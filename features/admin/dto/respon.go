@@ -1,1 +1,13 @@
 package dto
+
+import "time"
+
+type AdminRespon struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"nama"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}

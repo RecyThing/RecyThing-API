@@ -30,7 +30,6 @@ func (admin *AdminRepository) Insert(data entity.AdminCore) (entity.AdminCore, e
 
 func (admin *AdminRepository) SelectAll() ([]entity.AdminCore, error) {
 	dataAdmin := []model.Admin{}
-
 	if err := admin.db.Find(&dataAdmin).Error; err != nil {
 		return nil, err
 	}

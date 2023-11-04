@@ -11,10 +11,8 @@ type AdminRepository struct {
 	db *gorm.DB
 }
 
-func NewAdminRepository(db *gorm.DB) entity.AdminRepositoryInterface {
-	return &AdminRepository{
-		db: db,
-	}
+func NewAdminRepository(db *gorm.DB) *AdminRepository {
+	return &AdminRepository{db: db}
 }
 
 func (admin *AdminRepository) Insert(data entity.AdminCore) error {
@@ -38,19 +36,19 @@ func (admin *AdminRepository) SelectAll() ([]entity.AdminCore, error) {
 	return dataAllAdmin, nil
 }
 
-func (admin *AdminRepository) SelectById(id_admin, role string) (entity.AdminCore,error) {
+func (admin *AdminRepository) SelectById(id_admin, role string) (entity.AdminCore, error) {
 	dataAdmin := model.Admin{}
 
 	if err := admin.db.Where("id = ? AND role = ? ", id_admin, role).Find(&dataAdmin).Error; err != nil {
-		return entity.AdminCore{},err
+		return entity.AdminCore{}, err
 	}
 
 	data := entity.AdminModelToAdminCore(dataAdmin)
-	return data,nil
+	return data, nil
 }
 
-func (admin *AdminRepository) Update(id_admin string,data entity.AdminCore) (error) {
-	
+func (admin *AdminRepository) Update(id_admin string, data entity.AdminCore) error {
+
 	dataAdmin := entity.AdminCoreToAdminModel(data)
 	if err := admin.db.Where("id = ?", id_admin).Updates(&dataAdmin).Error; err != nil {
 		return err

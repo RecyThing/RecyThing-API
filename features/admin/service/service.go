@@ -9,7 +9,7 @@ type AdminService struct {
 	AdminRepository entity.AdminRepositoryInterface
 }
 
-func NewAdminService(admin entity.AdminRepositoryInterface) entity.AdminServiceInterface {
+func NewAdminService(admin entity.AdminRepositoryInterface) *AdminService{
 	return &AdminService{AdminRepository: admin}
 }
 

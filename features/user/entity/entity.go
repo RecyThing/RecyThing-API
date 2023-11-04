@@ -1,1 +1,25 @@
 package entity
+
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
+type UsersCore struct {
+	Id                string
+	Username          string `validate:"required,min=6"`
+	Email             string `validate:"required,email"`
+	Password          string `validate:"required,min=8"`
+	Fullname    	  string
+	Phone       	  string
+	Address     	  string
+	DateOfBirth 	  string
+	Purpose     	  string
+	Point             int
+	IsVerified        bool
+	VerificationToken string
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+	DeleteAt          gorm.DeletedAt
+}

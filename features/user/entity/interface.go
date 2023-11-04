@@ -10,10 +10,10 @@ type UsersRepositoryInterface interface {
 }
 
 type UsersUsecaseInterface interface {
-	Register(data UsersCore) (string, error)
+	Register(data UsersCore) error
 	Login(email, password string) (UsersCore, string, error)
-	GetById(id string) (UsersCore, UsersCore, error)
+	GetById(id string) (UsersCore, error)
 	UpdateById(id string, updated UsersCore) (data UsersCore, err error)
-	GetByVerificationToken(token string) (UsersCore, error)
+	VerifyUser(token string) (bool, error)
 	UpdateIsVerified(id string, isVerified bool) error
 }

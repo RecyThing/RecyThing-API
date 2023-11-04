@@ -23,7 +23,6 @@ func NewUserRepository(db *gorm.DB) entity.UsersRepositoryInterface {
 func (userRep *userRepository) GetById(id string) (entity.UsersCore, error) {
 	var userData model.Users
 
-	// Gunakan Preload untuk memuat data pickup terkait.
 	result := userRep.db.Where("id = ?", id).First(&userData)
 	if result.Error != nil {
 		return entity.UsersCore{}, result.Error
@@ -49,15 +48,13 @@ func (userRep *userRepository) GetByVerificationToken(token string) (entity.User
 func (userRep *userRepository) Login(email string, password string) (entity.UsersCore, error) {
 	var data model.Users
 
-	tx := userRep.db.Where("email = ? AND password = ?", email, password).First(&data)
+	tx := userRep.db.Where("email = ?", email).First(&data)
 	if tx.Error != nil {
 		return entity.UsersCore{}, tx.Error
 	}
-
+	
 	dataMain := entity.UsersModelToUsersCore(data)
-
 	return dataMain, nil
-
 }
 
 // Register implements entity.UsersRepositoryInterface.
@@ -69,8 +66,6 @@ func (userRep *userRepository) Register(data entity.UsersCore) error {
 
 	dataInput := entity.UsersCoreToUsersModel(data)
 	dataInput.Id = newUUID.String()
-	// uniqueToken := email.GenerateUniqueToken()
-	// dataInput.VerificationToken = uniqueToken
 
 	tx := userRep.db.Create(&dataInput)
 	if tx.Error != nil {

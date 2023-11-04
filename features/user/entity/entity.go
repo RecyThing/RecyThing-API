@@ -11,11 +11,12 @@ type UsersCore struct {
 	Username          string `validate:"required,min=6"`
 	Email             string `validate:"required,email"`
 	Password          string `validate:"required,min=8"`
-	Fullname    	  string
-	Phone       	  string
-	Address     	  string
-	DateOfBirth 	  string
-	Purpose     	  string
+	ConfirmPassword   string `validate:"required,eqfield=Password"`
+	Fullname          string
+	Phone             string
+	Address           string
+	DateOfBirth       string
+	Purpose           string
 	Point             int
 	IsVerified        bool
 	VerificationToken string

@@ -3,21 +3,24 @@ package service
 import (
 	"errors"
 	"recything/features/admin/entity"
+	"recything/utils/jwt"
 )
 
 type AdminService struct {
 	AdminRepository entity.AdminRepositoryInterface
 }
 
-func NewAdminService(admin entity.AdminRepositoryInterface) *AdminService{
-	return &AdminService{AdminRepository: admin}
+func NewAdminService(admin entity.AdminRepositoryInterface) *AdminService {
+	return &AdminService{
+		AdminRepository: admin,
+	}
 }
 
-func (admin *AdminService) Create(data entity.AdminCore)(entity.AdminCore, error) {
+func (admin *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) {
 
-	dataAdmin,err := admin.AdminRepository.Insert(data)
+	dataAdmin, err := admin.AdminRepository.Insert(data)
 	if err != nil {
-		return entity.AdminCore{}, errors.New("")
+		return entity.AdminCore{}, err
 	}
 
 	return dataAdmin, nil
@@ -30,12 +33,12 @@ func (admin *AdminService) GetAll() ([]entity.AdminCore, error) {
 		return nil, errors.New("")
 	}
 
-	return data, err
+	return data, nil
 }
 
-func (admin *AdminService) GetById(id_admin, role string) (entity.AdminCore, error) {
+func (admin *AdminService) GetById(adminId string) (entity.AdminCore, error) {
 
-	data, err := admin.AdminRepository.SelectById(id_admin, role)
+	data, err := admin.AdminRepository.SelectById(adminId)
 
 	if data == (entity.AdminCore{}) {
 		return entity.AdminCore{}, errors.New("null")
@@ -48,22 +51,36 @@ func (admin *AdminService) GetById(id_admin, role string) (entity.AdminCore, err
 	return data, nil
 }
 
-func (admin *AdminService) UpdateById(id_admin, role string, data entity.AdminCore) error {
+func (admin *AdminService) UpdateById(adminId string, data entity.AdminCore) error {
 
-	err := admin.AdminRepository.Update(id_admin, data)
+	err := admin.AdminRepository.Update(adminId, data)
 	if err != nil {
 		return errors.New("")
 	}
 
-	return err
+	return nil
 }
 
-func (admin *AdminService) DeleteById(id_admin string) error {
+func (admin *AdminService) DeleteById(adminId string) error {
 
-	err := admin.AdminRepository.Delete(id_admin)
+	err := admin.AdminRepository.Delete(adminId)
 	if err != nil {
 		return errors.New("")
 	}
 
-	return err
+	return nil
+}
+
+func (admin *AdminService) FindByEmailANDPassword(email, password string) (entity.AdminCore, string, error) {
+	data, err := admin.AdminRepository.FindByEmailANDPassword(email, password)
+	if err != nil {
+		return entity.AdminCore{}, "", errors.New("Gagal woy")
+	}
+
+	token, errToken := jwt.CreateToken(data.Id, data.Role)
+	if errToken != nil {
+		return entity.AdminCore{}, "", errToken
+	}
+
+	return data, token, nil
 }

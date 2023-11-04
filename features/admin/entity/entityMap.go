@@ -22,8 +22,8 @@ func AdminModelToAdminCore(admin model.Admin) AdminCore {
 func ListAdminModelToAdminCore(admins []model.Admin) []AdminCore {
 	listAdmin := []AdminCore{}
 	for _, admin := range admins {
-		adminModel := AdminModelToAdminCore(admin)
-		listAdmin = append(listAdmin, adminModel)
+		adminCore := AdminModelToAdminCore(admin)
+		listAdmin = append(listAdmin, adminCore)
 	}
 	return listAdmin
 }
@@ -50,7 +50,6 @@ func ListAdminCoreToAdminModel(admins []AdminCore) []model.Admin {
 	return listAdmin
 }
 
-
 func AdminRequestToAdminCore(admin dto.AdminRequest) AdminCore {
 	return AdminCore{
 		Name:     admin.Name,
@@ -61,7 +60,16 @@ func AdminRequestToAdminCore(admin dto.AdminRequest) AdminCore {
 
 func AdminCoreToAdminResponse(admin AdminCore) dto.AdminRespon {
 	return dto.AdminRespon{
-		Name:     admin.Name,
-		Email:    admin.Email,
+		Name:  admin.Name,
+		Email: admin.Email,
 	}
+}
+
+func ListAdminCoreToAdminResponse(admins []AdminCore) []dto.AdminRespon {
+	listAdmin := []dto.AdminRespon{}
+	for _, admin := range admins {
+		adminResp := AdminCoreToAdminResponse(admin)
+		listAdmin = append(listAdmin, adminResp)
+	}
+	return listAdmin
 }

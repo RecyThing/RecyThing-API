@@ -23,7 +23,7 @@ func JWTMiddleware() echo.MiddlewareFunc {
 }
 
 
-func CreateToken (id int,role string)(string,error){
+func CreateToken(id string,role string)(string,error){
 	godotenv.Load()
 	claims := jwt.MapClaims{}
 	claims["id"] = id
@@ -44,13 +44,14 @@ func SetTokenCookie(e echo.Context, token string) {
 	e.SetCookie(cookie)
 }
 
-func ExtractToken(e echo.Context) (int,string) {
+func ExtractToken(e echo.Context) (string,string) {
 	user := e.Get("user").(*jwt.Token)
 	if user.Valid {
 		claims := user.Claims.(jwt.MapClaims)
-		Id := int(claims["id"].(float64))
+		Id := claims["id"].(string)
 		Role := claims["role"].(string)
 		return Id,Role
 	}
-	return 0,""
+	return "",""
 }
+

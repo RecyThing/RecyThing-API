@@ -5,6 +5,7 @@ import (
 	"recything/features/admin/dto"
 	"recything/features/admin/entity"
 	"recything/utils/helper"
+	"recything/utils/jwt"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,23 +18,104 @@ func NewAdminHandler(admin entity.AdminServiceInterface) *AdminHandler {
 	return &AdminHandler{AdminService: admin}
 }
 
-func (admin *AdminHandler) Create(e echo.Context) {
+func (admin *AdminHandler) Create(e echo.Context) error {
 	inputAdmin := dto.AdminRequest{}
-	adminCore := entity.AdminRequestToAdminCore(inputAdmin)
 
+	if err := e.Bind(&inputAdmin); err != nil {
+		return err
+	}
+	
+	adminCore := entity.AdminRequestToAdminCore(inputAdmin)
 	adminCreated, err := admin.AdminService.Create(adminCore)
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, helper.FailedResponse(err.Error()))
+	}
+
+	adminResponse := entity.AdminCoreToAdminResponse(adminCreated)
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", adminResponse))
+
+}
+
+func (admin *AdminHandler) GetAll(e echo.Context) error {
+	_, role := jwt.ExtractToken(e)
+	if role != helper.SUPERADMIN {
+		e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+	}
+
+	AdminsData, err := admin.AdminService.GetAll()
 	if err != nil {
 		e.JSON(http.StatusInternalServerError, helper.FailedResponse("failed"))
 	}
 
-	adminResp := entity.AdminCoreToAdminResponse(adminCreated)
-	e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", adminResp))
+	adminsResponse := entity.ListAdminCoreToAdminResponse(AdminsData)
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", adminsResponse))
 
 }
+func (admin *AdminHandler) GetById(e echo.Context) error {
+	adminId := e.Param("id")
 
-func (admin *AdminHandler) GetAll(e echo.Context) {
-	AdminsData, err := admin.AdminService.GetAll()
-	
+	_, role := jwt.ExtractToken(e)
+	if role != helper.SUPERADMIN {
+		e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+	}
 
-	
+	AdminData, err := admin.AdminService.GetById(adminId)
+	if err != nil {
+		e.JSON(http.StatusInternalServerError, helper.FailedResponse("failed"))
+	}
+
+	adminResponse := entity.AdminCoreToAdminResponse(AdminData)
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", adminResponse))
+}
+
+func (admin *AdminHandler) Delete(e echo.Context) error {
+	adminId := e.Param("id")
+
+	_, role := jwt.ExtractToken(e)
+	if role != helper.SUPERADMIN {
+		e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+	}
+
+	err := admin.AdminService.DeleteById(adminId)
+	if err != nil {
+		e.JSON(http.StatusInternalServerError, helper.FailedResponse("failed"))
+	}
+
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("success"))
+}
+
+func (admin *AdminHandler) UpdateById(e echo.Context) error {
+	adminId := e.Param("id")
+
+	_, role := jwt.ExtractToken(e)
+	if role != helper.SUPERADMIN {
+		e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+	}
+
+	newAdmin := dto.AdminRequest{}
+	err := e.Bind(&newAdmin)
+	if err != nil {
+		e.JSON(http.StatusBadRequest, helper.FailedResponse("failed"))
+	}
+
+	coreAdmin := entity.AdminRequestToAdminCore(newAdmin)
+	err = admin.AdminService.UpdateById(adminId, coreAdmin)
+	return e.JSON(http.StatusOK, helper.SuccessResponse("success"))
+}
+
+func (admin *AdminHandler) Login(e echo.Context) error {
+	input := dto.AdminRequest{}
+	if err := e.Bind(&input); err != nil {
+		return e.JSON(http.StatusBadRequest, helper.FailedResponse(err.Error()))
+	}
+
+	adminData, token, err := admin.AdminService.FindByEmailANDPassword(input.Email, input.Password)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.FailedResponse(err.Error()))
+	}
+
+	jwt.SetTokenCookie(e, token)
+	adminResponse := entity.AdminCoreToAdminResponse(adminData)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Succes Login", adminResponse))
 }

@@ -63,6 +63,5 @@ func AdminCoreToAdminResponse(admin AdminCore) dto.AdminRespon {
 	return dto.AdminRespon{
 		Name:     admin.Name,
 		Email:    admin.Email,
-		Password: admin.Password,
 	}
 }

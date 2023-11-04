@@ -13,14 +13,14 @@ func NewAdminService(admin entity.AdminRepositoryInterface) *AdminService{
 	return &AdminService{AdminRepository: admin}
 }
 
-func (admin *AdminService) Create(data entity.AdminCore) error {
+func (admin *AdminService) Create(data entity.AdminCore)(entity.AdminCore, error) {
 
-	err := admin.AdminRepository.Insert(data)
+	dataAdmin,err := admin.AdminRepository.Insert(data)
 	if err != nil {
-		return errors.New("")
+		return entity.AdminCore{}, errors.New("")
 	}
 
-	return err
+	return dataAdmin, nil
 }
 
 func (admin *AdminService) GetAll() ([]entity.AdminCore, error) {

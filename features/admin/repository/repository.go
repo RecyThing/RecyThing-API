@@ -15,14 +15,15 @@ func NewAdminRepository(db *gorm.DB) *AdminRepository {
 	return &AdminRepository{db: db}
 }
 
-func (admin *AdminRepository) Insert(data entity.AdminCore) error {
+func (admin *AdminRepository) Insert(data entity.AdminCore) (entity.AdminCore, error) {
 
 	dataCreate := entity.AdminCoreToAdminModel(data)
 	if err := admin.db.Create(&dataCreate).Error; err != nil {
-		return err
+		return entity.AdminCore{}, err
 	}
-
-	return nil
+	
+	adminData := entity.AdminModelToAdminCore(dataCreate)
+	return adminData, nil
 }
 
 func (admin *AdminRepository) SelectAll() ([]entity.AdminCore, error) {

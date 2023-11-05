@@ -7,5 +7,7 @@ import (
 
 func New(e *echo.Echo, db *gorm.DB) {
 	admin := e.Group("/admins")
+	user := e.Group("/users")
 	RouteAdmin(admin, db)
+	RouteUser(user, db)
 }

@@ -1,5 +1,8 @@
 package helper
 
-const USER = "user"
-const ADMIN = "admin"
-const SUPERADMIN = "super_admin"
+const (
+	VERIFICATION_URL = "http://localhost:8080/users/verify?token="
+	USER             = "user"
+	ADMIN            = "admin"
+	SUPERADMIN       = "super_admin"
+)

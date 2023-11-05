@@ -12,11 +12,15 @@ import (
 
 func main() {
 	e := echo.New()
-	cfg := config.InitConfig()
-	db := database.InitDBMysql(cfg)
-	database.InitMigrationMysql(db)
 
-	route.New(e, db)
+	cfg := config.InitConfig()
+	dbMysql := database.InitDBMysql(cfg)
+	database.InitMigrationMysql(dbMysql)
+
+	e.Pre(middleware.RemoveTrailingSlash())
+	e.Use(middleware.CORS())
+
+	route.New(e, dbMysql)
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `[${time_rfc3339}] ${status} ${method} ${host}${path} ${latency_human}` + "\n",
 	}))

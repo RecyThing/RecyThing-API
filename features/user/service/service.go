@@ -69,7 +69,7 @@ func (uc *userService) Login(email string, password string) (entity.UsersCore, s
 	}
 
 	if helper.CompareHash(dataLogin.Password, password) {
-		token, err := jwt.CreateTokenUsers(dataLogin.Id)
+		token, err := jwt.CreateToken(dataLogin.Id, "")
 		if err != nil {
 			return entity.UsersCore{}, "", err
 		}

@@ -3,7 +3,8 @@ package database
 import (
 	"fmt"
 	"recything/app/config"
-	"recything/features/user/model"
+	user "recything/features/user/model"
+	admin "recything/features/admin/model"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -19,9 +20,12 @@ func InitDBMysql(cfg *config.AppConfig) *gorm.DB {
 	if err != nil {
 		panic(err)
 	}
+	InitMigrationMysql(db)
 	return db
 }
 
 func InitMigrationMysql(db *gorm.DB) {
-	db.AutoMigrate(&model.Users{})
+	db.AutoMigrate(&user.Users{})
+	db.AutoMigrate(&admin.Admin{})
+
 }

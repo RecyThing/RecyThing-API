@@ -33,7 +33,7 @@ func (uco *userHandler) UpdateById(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.ErrorResponse("invalid input"))
 	}
 
-	idToken, err := jwt.ExtractTokenUsers(c)
+	idToken, _, err := jwt.ExtractToken(c)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
 	}
@@ -122,7 +122,7 @@ func (uco *userHandler) Login(c echo.Context) error {
 
 func (uco *userHandler) GetUser(c echo.Context) error {
 	// Extra token dari id
-	idToken, err := jwt.ExtractTokenUsers(c)
+	idToken, _, err := jwt.ExtractToken(c)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
 	}

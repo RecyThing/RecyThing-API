@@ -13,13 +13,17 @@ import (
 func main() {
 	e := echo.New()
 
-	var cfg = config.InitConfig()
+	cfg := config.InitConfig()
 	dbMysql := database.InitDBMysql(cfg)
-	route.NewRoute(e, dbMysql)
 	database.InitMigrationMysql(dbMysql)
 
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.CORS())
+
+	route.New(e, dbMysql)
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: `[${time_rfc3339}] ${status} ${method} ${host}${path} ${latency_human}` + "\n",
+	}))
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", cfg.SERVERPORT)))
 }

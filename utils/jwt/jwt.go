@@ -21,7 +21,9 @@ func JWTMiddleware() echo.MiddlewareFunc {
 	})
 }
 
-func CreateTokenUsers(id string) (string, error) {
+
+func CreateToken(id string,role string)(string,error){
+	godotenv.Load()
 	claims := jwt.MapClaims{}
 	claims["id"] = id
 	claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
@@ -39,19 +41,14 @@ func SetTokenCookie(e echo.Context, token string) {
 	e.SetCookie(cookie)
 }
 
-func ExtractTokenUsers(c echo.Context) (string, error) {
-	user, ok := c.Get("user").(*jwt.Token)
-	if !ok || user == nil {
-		return "", errors.New("missing user token")
+func ExtractToken(e echo.Context) (string, string, error) {
+	user := e.Get("user").(*jwt.Token)
+	if user.Valid {
+		claims := user.Claims.(jwt.MapClaims)
+		Id := claims["id"].(string)
+		Role := claims["role"].(string)
+		return Id, Role, nil
 	}
-
-	if claims, ok := user.Claims.(jwt.MapClaims); ok && user.Valid {
-		id, ok := claims["id"].(string)
-		if !ok {
-			return "", errors.New("user ID claim is missing or not a string")
-		}
-		return id, nil
-	}
-
-	return "", errors.New("invalid or expired token")
+	return "","", errors.New("invalid token")
 }
+

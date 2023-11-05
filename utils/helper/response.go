@@ -20,14 +20,14 @@ func ErrorResponse(message string) ErrorResponseJson {
 
 func SuccessResponse(message string) SuccessResponseJson {
 	return SuccessResponseJson{
-		Status : "status",
+		Status : "success",
 		Message: message,
 	}
 }
 
 func SuccessWithDataResponse(message string, data interface{}) SuccessResponseJson {
 	return SuccessResponseJson{
-		Status : "status",
+		Status : "success",
 		Message: message,
 		Data:    data,
 	}

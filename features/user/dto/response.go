@@ -3,33 +3,37 @@ package dto
 import "recything/features/user/entity"
 
 type UserLoginResponse struct {
-	Id    string `json:"id"`
-	Email string `json:"email"`
-	Token string `json:"token"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
 }
 
 type UserResponseProfile struct {
-	Fullname    string `json:"fullname"`
+	Username    string `json:"username"`
 	Email       string `json:"email"`
+	Fullname    string `json:"fullname"`
 	Phone       string `json:"phone"`
 	Address     string `json:"address"`
 	DateOfBirth string `json:"date_of_birth"`
+	Purpose     string `json:"purpose"`
+	Point       int    `json:"point"`
 }
 
-func LoginResponse(id, email, token string) UserLoginResponse {
+func LoginResponse(username, email string) UserLoginResponse {
 	return UserLoginResponse{
-		Id:    id,
-		Email: email,
-		Token: token,
+		Username: username,
+		Email:    email,
 	}
 }
 
 func ResponseProfile(user entity.UsersCore) UserResponseProfile {
 	return UserResponseProfile{
-		Fullname:    user.Fullname,
+		Username:    user.Username,
 		Email:       user.Email,
+		Fullname:    user.Fullname,
 		Phone:       user.Phone,
 		Address:     user.Address,
 		DateOfBirth: user.DateOfBirth,
+		Purpose:     user.Purpose,
+		Point:       user.Point,
 	}
 }

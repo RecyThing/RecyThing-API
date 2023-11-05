@@ -19,9 +19,12 @@ func NewAdminHandler(admin entity.AdminServiceInterface) *AdminHandler {
 }
 
 func (admin *AdminHandler) Create(e echo.Context) error {
-	_, role := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
+	}
+	if err != nil {
+		return err
 	}
 
 	inputAdmin := dto.AdminRequest{}
@@ -42,9 +45,12 @@ func (admin *AdminHandler) Create(e echo.Context) error {
 }
 
 func (admin *AdminHandler) GetAll(e echo.Context) error {
-	_, role := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
+	}
+	if err != nil {
+		return err
 	}
 
 	AdminsData, err := admin.AdminService.GetAll()
@@ -59,9 +65,12 @@ func (admin *AdminHandler) GetAll(e echo.Context) error {
 func (admin *AdminHandler) GetById(e echo.Context) error {
 	adminId := e.Param("id")
 
-	_, role := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
+	}
+	if err != nil {
+		return err
 	}
 
 	AdminData, err := admin.AdminService.GetById(adminId)
@@ -76,12 +85,15 @@ func (admin *AdminHandler) GetById(e echo.Context) error {
 func (admin *AdminHandler) Delete(e echo.Context) error {
 	adminId := e.Param("id")
 
-	_, role := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
 	}
+	if err != nil {
+		return err
+	}
 
-	err := admin.AdminService.DeleteById(adminId)
+	err = admin.AdminService.DeleteById(adminId)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
@@ -92,13 +104,16 @@ func (admin *AdminHandler) Delete(e echo.Context) error {
 func (admin *AdminHandler) UpdateById(e echo.Context) error {
 	adminId := e.Param("id")
 
-	_, role := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
 	}
+	if err != nil {
+		return err
+	}
 
 	newAdmin := dto.AdminRequest{}
-	err := e.Bind(&newAdmin)
+	err = e.Bind(&newAdmin)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("failed"))
 	}

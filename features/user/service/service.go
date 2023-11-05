@@ -121,18 +121,22 @@ func (uc *userService) UpdateById(id string, updated entity.UsersCore) (data ent
 		return entity.UsersCore{}, errors.New("invalid id")
 	}
 
-	if len(updated.Username) < 6 {
+	if updated.Username != "" && len(updated.Username) < 6 {
 		return entity.UsersCore{}, errors.New("your username is too short, must be at least 6 characters")
 	}
 
-	if _, parseErr := time.Parse("2006-01-02", updated.DateOfBirth); parseErr != nil {
-		return entity.UsersCore{}, errors.New("error, date must be in the format 'yyyy-mm-dd'")
+	if updated.DateOfBirth != "" {
+		if _, parseErr := time.Parse("2006-01-02", updated.DateOfBirth); parseErr != nil {
+			return entity.UsersCore{}, errors.New("error, date must be in the format 'yyyy-mm-dd'")
+		}
 	}
 
-	phoneRegex := `^(?:\+62|0)[0-9-]+$`
-	match, _ := regexp.MatchString(phoneRegex, updated.Phone)
-	if !match {
-		return entity.UsersCore{}, errors.New("error, phone number format not valid")
+	if updated.Phone != "" {
+		phoneRegex := `^(?:\+62|0)[0-9-]+$`
+		match, _ := regexp.MatchString(phoneRegex, updated.Phone)
+		if !match {
+			return entity.UsersCore{}, errors.New("error, phone number format not valid")
+		}
 	}
 
 	updateData, err := uc.userRepo.UpdateById(id, updated)

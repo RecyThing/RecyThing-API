@@ -86,7 +86,11 @@ func (userRep *userRepository) UpdateById(id string, updated entity.UsersCore) (
 		}
 		return entity.UsersCore{}, errData
 	}
-	userRep.db.Model(&usersData).Updates(entity.UsersCoreToUsersModel(updated))
+	
+	errUpdate := userRep.db.Model(&usersData).Updates(entity.UsersCoreToUsersModel(updated))
+	if errUpdate != nil{
+		return entity.UsersCore{}, errUpdate.Error
+	}
 	data = entity.UsersModelToUsersCore(usersData)
 
 	return data, nil

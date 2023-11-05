@@ -23,6 +23,32 @@ func NewUserHandlers(uc entity.UsersUsecaseInterface) *userHandler {
 	}
 }
 
+func (uco *userHandler) UpdateById(c echo.Context) error {
+	dataUpdate := dto.UserUpdate{}
+	decoder := json.NewDecoder(c.Request().Body)
+	decoder.DisallowUnknownFields()
+
+	errBind := decoder.Decode(&dataUpdate)
+	if errBind != nil {
+		return c.JSON(http.StatusBadRequest, helper.ErrorResponse("invalid input"))
+	}
+
+	idToken, err := jwt.ExtractTokenUsers(c)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
+	}
+
+	updateData := dto.RequestUpdate(dataUpdate)
+
+	_ , err = uco.userUseCase.UpdateById(idToken, updateData)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("succes update data"))
+
+}
+
 func (uco *userHandler) Register(c echo.Context) error {
 	// Bind data
 	dataInput := dto.UserRegister{}

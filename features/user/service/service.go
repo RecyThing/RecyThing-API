@@ -6,6 +6,8 @@ import (
 	"recything/utils/email"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+	"regexp"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -115,13 +117,36 @@ func (uc *userService) Register(data entity.UsersCore) error {
 
 // UpdateById implements entity.UsersUsecaseInterface.
 func (uc *userService) UpdateById(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
-	panic("unimplemented")
+	if id == "" {
+		return entity.UsersCore{}, errors.New("invalid id")
+	}
+
+	if len(updated.Username) < 6 {
+		return entity.UsersCore{}, errors.New("your username is too short, must be at least 6 characters")
+	}
+
+	if _, parseErr := time.Parse("2006-01-02", updated.DateOfBirth); parseErr != nil {
+		return entity.UsersCore{}, errors.New("error, date must be in the format 'yyyy-mm-dd'")
+	}
+
+	phoneRegex := `^(?:\+62|0)[0-9-]+$`
+	match, _ := regexp.MatchString(phoneRegex, updated.Phone)
+	if !match {
+		return entity.UsersCore{}, errors.New("error, phone number format not valid")
+	}
+
+	updateData, err := uc.userRepo.UpdateById(id, updated)
+	if err != nil {
+		return entity.UsersCore{}, err
+	}
+
+	return updateData, nil
 }
 
 // UpdateIsVerified implements entity.UsersUsecaseInterface.
 func (uc *userService) UpdateIsVerified(id string, isVerified bool) error {
 	if id == "" {
-		return errors.New("user ID is required")
+		return errors.New("user id is required")
 	}
 
 	return uc.userRepo.UpdateIsVerified(id, isVerified)

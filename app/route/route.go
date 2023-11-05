@@ -20,5 +20,6 @@ func NewRoute(e *echo.Echo, db *gorm.DB) {
 	user.POST("/register", userHandler.Register)
 	user.POST("/login", userHandler.Login)
 	user.GET("", userHandler.GetUser, jwt.JWTMiddleware())
+	user.PUT("", userHandler.UpdateById, jwt.JWTMiddleware())
 	e.GET("/verify", userHandler.VerifyAccount)
 }

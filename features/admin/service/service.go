@@ -65,7 +65,7 @@ func (admin *AdminService) DeleteById(adminId string) error {
 
 	err := admin.AdminRepository.Delete(adminId)
 	if err != nil {
-		return errors.New("")
+		return err
 	}
 
 	return nil

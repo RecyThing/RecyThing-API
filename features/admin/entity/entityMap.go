@@ -60,8 +60,12 @@ func AdminRequestToAdminCore(admin dto.AdminRequest) AdminCore {
 
 func AdminCoreToAdminResponse(admin AdminCore) dto.AdminRespon {
 	return dto.AdminRespon{
+		ID: admin.Id,
 		Name:  admin.Name,
 		Email: admin.Email,
+		Status: admin.Status,
+		CreatedAt: admin.CreatedAt,
+		UpdatedAt: admin.UpdatedAt,
 	}
 }
 

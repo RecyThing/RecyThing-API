@@ -19,6 +19,11 @@ func NewAdminHandler(admin entity.AdminServiceInterface) *AdminHandler {
 }
 
 func (admin *AdminHandler) Create(e echo.Context) error {
+	_, role := jwt.ExtractToken(e)
+	if role != helper.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+	}
+
 	inputAdmin := dto.AdminRequest{}
 
 	if err := e.Bind(&inputAdmin); err != nil {
@@ -39,7 +44,7 @@ func (admin *AdminHandler) Create(e echo.Context) error {
 func (admin *AdminHandler) GetAll(e echo.Context) error {
 	_, role := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
 	}
 
 	AdminsData, err := admin.AdminService.GetAll()
@@ -56,7 +61,7 @@ func (admin *AdminHandler) GetById(e echo.Context) error {
 
 	_, role := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
 	}
 
 	AdminData, err := admin.AdminService.GetById(adminId)
@@ -73,15 +78,15 @@ func (admin *AdminHandler) Delete(e echo.Context) error {
 
 	_, role := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
 	}
 
 	err := admin.AdminService.DeleteById(adminId)
 	if err != nil {
-		e.JSON(http.StatusInternalServerError, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusInternalServerError, helper.FailedResponse(err.Error()))
 	}
 
-	return e.JSON(http.StatusCreated, helper.SuccessResponse("success"))
+	return e.JSON(http.StatusOK, helper.SuccessResponse("success"))
 }
 
 func (admin *AdminHandler) UpdateById(e echo.Context) error {
@@ -89,13 +94,13 @@ func (admin *AdminHandler) UpdateById(e echo.Context) error {
 
 	_, role := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
 	}
 
 	newAdmin := dto.AdminRequest{}
 	err := e.Bind(&newAdmin)
 	if err != nil {
-		e.JSON(http.StatusBadRequest, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusBadRequest, helper.FailedResponse("failed"))
 	}
 
 	coreAdmin := entity.AdminRequestToAdminCore(newAdmin)

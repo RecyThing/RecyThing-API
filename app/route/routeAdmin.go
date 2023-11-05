@@ -10,16 +10,17 @@ import (
 	"gorm.io/gorm"
 )
 
-func RouteAdmin(e *echo.Echo, db *gorm.DB) {
+func RouteAdmin(e *echo.Group, db *gorm.DB) {
 
 	adminRepository := repository.NewAdminRepository(db)
 	adminService := service.NewAdminService(adminRepository)
 	adminHandler := handler.NewAdminHandler(adminService)
 
-	e.POST("/admins/login", adminHandler.Login)
+	
+	e.POST("/login", adminHandler.Login)
 
-	admin := e.Group("/admins", jwt.JWTMiddleware())
-	admin.POST("/admins", adminHandler.Create)
+	admin := e.Group("", jwt.JWTMiddleware())
+	admin.POST("", adminHandler.Create)
 	admin.GET("", adminHandler.GetAll)
 	admin.GET("/:id", adminHandler.GetById)
 	admin.PUT("/:id", adminHandler.UpdateById)

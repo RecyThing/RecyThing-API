@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"fmt"
+	"errors"
 	"recything/features/admin/entity"
 	"recything/features/admin/model"
 	"recything/utils/helper"
@@ -23,7 +23,6 @@ func (admin *AdminRepository) Insert(data entity.AdminCore) (entity.AdminCore, e
 	if err := admin.db.Create(&dataCreate).Error; err != nil {
 		return entity.AdminCore{}, err
 	}
-	fmt.Println(dataCreate.Name)
 	adminData := entity.AdminModelToAdminCore(dataCreate)
 	return adminData, nil
 }
@@ -62,7 +61,13 @@ func (admin *AdminRepository) Update(adminId string, data entity.AdminCore) erro
 func (admin *AdminRepository) Delete(adminId string) error {
 	dataAdmin := model.Admin{}
 
-	if err := admin.db.Delete(&dataAdmin, adminId).Error; err != nil {
+	adminCore, _ := admin.SelectById(adminId)
+	if adminCore.Role == helper.SUPERADMIN {
+		return errors.New("can`t delete")
+	}
+
+	if err := admin.db.Where("id = ? AND role = ?", adminId, helper.ADMIN).Delete(&dataAdmin).Error; err != nil {
+
 		return err
 	}
 

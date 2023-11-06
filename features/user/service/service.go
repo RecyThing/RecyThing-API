@@ -24,6 +24,34 @@ func NewUserService(userRepo entity.UsersRepositoryInterface) entity.UsersUsecas
 	}
 }
 
+// ForgetPassword implements entity.UsersUsecaseInterface.
+func (uc *userService) ForgetPassword(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
+	if id == "" {
+		return entity.UsersCore{}, errors.New("invalid id")
+	}
+
+	if updated.Password != updated.ConfirmPassword {
+		return entity.UsersCore{}, errors.New("confirm password does not match")
+	}
+
+	if len(updated.Password) < 8 {
+		return entity.UsersCore{},errors.New("your password is too short, must be at least 8 characters")
+	}
+	
+	hashedPassword, errHash := helper.HashPassword(updated.Password)
+	if errHash != nil {
+		return entity.UsersCore{},errors.New("error hash password")
+	}
+	updated.Password = hashedPassword
+
+	updatePassword, err := uc.userRepo.ForgetPassword(id, updated)
+	if err != nil {
+		return entity.UsersCore{}, err
+	}
+
+	return updatePassword, nil
+}
+
 // GetById implements entity.UsersUsecaseInterface.
 func (uc *userService) GetById(id string) (entity.UsersCore, error) {
 	if id == "" {

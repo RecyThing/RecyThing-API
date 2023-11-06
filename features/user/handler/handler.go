@@ -23,6 +23,30 @@ func NewUserHandlers(uc entity.UsersUsecaseInterface) *userHandler {
 	}
 }
 
+func (uco *userHandler) ForgetPassword(c echo.Context) error {
+	newPassword := dto.UserForgetPassword{}
+	decoder := json.NewDecoder(c.Request().Body)
+	decoder.DisallowUnknownFields()
+
+	errBind := decoder.Decode(&newPassword)
+	if errBind != nil {
+		return c.JSON(http.StatusBadRequest, helper.ErrorResponse("invalid input"))
+	}
+
+	idToken, _, err := jwt.ExtractToken(c)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
+	}
+
+	updateData := dto.RequestForgetPassword(newPassword)
+	_, err = uco.userUseCase.ForgetPassword(idToken, updateData)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("success update password"))
+}
+
 func (uco *userHandler) UpdateById(c echo.Context) error {
 	dataUpdate := dto.UserUpdate{}
 	decoder := json.NewDecoder(c.Request().Body)
@@ -40,12 +64,12 @@ func (uco *userHandler) UpdateById(c echo.Context) error {
 
 	updateData := dto.RequestUpdate(dataUpdate)
 
-	_ , err = uco.userUseCase.UpdateById(idToken, updateData)
+	_, err = uco.userUseCase.UpdateById(idToken, updateData)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("succes update data"))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("success update data"))
 
 }
 

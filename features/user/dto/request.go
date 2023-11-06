@@ -24,6 +24,11 @@ type UserUpdate struct {
 	Purpose     string `json:"purpose"`
 }
 
+type UserForgetPassword struct {
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirm_password"`
+}
+
 func RequestRegister(dataRequest UserRegister) entity.UsersCore {
 	return entity.UsersCore{
 		Id:              dataRequest.Id,
@@ -42,5 +47,12 @@ func RequestUpdate(dataUpdate UserUpdate) entity.UsersCore {
 		DateOfBirth: dataUpdate.DateOfBirth,
 		Address:     dataUpdate.Address,
 		Purpose:     dataUpdate.Purpose,
+	}
+}
+
+func RequestForgetPassword(dataUpdate UserForgetPassword) entity.UsersCore {
+	return entity.UsersCore{
+		Password: dataUpdate.Password,
+		ConfirmPassword: dataUpdate.ConfirmPassword,
 	}
 }

@@ -7,6 +7,7 @@ type UsersRepositoryInterface interface {
 	UpdateById(id string, updated UsersCore) (data UsersCore, err error)
 	GetByVerificationToken(token string) (UsersCore, error)
 	UpdateIsVerified(id string, isVerified bool) error
+	ForgetPassword(id string, updated UsersCore) (data UsersCore, err error)
 }
 
 type UsersUsecaseInterface interface {
@@ -16,4 +17,5 @@ type UsersUsecaseInterface interface {
 	UpdateById(id string, updated UsersCore) (data UsersCore, err error)
 	VerifyUser(token string) (bool, error)
 	UpdateIsVerified(id string, isVerified bool) error
+	ForgetPassword(id string, updated UsersCore) (data UsersCore, err error)
 }

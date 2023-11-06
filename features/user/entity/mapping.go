@@ -1,6 +1,8 @@
 package entity
 
-import "recything/features/user/model"
+import (
+	"recything/features/user/model"
+)
 
 func UsersCoreToUsersModel(mainData UsersCore) model.Users {
 	return model.Users{
@@ -16,6 +18,15 @@ func UsersCoreToUsersModel(mainData UsersCore) model.Users {
 		IsVerified:        mainData.IsVerified,
 		VerificationToken: mainData.VerificationToken,
 	}
+}
+
+func ListUserCoreToUserModel(mainData []UsersCore) []model.Users {
+	listUser := []model.Users{}
+	for _, user := range mainData {
+		userModel := UsersCoreToUsersModel(user)
+		listUser = append(listUser, userModel)
+	}
+	return listUser
 }
 
 func UsersModelToUsersCore(mainData model.Users) UsersCore {
@@ -35,4 +46,13 @@ func UsersModelToUsersCore(mainData model.Users) UsersCore {
 		CreatedAt:         mainData.CreatedAt,
 		UpdatedAt:         mainData.UpdatedAt,
 	}
+}
+
+func ListUserModelToUserCore(mainData []model.Users) []UsersCore {
+	listUser := []UsersCore{}
+	for _, user := range mainData {
+		userModel := UsersModelToUsersCore(user)
+		listUser = append(listUser, userModel)
+	}
+	return listUser
 }

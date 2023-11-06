@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"recything/features/admin/entity"
+	user "recything/features/user/entity"
 	"recything/utils/jwt"
 )
 
@@ -83,4 +84,41 @@ func (admin *AdminService) FindByEmailANDPassword(email, password string) (entit
 	}
 
 	return data, token, nil
+}
+
+//Manage Users
+
+func (admin *AdminService) GetAllUsers() ([]user.UsersCore, error){
+	
+	data, err := admin.AdminRepository.SelectAllUsers()
+	if err != nil {
+		return nil, errors.New("")
+	}
+
+	return data, nil
+}
+
+func (admin *AdminService) GetByIdUsers(userId string) (user.UsersCore, error){
+	
+	data, err := admin.AdminRepository.SelectByIdUsers(userId)
+
+	if data == (user.UsersCore{}) {
+		return user.UsersCore{}, errors.New("null")
+	}
+
+	if err != nil {
+		return user.UsersCore{}, errors.New("")
+	}
+
+	return data, nil
+}
+
+func (admin *AdminService) DeleteUsers(userId string) error{
+	
+	err := admin.AdminRepository.DeleteUsers(userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -3,7 +3,9 @@ package repository
 import (
 	"errors"
 	"recything/features/admin/entity"
+	user "recything/features/user/entity"
 	"recything/features/admin/model"
+	userModel "recything/features/user/model"
 	"recything/utils/helper"
 
 	"gorm.io/gorm"
@@ -88,4 +90,37 @@ func (admin *AdminRepository) FindByEmailANDPassword(email, password string) (en
 
 	adminCore := entity.AdminModelToAdminCore(adminModel)
 	return adminCore, nil
+}
+
+//Manage Users
+func (admin *AdminRepository) SelectAllUsers() ([]user.UsersCore, error){
+	dataUser := []userModel.Users{}
+	if err := admin.db.Find(&dataUser).Error; err != nil {
+		return nil, err
+	}
+
+	var dataAllUser []user.UsersCore = user.ListUserModelToUserCore(dataUser)
+	return dataAllUser, nil
+}
+
+func (admin *AdminRepository) SelectByIdUsers(userId string) (user.UsersCore, error){
+	dataUser := userModel.Users{}
+
+	if err := admin.db.Where("id = ?", userId).Find(&dataUser).Error; err != nil {
+		return user.UsersCore{}, err
+	}
+
+	data := user.UsersModelToUsersCore(dataUser)
+	return data, nil
+}
+
+func (admin *AdminRepository) DeleteUsers(userId string) error{
+	dataUser := userModel.Users{}
+
+	if err := admin.db.Where("id = ?", userId).Delete(&dataUser).Error; err != nil {
+
+		return err
+	}
+
+	return nil
 }

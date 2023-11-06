@@ -37,3 +37,27 @@ func ResponseProfile(user entity.UsersCore) UserResponseProfile {
 		Point:       user.Point,
 	}
 }
+
+type ResponseManageUsers struct {
+	Id          string `json:"id"`
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	Phone       string `json:"phone"`
+}
+
+func UsersCoreToResponseUsers(user entity.UsersCore) ResponseManageUsers {
+	return ResponseManageUsers {
+		Id : user.Id,         
+		Username :user.Username,
+		Email :user.Email,
+		Phone :user.Phone ,
+	}
+}
+
+func UsersCoreToResponseUsersList(dataCore []entity.UsersCore) []ResponseManageUsers {
+	var result []ResponseManageUsers
+	for _, v := range dataCore {
+		result = append(result, UsersCoreToResponseUsers(v))
+	}
+	return result
+}

@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"recything/features/admin/dto"
+	userDto "recything/features/user/dto"
 	"recything/features/admin/entity"
 	"recything/utils/helper"
 	"recything/utils/jwt"
@@ -147,17 +148,17 @@ func (admin *AdminHandler) Login(e echo.Context) error {
 
 //Manage User
 func (admin *AdminHandler) GetAllUser(e echo.Context) error {
-	_, role := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
 	}
 
 	UsersData, err := admin.AdminService.GetAllUsers()
 	if err != nil {
-		e.JSON(http.StatusInternalServerError, helper.FailedResponse("failed"))
+		e.JSON(http.StatusInternalServerError, helper.ErrorResponse("failed"))
 	}
 
-	usersResponse := entity.ListAdminCoreToAdminResponse(UsersData)
+	usersResponse := userDto.UsersCoreToResponseUsersList(UsersData)
 	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", usersResponse))
 
 }
@@ -165,31 +166,31 @@ func (admin *AdminHandler) GetAllUser(e echo.Context) error {
 func (admin *AdminHandler) GetByIdUsers(e echo.Context) error {
 	userId := e.Param("id")
 
-	_, role := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
 	}
 
 	UsersData, err := admin.AdminService.GetByIdUsers(userId)
 	if err != nil {
-		e.JSON(http.StatusInternalServerError, helper.FailedResponse("failed"))
+		e.JSON(http.StatusInternalServerError, helper.ErrorResponse("failed"))
 	}
 
-	userResponse := entity.AdminCoreToAdminResponse(UsersData)
+	userResponse := userDto.UsersCoreToResponseUsers(UsersData)
 	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", userResponse))
 }
 
 func (admin *AdminHandler) DeleteUsers(e echo.Context) error {
 	userId := e.Param("id")
 
-	_, role := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
 	}
 
-	err := admin.AdminService.DeleteUsers(userId)
+	err = admin.AdminService.DeleteUsers(userId)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.FailedResponse(err.Error()))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("success"))

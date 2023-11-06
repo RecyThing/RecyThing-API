@@ -1,6 +1,7 @@
 package model
 
 import (
+	"recything/features/report/model"
 	"time"
 
 	"gorm.io/gorm"
@@ -22,4 +23,5 @@ type Users struct {
 	CreatedAt         time.Time      `json:"created_at"`
 	UpdatedAt         time.Time      `json:"updated_at"`
 	DeleteAt          gorm.DeletedAt `gorm:"index"`
+	Reports           []model.Report `gorm:"foreignKey:UsersId"`
 }

@@ -8,7 +8,6 @@ import (
 
 type UsersCore struct {
 	Id                string
-	Username          string `validate:"required,min=6"`
 	Email             string `validate:"required,email"`
 	Password          string `validate:"required,min=8"`
 	ConfirmPassword   string `validate:"required,eqfield=Password"`

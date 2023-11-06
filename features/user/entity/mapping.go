@@ -6,7 +6,6 @@ import (
 
 func UsersCoreToUsersModel(mainData UsersCore) model.Users {
 	return model.Users{
-		Username:          mainData.Username,
 		Email:             mainData.Email,
 		Password:          mainData.Password,
 		Fullname:          mainData.Fullname,
@@ -32,7 +31,6 @@ func ListUserCoreToUserModel(mainData []UsersCore) []model.Users {
 func UsersModelToUsersCore(mainData model.Users) UsersCore {
 	return UsersCore{
 		Id:                mainData.Id,
-		Username:          mainData.Username,
 		Email:             mainData.Email,
 		Password:          mainData.Password,
 		Fullname:          mainData.Fullname,

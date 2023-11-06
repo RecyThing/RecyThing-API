@@ -19,6 +19,27 @@ func NewUserRepository(db *gorm.DB) entity.UsersRepositoryInterface {
 	}
 }
 
+// ForgetPassword implements entity.UsersRepositoryInterface.
+func (userRep *userRepository) ForgetPassword(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
+	var usersData model.Users
+
+	errData := userRep.db.Where("id = ?", id).First(&usersData).Error
+	if errData != nil {
+		if errors.Is(errData, gorm.ErrRecordNotFound) {
+			return entity.UsersCore{}, errors.New("user not found")
+		}
+		return entity.UsersCore{}, errData
+	}
+
+	errUpdate := userRep.db.Model(&usersData).Updates(entity.UsersCoreToUsersModel(updated))
+	if errUpdate != nil {
+		return entity.UsersCore{}, errUpdate.Error
+	}
+	data = entity.UsersModelToUsersCore(usersData)
+
+	return data, nil
+}
+
 // GetById implements entity.UsersRepositoryInterface.
 func (userRep *userRepository) GetById(id string) (entity.UsersCore, error) {
 	var userData model.Users
@@ -52,7 +73,7 @@ func (userRep *userRepository) Login(email string, password string) (entity.User
 	if tx.Error != nil {
 		return entity.UsersCore{}, tx.Error
 	}
-	
+
 	dataMain := entity.UsersModelToUsersCore(data)
 	return dataMain, nil
 }
@@ -86,9 +107,9 @@ func (userRep *userRepository) UpdateById(id string, updated entity.UsersCore) (
 		}
 		return entity.UsersCore{}, errData
 	}
-	
+
 	errUpdate := userRep.db.Model(&usersData).Updates(entity.UsersCoreToUsersModel(updated))
-	if errUpdate != nil{
+	if errUpdate != nil {
 		return entity.UsersCore{}, errUpdate.Error
 	}
 	data = entity.UsersModelToUsersCore(usersData)

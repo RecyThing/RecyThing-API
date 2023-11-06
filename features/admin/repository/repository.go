@@ -89,3 +89,36 @@ func (admin *AdminRepository) FindByEmailANDPassword(email, password string) (en
 	adminCore := entity.AdminModelToAdminCore(adminModel)
 	return adminCore, nil
 }
+
+//Manage Users
+func (admin *AdminRepository) SelectAllUsers() ([]entity.AdminCore, error){
+	dataUser := []model.Admin{}
+	if err := admin.db.Find(&dataUser).Error; err != nil {
+		return nil, err
+	}
+
+	var dataAllUser []entity.AdminCore = entity.ListAdminModelToAdminCore(dataUser)
+	return dataAllUser, nil
+}
+
+func (admin *AdminRepository) SelectByIdUsers(userId string) (entity.AdminCore, error){
+	dataUser := model.Admin{}
+
+	if err := admin.db.Where("id = ?", userId).Find(&dataUser).Error; err != nil {
+		return entity.AdminCore{}, err
+	}
+
+	data := entity.AdminModelToAdminCore(dataUser)
+	return data, nil
+}
+
+func (admin *AdminRepository) DeleteUsers(userId string) error{
+	dataUser := model.Admin{}
+
+	if err := admin.db.Where("id = ?", userId).Delete(&dataUser).Error; err != nil {
+
+		return err
+	}
+
+	return nil
+}

@@ -124,3 +124,54 @@ func (admin *AdminHandler) Login(e echo.Context) error {
 
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Succes Login", adminResponse))
 }
+
+
+//Manage User
+func (admin *AdminHandler) GetAllUser(e echo.Context) error {
+	_, role := jwt.ExtractToken(e)
+	if role != helper.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+	}
+
+	UsersData, err := admin.AdminService.GetAllUsers()
+	if err != nil {
+		e.JSON(http.StatusInternalServerError, helper.FailedResponse("failed"))
+	}
+
+	usersResponse := entity.ListAdminCoreToAdminResponse(UsersData)
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", usersResponse))
+
+}
+
+func (admin *AdminHandler) GetByIdUsers(e echo.Context) error {
+	userId := e.Param("id")
+
+	_, role := jwt.ExtractToken(e)
+	if role != helper.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+	}
+
+	UsersData, err := admin.AdminService.GetByIdUsers(userId)
+	if err != nil {
+		e.JSON(http.StatusInternalServerError, helper.FailedResponse("failed"))
+	}
+
+	userResponse := entity.AdminCoreToAdminResponse(UsersData)
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", userResponse))
+}
+
+func (admin *AdminHandler) DeleteUsers(e echo.Context) error {
+	userId := e.Param("id")
+
+	_, role := jwt.ExtractToken(e)
+	if role != helper.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+	}
+
+	err := admin.AdminService.DeleteUsers(userId)
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, helper.FailedResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusOK, helper.SuccessResponse("success"))
+}

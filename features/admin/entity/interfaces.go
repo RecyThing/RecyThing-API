@@ -7,6 +7,10 @@ type AdminRepositoryInterface interface {
 	Update(adminId string, data AdminCore) error
 	Delete(adminId string) error
 	FindByEmailANDPassword(email, password string) (AdminCore, error)
+	//Manage Users
+	SelectAllUsers() ([]AdminCore, error)
+	SelectByIdUsers(adminId string) (AdminCore, error)
+	DeleteUsers(adminId string) error
 }
 
 type AdminServiceInterface interface {
@@ -16,4 +20,8 @@ type AdminServiceInterface interface {
 	UpdateById(adminId string, data AdminCore) error
 	DeleteById(adminId string) error
 	FindByEmailANDPassword(email, password string) (AdminCore, string, error)
+	//Manage Users
+	GetAllUsers() ([]AdminCore, error)
+	GetByIdUsers(adminId string) (AdminCore, error)
+	DeleteUsers(adminId string) error
 }

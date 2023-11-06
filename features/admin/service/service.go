@@ -84,3 +84,40 @@ func (admin *AdminService) FindByEmailANDPassword(email, password string) (entit
 
 	return data, token, nil
 }
+
+//Manage Users
+
+func (admin *AdminService) GetAllUsers() ([]entity.AdminCore, error){
+	
+	data, err := admin.AdminRepository.SelectAll()
+	if err != nil {
+		return nil, errors.New("")
+	}
+
+	return data, nil
+}
+
+func (admin *AdminService) GetByIdUsers(userId string) (entity.AdminCore, error){
+	
+	data, err := admin.AdminRepository.SelectById(userId)
+
+	if data == (entity.AdminCore{}) {
+		return entity.AdminCore{}, errors.New("null")
+	}
+
+	if err != nil {
+		return entity.AdminCore{}, errors.New("")
+	}
+
+	return data, nil
+}
+
+func (admin *AdminService) DeleteUsers(userId string) error{
+	
+	err := admin.AdminRepository.Delete(userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

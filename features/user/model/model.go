@@ -1,36 +1,25 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Users struct {
-
-  NamaLengkap string
-  Username string
-  Email string
-  KataSandi string
-  NoTelp string
-  Alamat string
-  TanggalLahir string
-  Badges string
-  Tujuan string
-  AkunTerdaftar time.Time
+	Id                string         `gorm:"primaryKey;not null" json:"id"`
+	Username          string         `gorm:"unique;not null" json:"username"`
+	Email             string         `gorm:"unique;not null" json:"email"`
+	Password          string         `gorm:"not null" json:"password"`
+	Fullname          string         `json:"fullname"`
+	Phone             string         `json:"phone"`
+	Address           string         `json:"address"`
+	DateOfBirth       string         `json:"date_of_birth"`
+	Purpose           string         `json:"purpose"`
+	Point             int            `gorm:"default:0" json:"point"`
+	IsVerified        bool           `gorm:"default:false" json:"is_verified"`
+	VerificationToken string         `json:"verification_token"`
+	CreatedAt         time.Time      `json:"created_at"`
+	UpdatedAt         time.Time      `json:"updated_at"`
+	DeleteAt          gorm.DeletedAt `gorm:"index"`
 }
-
-type Admins struct {
-
-  NamaLengkap string
-  Email string
-  KataSandi string
-  Status string //Aktif & Tidak Aktif
-
-}
-
-type Achievement struct {
-
-  NamaAchivement string
-  Badge string
-  TotalTercapai int
-  TargetPoin int
-
-}
-

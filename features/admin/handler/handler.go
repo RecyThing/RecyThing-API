@@ -19,9 +19,12 @@ func NewAdminHandler(admin entity.AdminServiceInterface) *AdminHandler {
 }
 
 func (admin *AdminHandler) Create(e echo.Context) error {
-	_, role := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
+	}
+	if err != nil {
+		return err
 	}
 
 	inputAdmin := dto.AdminRequest{}
@@ -29,11 +32,11 @@ func (admin *AdminHandler) Create(e echo.Context) error {
 	if err := e.Bind(&inputAdmin); err != nil {
 		return err
 	}
-	
+
 	adminCore := entity.AdminRequestToAdminCore(inputAdmin)
 	adminCreated, err := admin.AdminService.Create(adminCore)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.FailedResponse(err.Error()))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	adminResponse := entity.AdminCoreToAdminResponse(adminCreated)
@@ -42,14 +45,17 @@ func (admin *AdminHandler) Create(e echo.Context) error {
 }
 
 func (admin *AdminHandler) GetAll(e echo.Context) error {
-	_, role := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
+	}
+	if err != nil {
+		return err
 	}
 
 	AdminsData, err := admin.AdminService.GetAll()
 	if err != nil {
-		e.JSON(http.StatusInternalServerError, helper.FailedResponse("failed"))
+		e.JSON(http.StatusInternalServerError, helper.ErrorResponse("failed"))
 	}
 
 	adminsResponse := entity.ListAdminCoreToAdminResponse(AdminsData)
@@ -59,14 +65,17 @@ func (admin *AdminHandler) GetAll(e echo.Context) error {
 func (admin *AdminHandler) GetById(e echo.Context) error {
 	adminId := e.Param("id")
 
-	_, role := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
+	}
+	if err != nil {
+		return err
 	}
 
 	AdminData, err := admin.AdminService.GetById(adminId)
 	if err != nil {
-		e.JSON(http.StatusInternalServerError, helper.FailedResponse("failed"))
+		e.JSON(http.StatusInternalServerError, helper.ErrorResponse("failed"))
 	}
 
 	adminResponse := entity.AdminCoreToAdminResponse(AdminData)
@@ -76,14 +85,17 @@ func (admin *AdminHandler) GetById(e echo.Context) error {
 func (admin *AdminHandler) Delete(e echo.Context) error {
 	adminId := e.Param("id")
 
-	_, role := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
+	}
+	if err != nil {
+		return err
 	}
 
-	err := admin.AdminService.DeleteById(adminId)
+	err = admin.AdminService.DeleteById(adminId)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.FailedResponse(err.Error()))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("success"))
@@ -92,31 +104,37 @@ func (admin *AdminHandler) Delete(e echo.Context) error {
 func (admin *AdminHandler) UpdateById(e echo.Context) error {
 	adminId := e.Param("id")
 
-	_, role := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
+	}
+	if err != nil {
+		return err
 	}
 
 	newAdmin := dto.AdminRequest{}
-	err := e.Bind(&newAdmin)
+	err = e.Bind(&newAdmin)
 	if err != nil {
-		return e.JSON(http.StatusBadRequest, helper.FailedResponse("failed"))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("failed"))
 	}
 
 	coreAdmin := entity.AdminRequestToAdminCore(newAdmin)
 	err = admin.AdminService.UpdateById(adminId, coreAdmin)
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
 	return e.JSON(http.StatusOK, helper.SuccessResponse("success"))
 }
 
 func (admin *AdminHandler) Login(e echo.Context) error {
 	input := dto.AdminRequest{}
 	if err := e.Bind(&input); err != nil {
-		return e.JSON(http.StatusBadRequest, helper.FailedResponse(err.Error()))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
 	adminData, token, err := admin.AdminService.FindByEmailANDPassword(input.Email, input.Password)
 	if err != nil {
-		return e.JSON(http.StatusBadRequest, helper.FailedResponse(err.Error()))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
 	jwt.SetTokenCookie(e, token)

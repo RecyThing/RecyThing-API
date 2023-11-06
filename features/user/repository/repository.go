@@ -135,3 +135,16 @@ func (userRep *userRepository) UpdateIsVerified(id string, isVerified bool) erro
 
 	return result.Error
 }
+
+// EmailExists implements entity.UsersRepositoryInterface.
+func (userRep *userRepository) EmailExists(email string) (bool, error) {
+	var user model.Users
+	result := userRep.db.Select("id").Where("email = ?", email).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return false, nil
+	}
+	if result.Error != nil {
+		return false, result.Error
+	}
+	return true, nil
+}

@@ -4,6 +4,7 @@ import "recything/features/user/entity"
 
 type UserRegister struct {
 	Id              string `json:"id"`
+	Fullname        string `json:"fullname"`
 	Email           string `json:"email"`
 	Password        string `json:"password"`
 	ConfirmPassword string `json:"confirm_password"`
@@ -30,6 +31,7 @@ type UserForgetPassword struct {
 func RequestRegister(dataRequest UserRegister) entity.UsersCore {
 	return entity.UsersCore{
 		Id:              dataRequest.Id,
+		Fullname:        dataRequest.Fullname,
 		Email:           dataRequest.Email,
 		Password:        dataRequest.Password,
 		ConfirmPassword: dataRequest.ConfirmPassword,

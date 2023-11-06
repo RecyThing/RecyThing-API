@@ -10,7 +10,7 @@ type Users struct {
 	Id                string         `gorm:"primaryKey;not null" json:"id"`
 	Email             string         `gorm:"unique;not null" json:"email"`
 	Password          string         `gorm:"not null" json:"password"`
-	Fullname          string         `json:"fullname"`
+	Fullname          string         `gorm:"not null" json:"fullname"`
 	Phone             string         `json:"phone"`
 	Address           string         `json:"address"`
 	DateOfBirth       string         `json:"date_of_birth"`

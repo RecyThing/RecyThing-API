@@ -8,6 +8,7 @@ type UsersRepositoryInterface interface {
 	GetByVerificationToken(token string) (UsersCore, error)
 	UpdateIsVerified(id string, isVerified bool) error
 	ForgetPassword(id string, updated UsersCore) (data UsersCore, err error)
+	EmailExists(email string) (bool, error)
 }
 
 type UsersUsecaseInterface interface {

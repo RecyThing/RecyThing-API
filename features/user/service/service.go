@@ -113,6 +113,15 @@ func (uc *userService) Register(data entity.UsersCore) error {
 		return errValidate
 	}
 
+	emailExists, errEmail := uc.userRepo.EmailExists(data.Email)
+	if errEmail != nil {
+		return errors.New("failed to check if email exists")
+	}
+	
+	if emailExists {
+		return errors.New("email already in use")
+	}
+
 	if data.Password != data.ConfirmPassword {
 		return errors.New("confirm password does not match")
 	}

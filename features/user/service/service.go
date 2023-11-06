@@ -121,10 +121,6 @@ func (uc *userService) Register(data entity.UsersCore) error {
 		return errors.New("your password is too short, must be at least 8 characters")
 	}
 
-	if len(data.Username) < 6 {
-		return errors.New("your username is too short, must be at least 6 characters")
-	}
-
 	hashedPassword, errHash := helper.HashPassword(data.Password)
 	if errHash != nil {
 		return errors.New("error hash password")
@@ -147,10 +143,6 @@ func (uc *userService) Register(data entity.UsersCore) error {
 func (uc *userService) UpdateById(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
 	if id == "" {
 		return entity.UsersCore{}, errors.New("invalid id")
-	}
-
-	if updated.Username != "" && len(updated.Username) < 6 {
-		return entity.UsersCore{}, errors.New("your username is too short, must be at least 6 characters")
 	}
 
 	if updated.DateOfBirth != "" {

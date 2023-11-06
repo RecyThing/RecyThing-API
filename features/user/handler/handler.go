@@ -139,7 +139,7 @@ func (uco *userHandler) Login(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse("account not verified"))
 	}
 	jwt.SetTokenCookie(c, token)
-	response := dto.LoginResponse(user.Username, user.Email)
+	response := dto.LoginResponse(user.Email)
 
 	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("login successful", response))
 }

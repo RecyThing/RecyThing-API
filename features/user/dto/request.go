@@ -4,7 +4,6 @@ import "recything/features/user/entity"
 
 type UserRegister struct {
 	Id              string `json:"id"`
-	Username        string `json:"username"`
 	Email           string `json:"email"`
 	Password        string `json:"password"`
 	ConfirmPassword string `json:"confirm_password"`
@@ -16,7 +15,6 @@ type UserLogin struct {
 }
 
 type UserUpdate struct {
-	Username    string `json:"username"`
 	Fullname    string `json:"fullname"`
 	Phone       string `json:"phone"`
 	Address     string `json:"address"`
@@ -32,7 +30,6 @@ type UserForgetPassword struct {
 func RequestRegister(dataRequest UserRegister) entity.UsersCore {
 	return entity.UsersCore{
 		Id:              dataRequest.Id,
-		Username:        dataRequest.Username,
 		Email:           dataRequest.Email,
 		Password:        dataRequest.Password,
 		ConfirmPassword: dataRequest.ConfirmPassword,
@@ -41,7 +38,6 @@ func RequestRegister(dataRequest UserRegister) entity.UsersCore {
 
 func RequestUpdate(dataUpdate UserUpdate) entity.UsersCore {
 	return entity.UsersCore{
-		Username:    dataUpdate.Username,
 		Fullname:    dataUpdate.Fullname,
 		Phone:       dataUpdate.Phone,
 		DateOfBirth: dataUpdate.DateOfBirth,
@@ -52,7 +48,7 @@ func RequestUpdate(dataUpdate UserUpdate) entity.UsersCore {
 
 func RequestForgetPassword(dataUpdate UserForgetPassword) entity.UsersCore {
 	return entity.UsersCore{
-		Password: dataUpdate.Password,
+		Password:        dataUpdate.Password,
 		ConfirmPassword: dataUpdate.ConfirmPassword,
 	}
 }

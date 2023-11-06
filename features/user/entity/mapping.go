@@ -4,7 +4,6 @@ import "recything/features/user/model"
 
 func UsersCoreToUsersModel(mainData UsersCore) model.Users {
 	return model.Users{
-		Username:          mainData.Username,
 		Email:             mainData.Email,
 		Password:          mainData.Password,
 		Fullname:          mainData.Fullname,
@@ -21,7 +20,6 @@ func UsersCoreToUsersModel(mainData UsersCore) model.Users {
 func UsersModelToUsersCore(mainData model.Users) UsersCore {
 	return UsersCore{
 		Id:                mainData.Id,
-		Username:          mainData.Username,
 		Email:             mainData.Email,
 		Password:          mainData.Password,
 		Fullname:          mainData.Fullname,

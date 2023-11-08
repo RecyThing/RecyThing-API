@@ -2,6 +2,7 @@
 * Login 
 * Register
 * Reset kata sandi
+* Edit data
 
 ## Detail Point
 * Get all point

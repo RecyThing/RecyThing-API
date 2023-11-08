@@ -18,6 +18,8 @@ func RouteReport(e *echo.Group, db *gorm.DB) {
 
 	user := e.Group("", jwt.JWTMiddleware())
 	user.POST("/rubbish", reportHandler.CreateReportRubbish)
-	user.GET("/rubbish/:id", reportHandler.SelectById)
-	user.GET("/rubbish", reportHandler.ReadAllReport)
+	user.POST("/litters/small", reportHandler.CreateReportSMallLittering)
+	user.POST("/litters/big", reportHandler.CreateReportSMallLittering)
+	user.GET("/:id", reportHandler.SelectById)
+	user.GET("", reportHandler.ReadAllReport)
 }

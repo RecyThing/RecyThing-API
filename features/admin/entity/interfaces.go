@@ -1,8 +1,6 @@
 package entity
 
-import(
-	"recything/features/user/entity"
-)
+import "recything/features/user/entity"
 
 type AdminRepositoryInterface interface {
 	Insert(data AdminCore) (AdminCore, error)

@@ -11,12 +11,15 @@ type ReportCore struct {
 	Longitude    float64
 	Latitude     float64
 	Location     string
+	AddressPoint string
 	TrashType    string
 	Description  string
-	Images       []ImageCore 
+	Images       []ImageCore
 	ScaleType    string
 	InsidentTime string
-	CreatedAt    time.Time
+	WasteType    bool
+	CompanyName  string
+	CreatedAt    time.Time 
 	UpdatedAt    time.Time
 }
 

@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"mime/multipart"
 	"recything/features/report/entity"
 	"recything/features/report/model"
 
@@ -34,14 +33,9 @@ func NewReportRepository(db *gorm.DB) entity.ReportRepositoryInterface {
 	return &reportRepository{db: db}
 }
 
-// UploadProof implements entity.ReportRepositoryInterface.
-func (*reportRepository) UploadProof(id string, data entity.ReportCore, image *multipart.FileHeader) (purchases entity.ReportCore, err error) {
-	panic("unimplemented")
-}
-
-func (report *reportRepository) Insert(reportInput entity.ReportCore) (entity.ReportCore, error) {
+func (rc *reportRepository) Insert(reportInput entity.ReportCore) (entity.ReportCore, error) {
 	dataReport := entity.ReportCoreToReportModel(reportInput)
-	if err := report.db.Create(&dataReport).Error; err != nil {
+	if err := rc.db.Create(&dataReport).Error; err != nil {
 		return entity.ReportCore{}, err
 	}
 

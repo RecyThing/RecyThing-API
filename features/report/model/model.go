@@ -9,21 +9,23 @@ import (
 
 type Report struct {
 	//all
-	Id          string `gorm:"primary key"`
-	ReportType  string `gorm:"type:enum('rubbish','littering')"`
-	UsersId     string `gorm:"type:varchar(191);index"`
-	Longitude   float64
-	Latitude    float64
-	Location    string
-	Description string
-	Images      []Image `gorm:"foreignKey:ReportId"`
-
+	Id           string `gorm:"primary key"`
+	ReportType   string `gorm:"type:enum('Tumpukan Sampah','Pelanggaran Sampah')"`
+	UsersId      string `gorm:"type:varchar(191);index"`
+	Longitude    float64
+	Latitude     float64
+	Location     string
+	Description  string
+	Images       []Image `gorm:"foreignKey:ReportId"`
+	AddressPoint string
 	//rubbish only
-	TrashType string `gorm:"type:enum('dry waste','Wet waste');default:Null"`
+	TrashType string `gorm:"type:enum('Sampah Kering','Sampah Basah');default:Null"`
 
 	//littering only
-	ScaleType    string `gorm:"type:enum('big','small');default:Null"`
-	InsidentTime string
+	ScaleType    string `gorm:"type:enum('Skala Besar','Skala Kecil');default:Null"`
+	InsidentTime string `gorm:"type:datetime"`
+	WasteType    bool
+	CompanyName  string
 
 	//all
 	CreatedAt time.Time      `gorm:"type:DATETIME(0)"`

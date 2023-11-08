@@ -20,10 +20,10 @@ func NewUserRepository(db *gorm.DB) entity.UsersRepositoryInterface {
 }
 
 // ForgetPassword implements entity.UsersRepositoryInterface.
-func (userRep *userRepository) ForgetPassword(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
+func (ur *userRepository) ForgetPassword(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
 	var usersData model.Users
 
-	errData := userRep.db.Where("id = ?", id).First(&usersData).Error
+	errData := ur.db.Where("id = ?", id).First(&usersData).Error
 	if errData != nil {
 		if errors.Is(errData, gorm.ErrRecordNotFound) {
 			return entity.UsersCore{}, errors.New("user not found")
@@ -31,7 +31,7 @@ func (userRep *userRepository) ForgetPassword(id string, updated entity.UsersCor
 		return entity.UsersCore{}, errData
 	}
 
-	errUpdate := userRep.db.Model(&usersData).Updates(entity.UsersCoreToUsersModel(updated))
+	errUpdate := ur.db.Model(&usersData).Updates(entity.UsersCoreToUsersModel(updated))
 	if errUpdate != nil {
 		return entity.UsersCore{}, errUpdate.Error
 	}
@@ -41,10 +41,10 @@ func (userRep *userRepository) ForgetPassword(id string, updated entity.UsersCor
 }
 
 // GetById implements entity.UsersRepositoryInterface.
-func (userRep *userRepository) GetById(id string) (entity.UsersCore, error) {
+func (ur *userRepository) GetById(id string) (entity.UsersCore, error) {
 	var userData model.Users
 
-	result := userRep.db.Where("id = ?", id).First(&userData)
+	result := ur.db.Where("id = ?", id).First(&userData)
 	if result.Error != nil {
 		return entity.UsersCore{}, result.Error
 	}
@@ -54,9 +54,9 @@ func (userRep *userRepository) GetById(id string) (entity.UsersCore, error) {
 }
 
 // GetByVerificationToken implements entity.UsersRepositoryInterface.
-func (userRep *userRepository) GetByVerificationToken(token string) (entity.UsersCore, error) {
+func (ur *userRepository) GetByVerificationToken(token string) (entity.UsersCore, error) {
 	var userData model.Users
-	result := userRep.db.Where("verification_token = ?", token).First(&userData)
+	result := ur.db.Where("verification_token = ?", token).First(&userData)
 	if result.Error != nil {
 		return entity.UsersCore{}, result.Error
 	}
@@ -66,10 +66,10 @@ func (userRep *userRepository) GetByVerificationToken(token string) (entity.User
 }
 
 // Login implements entity.UsersRepositoryInterface.
-func (userRep *userRepository) Login(email string, password string) (entity.UsersCore, error) {
+func (ur *userRepository) Login(email string, password string) (entity.UsersCore, error) {
 	var data model.Users
 
-	tx := userRep.db.Where("email = ?", email).First(&data)
+	tx := ur.db.Where("email = ?", email).First(&data)
 	if tx.Error != nil {
 		return entity.UsersCore{}, tx.Error
 	}
@@ -79,16 +79,10 @@ func (userRep *userRepository) Login(email string, password string) (entity.User
 }
 
 // Register implements entity.UsersRepositoryInterface.
-func (userRep *userRepository) Register(data entity.UsersCore) error {
-	newUUID, err := uuid.NewRandom()
-	if err != nil {
-		return err
-	}
-
+func (ur *userRepository) Register(data entity.UsersCore) error {
 	dataInput := entity.UsersCoreToUsersModel(data)
-	dataInput.Id = newUUID.String()
 
-	tx := userRep.db.Create(&dataInput)
+	tx := ur.db.Create(&dataInput)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -97,10 +91,10 @@ func (userRep *userRepository) Register(data entity.UsersCore) error {
 }
 
 // UpdateById implements entity.UsersRepositoryInterface.
-func (userRep *userRepository) UpdateById(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
+func (ur *userRepository) UpdateById(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
 	var usersData model.Users
 
-	errData := userRep.db.Where("id = ?", id).First(&usersData).Error
+	errData := ur.db.Where("id = ?", id).First(&usersData).Error
 	if errData != nil {
 		if errors.Is(errData, gorm.ErrRecordNotFound) {
 			return entity.UsersCore{}, errors.New("user not found")
@@ -108,7 +102,7 @@ func (userRep *userRepository) UpdateById(id string, updated entity.UsersCore) (
 		return entity.UsersCore{}, errData
 	}
 
-	errUpdate := userRep.db.Model(&usersData).Updates(entity.UsersCoreToUsersModel(updated))
+	errUpdate := ur.db.Model(&usersData).Updates(entity.UsersCoreToUsersModel(updated))
 	if errUpdate != nil {
 		return entity.UsersCore{}, errUpdate.Error
 	}
@@ -118,28 +112,28 @@ func (userRep *userRepository) UpdateById(id string, updated entity.UsersCore) (
 }
 
 // UpdateIsVerified implements entity.UsersRepositoryInterface.
-func (userRep *userRepository) UpdateIsVerified(id string, isVerified bool) error {
+func (ur *userRepository) UpdateIsVerified(id string, isVerified bool) error {
 	uuidID, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
 
 	var user model.Users
-	result := userRep.db.First(&user, uuidID)
+	result := ur.db.First(&user, uuidID)
 	if result.Error != nil {
 		return result.Error
 	}
 
 	user.IsVerified = isVerified
-	result = userRep.db.Save(&user)
+	result = ur.db.Save(&user)
 
 	return result.Error
 }
 
 // EmailExists implements entity.UsersRepositoryInterface.
-func (userRep *userRepository) EmailExists(email string) (bool, error) {
+func (ur *userRepository) EmailExists(email string) (bool, error) {
 	var user model.Users
-	result := userRep.db.Select("id").Where("email = ?", email).First(&user)
+	result := ur.db.Select("id").Where("email = ?", email).First(&user)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return false, nil
 	}

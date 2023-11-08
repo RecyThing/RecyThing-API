@@ -25,7 +25,7 @@ func NewUserService(userRepo entity.UsersRepositoryInterface) entity.UsersUsecas
 }
 
 // ForgetPassword implements entity.UsersUsecaseInterface.
-func (uc *userService) ForgetPassword(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
+func (us *userService) ForgetPassword(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
 	if id == "" {
 		return entity.UsersCore{}, errors.New("invalid id")
 	}
@@ -44,7 +44,7 @@ func (uc *userService) ForgetPassword(id string, updated entity.UsersCore) (data
 	}
 	updated.Password = hashedPassword
 
-	updatePassword, err := uc.userRepo.ForgetPassword(id, updated)
+	updatePassword, err := us.userRepo.ForgetPassword(id, updated)
 	if err != nil {
 		return entity.UsersCore{}, err
 	}
@@ -53,22 +53,22 @@ func (uc *userService) ForgetPassword(id string, updated entity.UsersCore) (data
 }
 
 // GetById implements entity.UsersUsecaseInterface.
-func (uc *userService) GetById(id string) (entity.UsersCore, error) {
+func (us *userService) GetById(id string) (entity.UsersCore, error) {
 	if id == "" {
 		return entity.UsersCore{}, errors.New("invalid id")
 	}
 
-	idUser, err := uc.userRepo.GetById(id)
+	idUser, err := us.userRepo.GetById(id)
 	return idUser, err
 }
 
 // GetByVerificationToken implements entity.UsersUsecaseInterface.
-func (uc *userService) VerifyUser(token string) (bool, error) {
+func (us *userService) VerifyUser(token string) (bool, error) {
 	if token == "" {
 		return false, errors.New("invalid token")
 	}
 
-	user, err := uc.userRepo.GetByVerificationToken(token)
+	user, err := us.userRepo.GetByVerificationToken(token)
 	if err != nil {
 		return false, errors.New("failed to get user")
 	}
@@ -77,7 +77,7 @@ func (uc *userService) VerifyUser(token string) (bool, error) {
 		return true, nil
 	}
 
-	err = uc.userRepo.UpdateIsVerified(user.Id, true)
+	err = us.userRepo.UpdateIsVerified(user.Id, true)
 	if err != nil {
 		return false, errors.New("failed to activate the user")
 	}
@@ -86,12 +86,12 @@ func (uc *userService) VerifyUser(token string) (bool, error) {
 }
 
 // Login implements entity.UsersUsecaseInterface.
-func (uc *userService) Login(email string, password string) (entity.UsersCore, string, error) {
+func (us *userService) Login(email string, password string) (entity.UsersCore, string, error) {
 	if email == "" || password == "" {
 		return entity.UsersCore{}, "", errors.New("email dan password harus diisi")
 	}
 
-	dataLogin, err := uc.userRepo.Login(email, password)
+	dataLogin, err := us.userRepo.Login(email, password)
 	if err != nil {
 		return entity.UsersCore{}, "", err
 	}
@@ -107,13 +107,13 @@ func (uc *userService) Login(email string, password string) (entity.UsersCore, s
 }
 
 // Register implements entity.UsersUsecaseInterface.
-func (uc *userService) Register(data entity.UsersCore) error {
-	errValidate := uc.validate.Struct(data)
+func (us *userService) Register(data entity.UsersCore) error {
+	errValidate := us.validate.Struct(data)
 	if errValidate != nil {
 		return errValidate
 	}
 
-	emailExists, errEmail := uc.userRepo.EmailExists(data.Email)
+	emailExists, errEmail := us.userRepo.EmailExists(data.Email)
 	if errEmail != nil {
 		return errors.New("failed to check if email exists")
 	}
@@ -139,7 +139,7 @@ func (uc *userService) Register(data entity.UsersCore) error {
 	uniqueToken := email.GenerateUniqueToken()
 	data.VerificationToken = uniqueToken
 
-	err := uc.userRepo.Register(data)
+	err := us.userRepo.Register(data)
 	if err != nil {
 		return err
 	}
@@ -149,7 +149,7 @@ func (uc *userService) Register(data entity.UsersCore) error {
 }
 
 // UpdateById implements entity.UsersUsecaseInterface.
-func (uc *userService) UpdateById(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
+func (us *userService) UpdateById(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
 	if id == "" {
 		return entity.UsersCore{}, errors.New("invalid id")
 	}
@@ -168,7 +168,7 @@ func (uc *userService) UpdateById(id string, updated entity.UsersCore) (data ent
 		}
 	}
 
-	updateData, err := uc.userRepo.UpdateById(id, updated)
+	updateData, err := us.userRepo.UpdateById(id, updated)
 	if err != nil {
 		return entity.UsersCore{}, err
 	}
@@ -177,10 +177,10 @@ func (uc *userService) UpdateById(id string, updated entity.UsersCore) (data ent
 }
 
 // UpdateIsVerified implements entity.UsersUsecaseInterface.
-func (uc *userService) UpdateIsVerified(id string, isVerified bool) error {
+func (us *userService) UpdateIsVerified(id string, isVerified bool) error {
 	if id == "" {
 		return errors.New("user id is required")
 	}
 
-	return uc.userRepo.UpdateIsVerified(id, isVerified)
+	return us.userRepo.UpdateIsVerified(id, isVerified)
 }

@@ -3,7 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-	"recything/features/user/dto"
+	"recything/features/user/dto/request"
+	"recything/features/user/dto/response"
 	"recything/features/user/entity"
 	"recything/utils/email"
 	"recything/utils/helper"
@@ -23,8 +24,8 @@ func NewUserHandlers(uc entity.UsersUsecaseInterface) *userHandler {
 	}
 }
 
-func (uco *userHandler) ForgetPassword(c echo.Context) error {
-	newPassword := dto.UserForgetPassword{}
+func (uh *userHandler) ForgetPassword(c echo.Context) error {
+	newPassword := request.UserForgetPassword{}
 	decoder := json.NewDecoder(c.Request().Body)
 	decoder.DisallowUnknownFields()
 
@@ -38,8 +39,8 @@ func (uco *userHandler) ForgetPassword(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
 	}
 
-	updateData := dto.RequestForgetPassword(newPassword)
-	_, err = uco.userUseCase.ForgetPassword(idToken, updateData)
+	updateData := request.UsersRequestForgetPasswordToUsersCore(newPassword)
+	_, err = uh.userUseCase.ForgetPassword(idToken, updateData)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
@@ -47,8 +48,8 @@ func (uco *userHandler) ForgetPassword(c echo.Context) error {
 	return c.JSON(http.StatusOK, helper.SuccessResponse("success update password"))
 }
 
-func (uco *userHandler) UpdateById(c echo.Context) error {
-	dataUpdate := dto.UserUpdate{}
+func (uh *userHandler) UpdateById(c echo.Context) error {
+	dataUpdate := request.UserUpdate{}
 	decoder := json.NewDecoder(c.Request().Body)
 	decoder.DisallowUnknownFields()
 
@@ -62,9 +63,9 @@ func (uco *userHandler) UpdateById(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
 	}
 
-	updateData := dto.RequestUpdate(dataUpdate)
+	updateData := request.UsersRequestUpdateToUsersCore(dataUpdate)
 
-	_, err = uco.userUseCase.UpdateById(idToken, updateData)
+	_, err = uh.userUseCase.UpdateById(idToken, updateData)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
@@ -73,9 +74,9 @@ func (uco *userHandler) UpdateById(c echo.Context) error {
 
 }
 
-func (uco *userHandler) Register(c echo.Context) error {
+func (uh *userHandler) Register(c echo.Context) error {
 	// Bind data
-	dataInput := dto.UserRegister{}
+	dataInput := request.UserRegister{}
 	decoder := json.NewDecoder(c.Request().Body)
 	decoder.DisallowUnknownFields()
 
@@ -84,9 +85,9 @@ func (uco *userHandler) Register(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.ErrorResponse("invalid input"))
 	}
 
-	data := dto.RequestRegister(dataInput)
+	data := request.UsersRequestRegisterToUsersCore(dataInput)
 
-	errCreate := uco.userUseCase.Register(data)
+	errCreate := uh.userUseCase.Register(data)
 	if errCreate != nil {
 		if strings.Contains(errCreate.Error(), "validation") {
 			return c.JSON(http.StatusBadRequest, helper.ErrorResponse(errCreate.Error()))
@@ -98,10 +99,10 @@ func (uco *userHandler) Register(c echo.Context) error {
 	return c.JSON(http.StatusCreated, helper.SuccessResponse("success create data"))
 }
 
-func (uco *userHandler) VerifyAccount(c echo.Context) error {
+func (uh *userHandler) VerifyAccount(c echo.Context) error {
 	token := c.QueryParam("token")
 
-	alreadyVerified, err := uco.userUseCase.VerifyUser(token)
+	alreadyVerified, err := uh.userUseCase.VerifyUser(token)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, helper.ErrorResponse("invalid or expired verification token"))
 	}
@@ -121,16 +122,16 @@ func (uco *userHandler) VerifyAccount(c echo.Context) error {
 	return c.HTML(http.StatusOK, emailContent)
 }
 
-func (uco *userHandler) Login(c echo.Context) error {
+func (uh *userHandler) Login(c echo.Context) error {
 	// Bind data
-	var login dto.UserLogin
+	login := request.UserLogin{}
 	errBind := c.Bind(&login)
 	if errBind != nil {
 		return c.JSON(http.StatusInternalServerError, helper.ErrorResponse("eror bind data"))
 	}
 
 	// Memanggil func di usecase
-	user, token, err := uco.userUseCase.Login(login.Email, login.Password)
+	user, token, err := uh.userUseCase.Login(login.Email, login.Password)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse("login failed"))
 	}
@@ -139,24 +140,24 @@ func (uco *userHandler) Login(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse("account not verified"))
 	}
 	jwt.SetTokenCookie(c, token)
-	response := dto.LoginResponse(user.Fullname, user.Email)
+	response := response.UsersCoreToLoginResponse(user)
 
 	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("login successful", response))
 }
 
-func (uco *userHandler) GetUser(c echo.Context) error {
+func (uh *userHandler) GetUser(c echo.Context) error {
 	// Extra token dari id
 	idToken, _, err := jwt.ExtractToken(c)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
 	}
 
-	result, err := uco.userUseCase.GetById(idToken)
+	result, err := uh.userUseCase.GetById(idToken)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helper.ErrorResponse("error reading data"))
 	}
 
-	var usersResponse = dto.ResponseProfile(result)
+	var usersResponse = response.UsersCoreToResponseProfile(result)
 
 	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success get profile", usersResponse))
 }

@@ -87,12 +87,14 @@ func ReportCoreToReportModel(report ReportCore) model.Report {
 
 func ReportRequestToReportCore(report dto.ReportRubbishRequest) ReportCore {
 	reportCore := ReportCore{
-		ReportType:  report.ReportType,
-		Longitude:   report.Longitude,
-		Latitude:    report.Latitude,
-		Location:    report.Location,
-		TrashType:   report.TrashType,
-		Description: report.Description,
+		ReportType:   report.ReportType,
+		Longitude:    report.Longitude,
+		Latitude:     report.Latitude,
+		Location:     report.Location,
+		TrashType:    report.TrashType,
+		Description:  report.Description,
+		ScaleType:    report.ScaleType,
+		InsidentTime: report.InsidentTime,
 	}
 	image := ListImageRequestToImageCore(report.Images)
 	reportCore.Images = image
@@ -152,6 +154,4 @@ func ReportCoreToReportResponse(report ReportCore) dto.ReportCreateResponse {
 	return reportResponse
 
 }
-
-
 

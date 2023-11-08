@@ -13,7 +13,7 @@ type ReportCore struct {
 	Location     string
 	TrashType    string
 	Description  string
-	Images       []ImageCore
+	Images       []ImageCore 
 	ScaleType    string
 	InsidentTime string
 	CreatedAt    time.Time

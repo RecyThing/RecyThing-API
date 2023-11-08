@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"mime/multipart"
 	"recything/features/report/entity"
 	"recything/features/report/model"
 
@@ -11,8 +12,31 @@ type reportRepository struct {
 	db *gorm.DB
 }
 
-func NewReportRepository(db *gorm.DB) *reportRepository {
+// ReadAllReport implements entity.ReportRepositoryInterface.
+func (report *reportRepository) ReadAllReport(idUser string) ([]entity.ReportCore, error) {
+	var dataReport []model.Report
+
+	errData := report.db.Where("users_id = ?", idUser).Find(&dataReport).Error
+	if errData != nil {
+
+		return nil, errData
+	}
+
+	mapData := make([]entity.ReportCore, len(dataReport))
+	for i, value := range dataReport {
+		mapData[i] = entity.ReportModelToReportCore(value)
+	}
+
+	return mapData, nil
+}
+
+func NewReportRepository(db *gorm.DB) entity.ReportRepositoryInterface {
 	return &reportRepository{db: db}
+}
+
+// UploadProof implements entity.ReportRepositoryInterface.
+func (*reportRepository) UploadProof(id string, data entity.ReportCore, image *multipart.FileHeader) (purchases entity.ReportCore, err error) {
+	panic("unimplemented")
 }
 
 func (report *reportRepository) Insert(reportInput entity.ReportCore) (entity.ReportCore, error) {
@@ -20,7 +44,6 @@ func (report *reportRepository) Insert(reportInput entity.ReportCore) (entity.Re
 	if err := report.db.Create(&dataReport).Error; err != nil {
 		return entity.ReportCore{}, err
 	}
-
 
 	ReportCreated := entity.ReportModelToReportCore(dataReport)
 	return ReportCreated, nil

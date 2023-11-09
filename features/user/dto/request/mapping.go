@@ -22,6 +22,14 @@ func UsersRequestUpdateToUsersCore(data UserUpdate) entity.UsersCore {
 	}
 }
 
+func UsersRequestUpdatePasswordToUsersCore(data UserUpdatePassword) entity.UsersCore {
+	return entity.UsersCore{
+		Password:        data.Password,
+		NewPassword: data.NewPassword,
+		ConfirmPassword: data.ConfirmPassword,
+	}
+}
+
 func UsersRequestForgetPasswordToUsersCore(data UserForgetPassword) entity.UsersCore {
 	return entity.UsersCore{
 		Password:        data.Password,
@@ -33,5 +41,18 @@ func UsersRequestLoginToUsersCore(data UserLogin) entity.UsersCore {
 	return entity.UsersCore{
 		Fullname: data.Email,
 		Password: data.Password,
+	}
+}
+
+func UsersRequestOTPToUsersCore(data UserSendOTP) entity.UsersCore {
+	return entity.UsersCore{
+		Email: data.Email,
+	}
+}
+
+func UsersRequestVerifyOTPToUsersCore(data UserVerifyOTP) entity.UsersCore {
+	return entity.UsersCore{
+		Email: data.Email,
+		Otp:   data.Otp,
 	}
 }

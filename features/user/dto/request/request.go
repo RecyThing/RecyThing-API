@@ -25,3 +25,17 @@ type UserForgetPassword struct {
 	Password        string `json:"password"`
 	ConfirmPassword string `json:"confirm_password"`
 }
+
+type UserUpdatePassword struct {
+	Password        string `json:"password"`
+	NewPassword     string `json:"new_password"`
+	ConfirmPassword string `json:"confirm_password"`
+}
+type UserSendOTP struct {
+	Email string `json:"email"`
+}
+
+type UserVerifyOTP struct {
+	Email string `json:"email"`
+	Otp   string `json:"otp"`
+}

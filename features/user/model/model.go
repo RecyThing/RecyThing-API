@@ -19,6 +19,8 @@ type Users struct {
 	Point             int            `gorm:"default:0" json:"point"`
 	IsVerified        bool           `gorm:"default:false" json:"is_verified"`
 	VerificationToken string         `json:"verification_token"`
+	Otp               string         `json:"otp"`
+	OtpExpiration     time.Time      `json:"otp_expiration"`
 	CreatedAt         time.Time      `json:"created_at"`
 	UpdatedAt         time.Time      `json:"updated_at"`
 	DeleteAt          gorm.DeletedAt `gorm:"index"`

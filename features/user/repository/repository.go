@@ -4,6 +4,7 @@ import (
 	"errors"
 	"recything/features/user/entity"
 	"recything/features/user/model"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -20,18 +21,39 @@ func NewUserRepository(db *gorm.DB) entity.UsersRepositoryInterface {
 }
 
 // ForgetPassword implements entity.UsersRepositoryInterface.
-func (ur *userRepository) ForgetPassword(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
+func (ur *userRepository) UpdatePassword(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
 	var usersData model.Users
 
 	errData := ur.db.Where("id = ?", id).First(&usersData).Error
 	if errData != nil {
 		if errors.Is(errData, gorm.ErrRecordNotFound) {
-			return entity.UsersCore{}, errors.New("user not found")
+			return entity.UsersCore{}, errors.New("pengguna tidak ditemukan")
 		}
 		return entity.UsersCore{}, errData
 	}
 
 	errUpdate := ur.db.Model(&usersData).Updates(entity.UsersCoreToUsersModel(updated))
+	if errUpdate != nil {
+		return entity.UsersCore{}, errUpdate.Error
+	}
+	data = entity.UsersModelToUsersCore(usersData)
+
+	return data, nil
+}
+
+// ForgetPassword implements entity.UsersRepositoryInterface.
+func (ur *userRepository) ForgetPassword(email string, updated entity.UsersCore) (data entity.UsersCore, err error) {
+	var usersData model.Users
+
+    errData := ur.db.Where("email = ?", email).First(&usersData).Error
+    if errData != nil {
+        if errors.Is(errData, gorm.ErrRecordNotFound) {
+            return entity.UsersCore{}, errors.New("pengguna tidak ditemukan")
+        }
+        return entity.UsersCore{}, errData
+    }
+
+    errUpdate := ur.db.Model(&usersData).Updates(entity.UsersCoreToUsersModel(updated))
 	if errUpdate != nil {
 		return entity.UsersCore{}, errUpdate.Error
 	}
@@ -97,7 +119,7 @@ func (ur *userRepository) UpdateById(id string, updated entity.UsersCore) (data 
 	errData := ur.db.Where("id = ?", id).First(&usersData).Error
 	if errData != nil {
 		if errors.Is(errData, gorm.ErrRecordNotFound) {
-			return entity.UsersCore{}, errors.New("user not found")
+			return entity.UsersCore{}, errors.New("pengguna tidak ditemukan")
 		}
 		return entity.UsersCore{}, errData
 	}
@@ -141,4 +163,66 @@ func (ur *userRepository) EmailExists(email string) (bool, error) {
 		return false, result.Error
 	}
 	return true, nil
+}
+
+// SendOTP implements entity.UsersRepositoryInterface.
+func (ur *userRepository) SendOTP(emailUser string, otp string, expiry time.Time) (data entity.UsersCore, err error) {
+	var usersData model.Users
+
+	errData := ur.db.Where("email = ?", emailUser).First(&usersData).Error
+	if errData != nil {
+		if errors.Is(errData, gorm.ErrRecordNotFound) {
+			return entity.UsersCore{}, errors.New("pengguna tidak ditemukan")
+		}
+		return entity.UsersCore{}, errData
+	}
+
+	usersData.Otp = otp
+	usersData.OtpExpiration = expiry
+
+	errUpdate := ur.db.Save(&usersData).Error
+	if errUpdate != nil {
+		return entity.UsersCore{}, errUpdate
+	}
+	data = entity.UsersModelToUsersCore(usersData)
+
+	return data, nil
+}
+
+// VerifyOTP implements entity.UsersRepositoryInterface.
+func (ur *userRepository) VerifyOTP(emailUser string, otp string) (entity.UsersCore, error) {
+	var user model.Users
+	tx := ur.db.Where("email = ?", emailUser).First(&user)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return entity.UsersCore{}, errors.New("pengguna tidak ditemukan")
+		}
+		return entity.UsersCore{}, tx.Error
+	}
+
+	dataMain := entity.UsersModelToUsersCore(user)
+	return dataMain, nil
+}
+
+// ResetOTP implements entity.UsersRepositoryInterface.
+func (ur *userRepository) ResetOTP(emailUser string) (data entity.UsersCore, err error) {
+	var usersData model.Users
+	errData := ur.db.Where("email = ?", emailUser).First(&usersData).Error
+	if errData != nil {
+		if errors.Is(errData, gorm.ErrRecordNotFound) {
+			return entity.UsersCore{}, errData
+		}
+		return entity.UsersCore{}, errData
+	}
+
+	usersData.Otp = ""
+	usersData.OtpExpiration = time.Time{}
+
+	errUpdate := ur.db.Save(&usersData).Error
+	if errUpdate != nil {
+		return entity.UsersCore{}, errUpdate
+	}
+
+	data = entity.UsersModelToUsersCore(usersData)
+	return data, nil
 }

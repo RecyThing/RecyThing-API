@@ -19,6 +19,9 @@ type UsersCore struct {
 	Point             int
 	IsVerified        bool
 	VerificationToken string
+	Otp               string
+	NewPassword       string
+	OtpExpiration     time.Time
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 	DeleteAt          gorm.DeletedAt

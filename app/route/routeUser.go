@@ -19,8 +19,11 @@ func RouteUser(e *echo.Group, db *gorm.DB) {
 	user := e.Group("", jwt.JWTMiddleware())
 	user.GET("", userHandler.GetUser)
 	user.PUT("", userHandler.UpdateById)
-	user.PUT("/forget_password", userHandler.ForgetPassword)
-	e.GET("/verify", userHandler.VerifyAccount)
+	user.PATCH("/update-password", userHandler.UpdatePassword)
+	user.PATCH("/forget-password", userHandler.ForgetPassword)
+	e.POST("/otp", userHandler.EmailOTP)
+	e.POST("/verify-otp", userHandler.VerifyOTP)
+	e.GET("/verify-token", userHandler.VerifyAccount)
 	e.POST("/register", userHandler.Register)
 	e.POST("/login", userHandler.Login)
 }

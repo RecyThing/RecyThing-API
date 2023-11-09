@@ -1,4 +1,4 @@
-package dto
+package request
 
 type AdminRequest struct {
 	Name     string `json:"name" form:"name"`

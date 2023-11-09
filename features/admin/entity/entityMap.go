@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"recything/features/admin/dto"
 	"recything/features/admin/model"
 )
 
@@ -50,30 +49,3 @@ func ListAdminCoreToAdminModel(admins []AdminCore) []model.Admin {
 	return listAdmin
 }
 
-func AdminRequestToAdminCore(admin dto.AdminRequest) AdminCore {
-	return AdminCore{
-		Name:     admin.Name,
-		Email:    admin.Email,
-		Password: admin.Password,
-	}
-}
-
-func AdminCoreToAdminResponse(admin AdminCore) dto.AdminRespon {
-	return dto.AdminRespon{
-		ID: admin.Id,
-		Name:  admin.Name,
-		Email: admin.Email,
-		Status: admin.Status,
-		CreatedAt: admin.CreatedAt,
-		UpdatedAt: admin.UpdatedAt,
-	}
-}
-
-func ListAdminCoreToAdminResponse(admins []AdminCore) []dto.AdminRespon {
-	listAdmin := []dto.AdminRespon{}
-	for _, admin := range admins {
-		adminResp := AdminCoreToAdminResponse(admin)
-		listAdmin = append(listAdmin, adminResp)
-	}
-	return listAdmin
-}

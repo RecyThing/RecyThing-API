@@ -2,9 +2,10 @@ package handler
 
 import (
 	"net/http"
-	"recything/features/admin/dto"
-	userDto "recything/features/user/dto"
+	"recything/features/admin/dto/request"
+	"recything/features/admin/dto/response"
 	"recything/features/admin/entity"
+	userDto "recything/features/user/dto/response"
 	"recything/utils/helper"
 	"recything/utils/jwt"
 
@@ -28,19 +29,19 @@ func (admin *AdminHandler) Create(e echo.Context) error {
 		return err
 	}
 
-	inputAdmin := dto.AdminRequest{}
+	inputAdmin := request.AdminRequest{}
 
 	if err := e.Bind(&inputAdmin); err != nil {
 		return err
 	}
 
-	adminCore := entity.AdminRequestToAdminCore(inputAdmin)
+	adminCore := request.AdminRequestToAdminCore(inputAdmin)
 	adminCreated, err := admin.AdminService.Create(adminCore)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	adminResponse := entity.AdminCoreToAdminResponse(adminCreated)
+	adminResponse := response.AdminCoreToAdminResponse(adminCreated)
 	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("create admin success", adminResponse))
 
 }
@@ -59,7 +60,7 @@ func (admin *AdminHandler) GetAll(e echo.Context) error {
 		e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	adminsResponse := entity.ListAdminCoreToAdminResponse(AdminsData)
+	adminsResponse := response.ListAdminCoreToAdminResponse(AdminsData)
 	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("all data admins", adminsResponse))
 
 }
@@ -79,8 +80,8 @@ func (admin *AdminHandler) GetById(e echo.Context) error {
 		e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	adminResponse := entity.AdminCoreToAdminResponse(AdminData)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("data admin" + AdminData.Name, adminResponse))
+	adminResponse := response.AdminCoreToAdminResponse(AdminData)
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("data admin"+AdminData.Name, adminResponse))
 }
 
 func (admin *AdminHandler) Delete(e echo.Context) error {
@@ -113,13 +114,13 @@ func (admin *AdminHandler) UpdateById(e echo.Context) error {
 		return err
 	}
 
-	newAdmin := dto.AdminRequest{}
+	newAdmin := request.AdminRequest{}
 	err = e.Bind(&newAdmin)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	coreAdmin := entity.AdminRequestToAdminCore(newAdmin)
+	coreAdmin := request.AdminRequestToAdminCore(newAdmin)
 	err = admin.AdminService.UpdateById(adminId, coreAdmin)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
@@ -128,7 +129,7 @@ func (admin *AdminHandler) UpdateById(e echo.Context) error {
 }
 
 func (admin *AdminHandler) Login(e echo.Context) error {
-	input := dto.AdminRequest{}
+	input := request.AdminRequest{}
 	if err := e.Bind(&input); err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
@@ -139,18 +140,21 @@ func (admin *AdminHandler) Login(e echo.Context) error {
 	}
 
 	jwt.SetTokenCookie(e, token)
-	adminResponse := entity.AdminCoreToAdminResponse(adminData)
+	adminResponse := response.AdminCoreToAdminResponse(adminData)
 
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("success login", adminResponse))
 
 }
 
-
-//Manage User
+// Manage User
 func (admin *AdminHandler) GetAllUser(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("unathorized"))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed extra token"))
 	}
 
 	UsersData, err := admin.AdminService.GetAllUsers()
@@ -168,7 +172,11 @@ func (admin *AdminHandler) GetByIdUsers(e echo.Context) error {
 
 	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("unathorized"))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed extra token"))
 	}
 
 	UsersData, err := admin.AdminService.GetByIdUsers(userId)
@@ -185,7 +193,11 @@ func (admin *AdminHandler) DeleteUsers(e echo.Context) error {
 
 	_, role, err := jwt.ExtractToken(e)
 	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("unathorized"))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed extra token"))
 	}
 
 	err = admin.AdminService.DeleteUsers(userId)

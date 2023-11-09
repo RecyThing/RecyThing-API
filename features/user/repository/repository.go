@@ -42,13 +42,13 @@ func (ur *userRepository) UpdatePassword(id string, updated entity.UsersCore) (d
 }
 
 // ForgetPassword implements entity.UsersRepositoryInterface.
-func (ur *userRepository) ForgetPassword(email string, updated entity.UsersCore) (data entity.UsersCore, err error) {
+func (ur *userRepository) ForgetPassword(otp string, updated entity.UsersCore) (data entity.UsersCore, err error) {
 	var usersData model.Users
 
-    errData := ur.db.Where("email = ?", email).First(&usersData).Error
+    errData := ur.db.Where("otp = ?", otp).First(&usersData).Error
     if errData != nil {
         if errors.Is(errData, gorm.ErrRecordNotFound) {
-            return entity.UsersCore{}, errors.New("pengguna tidak ditemukan")
+            return entity.UsersCore{}, errors.New("otp tidak ditemukan")
         }
         return entity.UsersCore{}, errData
     }
@@ -190,12 +190,12 @@ func (ur *userRepository) SendOTP(emailUser string, otp string, expiry time.Time
 }
 
 // VerifyOTP implements entity.UsersRepositoryInterface.
-func (ur *userRepository) VerifyOTP(emailUser string, otp string) (entity.UsersCore, error) {
+func (ur *userRepository) VerifyOTP(otp string) (entity.UsersCore, error) {
 	var user model.Users
-	tx := ur.db.Where("email = ?", emailUser).First(&user)
+	tx := ur.db.Where("otp = ?", otp).First(&user)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return entity.UsersCore{}, errors.New("pengguna tidak ditemukan")
+			return entity.UsersCore{}, errors.New("otp tidak ditemukan")
 		}
 		return entity.UsersCore{}, tx.Error
 	}
@@ -205,9 +205,9 @@ func (ur *userRepository) VerifyOTP(emailUser string, otp string) (entity.UsersC
 }
 
 // ResetOTP implements entity.UsersRepositoryInterface.
-func (ur *userRepository) ResetOTP(emailUser string) (data entity.UsersCore, err error) {
+func (ur *userRepository) ResetOTP(otp string) (data entity.UsersCore, err error) {
 	var usersData model.Users
-	errData := ur.db.Where("email = ?", emailUser).First(&usersData).Error
+	errData := ur.db.Where("otp = ?", otp).First(&usersData).Error
 	if errData != nil {
 		if errors.Is(errData, gorm.ErrRecordNotFound) {
 			return entity.UsersCore{}, errData

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"recything/features/user/dto/request"
 	"recything/features/user/dto/response"
@@ -59,13 +58,13 @@ func (uh *userHandler) ForgetPassword(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.ErrorResponse("input salah"))
 	}
 
-	email, err := jwt.ExtractTokenVerifikasi(c)
+	otp, err := jwt.ExtractTokenVerifikasi(c)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
 	}
-	log.Println("emailnya :", email)
+	
 	updateData := request.UsersRequestForgetPasswordToUsersCore(newPassword)
-	err = uh.userUseCase.ForgetPassword(email, updateData)
+	err = uh.userUseCase.ForgetPassword(otp, updateData)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
@@ -213,7 +212,7 @@ func (uh *userHandler) VerifyOTP(c echo.Context) error {
 
 	userCore := request.UsersRequestVerifyOTPToUsersCore(dataInput)
 
-	token, err := uh.userUseCase.VerifyOTP(userCore.Email, userCore.Otp)
+	token, err := uh.userUseCase.VerifyOTP(userCore.Otp)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal verifikasi OTP " + err.Error()))
 	}

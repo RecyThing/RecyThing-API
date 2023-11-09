@@ -212,8 +212,8 @@ func (us *userService) SendOTP(emailUser string) error {
 }
 
 // VerifyOTP implements entity.UsersUsecaseInterface.
-func (us *userService) VerifyOTP(emailUser string, otp string) (string, error) {
-	user, err := us.userRepo.VerifyOTP(emailUser, otp)
+func (us *userService) VerifyOTP(otp string) (string, error) {
+	user, err := us.userRepo.VerifyOTP(otp)
 	if err != nil {
 		return "", err
 	}
@@ -226,25 +226,19 @@ func (us *userService) VerifyOTP(emailUser string, otp string) (string, error) {
 		return "", errors.New("otp tidak valid")
 	}
 
-	token, err := jwt.CreateTokenVerifikasi(emailUser)
+	token, err := jwt.CreateTokenVerifikasi(otp)
 	if err != nil {
 		return "", errors.New("token gagal dibuat")
-	}
-
-	_, err = us.userRepo.ResetOTP(emailUser)
-	if err != nil {
-		return "", errors.New("gagal mengatur ulang OTP")
 	}
 
 	return token, nil
 }
 
 // ForgetPassword implements entity.UsersUsecaseInterface.
-func (us *userService) ForgetPassword(emailUser string, updated entity.UsersCore) error {
+func (us *userService) ForgetPassword(otp string, updated entity.UsersCore) error {
 	if updated.Password != updated.ConfirmPassword {
 		return errors.New("password tidak sama")
 	}
-
 
 	if len(updated.Password) < 8 {
 		return errors.New("password anda terlalu pendek, minimal 8 karakter untuk password")
@@ -256,9 +250,14 @@ func (us *userService) ForgetPassword(emailUser string, updated entity.UsersCore
 	}
 	updated.Password = hashedPassword
 
-	_, err := us.userRepo.ForgetPassword(emailUser, updated)
+	_, err := us.userRepo.ForgetPassword(otp, updated)
 	if err != nil {
 		return err
+	}
+
+	_, err = us.userRepo.ResetOTP(otp)
+	if err != nil {
+		return errors.New("gagal mengatur ulang OTP")
 	}
 
 	return  nil

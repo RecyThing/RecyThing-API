@@ -24,46 +24,83 @@ func NewUserService(userRepo entity.UsersRepositoryInterface) entity.UsersUsecas
 	}
 }
 
-// GetById implements entity.UsersUsecaseInterface.
-func (uc *userService) GetById(id string) (entity.UsersCore, error) {
+// UpdatePassword implements entity.UsersUsecaseInterface.
+func (us *userService) UpdatePassword(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
 	if id == "" {
 		return entity.UsersCore{}, errors.New("invalid id")
 	}
 
-	idUser, err := uc.userRepo.GetById(id)
+	existingUser, err := us.userRepo.GetById(id)
+    if err != nil {
+        return entity.UsersCore{}, err
+    }
+
+	if helper.CompareHash(updated.Password, existingUser.Password) {
+        return entity.UsersCore{}, errors.New("password lama tidak benar")
+    }
+
+	if updated.NewPassword != updated.ConfirmPassword {
+		return entity.UsersCore{}, errors.New("password tidak sama")
+	}
+
+	if len(updated.Password) < 8 {
+		return entity.UsersCore{}, errors.New("password anda terlalu pendek, minimal 8 karakter untuk password")
+	}
+
+	hashedPassword, errHash := helper.HashPassword(updated.NewPassword)
+	if errHash != nil {
+		return entity.UsersCore{}, errors.New("error hash password")
+	}
+	updated.Password = hashedPassword
+
+	updatePassword, err := us.userRepo.UpdatePassword(id, updated)
+	if err != nil {
+		return entity.UsersCore{}, err
+	}
+
+	return updatePassword, nil
+}
+
+// GetById implements entity.UsersUsecaseInterface.
+func (us *userService) GetById(id string) (entity.UsersCore, error) {
+	if id == "" {
+		return entity.UsersCore{}, errors.New("invalid id")
+	}
+
+	idUser, err := us.userRepo.GetById(id)
 	return idUser, err
 }
 
 // GetByVerificationToken implements entity.UsersUsecaseInterface.
-func (uc *userService) VerifyUser(token string) (bool, error) {
+func (us *userService) VerifyUser(token string) (bool, error) {
 	if token == "" {
 		return false, errors.New("invalid token")
 	}
 
-	user, err := uc.userRepo.GetByVerificationToken(token)
+	user, err := us.userRepo.GetByVerificationToken(token)
 	if err != nil {
-		return false, errors.New("failed to get user")
+		return false, errors.New("gagal mendapatkan data")
 	}
 
 	if user.IsVerified {
 		return true, nil
 	}
 
-	err = uc.userRepo.UpdateIsVerified(user.Id, true)
+	err = us.userRepo.UpdateIsVerified(user.Id, true)
 	if err != nil {
-		return false, errors.New("failed to activate the user")
+		return false, errors.New("gagal untuk mengaktifkan user")
 	}
 
 	return false, nil
 }
 
 // Login implements entity.UsersUsecaseInterface.
-func (uc *userService) Login(email string, password string) (entity.UsersCore, string, error) {
+func (us *userService) Login(email string, password string) (entity.UsersCore, string, error) {
 	if email == "" || password == "" {
 		return entity.UsersCore{}, "", errors.New("email dan password harus diisi")
 	}
 
-	dataLogin, err := uc.userRepo.Login(email, password)
+	dataLogin, err := us.userRepo.Login(email, password)
 	if err != nil {
 		return entity.UsersCore{}, "", err
 	}
@@ -75,26 +112,31 @@ func (uc *userService) Login(email string, password string) (entity.UsersCore, s
 		}
 		return dataLogin, token, nil
 	}
-	return entity.UsersCore{}, "", errors.New("login failed")
+	return entity.UsersCore{}, "", errors.New("login gagal")
 }
 
 // Register implements entity.UsersUsecaseInterface.
-func (uc *userService) Register(data entity.UsersCore) error {
-	errValidate := uc.validate.Struct(data)
+func (us *userService) Register(data entity.UsersCore) error {
+	errValidate := us.validate.Struct(data)
 	if errValidate != nil {
 		return errValidate
 	}
 
+	emailExists, errEmail := us.userRepo.EmailExists(data.Email)
+	if errEmail != nil {
+		return errors.New("gagal mengecek bahwa email telah ada")
+	}
+
+	if emailExists {
+		return errors.New("email telah digunakan")
+	}
+
 	if data.Password != data.ConfirmPassword {
-		return errors.New("confirm password does not match")
+		return errors.New("password tidak sama")
 	}
 
 	if len(data.Password) < 8 {
-		return errors.New("your password is too short, must be at least 8 characters")
-	}
-
-	if len(data.Username) < 6 {
-		return errors.New("your username is too short, must be at least 6 characters")
+		return errors.New("password anda terlalu pendek, minimal 8 karakter untuk password")
 	}
 
 	hashedPassword, errHash := helper.HashPassword(data.Password)
@@ -106,7 +148,7 @@ func (uc *userService) Register(data entity.UsersCore) error {
 	uniqueToken := email.GenerateUniqueToken()
 	data.VerificationToken = uniqueToken
 
-	err := uc.userRepo.Register(data)
+	err := us.userRepo.Register(data)
 	if err != nil {
 		return err
 	}
@@ -116,18 +158,14 @@ func (uc *userService) Register(data entity.UsersCore) error {
 }
 
 // UpdateById implements entity.UsersUsecaseInterface.
-func (uc *userService) UpdateById(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
+func (us *userService) UpdateById(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
 	if id == "" {
 		return entity.UsersCore{}, errors.New("invalid id")
 	}
 
-	if updated.Username != "" && len(updated.Username) < 6 {
-		return entity.UsersCore{}, errors.New("your username is too short, must be at least 6 characters")
-	}
-
 	if updated.DateOfBirth != "" {
 		if _, parseErr := time.Parse("2006-01-02", updated.DateOfBirth); parseErr != nil {
-			return entity.UsersCore{}, errors.New("error, date must be in the format 'yyyy-mm-dd'")
+			return entity.UsersCore{}, errors.New("error, tanggal harus dalam format 'yyyy-mm-dd'")
 		}
 	}
 
@@ -135,11 +173,11 @@ func (uc *userService) UpdateById(id string, updated entity.UsersCore) (data ent
 		phoneRegex := `^(?:\+62|0)[0-9-]+$`
 		match, _ := regexp.MatchString(phoneRegex, updated.Phone)
 		if !match {
-			return entity.UsersCore{}, errors.New("error, phone number format not valid")
+			return entity.UsersCore{}, errors.New("error, format nomor telepon tidak valid")
 		}
 	}
 
-	updateData, err := uc.userRepo.UpdateById(id, updated)
+	updateData, err := us.userRepo.UpdateById(id, updated)
 	if err != nil {
 		return entity.UsersCore{}, err
 	}
@@ -148,10 +186,80 @@ func (uc *userService) UpdateById(id string, updated entity.UsersCore) (data ent
 }
 
 // UpdateIsVerified implements entity.UsersUsecaseInterface.
-func (uc *userService) UpdateIsVerified(id string, isVerified bool) error {
+func (us *userService) UpdateIsVerified(id string, isVerified bool) error {
 	if id == "" {
 		return errors.New("user id is required")
 	}
 
-	return uc.userRepo.UpdateIsVerified(id, isVerified)
+	return us.userRepo.UpdateIsVerified(id, isVerified)
+}
+
+// SendOTP implements entity.UsersUsecaseInterface.
+func (us *userService) SendOTP(emailUser string) error {
+	otp, err := email.GenerateOTP(4)
+	if err != nil {
+		return errors.New("generate otp gagal")
+	}
+
+	expiration := time.Now().Add(15 * time.Minute)
+	_, err = us.userRepo.SendOTP(emailUser, otp, expiration)
+	if err != nil {
+		return err
+	}
+
+	email.SendOTPEmail(emailUser, otp)
+	return nil
+}
+
+// VerifyOTP implements entity.UsersUsecaseInterface.
+func (us *userService) VerifyOTP(emailUser string, otp string) (string, error) {
+	user, err := us.userRepo.VerifyOTP(emailUser, otp)
+	if err != nil {
+		return "", err
+	}
+
+	if user.OtpExpiration.Before(time.Now()) {
+		return "", errors.New("otp sudah kadaluwarsa")
+	}
+
+	if user.Otp != otp {
+		return "", errors.New("otp tidak valid")
+	}
+
+	token, err := jwt.CreateTokenVerifikasi(emailUser)
+	if err != nil {
+		return "", errors.New("token gagal dibuat")
+	}
+
+	_, err = us.userRepo.ResetOTP(emailUser)
+	if err != nil {
+		return "", errors.New("gagal mengatur ulang OTP")
+	}
+
+	return token, nil
+}
+
+// ForgetPassword implements entity.UsersUsecaseInterface.
+func (us *userService) ForgetPassword(emailUser string, updated entity.UsersCore) error {
+	if updated.Password != updated.ConfirmPassword {
+		return errors.New("password tidak sama")
+	}
+
+
+	if len(updated.Password) < 8 {
+		return errors.New("password anda terlalu pendek, minimal 8 karakter untuk password")
+	}
+
+	hashedPassword, errHash := helper.HashPassword(updated.Password)
+	if errHash != nil {
+		return errors.New("error hash password")
+	}
+	updated.Password = hashedPassword
+
+	_, err := us.userRepo.ForgetPassword(emailUser, updated)
+	if err != nil {
+		return err
+	}
+
+	return  nil
 }

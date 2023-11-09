@@ -8,7 +8,6 @@ import (
 
 type UsersCore struct {
 	Id                string
-	Username          string `validate:"required,min=6"`
 	Email             string `validate:"required,email"`
 	Password          string `validate:"required,min=8"`
 	ConfirmPassword   string `validate:"required,eqfield=Password"`
@@ -20,6 +19,9 @@ type UsersCore struct {
 	Point             int
 	IsVerified        bool
 	VerificationToken string
+	Otp               string
+	NewPassword       string
+	OtpExpiration     time.Time
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 	DeleteAt          gorm.DeletedAt

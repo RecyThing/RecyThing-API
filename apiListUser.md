@@ -71,9 +71,11 @@
 | ![](https://storage.kodeteks.com/POST.png)                       | `/comunities/:id`           |                           | Follow Community               |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/comunities/event/:id`     |                           | View Community Event, only member can see   |
 
-### Drop Point (blom dibenerin)
+### Mission (blom dibenerin)
 | Method                                                           | Url                     | Query Param    | Description                    |
 | ---------------------------------------------------------------- | ----------------------- | -------------- | ------------------------------ |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/missions`             | `status`       | View All Available Missions,  |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/drop-point/:id`       |                | View Detail Articles           |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/missions/:id`       |                | View Detail mission           |
+| ![](https://storage.kodeteks.com/POST.png)  | `/missions`       |                | Accept Challenge           |
+| ![](https://storage.kodeteks.com/POST.png)  | `/missions/proof`       |                | upload proof           |
 

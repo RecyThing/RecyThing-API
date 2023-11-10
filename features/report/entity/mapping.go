@@ -26,18 +26,21 @@ func ListImageModelToImageCore(images []model.Image) []ImageCore {
 
 func ReportModelToReportCore(report model.Report) ReportCore {
 	reportCore := ReportCore{
-		ID:           report.Id,
-		ReportType:   report.ReportType,
-		UserId:       report.UsersId,
-		Longitude:    report.Longitude,
-		Latitude:     report.Latitude,
-		Location:     report.Location,
-		TrashType:    report.TrashType,
-		Description:  report.Description,
-		ScaleType:    report.ScaleType,
-		InsidentTime: report.InsidentTime,
-		CreatedAt:    report.CreatedAt,
-		UpdatedAt:    report.UpdatedAt,
+		ID:            report.Id,
+		ReportType:    report.ReportType,
+		UserId:        report.UsersId,
+		Longitude:     report.Longitude,
+		Latitude:      report.Latitude,
+		Location:      report.Location,
+		TrashType:     report.TrashType,
+		Description:   report.Description,
+		ScaleType:     report.ScaleType,
+		InsidentTime:  report.InsidentTime,
+		Status:        report.Status,
+		CompanyName:   report.CompanyName,
+		DangerousWaste: report.DangerousWaste,
+		CreatedAt:     report.CreatedAt,
+		UpdatedAt:     report.UpdatedAt,
 	}
 	image := ListImageModelToImageCore(report.Images)
 	reportCore.Images = image
@@ -66,18 +69,21 @@ func ListImageCoreToImageModel(images []ImageCore) []model.Image {
 
 func ReportCoreToReportModel(report ReportCore) model.Report {
 	reportModel := model.Report{
-		Id:           report.ID,
-		ReportType:   report.ReportType,
-		UsersId:      report.UserId,
-		Longitude:    report.Longitude,
-		Latitude:     report.Latitude,
-		Location:     report.Location,
-		TrashType:    report.TrashType,
-		Description:  report.Description,
-		ScaleType:    report.ScaleType,
-		InsidentTime: report.InsidentTime,
-		CreatedAt:    report.CreatedAt,
-		UpdatedAt:    report.UpdatedAt,
+		Id:            report.ID,
+		ReportType:    report.ReportType,
+		UsersId:       report.UserId,
+		Longitude:     report.Longitude,
+		Latitude:      report.Latitude,
+		Location:      report.Location,
+		TrashType:     report.TrashType,
+		Description:   report.Description,
+		ScaleType:     report.ScaleType,
+		InsidentTime:  report.InsidentTime,
+		Status:        report.Status,
+		CompanyName:   report.CompanyName,
+		DangerousWaste: report.DangerousWaste,
+		CreatedAt:     report.CreatedAt,
+		UpdatedAt:     report.UpdatedAt,
 	}
 	image := ListImageCoreToImageModel(report.Images)
 	reportModel.Images = image
@@ -87,14 +93,16 @@ func ReportCoreToReportModel(report ReportCore) model.Report {
 
 func ReportRequestToReportCore(report dto.ReportRubbishRequest) ReportCore {
 	reportCore := ReportCore{
-		ReportType:   report.ReportType,
-		Longitude:    report.Longitude,
-		Latitude:     report.Latitude,
-		Location:     report.Location,
-		TrashType:    report.TrashType,
-		Description:  report.Description,
-		ScaleType:    report.ScaleType,
-		InsidentTime: report.InsidentTime,
+		ReportType:    report.ReportType,
+		Longitude:     report.Longitude,
+		Latitude:      report.Latitude,
+		Location:      report.Location,
+		TrashType:     report.TrashType,
+		Description:   report.Description,
+		ScaleType:     report.ScaleType,
+		InsidentTime:  report.InsidentTime,
+		CompanyName:   report.CompanyName,
+		DangerousWaste: report.DangerousWaste,
 	}
 	image := ListImageRequestToImageCore(report.Images)
 	reportCore.Images = image
@@ -146,6 +154,9 @@ func ReportCoreToReportResponse(report ReportCore) dto.ReportCreateResponse {
 		Description:  report.Description,
 		ScaleType:    report.ScaleType,
 		InsidentTime: report.InsidentTime,
+		Status:        report.Status,
+		CompanyName:   report.CompanyName,
+		DangerousWaste: report.DangerousWaste,
 		CreatedAt:    report.CreatedAt,
 		UpdatedAt:    report.UpdatedAt,
 	}
@@ -154,4 +165,3 @@ func ReportCoreToReportResponse(report ReportCore) dto.ReportCreateResponse {
 	return reportResponse
 
 }
-

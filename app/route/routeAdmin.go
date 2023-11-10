@@ -27,7 +27,7 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 	admin.DELETE("/:id", adminHandler.Delete)
 
 	//Manage Users
-	admin.GET("/users", adminHandler.GetAllUser)
-	admin.GET("/users/:id", adminHandler.GetByIdUsers)
+	// admin.GET("/users", adminHandler.GetAllUser)
+	// admin.GET("/users/:id", adminHandler.GetByIdUsers)
 	admin.DELETE("/users/:id", adminHandler.DeleteUsers)
 }

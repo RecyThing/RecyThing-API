@@ -3,7 +3,6 @@ package handler
 import (
 	"net/http"
 	"recything/features/admin/dto"
-	userDto "recything/features/user/dto"
 	"recything/features/admin/entity"
 	"recything/utils/helper"
 	"recything/utils/jwt"
@@ -80,7 +79,7 @@ func (admin *AdminHandler) GetById(e echo.Context) error {
 	}
 
 	adminResponse := entity.AdminCoreToAdminResponse(AdminData)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("data admin" + AdminData.Name, adminResponse))
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("data admin"+AdminData.Name, adminResponse))
 }
 
 func (admin *AdminHandler) Delete(e echo.Context) error {
@@ -128,6 +127,8 @@ func (admin *AdminHandler) UpdateById(e echo.Context) error {
 }
 
 func (admin *AdminHandler) Login(e echo.Context) error {
+
+	
 	input := dto.AdminRequest{}
 	if err := e.Bind(&input); err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
@@ -145,40 +146,39 @@ func (admin *AdminHandler) Login(e echo.Context) error {
 
 }
 
-
 //Manage User
-func (admin *AdminHandler) GetAllUser(e echo.Context) error {
-	_, role, err := jwt.ExtractToken(e)
-	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
-	}
+// func (admin *AdminHandler) GetAllUser(e echo.Context) error {
+// 	_, role, err := jwt.ExtractToken(e)
+// 	if role != helper.SUPERADMIN {
+// 		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
+// 	}
 
-	UsersData, err := admin.AdminService.GetAllUsers()
-	if err != nil {
-		e.JSON(http.StatusInternalServerError, helper.ErrorResponse("failed"))
-	}
+// 	UsersData, err := admin.AdminService.GetAllUsers()
+// 	if err != nil {
+// 		e.JSON(http.StatusInternalServerError, helper.ErrorResponse("failed"))
+// 	}
 
-	usersResponse := userDto.UsersCoreToResponseUsersList(UsersData)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", usersResponse))
+// 	usersResponse := userDto.UsersCoreToResponseUsersList(UsersData)
+// 	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", usersResponse))
 
-}
+// }
 
-func (admin *AdminHandler) GetByIdUsers(e echo.Context) error {
-	userId := e.Param("id")
+// func (admin *AdminHandler) GetByIdUsers(e echo.Context) error {
+// 	userId := e.Param("id")
 
-	_, role, err := jwt.ExtractToken(e)
-	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
-	}
+// 	_, role, err := jwt.ExtractToken(e)
+// 	if role != helper.SUPERADMIN {
+// 		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed"))
+// 	}
 
-	UsersData, err := admin.AdminService.GetByIdUsers(userId)
-	if err != nil {
-		e.JSON(http.StatusInternalServerError, helper.ErrorResponse("failed"))
-	}
+// 	UsersData, err := admin.AdminService.GetByIdUsers(userId)
+// 	if err != nil {
+// 		e.JSON(http.StatusInternalServerError, helper.ErrorResponse("failed"))
+// 	}
 
-	userResponse := userDto.UsersCoreToResponseUsers(UsersData)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", userResponse))
-}
+// 	userResponse := userDto.UsersCoreToResponseUsers(UsersData)
+// 	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", userResponse))
+// }
 
 func (admin *AdminHandler) DeleteUsers(e echo.Context) error {
 	userId := e.Param("id")

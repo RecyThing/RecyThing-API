@@ -207,6 +207,10 @@ func (us *userService) SendOTP(emailUser string) error {
 		return err
 	}
 
+	if email.ContainsLowerCase(otp) {
+		return errors.New("otp tidak boleh mengandung huruf kecil")
+	}
+
 	email.SendOTPEmail(emailUser, otp)
 	return nil
 }

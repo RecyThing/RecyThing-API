@@ -214,7 +214,7 @@ func (uh *userHandler) VerifyOTP(c echo.Context) error {
 
 	token, err := uh.userUseCase.VerifyOTP(userCore.Otp)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal verifikasi OTP " + err.Error()))
+		return c.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal verifikasi " + err.Error()))
 	}
 	jwt.SetTokenCookie(c, token)
 	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("verifikasi OTP berhasil", token))

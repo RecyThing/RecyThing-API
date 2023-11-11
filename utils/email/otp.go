@@ -1,26 +1,24 @@
 package email
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 )
 
 func SendOTPEmail(emailAddress string, otp string) {
 	go func() {
-		// Baca template email dari file.
-		emailTemplateBytes, err := ioutil.ReadFile("utils/email/templates/otp.html")
+		// Buka file template email.
+		filePath := "utils/email/templates/otp.html"
+		file, err := os.ReadFile(filePath)
 		if err != nil {
 			log.Printf("gagal membaca template email: %v", err)
 			return
 		}
-		emailTemplate := string(emailTemplateBytes)
+		emailTemplate := string(file)
 
-		// Ganti placeholder dalam template dengan OTP sebenarnya.
 		emailContent := strings.Replace(emailTemplate, "{{.Otp}}", otp, -1)
 
-		// Kirim email dengan menggunakan fungsi SMTP.
-		// Pastikan fungsi SendEmailSMTP memiliki signature yang sesuai dengan penggunaan ini.
 		_, errEmail := SendEmailSMTPForOTP([]string{emailAddress}, emailContent, otp)
 		if errEmail != nil {
 			log.Printf("gagal mengirim otp: %v", errEmail)

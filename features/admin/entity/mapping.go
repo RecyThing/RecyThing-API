@@ -4,16 +4,17 @@ import (
 	"recything/features/admin/model"
 )
 
-func AdminModelToAdminCore(admin model.Admin) AdminCore {
+func AdminModelToAdminCore(data model.Admin) AdminCore {
 	return AdminCore{
-		Id:        admin.Id,
-		Name:      admin.Name,
-		Role:      admin.Role,
-		Email:     admin.Email,
-		Password:  admin.Password,
-		Status:    admin.Status,
-		CreatedAt: admin.CreatedAt,
-		UpdatedAt: admin.UpdatedAt,
+		Id:              data.Id,
+		Name:            data.Name,
+		Role:            data.Role,
+		Email:           data.Email,
+		Password:        data.Password,
+		ConfirmPassword: data.ConfirmPassword,
+		Status:          data.Status,
+		CreatedAt:       data.CreatedAt,
+		UpdatedAt:       data.UpdatedAt,
 	}
 
 }
@@ -48,4 +49,3 @@ func ListAdminCoreToAdminModel(admins []AdminCore) []model.Admin {
 	}
 	return listAdmin
 }
-

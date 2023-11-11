@@ -11,86 +11,91 @@ type AdminService struct {
 	AdminRepository entity.AdminRepositoryInterface
 }
 
-func NewAdminService(admin entity.AdminRepositoryInterface) *AdminService {
+func NewAdminService(ar entity.AdminRepositoryInterface) entity.AdminServiceInterface {
 	return &AdminService{
-		AdminRepository: admin,
+		AdminRepository: ar,
 	}
 }
 
-func (admin *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) {
+func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) {
 
-	dataAdmin, err := admin.AdminRepository.Insert(data)
-	if err != nil {
-		return entity.AdminCore{}, err
+	err := as.AdminRepository.FindByEmail(data.Email)
+	if err == nil{
+		return entity.AdminCore{},errors.New("email sudah ada, gunakan email lain")
 	}
 
-	return dataAdmin, nil
+	if data.ConfirmPassword != data.Password {
+		return entity.AdminCore{}, errors.New("password tidak sesuai")
+	}
+
+	result, err := as.AdminRepository.Insert(data)
+	if err != nil {
+		return entity.AdminCore{}, errors.New("gagal membuat data admin")
+	}
+
+	return result, nil
 }
 
-func (admin *AdminService) GetAll() ([]entity.AdminCore, error) {
+func (as *AdminService) GetAll() ([]entity.AdminCore, error) {
 
-	data, err := admin.AdminRepository.SelectAll()
+	result, err := as.AdminRepository.SelectAll()
+
 	if err != nil {
-		return nil, errors.New("")
+		return nil, errors.New("gagal mengambil semua data admin")
 	}
 
-	return data, nil
+	return result, nil
 }
 
-func (admin *AdminService) GetById(adminId string) (entity.AdminCore, error) {
+func (as *AdminService) GetById(adminId string) (entity.AdminCore, error) {
 
-	data, err := admin.AdminRepository.SelectById(adminId)
-
-	if data == (entity.AdminCore{}) {
-		return entity.AdminCore{}, errors.New("null")
-	}
-
+	result, err := as.AdminRepository.SelectById(adminId)
 	if err != nil {
-		return entity.AdminCore{}, errors.New("")
+		return entity.AdminCore{}, errors.New("data admin tidak ada")
 	}
 
-	return data, nil
+	return result, nil
 }
 
-func (admin *AdminService) UpdateById(adminId string, data entity.AdminCore) error {
+func (as *AdminService) UpdateById(adminId string, data entity.AdminCore) error {
 
-	err := admin.AdminRepository.Update(adminId, data)
+	err := as.AdminRepository.Update(adminId, data)
 	if err != nil {
-		return errors.New("")
+		return errors.New("gagal melakukan update data admin")
 	}
 
 	return nil
 }
 
-func (admin *AdminService) DeleteById(adminId string) error {
+func (as *AdminService) DeleteById(adminId string) error {
 
-	err := admin.AdminRepository.Delete(adminId)
+	err := as.AdminRepository.Delete(adminId)
 	if err != nil {
-		return err
+		return errors.New("gagal menghapus data admin")
 	}
 
 	return nil
 }
 
-func (admin *AdminService) FindByEmailANDPassword(email, password string) (entity.AdminCore, string, error) {
-	data, err := admin.AdminRepository.FindByEmailANDPassword(email, password)
+func (as *AdminService) FindByEmailANDPassword(data entity.AdminCore) (entity.AdminCore, string, error) {
+
+	data, err := as.AdminRepository.FindByEmailANDPassword(data)
 	if err != nil {
-		return entity.AdminCore{}, "", errors.New("Gagal woy")
+		return entity.AdminCore{}, "", errors.New("data tidak ada")
 	}
 
 	token, errToken := jwt.CreateToken(data.Id, data.Role)
 	if errToken != nil {
-		return entity.AdminCore{}, "", errToken
+		return entity.AdminCore{}, "", errors.New("gagal membuat token session")
 	}
-
 	return data, token, nil
 }
 
 //Manage Users
 
-func (admin *AdminService) GetAllUsers() ([]user.UsersCore, error){
-	
-	data, err := admin.AdminRepository.SelectAllUsers()
+func (as *AdminService) GetAllUsers() ([]user.UsersCore, error) {
+
+	data, err := as.AdminRepository.SelectAllUsers()
 	if err != nil {
 		return nil, errors.New("")
 	}
@@ -98,9 +103,9 @@ func (admin *AdminService) GetAllUsers() ([]user.UsersCore, error){
 	return data, nil
 }
 
-func (admin *AdminService) GetByIdUsers(userId string) (user.UsersCore, error){
-	
-	data, err := admin.AdminRepository.SelectByIdUsers(userId)
+func (as *AdminService) GetByIdUsers(userId string) (user.UsersCore, error) {
+
+	data, err := as.AdminRepository.SelectByIdUsers(userId)
 
 	if data == (user.UsersCore{}) {
 		return user.UsersCore{}, errors.New("null")
@@ -113,9 +118,9 @@ func (admin *AdminService) GetByIdUsers(userId string) (user.UsersCore, error){
 	return data, nil
 }
 
-func (admin *AdminService) DeleteUsers(userId string) error{
-	
-	err := admin.AdminRepository.DeleteUsers(userId)
+func (as *AdminService) DeleteUsers(userId string) error {
+
+	err := as.AdminRepository.DeleteUsers(userId)
 	if err != nil {
 		return err
 	}

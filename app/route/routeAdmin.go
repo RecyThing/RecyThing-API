@@ -1,9 +1,12 @@
 package route
 
 import (
-	"recything/features/admin/handler"
-	"recything/features/admin/repository"
-	"recything/features/admin/service"
+	adminHandler "recything/features/admin/handler"
+	adminRepository "recything/features/admin/repository"
+	adminService "recything/features/admin/service"
+	recybotHandler "recything/features/report/handler"
+	recybotRepository "recything/features/report/repository"
+	recybotService "recything/features/report/service"
 	"recything/utils/jwt"
 
 	"github.com/labstack/echo/v4"
@@ -12,11 +15,15 @@ import (
 
 func RouteAdmin(e *echo.Group, db *gorm.DB) {
 
-	adminRepository := repository.NewAdminRepository(db)
-	adminService := service.NewAdminService(adminRepository)
-	adminHandler := handler.NewAdminHandler(adminService)
+	adminRepository := adminRepository.NewAdminRepository(db)
+	adminService := adminService.NewAdminService(adminRepository)
+	adminHandler := adminHandler.NewAdminHandler(adminService)
 
-	
+	//manage prompt
+	recybotRepository := recybotRepository.NewReportRepository(db)
+	recybotService := recybotService.NewReportService(recybotRepository)
+	recybotHandler := recybotHandler.NewReportHandler(recybotService)
+
 	e.POST("/login", adminHandler.Login)
 
 	admin := e.Group("", jwt.JWTMiddleware())
@@ -27,7 +34,12 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 	admin.DELETE("/:id", adminHandler.Delete)
 
 	//Manage Users
-	admin.GET("/users", adminHandler.GetAllUser)
-	admin.GET("/users/:id", adminHandler.GetByIdUsers)
-	admin.DELETE("/users/:id", adminHandler.DeleteUsers)
+	user := e.Group("/manage/users", jwt.JWTMiddleware())
+	user.GET("/users", adminHandler.GetAllUser)
+	user.GET("/users/:id", adminHandler.GetByIdUsers)
+	user.DELETE("/users/:id", adminHandler.DeleteUsers)
+
+	//Manage Prompt
+	recybot := e.Group("/manage/prompts", jwt.JWTMiddleware())
+	recybot.POST("", recybotHandler.CreateReport)
 }

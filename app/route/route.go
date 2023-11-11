@@ -9,9 +9,8 @@ func New(e *echo.Echo, db *gorm.DB) {
 	
 	user := e.Group("/users")
 	report := e.Group("/reports")
-	recybot := e.Group("/admins")
-	
+	admin:=e.Group("/admins")
 	RouteUser(user, db)
 	RouteReport(report, db)
-	RouteRecybot(recybot, db)
+	RouteAdmin(admin, db)
 }

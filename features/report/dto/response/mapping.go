@@ -1,6 +1,9 @@
 package response
 
-import "recything/features/report/entity"
+import (
+	"recything/features/report/entity"
+	user "recything/features/user/entity"
+)
 
 func ImageCoreToImageResponse(image entity.ImageCore) ImageResponse {
 	return ImageResponse{
@@ -41,4 +44,25 @@ func ReportCoreToReportResponse(report entity.ReportCore) ReportCreateResponse {
 	reportResponse.Images = image
 	return reportResponse
 
+}
+
+func ReportCoreToReportResponseForDataReporting(report entity.ReportCore, user user.UsersCore) ReportDetails {
+	return ReportDetails{
+		Id:           report.ID,
+		ReportType:   report.ReportType,
+		Fullname:     user.Fullname,
+		Location:     report.Location,
+		InsidentTime: report.InsidentTime,
+		Status:       report.Status,
+	}
+}
+
+func ListReportCoresToReportResponseForDataReporting(reports []entity.ReportCore, userService user.UsersUsecaseInterface) []ReportDetails {
+	responReporting := []ReportDetails{}
+	for _, report := range reports {
+		user, _ := userService.GetById(report.UserId)
+		reports := ReportCoreToReportResponseForDataReporting(report, user)
+		responReporting = append(responReporting, reports)
+	}
+	return responReporting
 }

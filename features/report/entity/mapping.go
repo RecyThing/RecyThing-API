@@ -89,3 +89,12 @@ func ReportCoreToReportModel(report ReportCore) model.Report {
 	return reportModel
 
 }
+
+func ListReportModelToReportCore(mainData []model.Report) []ReportCore {
+    listReport := []ReportCore{}
+    for _, report := range mainData {
+        reportModel := ReportModelToReportCore(report)
+        listReport = append(listReport, reportModel)
+    }
+    return listReport
+}

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"recything/features/recybot/entity"
+	"recything/features/recybot/model"
 
 	"gorm.io/gorm"
 )
@@ -23,5 +24,25 @@ func (rb *recybotRepository) Create(recybot entity.RecybotCore) (entity.RecybotC
 		return entity.RecybotCore{}, err
 	}
 	result := entity.ModelRecybotToCoreRecybot(input)
+	return result, err
+}
+
+func (rb *recybotRepository) Update(idData string) (entity.RecybotCore, error) {
+	data := model.Recybot{}
+	err := rb.db.Where("id = ?", idData).Updates(&data).Error
+	if err != nil {
+		return entity.RecybotCore{}, err
+	}
+	result := entity.ModelRecybotToCoreRecybot(data)
+	return result, err
+}
+
+func (rb *recybotRepository) Delete(idData string) (entity.RecybotCore, error) {
+	data := model.Recybot{}
+	err := rb.db.Where("id = ?", idData).Delete(&data).Error
+	if err != nil {
+		return entity.RecybotCore{}, err
+	}
+	result := entity.ModelRecybotToCoreRecybot(data)
 	return result, err
 }

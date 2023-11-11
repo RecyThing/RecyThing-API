@@ -7,6 +7,8 @@ import (
 	recybotHandler "recything/features/report/handler"
 	recybotRepository "recything/features/report/repository"
 	recybotService "recything/features/report/service"
+	userRepository "recything/features/user/repository"
+	userService "recything/features/user/service"
 	"recything/utils/jwt"
 
 	"github.com/labstack/echo/v4"
@@ -17,7 +19,9 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 
 	adminRepository := adminRepository.NewAdminRepository(db)
 	adminService := adminService.NewAdminService(adminRepository)
-	adminHandler := adminHandler.NewAdminHandler(adminService)
+	userRepository := userRepository.NewUserRepository(db)
+	userService := userService.NewUserService(userRepository)
+	adminHandler := adminHandler.NewAdminHandler(adminService, userService)
 
 	//manage prompt
 	recybotRepository := recybotRepository.NewReportRepository(db)
@@ -42,4 +46,9 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 	//Manage Prompt
 	recybot := e.Group("/manage/prompts", jwt.JWTMiddleware())
 	recybot.POST("", recybotHandler.CreateReport)
+
+	// Manage Reporting
+	reporting := e.Group("/manage/reports", jwt.JWTMiddleware())
+	reporting.GET("", adminHandler.GetByStatusReport)
+	reporting.PATCH("/:id", adminHandler.UpdateStatusReport)
 }

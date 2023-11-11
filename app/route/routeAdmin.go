@@ -4,9 +4,9 @@ import (
 	adminHandler "recything/features/admin/handler"
 	adminRepository "recything/features/admin/repository"
 	adminService "recything/features/admin/service"
-	recybotHandler "recything/features/report/handler"
-	recybotRepository "recything/features/report/repository"
-	recybotService "recything/features/report/service"
+	recybotHandler "recything/features/recybot/handler"
+	recybotRepository "recything/features/recybot/repository"
+	recybotService "recything/features/recybot/service"
 	"recything/utils/jwt"
 
 	"github.com/labstack/echo/v4"
@@ -20,9 +20,9 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 	adminHandler := adminHandler.NewAdminHandler(adminService)
 
 	//manage prompt
-	recybotRepository := recybotRepository.NewReportRepository(db)
-	recybotService := recybotService.NewReportService(recybotRepository)
-	recybotHandler := recybotHandler.NewReportHandler(recybotService)
+	recybotRepository := recybotRepository.NewRecybotRepository(db)
+	recybotService := recybotService.NewRecybotService(recybotRepository)
+	recybotHandler := recybotHandler.NewRecybotHandler(recybotService)
 
 	e.POST("/login", adminHandler.Login)
 
@@ -41,5 +41,9 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 
 	//Manage Prompt
 	recybot := e.Group("/manage/prompts", jwt.JWTMiddleware())
-	recybot.POST("", recybotHandler.CreateReport)
+	recybot.POST("", recybotHandler.CreateData)
+	recybot.GET("", recybotHandler.GetAllData)
+	recybot.GET("/:id", recybotHandler.GetById)
+	recybot.DELETE("/:id", recybotHandler.DeleteById)
+	recybot.PUT("/:id", recybotHandler.UpdateData)
 }

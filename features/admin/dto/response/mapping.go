@@ -9,7 +9,6 @@ func AdminCoreToAdminResponse(admin entity.AdminCore) AdminRespon {
 		Email:     admin.Email,
 		Status:    admin.Status,
 		CreatedAt: admin.CreatedAt,
-		UpdatedAt: admin.UpdatedAt,
 	}
 }
 

@@ -3,7 +3,8 @@ package handler
 import (
 	"log"
 	"net/http"
-	"recything/features/report/dto"
+	"recything/features/report/dto/request"
+	"recything/features/report/dto/response"
 	"recything/features/report/entity"
 	"recything/utils/helper"
 	"recything/utils/jwt"
@@ -19,7 +20,7 @@ func NewReportHandler(report entity.ReportServiceInterface) *reportHandler {
 	return &reportHandler{reportService: report}
 }
 
-func (report *reportHandler) CreateReportRubbish(e echo.Context) error {
+func (report *reportHandler) CreateReport(e echo.Context) error {
 	userId, _, err := jwt.ExtractToken(e)
 	if err != nil {
 		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
@@ -28,19 +29,19 @@ func (report *reportHandler) CreateReportRubbish(e echo.Context) error {
 	// 	return e.JSON(http.StatusForbidden, helper.ErrorResponse(err.Error()))
 	// }
 
-	newReport := dto.ReportRubbishRequest{}
+	newReport := request.ReportRubbishRequest{}
 	err = e.Bind(&newReport)
 	log.Println("images ", newReport.Images)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	reportInput := entity.ReportRequestToReportCore(newReport)
+	reportInput := request.ReportRequestToReportCore(newReport)
 	createdReport, err := report.reportService.Create(reportInput, userId)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
-	reportResponse := entity.ReportCoreToReportResponse(createdReport)
+	reportResponse := response.ReportCoreToReportResponse(createdReport)
 	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("success", reportResponse))
 }
 
@@ -52,7 +53,7 @@ func (rco *reportHandler) SelectById(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("error reading data"))
 	}
 
-	var reportResponse = entity.ReportCoreToReportResponse(result)
+	var reportResponse = response.ReportCoreToReportResponse(result)
 
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("success get report data", reportResponse))
 }

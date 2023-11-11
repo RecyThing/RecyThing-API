@@ -10,7 +10,8 @@ type AdminRepositoryInterface interface {
 	SelectById(adminId string) (AdminCore, error)
 	Update(adminId string, data AdminCore) error
 	Delete(adminId string) error
-	FindByEmailANDPassword(email, password string) (AdminCore, error)
+	FindByEmail(email string)(error)
+	FindByEmailANDPassword(data AdminCore) (AdminCore, error)
 	//Manage Users
 	SelectAllUsers() ([]entity.UsersCore, error)
 	SelectByIdUsers(adminId string) (entity.UsersCore, error)
@@ -23,7 +24,7 @@ type AdminServiceInterface interface {
 	GetById(adminId string) (AdminCore, error)
 	UpdateById(adminId string, data AdminCore) error
 	DeleteById(adminId string) error
-	FindByEmailANDPassword(email, password string) (AdminCore, string, error)
+	FindByEmailANDPassword(data AdminCore) (AdminCore, string, error)
 	//Manage Users
 	GetAllUsers() ([]entity.UsersCore, error)
 	GetByIdUsers(adminId string) (entity.UsersCore, error)

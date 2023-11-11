@@ -3,8 +3,8 @@ package repository
 import (
 	"errors"
 	"recything/features/admin/entity"
-	user "recything/features/user/entity"
 	"recything/features/admin/model"
+	user "recything/features/user/entity"
 	userModel "recything/features/user/model"
 	"recything/utils/helper"
 
@@ -15,111 +15,131 @@ type AdminRepository struct {
 	db *gorm.DB
 }
 
-func NewAdminRepository(db *gorm.DB) *AdminRepository {
+func NewAdminRepository(db *gorm.DB) entity.AdminRepositoryInterface {
 	return &AdminRepository{db: db}
 }
 
-func (admin *AdminRepository) Insert(data entity.AdminCore) (entity.AdminCore, error) {
-
+func (ar *AdminRepository) Insert(data entity.AdminCore) (entity.AdminCore, error) {
 	dataCreate := entity.AdminCoreToAdminModel(data)
-	if err := admin.db.Create(&dataCreate).Error; err != nil {
-		return entity.AdminCore{}, err
+
+	tx := ar.db.Create(&dataCreate)
+	if tx.Error != nil {
+		return entity.AdminCore{}, tx.Error
 	}
+
 	adminData := entity.AdminModelToAdminCore(dataCreate)
 	return adminData, nil
 }
 
-func (admin *AdminRepository) SelectAll() ([]entity.AdminCore, error) {
+func (ar *AdminRepository) SelectAll() ([]entity.AdminCore, error) {
 	dataAdmin := []model.Admin{}
-	if err := admin.db.Find(&dataAdmin).Error; err != nil {
-		return nil, err
+
+	tx := ar.db.Where("role = ? ", helper.ADMIN).Find(&dataAdmin)
+	if tx.Error != nil {
+		return nil, tx.Error
 	}
 
-	var dataAllAdmin []entity.AdminCore = entity.ListAdminModelToAdminCore(dataAdmin)
-	return dataAllAdmin, nil
+	result := entity.ListAdminModelToAdminCore(dataAdmin)
+	return result, nil
 }
 
-func (admin *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) {
+func (ar *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) {
 	dataAdmin := model.Admin{}
 
-	if err := admin.db.Where("id = ?", adminId).Find(&dataAdmin).Error; err != nil {
-		return entity.AdminCore{}, err
+	tx := ar.db.Where("id = ? AND role = ?", adminId, helper.ADMIN).First(&dataAdmin)
+	if tx.Error != nil {
+		return entity.AdminCore{}, tx.Error
 	}
 
-	data := entity.AdminModelToAdminCore(dataAdmin)
-	return data, nil
+	result := entity.AdminModelToAdminCore(dataAdmin)
+	return result, nil
 }
 
-func (admin *AdminRepository) Update(adminId string, data entity.AdminCore) error {
+func (ar *AdminRepository) Update(adminId string, data entity.AdminCore) error {
+	request := entity.AdminCoreToAdminModel(data)
 
-	dataAdmin := entity.AdminCoreToAdminModel(data)
-	if err := admin.db.Where("id = ?", adminId).Updates(&dataAdmin).Error; err != nil {
-		return err
+	tx := ar.db.Where("id = ?", adminId).Updates(&request)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
 	return nil
 }
 
-func (admin *AdminRepository) Delete(adminId string) error {
+func (ar *AdminRepository) Delete(adminId string) error {
 	dataAdmin := model.Admin{}
 
-	adminCore, _ := admin.SelectById(adminId)
-	if adminCore.Role == helper.SUPERADMIN {
+	result, _ := ar.SelectById(adminId)
+	if result.Role == helper.SUPERADMIN {
 		return errors.New("can`t delete")
 	}
 
-	if err := admin.db.Where("id = ? AND role = ?", adminId, helper.ADMIN).Delete(&dataAdmin).Error; err != nil {
-
-		return err
+	tx := ar.db.Where("id = ? AND role = ?", adminId, helper.ADMIN).Delete(&dataAdmin)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
 	return nil
 }
 
-func (admin *AdminRepository) FindByEmailANDPassword(email, password string) (entity.AdminCore, error) {
-	var err error
-	adminModel := model.Admin{}
+func (ar *AdminRepository) FindByEmail(email string) error {
+	dataAdmin := model.Admin{}
 
-	if err = admin.db.Where("email = ?", email).First(&adminModel).Error; err != nil {
-		return entity.AdminCore{}, err
+	tx := ar.db.Where("email = ?", email).First(&dataAdmin)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
-	if comparePass := helper.CompareHash(adminModel.Password, password); !comparePass {
-		return entity.AdminCore{}, err
+	return nil
+}
+
+func (ar *AdminRepository) FindByEmailANDPassword(data entity.AdminCore) (entity.AdminCore, error) {
+	dataAdmin := model.Admin{}
+
+	tx := ar.db.Where("email = ?", data.Email).First(&dataAdmin)
+	if tx.Error != nil {
+		return entity.AdminCore{}, tx.Error
 	}
 
-	adminCore := entity.AdminModelToAdminCore(adminModel)
+	if comparePass := helper.CompareHash(dataAdmin.Password, data.Password); !comparePass {
+		return entity.AdminCore{}, errors.New("password tidak sama")
+	}
+
+	adminCore := entity.AdminModelToAdminCore(dataAdmin)
 	return adminCore, nil
 }
 
-//Manage Users
-func (admin *AdminRepository) SelectAllUsers() ([]user.UsersCore, error){
+// Manage Users
+func (ar *AdminRepository) SelectAllUsers() ([]user.UsersCore, error) {
 	dataUser := []userModel.Users{}
-	if err := admin.db.Find(&dataUser).Error; err != nil {
-		return nil, err
+
+	tx := ar.db.Find(&dataUser)
+	if tx.Error != nil {
+		return nil, tx.Error
 	}
 
 	var dataAllUser []user.UsersCore = user.ListUserModelToUserCore(dataUser)
 	return dataAllUser, nil
 }
 
-func (admin *AdminRepository) SelectByIdUsers(userId string) (user.UsersCore, error){
+func (ar *AdminRepository) SelectByIdUsers(userId string) (user.UsersCore, error) {
 	dataUser := userModel.Users{}
 
-	if err := admin.db.Where("id = ?", userId).Find(&dataUser).Error; err != nil {
-		return user.UsersCore{}, err
+	tx := ar.db.Where("id = ?", userId).Find(&dataUser)
+	if tx.Error != nil {
+		return user.UsersCore{}, tx.Error
 	}
 
 	data := user.UsersModelToUsersCore(dataUser)
 	return data, nil
 }
 
-func (admin *AdminRepository) DeleteUsers(userId string) error{
+func (ar *AdminRepository) DeleteUsers(userId string) error {
 	dataUser := userModel.Users{}
 
-	if err := admin.db.Where("id = ?", userId).Delete(&dataUser).Error; err != nil {
-
-		return err
+	tx := ar.db.Where("id = ?", userId).Delete(&dataUser)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
 	return nil

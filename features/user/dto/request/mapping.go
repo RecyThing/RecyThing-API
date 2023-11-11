@@ -52,7 +52,6 @@ func UsersRequestOTPToUsersCore(data UserSendOTP) entity.UsersCore {
 
 func UsersRequestVerifyOTPToUsersCore(data UserVerifyOTP) entity.UsersCore {
 	return entity.UsersCore{
-		Email: data.Email,
 		Otp:   data.Otp,
 	}
 }

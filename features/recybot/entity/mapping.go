@@ -5,7 +5,7 @@ import "recything/features/recybot/model"
 func CoreRecybotToModelRecybot(recybot RecybotCore) model.Recybot {
 	return model.Recybot{
 		Category: recybot.Category,
-		Question: recybot.Category,
+		Question: recybot.Question,
 	}
 }
 
@@ -22,7 +22,7 @@ func ModelRecybotToCoreRecybot(recybot model.Recybot) RecybotCore {
 	return RecybotCore{
 		ID:        recybot.ID,
 		Category:  recybot.Category,
-		Question:  recybot.Category,
+		Question:  recybot.Question,
 		CreatedAt: recybot.CreatedAt,
 		UpdatedAt: recybot.UpdatedAt,
 	}

@@ -5,7 +5,7 @@ import "recything/features/recybot/entity"
 func RequestRecybotToCoreRecybot(recybot RecybotRequest) entity.RecybotCore {
 	return entity.RecybotCore{
 		Category: recybot.Category,
-		Question: recybot.Category,
+		Question: recybot.Question,
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"recything/app/config"
 
+	admin "recything/features/admin/model"
 	recybot "recything/features/recybot/model"
 	report "recything/features/report/model"
 	user "recything/features/user/model"
@@ -28,7 +29,7 @@ func InitDBMysql(cfg *config.AppConfig) *gorm.DB {
 
 func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&user.Users{})
-	
+	db.AutoMigrate(&admin.Admin{})
 	db.AutoMigrate(&report.Report{}, &report.Image{})
 	db.AutoMigrate(&recybot.Recybot{})
 

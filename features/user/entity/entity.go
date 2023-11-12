@@ -8,9 +8,9 @@ import (
 
 type UsersCore struct {
 	Id                string
-	Email             string `validate:"required,email"`
-	Password          string `validate:"required,min=8"`
-	ConfirmPassword   string `validate:"required,eqfield=Password"`
+	Email             string 
+	Password          string 
+	ConfirmPassword   string 
 	Fullname          string
 	Phone             string
 	Address           string

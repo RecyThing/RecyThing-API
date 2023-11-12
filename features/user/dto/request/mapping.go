@@ -4,7 +4,6 @@ import "recything/features/user/entity"
 
 func UsersRequestRegisterToUsersCore(data UserRegister) entity.UsersCore {
 	return entity.UsersCore{
-		Id:              data.Id,
 		Fullname:        data.Fullname,
 		Email:           data.Email,
 		Password:        data.Password,
@@ -30,7 +29,7 @@ func UsersRequestUpdatePasswordToUsersCore(data UserUpdatePassword) entity.Users
 	}
 }
 
-func UsersRequestForgetPasswordToUsersCore(data UserForgetPassword) entity.UsersCore {
+func UsersRequestNewPasswordToUsersCore(data UserNewPassword) entity.UsersCore {
 	return entity.UsersCore{
 		Password:        data.Password,
 		ConfirmPassword: data.ConfirmPassword,

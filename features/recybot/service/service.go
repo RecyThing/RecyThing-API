@@ -24,17 +24,43 @@ func (rb *recybotService) CreateData(recybot entity.RecybotCore) (entity.Recybot
 }
 
 // Delete implements entity.RecybotServiceInterface.
-func (rb *recybotService) Delete(idData string) (entity.RecybotCore, error) {
-	result, err := rb.recybotRepo.Delete(idData)
+func (rb *recybotService) DeleteData(idData string) error {
+	_, err := rb.SelectById(idData)
+	if err != nil {
+		return err
+	}
+	err = rb.recybotRepo.Delete(idData)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// UpdateData implements entity.RecybotServiceInterface.
+func (rb *recybotService) UpdateData(idData string, recybot entity.RecybotCore) (entity.RecybotCore, error) {
+	_, err := rb.recybotRepo.SelectById(idData)
+	if err != nil {
+		return entity.RecybotCore{}, err
+	}
+
+	result, err := rb.recybotRepo.Update(idData, recybot)
+	if err != nil {
+		return result, err
+	}
+	result.ID = idData
+	return result, nil
+}
+
+func (rb *recybotService) SelectAllData() ([]entity.RecybotCore, error) {
+	result, err := rb.recybotRepo.SelectAll()
 	if err != nil {
 		return result, err
 	}
 	return result, nil
 }
 
-// UpdateData implements entity.RecybotServiceInterface.
-func (rb *recybotService) UpdateData(idData string) (entity.RecybotCore, error) {
-	result, err := rb.recybotRepo.Update (idData)
+func (rb *recybotService) SelectById(idData string) (entity.RecybotCore, error) {
+	result, err := rb.recybotRepo.SelectById(idData)
 	if err != nil {
 		return result, err
 	}

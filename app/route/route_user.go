@@ -17,7 +17,7 @@ func RouteUser(e *echo.Group, db *gorm.DB) {
 	userHandler := handler.NewUserHandlers(userService)
 
 	user := e.Group("/profile", jwt.JWTMiddleware())
-	user.GET("", userHandler.GetUser)
+	user.GET("", userHandler.GetUserById)
 	user.PUT("", userHandler.UpdateById)
 	user.PATCH("/reset-password", userHandler.UpdatePassword)
 	

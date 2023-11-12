@@ -1,7 +1,5 @@
 package entity
 
-import "time"
-
 type UsersRepositoryInterface interface {
 	Register(data UsersCore) error
 	Login(email, password string) (UsersCore, error)
@@ -12,7 +10,7 @@ type UsersRepositoryInterface interface {
 	ForgetPassword(otp string, updated UsersCore) (data UsersCore, err error)
 	UpdatePassword(id string, updated UsersCore) (data UsersCore, err error)
 	EmailExists(email string) (bool, error)
-	SendOTP(emailUser string, otp string, expiry time.Time) (data UsersCore, err error)
+	SendOTP(emailUser string, otp string, expiry int64) (data UsersCore, err error)
 	VerifyOTP(otp string) (data UsersCore, err error)
 	ResetOTP(otp string) (data UsersCore, err error)
 }

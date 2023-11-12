@@ -21,7 +21,7 @@ type UsersCore struct {
 	VerificationToken string
 	Otp               string
 	NewPassword       string
-	OtpExpiration     time.Time
+	OtpExpiration     int64
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 	DeleteAt          gorm.DeletedAt

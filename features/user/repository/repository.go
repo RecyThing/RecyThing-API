@@ -4,7 +4,6 @@ import (
 	"errors"
 	"recything/features/user/entity"
 	"recything/features/user/model"
-	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -166,7 +165,7 @@ func (ur *userRepository) EmailExists(email string) (bool, error) {
 }
 
 // SendOTP implements entity.UsersRepositoryInterface.
-func (ur *userRepository) SendOTP(emailUser string, otp string, expiry time.Time) (data entity.UsersCore, err error) {
+func (ur *userRepository) SendOTP(emailUser string, otp string, expiry int64) (data entity.UsersCore, err error) {
 	var usersData model.Users
 
 	errData := ur.db.Where("email = ?", emailUser).First(&usersData).Error
@@ -216,7 +215,7 @@ func (ur *userRepository) ResetOTP(otp string) (data entity.UsersCore, err error
 	}
 
 	usersData.Otp = ""
-	usersData.OtpExpiration = time.Time{}
+	usersData.OtpExpiration = 0
 
 	errUpdate := ur.db.Save(&usersData).Error
 	if errUpdate != nil {

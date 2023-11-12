@@ -31,13 +31,13 @@ func (us *userService) UpdatePassword(id string, updated entity.UsersCore) (data
 	}
 
 	existingUser, err := us.userRepo.GetById(id)
-    if err != nil {
-        return entity.UsersCore{}, err
-    }
+	if err != nil {
+		return entity.UsersCore{}, err
+	}
 
 	if helper.CompareHash(updated.Password, existingUser.Password) {
-        return entity.UsersCore{}, errors.New("password lama tidak benar")
-    }
+		return entity.UsersCore{}, errors.New("password lama tidak benar")
+	}
 
 	if updated.NewPassword != updated.ConfirmPassword {
 		return entity.UsersCore{}, errors.New("password tidak sama")
@@ -124,7 +124,11 @@ func (us *userService) Register(data entity.UsersCore) error {
 
 	emailExists, errEmail := us.userRepo.EmailExists(data.Email)
 	if errEmail != nil {
-		return errors.New("gagal mengecek bahwa email telah ada")
+		return errors.New("gagal mengecek keberadaan email, silakan coba lagi")
+	}
+
+	if emailExists {
+		return errors.New("email telah digunakan")
 	}
 
 	if emailExists {
@@ -201,7 +205,7 @@ func (us *userService) SendOTP(emailUser string) error {
 		return errors.New("generate otp gagal")
 	}
 
-	expiration := time.Now().Add(15 * time.Minute)
+	expiration := time.Now().Add(5 * time.Minute).Unix()
 	_, err = us.userRepo.SendOTP(emailUser, otp, expiration)
 	if err != nil {
 		return err
@@ -222,7 +226,7 @@ func (us *userService) VerifyOTP(otp string) (string, error) {
 		return "", err
 	}
 
-	if user.OtpExpiration.Before(time.Now()) {
+	if user.OtpExpiration <= time.Now().Unix() {
 		return "", errors.New("otp sudah kadaluwarsa")
 	}
 
@@ -264,5 +268,5 @@ func (us *userService) ForgetPassword(otp string, updated entity.UsersCore) erro
 		return errors.New("gagal mengatur ulang OTP")
 	}
 
-	return  nil
+	return nil
 }

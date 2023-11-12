@@ -4,6 +4,8 @@ import (
 	"errors"
 	"recything/features/admin/entity"
 	"recything/features/admin/model"
+	report "recything/features/report/entity"
+	reportModel "recything/features/report/model"
 	user "recything/features/user/entity"
 	userModel "recything/features/user/model"
 	"recything/utils/helper"
@@ -16,7 +18,9 @@ type AdminRepository struct {
 }
 
 func NewAdminRepository(db *gorm.DB) entity.AdminRepositoryInterface {
-	return &AdminRepository{db: db}
+	return &AdminRepository{
+		db: db,
+	}
 }
 
 func (ar *AdminRepository) Insert(data entity.AdminCore) (entity.AdminCore, error) {
@@ -143,4 +147,46 @@ func (ar *AdminRepository) DeleteUsers(userId string) error {
 	}
 
 	return nil
+}
+
+// GetByStatusReport implements entity.AdminRepositoryInterface.
+func (ar *AdminRepository) GetByStatusReport(status string) ([]report.ReportCore, error) {
+	var dataReports []reportModel.Report
+	var result *gorm.DB
+
+	if status != "" {
+		result = ar.db.Where("status = ?", status).Find(&dataReports)
+	} else {
+		result = ar.db.Find(&dataReports)
+	}
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	dataAllReport := report.ListReportModelToReportCore(dataReports)
+	return dataAllReport, nil
+}
+
+// // UpdateStatusReport implements entity.AdminRepositoryInterface.
+func (ar *AdminRepository) UpdateStatusReport(id string, status string) (report.ReportCore, error) {
+	var usersData reportModel.Report
+
+    errData := ar.db.Where("id = ?", id).First(&usersData).Error
+    if errData != nil {
+        if errors.Is(errData, gorm.ErrRecordNotFound) {
+            return report.ReportCore{}, errors.New("data tidak ditemukan")
+        }
+        return report.ReportCore{}, errData
+    }
+
+    usersData.Status = status
+    err := ar.db.Save(&usersData).Error
+    if err != nil {
+        return report.ReportCore{}, err
+    }
+
+	data := report.ReportModelToReportCore(usersData)
+
+	return data, nil
 }

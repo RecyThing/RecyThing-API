@@ -5,7 +5,10 @@ import (
 	"recything/features/admin/dto/request"
 	"recything/features/admin/dto/response"
 	"recything/features/admin/entity"
+	user "recything/features/user/entity"
 	userDto "recything/features/user/dto/response"
+	reportRequest "recything/features/report/dto/request"
+	reportDto "recything/features/report/dto/response"
 	"recything/utils/helper"
 	"recything/utils/jwt"
 	"github.com/labstack/echo/v4"
@@ -13,10 +16,14 @@ import (
 
 type AdminHandler struct {
 	AdminService entity.AdminServiceInterface
+	UserService  user.UsersUsecaseInterface
 }
 
-func NewAdminHandler(as entity.AdminServiceInterface) *AdminHandler {
-	return &AdminHandler{AdminService: as}
+func NewAdminHandler(as entity.AdminServiceInterface, us user.UsersUsecaseInterface) *AdminHandler {
+	return &AdminHandler{
+		AdminService: as,
+		UserService:  us,
+	}
 }
 
 // membuat admin, hanya untuk super admin
@@ -173,9 +180,9 @@ func (ah *AdminHandler) UpdateById(e echo.Context) error {
 // Manage User
 func (ah *AdminHandler) GetAllUser(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
-	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("unathorized"))
-	}
+	if role != helper.SUPERADMIN && role != helper.ADMIN {
+        return e.JSON(http.StatusForbidden, helper.ErrorResponse("unauthorized"))
+    }
 
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed extra token"))
@@ -195,9 +202,9 @@ func (ah *AdminHandler) GetByIdUsers(e echo.Context) error {
 	userId := e.Param("id")
 
 	_, role, err := jwt.ExtractToken(e)
-	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("unathorized"))
-	}
+	if role != helper.SUPERADMIN && role != helper.ADMIN {
+        return e.JSON(http.StatusForbidden, helper.ErrorResponse("unauthorized"))
+    }
 
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed extra token"))
@@ -216,9 +223,9 @@ func (ah *AdminHandler) DeleteUsers(e echo.Context) error {
 	userId := e.Param("id")
 
 	_, role, err := jwt.ExtractToken(e)
-	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("unathorized"))
-	}
+	if role != helper.SUPERADMIN && role != helper.ADMIN {
+        return e.JSON(http.StatusForbidden, helper.ErrorResponse("unauthorized"))
+    }
 
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed extra token"))
@@ -230,4 +237,57 @@ func (ah *AdminHandler) DeleteUsers(e echo.Context) error {
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("success"))
+}
+
+// Manage Reporting
+func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
+	_, role, err := jwt.ExtractToken(e)
+
+	if role != helper.SUPERADMIN && role != helper.ADMIN {
+        return e.JSON(http.StatusForbidden, helper.ErrorResponse("unauthorized"))
+    }
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed extra token"))
+	}
+
+	status := e.QueryParam("status")
+	result, err := ah.AdminService.GetByStatusReport(status)
+	if err != nil {
+		if err.Error() == "status tidak valid" {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse("input status salah"))
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mendapatkan data"))
+	}
+
+	response := reportDto.ListReportCoresToReportResponseForDataReporting(result, ah.UserService)
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("success", response))
+
+}
+
+func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
+	_, role, err := jwt.ExtractToken(e)
+
+	if role != helper.SUPERADMIN && role != helper.ADMIN {
+        return e.JSON(http.StatusForbidden, helper.ErrorResponse("unauthorized"))
+    }
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed extra token"))
+	}
+
+	id := e.Param("id")
+
+	input := reportRequest.UpdateStatusReportRubbish{}
+	err = helper.DecodeJSON(e, &input)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+	
+	_, err = ah.AdminService.UpdateStatusReport(id, input.Status)
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil memperbarui status"))
 }

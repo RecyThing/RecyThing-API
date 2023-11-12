@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"recything/features/admin/entity"
+	report "recything/features/report/entity"
 	user "recything/features/user/entity"
 	"recything/utils/jwt"
 )
@@ -20,8 +21,8 @@ func NewAdminService(ar entity.AdminRepositoryInterface) entity.AdminServiceInte
 func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) {
 
 	err := as.AdminRepository.FindByEmail(data.Email)
-	if err == nil{
-		return entity.AdminCore{},errors.New("email sudah ada, gunakan email lain")
+	if err == nil {
+		return entity.AdminCore{}, errors.New("email sudah ada, gunakan email lain")
 	}
 
 	if data.ConfirmPassword != data.Password {
@@ -126,4 +127,45 @@ func (as *AdminService) DeleteUsers(userId string) error {
 	}
 
 	return nil
+}
+
+// Manage Reporting
+// GetByStatusReport implements entity.AdminServiceInterface.
+func (as *AdminService) GetByStatusReport(status string) (data []report.ReportCore, err error) {
+	switch status {
+	case "Perlu Tinjauan", "Diterima", "Ditolak":
+		data, err = as.AdminRepository.GetByStatusReport(status)
+	case "":
+		data, err = as.AdminRepository.GetByStatusReport("")
+	default:
+		return nil, errors.New("status tidak valid")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+// UpdateStatusReport implements entity.AdminServiceInterface.
+func (as *AdminService) UpdateStatusReport(id string, status string) (report.ReportCore, error) {
+	if id == "" {
+		return report.ReportCore{}, errors.New("id tidak valid")
+	}
+
+	if status == "" {
+		return report.ReportCore{}, errors.New("status tidak valid")
+	}
+
+	data, err := as.AdminRepository.UpdateStatusReport(id, status)
+    if err != nil {
+        return report.ReportCore{}, errors.New("gagal update status")
+    }
+
+	if data.Status == "Diterima" || data.Status == "Ditolak" {
+		return report.ReportCore{}, errors.New("status sudah diterima atau ditolak, tidak bisa update data lagi")
+	}
+
+	return data, nil
 }

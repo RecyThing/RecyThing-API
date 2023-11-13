@@ -5,12 +5,14 @@ import (
 	"recything/features/admin/dto/request"
 	"recything/features/admin/dto/response"
 	"recything/features/admin/entity"
-	user "recything/features/user/entity"
-	userDto "recything/features/user/dto/response"
 	reportRequest "recything/features/report/dto/request"
 	reportDto "recything/features/report/dto/response"
+	userDto "recything/features/user/dto/response"
+	user "recything/features/user/entity"
+	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -30,11 +32,12 @@ func NewAdminHandler(as entity.AdminServiceInterface, us user.UsersUsecaseInterf
 func (ah *AdminHandler) Create(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
 
-	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("Acces Denied"))
+	if role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
+
 	if err != nil {
-		return err
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
 	input := request.AdminRequest{}
@@ -75,17 +78,18 @@ func (ah *AdminHandler) Login(e echo.Context) error {
 	jwt.SetTokenCookie(e, token)
 	response := response.AdminCoreToAdminResponse(result)
 
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil melakukan login", response))
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_LOGIN, response))
 }
 
 // mendapatkan semua data admin yang active maupun yang tidak active
 func (ah *AdminHandler) GetAll(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
-	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("Acces Denied"))
+	if role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
+
 	if err != nil {
-		return err
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
 	result, err := ah.AdminService.GetAll()
@@ -108,11 +112,12 @@ func (ah *AdminHandler) GetById(e echo.Context) error {
 	adminId:= e.Param("id")
 
 	_, role, err := jwt.ExtractToken(e)
-	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("Acces Denied"))
+	if role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
+
 	if err != nil {
-		return err
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
 	result, err := ah.AdminService.GetById(adminId)
@@ -133,11 +138,12 @@ func (ah *AdminHandler) Delete(e echo.Context) error {
 	adminId := e.Param("id")
 
 	_, role, err := jwt.ExtractToken(e)
-	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("Acces Denied"))
+	if role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
+
 	if err != nil {
-		return err
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
 	err = ah.AdminService.DeleteById(adminId)
@@ -153,11 +159,12 @@ func (ah *AdminHandler) UpdateById(e echo.Context) error {
 	adminId := e.Param("id")
 
 	_, role, err := jwt.ExtractToken(e)
-	if role != helper.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("Acces Denied"))
+	if role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
+
 	if err != nil {
-		return err
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
 	input := request.AdminRequest{}
@@ -179,21 +186,21 @@ func (ah *AdminHandler) UpdateById(e echo.Context) error {
 // Manage User
 func (ah *AdminHandler) GetAllUser(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
-	if role != helper.SUPERADMIN && role != helper.ADMIN {
-        return e.JSON(http.StatusForbidden, helper.ErrorResponse("unauthorized"))
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+        return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
     }
 
 	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed extra token"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
 	result, err := ah.AdminService.GetAllUsers()
 	if err != nil {
-		e.JSON(http.StatusInternalServerError, helper.ErrorResponse("failed"))
+		e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	response := userDto.UsersCoreToResponseUsersList(result)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", response))
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil mendapatkan data user", response))
 
 }
 
@@ -201,33 +208,33 @@ func (ah *AdminHandler) GetByIdUsers(e echo.Context) error {
 	userId := e.Param("id")
 
 	_, role, err := jwt.ExtractToken(e)
-	if role != helper.SUPERADMIN && role != helper.ADMIN {
-        return e.JSON(http.StatusForbidden, helper.ErrorResponse("unauthorized"))
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+        return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
     }
 
 	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed extra token"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
 	UsersData, err := ah.AdminService.GetByIdUsers(userId)
 	if err != nil {
-		e.JSON(http.StatusInternalServerError, helper.ErrorResponse("failed"))
+		e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	userResponse := userDto.UsersCoreToResponseUsers(UsersData)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("succes", userResponse))
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil mendapatkan data user", userResponse))
 }
 
 func (ah *AdminHandler) DeleteUsers(e echo.Context) error {
 	userId := e.Param("id")
 
 	_, role, err := jwt.ExtractToken(e)
-	if role != helper.SUPERADMIN && role != helper.ADMIN {
-        return e.JSON(http.StatusForbidden, helper.ErrorResponse("unauthorized"))
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+        return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
     }
 
 	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed extra token"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
 	err = ah.AdminService.DeleteUsers(userId)
@@ -235,19 +242,19 @@ func (ah *AdminHandler) DeleteUsers(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	return e.JSON(http.StatusOK, helper.SuccessResponse("success"))
+	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil menghapus data user"))
 }
 
 // Manage Reporting
 func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
 
-	if role != helper.SUPERADMIN && role != helper.ADMIN {
-        return e.JSON(http.StatusForbidden, helper.ErrorResponse("unauthorized"))
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+        return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
     }
 
 	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed extra token"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
 	status := e.QueryParam("status")
@@ -260,19 +267,19 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 	}
 
 	response := reportDto.ListReportCoresToReportResponseForDataReporting(result, ah.UserService)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("success", response))
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil mendapatkan data reporting", response))
 
 }
 
 func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
 
-	if role != helper.SUPERADMIN && role != helper.ADMIN {
-        return e.JSON(http.StatusForbidden, helper.ErrorResponse("unauthorized"))
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+        return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
     }
 
 	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse("failed extra token"))
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
 	id := e.Param("id")

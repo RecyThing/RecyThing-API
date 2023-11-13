@@ -6,7 +6,7 @@ import (
 )
 
 type AdminRepositoryInterface interface {
-	Insert(data AdminCore) (AdminCore, error)
+	Create(data AdminCore) (AdminCore, error)
 	SelectAll() ([]AdminCore, error)
 	SelectById(adminId string) (AdminCore, error)
 	Update(adminId string, data AdminCore) error
@@ -14,8 +14,8 @@ type AdminRepositoryInterface interface {
 	FindByEmail(email string) error
 	FindByEmailANDPassword(data AdminCore) (AdminCore, error)
 	//Manage Users
-	SelectAllUsers() ([]user.UsersCore, error)
-	SelectByIdUsers(adminId string) (user.UsersCore, error)
+	GetAllUsers() ([]user.UsersCore, error)
+	GetByIdUser(userId string) (user.UsersCore, error)
 	DeleteUsers(adminId string) error
 	// Manage Reporting
 	GetByStatusReport(status string) ([]report.ReportCore, error)

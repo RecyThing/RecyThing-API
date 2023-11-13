@@ -22,9 +22,9 @@ func NewUserRepository(db *gorm.DB) entity.UsersRepositoryInterface {
 func (ur *userRepository) Register(data entity.UsersCore) error {
 	request := entity.UsersCoreToUsersModel(data)
 
-	err := ur.db.Create(&request).Error
-	if err != nil {
-		return err
+	tx := ur.db.Create(&request)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
 	return nil
@@ -34,9 +34,9 @@ func (ur *userRepository) Register(data entity.UsersCore) error {
 func (ur *userRepository) GetById(id string) (entity.UsersCore, error) {
 	dataUsers := model.Users{}
 
-	err := ur.db.Where("id = ?", id).First(&dataUsers).Error
-	if err != nil {
-		return entity.UsersCore{}, err
+	tx := ur.db.Where("id = ?", id).First(&dataUsers)
+	if tx.Error != nil {
+		return entity.UsersCore{}, tx.Error
 	}
 
 	dataResponse := entity.UsersModelToUsersCore(dataUsers)
@@ -46,10 +46,10 @@ func (ur *userRepository) GetById(id string) (entity.UsersCore, error) {
 func (ur *userRepository) FindByEmail(email string) (entity.UsersCore, error) {
 	dataUsers := model.Users{}
 
-	err := ur.db.Where("email = ?", email).First(&dataUsers).Error
+	tx := ur.db.Where("email = ?", email).First(&dataUsers)
 
-	if err != nil {
-		return entity.UsersCore{}, err
+	if tx.Error != nil {
+		return entity.UsersCore{}, tx.Error
 	}
 
 	dataResponse := entity.UsersModelToUsersCore(dataUsers)
@@ -60,9 +60,10 @@ func (ur *userRepository) FindByEmail(email string) (entity.UsersCore, error) {
 func (ur *userRepository) UpdateById(id string, data entity.UsersCore) error {
 
 	request := entity.UsersCoreToUsersModel(data)
-	err := ur.db.Where("id = ?", id).Updates(&request).Error
-	if err != nil {
-		return err
+
+	tx := ur.db.Where("id = ?", id).Updates(&request)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
 	return nil
@@ -73,9 +74,9 @@ func (ur *userRepository) UpdatePassword(id string, data entity.UsersCore) error
 
 	request := entity.UsersCoreToUsersModel(data)
 
-	err := ur.db.Where("id = ?", id).Updates(&request).Error
-	if err != nil {
-		return err
+	tx := ur.db.Where("id = ?", id).Updates(&request)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
 	return nil
@@ -85,9 +86,9 @@ func (ur *userRepository) UpdatePassword(id string, data entity.UsersCore) error
 func (ur *userRepository) GetByVerificationToken(token string) (entity.UsersCore, error) {
 	dataUsers := model.Users{}
 
-	err := ur.db.Where("verification_token = ?", token).First(&dataUsers).Error
-	if err != nil {
-		return entity.UsersCore{}, err
+	tx := ur.db.Where("verification_token = ?", token).First(&dataUsers)
+	if tx.Error != nil {
+		return entity.UsersCore{}, tx.Error
 	}
 
 	userToken := entity.UsersModelToUsersCore(dataUsers)
@@ -98,9 +99,9 @@ func (ur *userRepository) GetByVerificationToken(token string) (entity.UsersCore
 func (ur *userRepository) UpdateIsVerified(id string, isVerified bool) error {
 	dataUser := model.Users{}
 
-	errFind := ur.db.First(&dataUser, id).Error
-	if errFind != nil {
-		return errFind
+	tx := ur.db.First(&dataUser, id)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
 	dataUser.IsVerified = isVerified
@@ -117,12 +118,12 @@ func (ur *userRepository) UpdateIsVerified(id string, isVerified bool) error {
 func (ur *userRepository) SendOTP(emailUser string, otp string, expiry int64) (data entity.UsersCore, err error) {
 	dataUsers := model.Users{}
 
-	errData := ur.db.Where("email = ?", emailUser).First(&dataUsers).Error
-	if errData != nil {
-		if errors.Is(errData, gorm.ErrRecordNotFound) {
+	tx := ur.db.Where("email = ?", emailUser).First(&dataUsers)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return entity.UsersCore{}, errors.New("pengguna tidak ditemukan")
 		}
-		return entity.UsersCore{}, errData
+		return entity.UsersCore{}, tx.Error
 	}
 
 	dataUsers.Otp = otp
@@ -142,9 +143,9 @@ func (ur *userRepository) SendOTP(emailUser string, otp string, expiry int64) (d
 func (ur *userRepository) VerifyOTP(otp string) (entity.UsersCore, error) {
 	dataUsers := model.Users{}
 
-	err := ur.db.Where("otp = ?", otp).First(&dataUsers).Error
-	if err != nil {
-		return entity.UsersCore{}, err
+	tx := ur.db.Where("otp = ?", otp).First(&dataUsers)
+	if tx.Error != nil {
+		return entity.UsersCore{}, tx.Error
 	}
 
 	dataResponse := entity.UsersModelToUsersCore(dataUsers)
@@ -155,9 +156,9 @@ func (ur *userRepository) VerifyOTP(otp string) (entity.UsersCore, error) {
 func (ur *userRepository) ResetOTP(otp string) (data entity.UsersCore, err error) {
 	dataUsers := model.Users{}
 
-	errData := ur.db.Where("otp = ?", otp).First(&dataUsers).Error
-	if errData != nil {
-		return entity.UsersCore{}, errData
+	tx := ur.db.Where("otp = ?", otp).First(&dataUsers)
+	if tx.Error != nil {
+		return entity.UsersCore{}, tx.Error
 	}
 
 	dataUsers.Otp = ""
@@ -176,9 +177,9 @@ func (ur *userRepository) ResetOTP(otp string) (data entity.UsersCore, err error
 func (ur *userRepository) NewPassword(otp string, data entity.UsersCore) (entity.UsersCore, error) {
 	dataUsers := model.Users{}
 
-	errData := ur.db.Where("otp = ?", otp).First(&dataUsers).Error
-	if errData != nil {
-		return entity.UsersCore{}, errData
+	tx := ur.db.Where("otp = ?", otp).First(&dataUsers)
+	if tx.Error != nil {
+		return entity.UsersCore{}, tx.Error
 	}
 
 	errUpdate := ur.db.Model(&dataUsers).Updates(entity.UsersCoreToUsersModel(data))

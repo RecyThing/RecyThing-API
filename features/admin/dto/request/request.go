@@ -7,7 +7,7 @@ type AdminRequest struct {
 	ConfirmPassword string `json:"confirm_password" valid:"required~harap konfirmasi password"`
 }
 
-type RequestLogin struct {
+type AdminLogin struct {
 	Email    string `json:"email" valid:"required~harap lengkapi email,email~format email tidak valid"`
-	Password string `json:"password"  valid:"required~harap lengkapi password"`
+	Password string `json:"password" valid:"required~harap lengkapi password"`
 }

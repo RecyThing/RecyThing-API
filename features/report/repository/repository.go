@@ -1,14 +1,21 @@
 package repository
 
 import (
+	"fmt"
+	"mime/multipart"
 	"recything/features/report/entity"
 	"recything/features/report/model"
+	"recything/features/report/storage"
 
 	"gorm.io/gorm"
 )
 
 type reportRepository struct {
 	db *gorm.DB
+}
+
+func NewReportRepository(db *gorm.DB) entity.ReportRepositoryInterface {
+	return &reportRepository{db: db}
 }
 
 // ReadAllReport implements entity.ReportRepositoryInterface.
@@ -29,17 +36,22 @@ func (report *reportRepository) ReadAllReport(idUser string) ([]entity.ReportCor
 	return mapData, nil
 }
 
-func NewReportRepository(db *gorm.DB) entity.ReportRepositoryInterface {
-	return &reportRepository{db: db}
-}
-
-func (rc *reportRepository) Insert(reportInput entity.ReportCore) (entity.ReportCore, error) {
+func (report *reportRepository) Insert(reportInput entity.ReportCore, image *multipart.FileHeader) (entity.ReportCore, error) {
 	dataReport := entity.ReportCoreToReportModel(reportInput)
-	if err := rc.db.Create(&dataReport).Error; err != nil {
+	if err := report.db.Create(&dataReport).Error; err != nil {
 		return entity.ReportCore{}, err
 	}
 
+	imageURL, uploadErr := storage.UploadProof(image)
+	if uploadErr != nil {
+		return entity.ReportCore{}, uploadErr
+	}
+
+	fmt.Println("repository : ", dataReport.InsidentDate)
 	ReportCreated := entity.ReportModelToReportCore(dataReport)
+	ImageList := entity.ImageCore{}
+	ImageList.Image = imageURL
+
 	return ReportCreated, nil
 }
 

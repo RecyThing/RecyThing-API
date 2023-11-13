@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 	"recything/features/report/dto"
 	"recything/features/report/entity"
@@ -18,76 +20,38 @@ func NewReportHandler(report entity.ReportServiceInterface) *reportHandler {
 	return &reportHandler{reportService: report}
 }
 
-func (rco *reportHandler) CreateReportRubbish(e echo.Context) error {
+func (report *reportHandler) CreateReport(e echo.Context) error {
 	userId, _, err := jwt.ExtractToken(e)
 	if err != nil {
 		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
 	}
 
-	newReport := dto.RubbishRequest{}
+	newReport := dto.ReportRubbishRequest{}
 	err = e.Bind(&newReport)
+	log.Println("images ", newReport.Images)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}	
+
+	image, err := e.FormFile("images")
+	if err != nil {
+		if err == http.ErrMissingFile {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "No file uploaded",
+			})
+		}
+		return e.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "Error uploading file",
+		})
 	}
 
-	reportInput := dto.RubbishRequestToReportCore(newReport)
-	reportInput.ReportType = "Tumpukan Sampah"
-	createdReport, err := rco.reportService.Create(reportInput, userId)
+	reportInput := entity.ReportRequestToReportCore(newReport)
+	fmt.Println("handler : ",reportInput.InsidentDate)
+	createdReport, err := report.reportService.Create(reportInput, userId, image)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
-
-	reportResponse := dto.ReportCoreToReportResponse(createdReport)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("success", reportResponse))
-}
-
-func (rco *reportHandler) CreateReportSMallLittering(e echo.Context) error {
-	userId, _, err := jwt.ExtractToken(e)
-	if err != nil {
-		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
-	}
-
-	newReport := dto.LitteringSmallRequest{}
-	err = e.Bind(&newReport)
-	if err != nil {
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-	}
-
-	reportInput := dto.LitteringSmallRequestToReportCore(newReport)
-	reportInput.ReportType = "Pelanggaran Sampah"
-	reportInput.ScaleType = "Skala Besar"
-
-	createdReport, err := rco.reportService.Create(reportInput, userId)
-	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
-
-	reportResponse := dto.ReportCoreToReportResponse(createdReport)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("success", reportResponse))
-}
-
-func (rco *reportHandler) CreateReportBigLittering(e echo.Context) error {
-	userId, _, err := jwt.ExtractToken(e)
-	if err != nil {
-		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
-	}
-
-	newReport := dto.LitteringBigRequest{}
-	err = e.Bind(&newReport)
-	if err != nil {
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-	}
-
-	reportInput := dto.LitteringBigRequestToReportCore(newReport)
-	reportInput.ReportType = "Pelanggaran Sampah"
-	reportInput.ScaleType = "Skala Kecil"
-
-	createdReport, err := rco.reportService.Create(reportInput, userId)
-	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
-
-	reportResponse := dto.ReportCoreToReportResponse(createdReport)
+	reportResponse := entity.ReportCoreToReportResponse(createdReport)
 	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("success", reportResponse))
 }
 
@@ -99,7 +63,7 @@ func (rco *reportHandler) SelectById(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("error reading data"))
 	}
 
-	var reportResponse = dto.ReportCoreToReportResponse(result)
+	var reportResponse = entity.ReportCoreToReportResponse(result)
 
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("success get report data", reportResponse))
 }

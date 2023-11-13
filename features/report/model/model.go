@@ -18,14 +18,17 @@ type Report struct {
 	Description  string
 	Images       []Image `gorm:"foreignKey:ReportId"`
 	AddressPoint string
+	Status       string  `gorm:"default:'proses'"`
+
 	//rubbish only
 	TrashType string `gorm:"type:enum('Sampah Kering','Sampah Basah');default:Null"`
 
 	//littering only
-	ScaleType    string `gorm:"type:enum('Skala Besar','Skala Kecil');default:Null"`
-	InsidentTime string `gorm:"type:datetime"`
-	WasteType    bool
-	CompanyName  string
+	ScaleType      string `gorm:"type:enum('Skala Besar','Skala Kecil');default:Null"`
+	InsidentDate   string `gorm:"null"`
+	InsidentTime   string `gorm:"null"`
+	DangerousWaste bool
+	CompanyName    string
 
 	//all
 	CreatedAt time.Time      `gorm:"type:DATETIME(0)"`

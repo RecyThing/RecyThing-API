@@ -20,8 +20,8 @@ func NewAdminService(ar entity.AdminRepositoryInterface) entity.AdminServiceInte
 
 func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) {
 
-	err := as.AdminRepository.FindByEmail(data.Email)
-	if err == nil {
+	errFind := as.AdminRepository.FindByEmail(data.Email)
+	if errFind == nil {
 		return entity.AdminCore{}, errors.New("email sudah ada, gunakan email lain")
 	}
 
@@ -29,33 +29,32 @@ func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) 
 		return entity.AdminCore{}, errors.New("password tidak sesuai")
 	}
 
-	result, err := as.AdminRepository.Insert(data)
-	if err != nil {
+	dataAdmins, errCreate := as.AdminRepository.Create(data)
+	if errCreate != nil {
 		return entity.AdminCore{}, errors.New("gagal membuat data admin")
 	}
 
-	return result, nil
+	return dataAdmins, nil
 }
 
 func (as *AdminService) GetAll() ([]entity.AdminCore, error) {
 
-	result, err := as.AdminRepository.SelectAll()
-
+	dataAdmins, err := as.AdminRepository.SelectAll()
 	if err != nil {
 		return nil, errors.New("gagal mengambil semua data admin")
 	}
 
-	return result, nil
+	return dataAdmins, nil
 }
 
 func (as *AdminService) GetById(adminId string) (entity.AdminCore, error) {
 
-	result, err := as.AdminRepository.SelectById(adminId)
+	dataAdmins, err := as.AdminRepository.SelectById(adminId)
 	if err != nil {
 		return entity.AdminCore{}, errors.New("data admin tidak ada")
 	}
 
-	return result, nil
+	return dataAdmins, nil
 }
 
 func (as *AdminService) UpdateById(adminId string, data entity.AdminCore) error {
@@ -96,7 +95,7 @@ func (as *AdminService) FindByEmailANDPassword(data entity.AdminCore) (entity.Ad
 
 func (as *AdminService) GetAllUsers() ([]user.UsersCore, error) {
 
-	data, err := as.AdminRepository.SelectAllUsers()
+	data, err := as.AdminRepository.GetAllUsers()
 	if err != nil {
 		return nil, errors.New("")
 	}
@@ -106,7 +105,7 @@ func (as *AdminService) GetAllUsers() ([]user.UsersCore, error) {
 
 func (as *AdminService) GetByIdUsers(userId string) (user.UsersCore, error) {
 
-	data, err := as.AdminRepository.SelectByIdUsers(userId)
+	data, err := as.AdminRepository.GetByIdUser(userId)
 
 	if data == (user.UsersCore{}) {
 		return user.UsersCore{}, errors.New("null")

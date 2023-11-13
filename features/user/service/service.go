@@ -214,30 +214,30 @@ func (us *userService) SendOTP(emailUser string) error {
 }
 
 // VerifyOTP implements entity.UsersUsecaseInterface.
-func (us *userService) VerifyOTP(otp string) (string, error) {
-	dataUsers, err := us.userRepo.VerifyOTP(otp)
+func (us *userService) VerifyOTP(email, otp string) error {
+	dataUsers, err := us.userRepo.VerifyOTP(email, otp)
 	if err != nil {
-		return "", errors.New("otp tidak ditemukan")
+		return errors.New("otp tidak ditemukan")
 	}
 
 	if dataUsers.OtpExpiration <= time.Now().Unix() {
-		return "", errors.New("otp sudah kadaluwarsa")
+		return errors.New("otp sudah kadaluwarsa")
 	}
 
 	if dataUsers.Otp != otp {
-		return "", errors.New("otp tidak valid")
+		return errors.New("otp tidak valid")
 	}
 
-	token, err := jwt.CreateTokenVerifikasi(otp)
-	if err != nil {
-		return "", errors.New("token gagal dibuat")
+	_, errReset := us.userRepo.ResetOTP(otp)
+	if errReset != nil {
+		return errors.New("gagal mengatur ulang OTP")
 	}
 
-	return token, nil
+	return nil
 }
 
 // ForgetPassword implements entity.UsersUsecaseInterface.
-func (us *userService) NewPassword(otp string, data entity.UsersCore) error {
+func (us *userService) NewPassword(email string, data entity.UsersCore) error {
 	if data.Password != data.ConfirmPassword {
 		return errors.New("password tidak sama")
 	}
@@ -248,14 +248,9 @@ func (us *userService) NewPassword(otp string, data entity.UsersCore) error {
 	}
 	data.Password = HashPassword
 
-	_, errNew := us.userRepo.NewPassword(otp, data)
+	_, errNew := us.userRepo.NewPassword(email, data)
 	if errNew != nil {
-		return errors.New("otp tidak ditemukan")
-	}
-
-	_, errReset := us.userRepo.ResetOTP(otp)
-	if errReset != nil {
-		return errors.New("gagal mengatur ulang OTP")
+		return errors.New("email tidak ditemukan")
 	}
 
 	return nil

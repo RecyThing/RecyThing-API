@@ -159,7 +159,7 @@ func (uh *userHandler) ForgotPassword(e echo.Context) error {
 
 	err := uh.userUseCase.SendOTP(userCore.Email)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mengirim OTP"))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mengirim otp"))
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("otp berhasil dikirim"))
@@ -175,14 +175,12 @@ func (uh *userHandler) VerifyOTP(e echo.Context) error {
 
 	request := request.UsersRequestVerifyOTPToUsersCore(input)
 
-	token, err := uh.userUseCase.VerifyOTP(request.Otp)
+	err := uh.userUseCase.VerifyOTP(request.Email, request.Otp)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal verifikasi OTP " + err.Error()))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal verifikasi " + err.Error()))
 	}
 
-	jwt.SetTokenCookie(e, token)
-
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("verifikasi OTP berhasil", token))
+	return e.JSON(http.StatusOK, helper.SuccessResponse("verifikasi otp berhasil"))
 }
 
 
@@ -193,14 +191,9 @@ func (uh *userHandler) NewPassword(e echo.Context) error {
 	if errBind != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
-
-	otp, errExtract := jwt.ExtractTokenVerifikasi(e)
-	if errExtract != nil {
-		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(errExtract.Error()))
-	}
 	
 	request := request.UsersRequestNewPasswordToUsersCore(input)
-	err := uh.userUseCase.NewPassword(otp, request)
+	err := uh.userUseCase.NewPassword(request.Email, request)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}

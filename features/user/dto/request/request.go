@@ -21,6 +21,7 @@ type UserUpdate struct {
 }
 
 type UserNewPassword struct {
+	Email           string `json:"email" valid:"required~harap lengkapi email,email~format email tidak valid"`
 	Password        string `json:"password" valid:"required~harap lengkapi password,minstringlength(8)~password minimal 8 karakter"`
 	ConfirmPassword string `json:"confirm_password" valid:"required~harap konfirmasi password"`
 }
@@ -35,7 +36,6 @@ type UserSendOTP struct {
 }
 
 type UserVerifyOTP struct {
-	Otp string `json:"otp" valid:"required~kode otp wajib di isi!"`
+	Email string `json:"email" valid:"required~harap lengkapi email,email~format email tidak valid"`
+	Otp   string `json:"otp" valid:"required~kode otp wajib di isi!"`
 }
-
-

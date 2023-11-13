@@ -4,6 +4,7 @@ import (
 	"errors"
 	"recything/features/user/entity"
 	"recything/features/user/model"
+	"recything/utils/constanta"
 
 	"gorm.io/gorm"
 )
@@ -39,6 +40,10 @@ func (ur *userRepository) GetById(id string) (entity.UsersCore, error) {
 		return entity.UsersCore{}, tx.Error
 	}
 
+	if tx.RowsAffected == 0 {
+		return entity.UsersCore{}, errors.New(constanta.ERROR_DATA_ID)
+	}
+
 	dataResponse := entity.UsersModelToUsersCore(dataUsers)
 	return dataResponse, nil
 }
@@ -50,6 +55,10 @@ func (ur *userRepository) FindByEmail(email string) (entity.UsersCore, error) {
 
 	if tx.Error != nil {
 		return entity.UsersCore{}, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return entity.UsersCore{}, errors.New(constanta.ERROR_DATA_EMAIL)
 	}
 
 	dataResponse := entity.UsersModelToUsersCore(dataUsers)
@@ -66,6 +75,10 @@ func (ur *userRepository) UpdateById(id string, data entity.UsersCore) error {
 		return tx.Error
 	}
 
+	if tx.RowsAffected == 0 {
+		return errors.New(constanta.ERROR_DATA_ID)
+	}
+
 	return nil
 }
 
@@ -77,6 +90,10 @@ func (ur *userRepository) UpdatePassword(id string, data entity.UsersCore) error
 	tx := ur.db.Where("id = ?", id).Updates(&request)
 	if tx.Error != nil {
 		return tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return errors.New(constanta.ERROR_DATA_ID)
 	}
 
 	return nil
@@ -91,6 +108,10 @@ func (ur *userRepository) GetByVerificationToken(token string) (entity.UsersCore
 		return entity.UsersCore{}, tx.Error
 	}
 
+	if tx.RowsAffected == 0 {
+		return entity.UsersCore{}, errors.New("token tidak ditemukan")
+	}
+
 	userToken := entity.UsersModelToUsersCore(dataUsers)
 	return userToken, nil
 }
@@ -102,6 +123,10 @@ func (ur *userRepository) UpdateIsVerified(id string, isVerified bool) error {
 	tx := ur.db.First(&dataUser, id)
 	if tx.Error != nil {
 		return tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return errors.New(constanta.ERROR_DATA_ID)
 	}
 
 	dataUser.IsVerified = isVerified
@@ -120,10 +145,11 @@ func (ur *userRepository) SendOTP(emailUser string, otp string, expiry int64) (d
 
 	tx := ur.db.Where("email = ?", emailUser).First(&dataUsers)
 	if tx.Error != nil {
-		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return entity.UsersCore{}, errors.New("pengguna tidak ditemukan")
-		}
 		return entity.UsersCore{}, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return entity.UsersCore{}, errors.New(constanta.ERROR_DATA_EMAIL)
 	}
 
 	dataUsers.Otp = otp
@@ -140,12 +166,16 @@ func (ur *userRepository) SendOTP(emailUser string, otp string, expiry int64) (d
 }
 
 // VerifyOTP implements entity.UsersRepositoryInterface.
-func (ur *userRepository) VerifyOTP(otp string) (entity.UsersCore, error) {
+func (ur *userRepository) VerifyOTP(email, otp string) (entity.UsersCore, error) {
 	dataUsers := model.Users{}
 
-	tx := ur.db.Where("otp = ?", otp).First(&dataUsers)
+	tx := ur.db.Where("otp = ? AND email = ?", otp, email).First(&dataUsers)
 	if tx.Error != nil {
 		return entity.UsersCore{}, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return entity.UsersCore{}, errors.New("email atau otp tidak ditemukan")
 	}
 
 	dataResponse := entity.UsersModelToUsersCore(dataUsers)
@@ -161,6 +191,10 @@ func (ur *userRepository) ResetOTP(otp string) (data entity.UsersCore, err error
 		return entity.UsersCore{}, tx.Error
 	}
 
+	if tx.RowsAffected == 0 {
+		return entity.UsersCore{}, errors.New("otp tidak ditemukan")
+	}
+
 	dataUsers.Otp = ""
 	dataUsers.OtpExpiration = 0
 
@@ -174,12 +208,16 @@ func (ur *userRepository) ResetOTP(otp string) (data entity.UsersCore, err error
 }
 
 // ForgetPassword implements entity.UsersRepositoryInterface.
-func (ur *userRepository) NewPassword(otp string, data entity.UsersCore) (entity.UsersCore, error) {
+func (ur *userRepository) NewPassword(email string, data entity.UsersCore) (entity.UsersCore, error) {
 	dataUsers := model.Users{}
 
-	tx := ur.db.Where("otp = ?", otp).First(&dataUsers)
+	tx := ur.db.Where("email = ?", email).First(&dataUsers)
 	if tx.Error != nil {
 		return entity.UsersCore{}, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return entity.UsersCore{}, errors.New(constanta.ERROR_DATA_EMAIL)
 	}
 
 	errUpdate := ur.db.Model(&dataUsers).Updates(entity.UsersCoreToUsersModel(data))

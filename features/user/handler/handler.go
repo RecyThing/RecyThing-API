@@ -5,6 +5,7 @@ import (
 	"recything/features/user/dto/request"
 	"recything/features/user/dto/response"
 	"recything/features/user/entity"
+	"recything/utils/constanta"
 	"recything/utils/email"
 	"recything/utils/helper"
 	"recything/utils/jwt"
@@ -56,7 +57,7 @@ func (uh *userHandler) Login(e echo.Context) error {
 	jwt.SetTokenCookie(e, token)
 	response := response.UsersCoreToLoginResponse(dataUser)
 
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("login berhasil", response))
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_LOGIN, response))
 }
 
 
@@ -135,14 +136,14 @@ func (uh *userHandler) VerifyAccount(e echo.Context) error {
 	if alreadyVerified {
 		emailDone, err := email.ParseTemplate("verification_active.html", nil)
 		if err != nil {
-			return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal menguraikan template"))
+			return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(constanta.ERROR_TEMPLATE))
 		}
 		return e.HTML(http.StatusOK, emailDone)
 	}
 
 	emailContent, err := email.ParseTemplate("success_verification.html", nil)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal menguraikan template"))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(constanta.ERROR_TEMPLATE))
 	}
 	return e.HTML(http.StatusOK, emailContent)
 }
@@ -159,7 +160,7 @@ func (uh *userHandler) ForgotPassword(e echo.Context) error {
 
 	err := uh.userUseCase.SendOTP(userCore.Email)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mengirim OTP"))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mengirim otp"))
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("otp berhasil dikirim"))
@@ -175,14 +176,12 @@ func (uh *userHandler) VerifyOTP(e echo.Context) error {
 
 	request := request.UsersRequestVerifyOTPToUsersCore(input)
 
-	token, err := uh.userUseCase.VerifyOTP(request.Otp)
+	err := uh.userUseCase.VerifyOTP(request.Email, request.Otp)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal verifikasi OTP " + err.Error()))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal verifikasi " + err.Error()))
 	}
 
-	jwt.SetTokenCookie(e, token)
-
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("verifikasi OTP berhasil", token))
+	return e.JSON(http.StatusOK, helper.SuccessResponse("verifikasi otp berhasil"))
 }
 
 
@@ -193,14 +192,9 @@ func (uh *userHandler) NewPassword(e echo.Context) error {
 	if errBind != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
-
-	otp, errExtract := jwt.ExtractTokenVerifikasi(e)
-	if errExtract != nil {
-		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(errExtract.Error()))
-	}
 	
 	request := request.UsersRequestNewPasswordToUsersCore(input)
-	err := uh.userUseCase.NewPassword(otp, request)
+	err := uh.userUseCase.NewPassword(request.Email, request)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}

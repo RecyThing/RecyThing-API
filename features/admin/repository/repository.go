@@ -28,9 +28,9 @@ func NewAdminRepository(db *gorm.DB) entity.AdminRepositoryInterface {
 func (ar *AdminRepository) Create(data entity.AdminCore) (entity.AdminCore, error) {
 	dataAdmins := entity.AdminCoreToAdminModel(data)
 
-	err := ar.db.Create(&dataAdmins).Error
-	if err != nil {
-		return entity.AdminCore{}, err
+	tx := ar.db.Create(&dataAdmins)
+	if tx.Error != nil {
+		return entity.AdminCore{}, tx.Error
 	}
 
 	dataResponse := entity.AdminModelToAdminCore(dataAdmins)
@@ -40,9 +40,9 @@ func (ar *AdminRepository) Create(data entity.AdminCore) (entity.AdminCore, erro
 func (ar *AdminRepository) SelectAll() ([]entity.AdminCore, error) {
 	dataAdmins := []model.Admin{}
 
-	err := ar.db.Where("role = ? ", helper.ADMIN).Find(&dataAdmins).Error
-	if err != nil {
-		return nil, err
+	tx := ar.db.Where("role = ? ", helper.ADMIN).Find(&dataAdmins)
+	if tx.Error != nil {
+		return nil, tx.Error
 	}
 
 	dataResponse := entity.ListAdminModelToAdminCore(dataAdmins)
@@ -52,9 +52,9 @@ func (ar *AdminRepository) SelectAll() ([]entity.AdminCore, error) {
 func (ar *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) {
 	dataAdmins := model.Admin{}
 
-	err := ar.db.Where("id = ? AND role = ?", adminId, helper.ADMIN).First(&dataAdmins).Error
-	if err != nil {
-		return entity.AdminCore{}, err
+	tx := ar.db.Where("id = ? AND role = ?", adminId, helper.ADMIN).First(&dataAdmins)
+	if tx.Error != nil {
+		return entity.AdminCore{}, tx.Error
 	}
 
 	dataResponse := entity.AdminModelToAdminCore(dataAdmins)
@@ -64,9 +64,9 @@ func (ar *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) 
 func (ar *AdminRepository) Update(adminId string, data entity.AdminCore) error {
 	dataAdmins := entity.AdminCoreToAdminModel(data)
 
-	err := ar.db.Where("id = ?", adminId).Updates(&dataAdmins).Error
-	if err != nil {
-		return err
+	tx := ar.db.Where("id = ?", adminId).Updates(&dataAdmins)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
 	return nil
@@ -80,9 +80,9 @@ func (ar *AdminRepository) Delete(adminId string) error {
 		return errors.New("can`t delete")
 	}
 
-	err := ar.db.Where("id = ? AND role = ?", adminId, helper.ADMIN).Delete(&dataAdmins).Error
-	if err != nil {
-		return err
+	tx := ar.db.Where("id = ? AND role = ?", adminId, helper.ADMIN).Delete(&dataAdmins)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
 	return nil
@@ -91,9 +91,9 @@ func (ar *AdminRepository) Delete(adminId string) error {
 func (ar *AdminRepository) FindByEmail(email string) error {
 	dataAdmins := model.Admin{}
 
-	err := ar.db.Where("email = ?", email).First(&dataAdmins).Error
-	if err != nil {
-		return err
+	tx := ar.db.Where("email = ?", email).First(&dataAdmins)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
 	return nil
@@ -102,9 +102,9 @@ func (ar *AdminRepository) FindByEmail(email string) error {
 func (ar *AdminRepository) FindByEmailANDPassword(data entity.AdminCore) (entity.AdminCore, error) {
 	dataAdmins := model.Admin{}
 
-	err := ar.db.Where("email = ?", data.Email).First(&dataAdmins).Error
-	if err != nil {
-		return entity.AdminCore{}, err
+	tx := ar.db.Where("email = ?", data.Email).First(&dataAdmins)
+	if tx.Error != nil {
+		return entity.AdminCore{}, tx.Error
 	}
 
 	if comparePass := helper.CompareHash(dataAdmins.Password, data.Password); !comparePass {
@@ -119,9 +119,9 @@ func (ar *AdminRepository) FindByEmailANDPassword(data entity.AdminCore) (entity
 func (ar *AdminRepository) GetAllUsers() ([]user.UsersCore, error) {
 	dataUsers := []userModel.Users{}
 
-	err := ar.db.Find(&dataUsers).Error
-	if err != nil {
-		return nil, err
+	tx := ar.db.Find(&dataUsers)
+	if tx.Error != nil {
+		return nil, tx.Error
 	}
 
 	dataResponse := user.ListUserModelToUserCore(dataUsers)
@@ -131,9 +131,9 @@ func (ar *AdminRepository) GetAllUsers() ([]user.UsersCore, error) {
 func (ar *AdminRepository) GetByIdUser(userId string) (user.UsersCore, error) {
 	dataUsers := userModel.Users{}
 
-	err := ar.db.Where("id = ?", userId).Find(&dataUsers).Error
-	if err != nil {
-		return user.UsersCore{}, err
+	tx := ar.db.Where("id = ?", userId).Find(&dataUsers)
+	if tx.Error != nil {
+		return user.UsersCore{}, tx.Error
 	}
 
 	dataResponse := user.UsersModelToUsersCore(dataUsers)
@@ -143,9 +143,9 @@ func (ar *AdminRepository) GetByIdUser(userId string) (user.UsersCore, error) {
 func (ar *AdminRepository) DeleteUsers(userId string) error {
 	dataUsers := userModel.Users{}
 
-	err := ar.db.Where("id = ?", userId).Delete(&dataUsers).Error
-	if err != nil {
-		return err
+	tx := ar.db.Where("id = ?", userId).Delete(&dataUsers)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
 	return nil
@@ -162,7 +162,7 @@ func (ar *AdminRepository) GetByStatusReport(status string) ([]report.ReportCore
 		result = ar.db.Find(&dataReports)
 	}
 
-	if result.Error != nil {
+	if result != nil {
 		return nil, result.Error
 	}
 
@@ -174,18 +174,18 @@ func (ar *AdminRepository) GetByStatusReport(status string) ([]report.ReportCore
 func (ar *AdminRepository) UpdateStatusReport(id ,status string) (report.ReportCore, error) {
 	dataReports := reportModel.Report{}
 
-	errData := ar.db.Where("id = ?", id).First(&dataReports).Error
+	errData := ar.db.Where("id = ?", id).First(&dataReports)
 	if errData != nil {
-		if errors.Is(errData, gorm.ErrRecordNotFound) {
+		if errors.Is(errData.Error, gorm.ErrRecordNotFound) {
 			return report.ReportCore{}, errors.New("data tidak ditemukan")
 		}
-		return report.ReportCore{}, errData
+		return report.ReportCore{}, errData.Error
 	}
 
 	dataReports.Status = status
-	err := ar.db.Save(&dataReports).Error
-	if err != nil {
-		return report.ReportCore{}, err
+	tx := ar.db.Save(&dataReports)
+	if tx.Error != nil {
+		return report.ReportCore{}, tx.Error
 	}
 
 	dataResponse := report.ReportModelToReportCore(dataReports)

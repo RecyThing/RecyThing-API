@@ -4,6 +4,7 @@ import "recything/features/user/entity"
 
 func UsersCoreToLoginResponse(data entity.UsersCore) UserLoginResponse {
 	return UserLoginResponse{
+		Id:       data.Id,
 		Fullname: data.Fullname,
 		Email:    data.Email,
 	}
@@ -11,11 +12,12 @@ func UsersCoreToLoginResponse(data entity.UsersCore) UserLoginResponse {
 
 func UsersCoreToResponseProfile(data entity.UsersCore) UserResponseProfile {
 	return UserResponseProfile{
-		Email:       data.Email,
+		Id:          data.Id,
 		Fullname:    data.Fullname,
+		Email:       data.Email,
+		DateOfBirth: data.DateOfBirth,
 		Phone:       data.Phone,
 		Address:     data.Address,
-		DateOfBirth: data.DateOfBirth,
 		Purpose:     data.Purpose,
 		Point:       data.Point,
 	}

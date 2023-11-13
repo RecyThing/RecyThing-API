@@ -43,7 +43,6 @@ func (ah *AdminHandler) Create(e echo.Context) error {
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
-	
 
 	request := request.AdminRequestToAdminCore(input)
 
@@ -59,9 +58,9 @@ func (ah *AdminHandler) Create(e echo.Context) error {
 
 // login untuk admin dan juga super admin
 func (ah *AdminHandler) Login(e echo.Context) error {
-	input := request.RequestLogin{}
+	input := request.AdminLogin{}
 
-	err := helper.BindFormData(e, &input)
+	err := helper.DecodeJSON(e, &input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}

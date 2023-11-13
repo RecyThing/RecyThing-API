@@ -16,7 +16,7 @@ func GenerateUniqueToken() string {
 }
 
 func GenerateOTP(length int) (string, error) {
-	const charset = "1234567890"
+	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	b := make([]byte, length)
 	for i := 0; i < length; i++ {
 		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
@@ -26,4 +26,13 @@ func GenerateOTP(length int) (string, error) {
 		b[i] = charset[num.Int64()]
 	}
 	return string(b), nil
+}
+
+func ContainsLowerCase(s string) bool {
+	for _, char := range s {
+		if char >= 'a' && char <= 'z' {
+			return true
+		}
+	}
+	return false
 }

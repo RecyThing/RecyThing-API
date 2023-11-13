@@ -1,16 +1,18 @@
 package response
 
 type UserLoginResponse struct {
+	Id       string `json:"id"`
 	Fullname string `json:"fullname"`
 	Email    string `json:"email"`
 }
 
 type UserResponseProfile struct {
-	Email       string `json:"email"`
+	Id          string `json:"id"`
 	Fullname    string `json:"fullname"`
+	Email       string `json:"email"`
+	DateOfBirth string `json:"date_of_birth"`
 	Phone       string `json:"phone"`
 	Address     string `json:"address"`
-	DateOfBirth string `json:"date_of_birth"`
 	Purpose     string `json:"purpose"`
 	Point       int    `json:"point"`
 }

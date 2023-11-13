@@ -8,9 +8,9 @@ import (
 
 type UsersCore struct {
 	Id                string
-	Email             string `validate:"required,email"`
-	Password          string `validate:"required,min=8"`
-	ConfirmPassword   string `validate:"required,eqfield=Password"`
+	Email             string 
+	Password          string 
+	ConfirmPassword   string 
 	Fullname          string
 	Phone             string
 	Address           string
@@ -21,7 +21,7 @@ type UsersCore struct {
 	VerificationToken string
 	Otp               string
 	NewPassword       string
-	OtpExpiration     time.Time
+	OtpExpiration     int64
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 	DeleteAt          gorm.DeletedAt

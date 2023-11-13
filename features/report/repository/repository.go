@@ -12,14 +12,18 @@ type reportRepository struct {
 	db *gorm.DB
 }
 
+func NewReportRepository(db *gorm.DB) entity.ReportRepositoryInterface {
+	return &reportRepository{db: db}
+}
+
 // ReadAllReport implements entity.ReportRepositoryInterface.
 func (report *reportRepository) ReadAllReport(idUser string) ([]entity.ReportCore, error) {
-	var dataReport []model.Report
+	dataReport := []model.Report {}
 
-	errData := report.db.Where("users_id = ?", idUser).Find(&dataReport).Error
-	if errData != nil {
+	tx := report.db.Where("users_id = ?", idUser).Find(&dataReport)
+	if tx.Error != nil {
 
-		return nil, errData
+		return nil, tx.Error
 	}
 
 	mapData := make([]entity.ReportCore, len(dataReport))
@@ -30,9 +34,6 @@ func (report *reportRepository) ReadAllReport(idUser string) ([]entity.ReportCor
 	return mapData, nil
 }
 
-func NewReportRepository(db *gorm.DB) entity.ReportRepositoryInterface {
-	return &reportRepository{db: db}
-}
 
 // UploadProof implements entity.ReportRepositoryInterface.
 func (*reportRepository) UploadProof(id string, data entity.ReportCore, image *multipart.FileHeader) (purchases entity.ReportCore, err error) {
@@ -41,20 +42,24 @@ func (*reportRepository) UploadProof(id string, data entity.ReportCore, image *m
 
 func (report *reportRepository) Insert(reportInput entity.ReportCore) (entity.ReportCore, error) {
 	dataReport := entity.ReportCoreToReportModel(reportInput)
-	if err := report.db.Create(&dataReport).Error; err != nil {
-		return entity.ReportCore{}, err
+
+	tx := report.db.Create(&dataReport)
+	if tx.Error != nil {
+		return entity.ReportCore{}, tx.Error
 	}
 
-	ReportCreated := entity.ReportModelToReportCore(dataReport)
-	return ReportCreated, nil
+	dataResponse := entity.ReportModelToReportCore(dataReport)
+	return dataResponse, nil
 }
 
 func (report *reportRepository) SelectById(iDReport string) (entity.ReportCore, error) {
-	reportModel := model.Report{}
-	err := report.db.Where("id = ?", iDReport).Preload("Images").First(&reportModel).Error
-	if err != nil {
-		return entity.ReportCore{}, err
+	dataReports := model.Report{}
+
+	tx := report.db.Where("id = ?", iDReport).Preload("Images").First(&dataReports)
+	if tx.Error != nil {
+		return entity.ReportCore{}, tx.Error
 	}
-	dataReport := entity.ReportModelToReportCore(reportModel)
-	return dataReport, nil
+
+	dataResponse := entity.ReportModelToReportCore(dataReports)
+	return dataResponse, nil
 }

@@ -4,9 +4,7 @@ import (
 	"errors"
 	"recything/features/user/entity"
 	"recything/features/user/model"
-	"time"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -20,91 +18,11 @@ func NewUserRepository(db *gorm.DB) entity.UsersRepositoryInterface {
 	}
 }
 
-// ForgetPassword implements entity.UsersRepositoryInterface.
-func (ur *userRepository) UpdatePassword(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
-	var usersData model.Users
-
-	errData := ur.db.Where("id = ?", id).First(&usersData).Error
-	if errData != nil {
-		if errors.Is(errData, gorm.ErrRecordNotFound) {
-			return entity.UsersCore{}, errors.New("pengguna tidak ditemukan")
-		}
-		return entity.UsersCore{}, errData
-	}
-
-	errUpdate := ur.db.Model(&usersData).Updates(entity.UsersCoreToUsersModel(updated))
-	if errUpdate != nil {
-		return entity.UsersCore{}, errUpdate.Error
-	}
-	data = entity.UsersModelToUsersCore(usersData)
-
-	return data, nil
-}
-
-// ForgetPassword implements entity.UsersRepositoryInterface.
-func (ur *userRepository) ForgetPassword(otp string, updated entity.UsersCore) (data entity.UsersCore, err error) {
-	var usersData model.Users
-
-    errData := ur.db.Where("otp = ?", otp).First(&usersData).Error
-    if errData != nil {
-        if errors.Is(errData, gorm.ErrRecordNotFound) {
-            return entity.UsersCore{}, errors.New("otp tidak ditemukan")
-        }
-        return entity.UsersCore{}, errData
-    }
-
-    errUpdate := ur.db.Model(&usersData).Updates(entity.UsersCoreToUsersModel(updated))
-	if errUpdate != nil {
-		return entity.UsersCore{}, errUpdate.Error
-	}
-	data = entity.UsersModelToUsersCore(usersData)
-
-	return data, nil
-}
-
-// GetById implements entity.UsersRepositoryInterface.
-func (ur *userRepository) GetById(id string) (entity.UsersCore, error) {
-	var userData model.Users
-
-	result := ur.db.Where("id = ?", id).First(&userData)
-	if result.Error != nil {
-		return entity.UsersCore{}, result.Error
-	}
-
-	var userById = entity.UsersModelToUsersCore(userData)
-	return userById, nil
-}
-
-// GetByVerificationToken implements entity.UsersRepositoryInterface.
-func (ur *userRepository) GetByVerificationToken(token string) (entity.UsersCore, error) {
-	var userData model.Users
-	result := ur.db.Where("verification_token = ?", token).First(&userData)
-	if result.Error != nil {
-		return entity.UsersCore{}, result.Error
-	}
-
-	var userToken = entity.UsersModelToUsersCore(userData)
-	return userToken, nil
-}
-
-// Login implements entity.UsersRepositoryInterface.
-func (ur *userRepository) Login(email string, password string) (entity.UsersCore, error) {
-	var data model.Users
-
-	tx := ur.db.Where("email = ?", email).First(&data)
-	if tx.Error != nil {
-		return entity.UsersCore{}, tx.Error
-	}
-
-	dataMain := entity.UsersModelToUsersCore(data)
-	return dataMain, nil
-}
-
 // Register implements entity.UsersRepositoryInterface.
 func (ur *userRepository) Register(data entity.UsersCore) error {
-	dataInput := entity.UsersCoreToUsersModel(data)
+	request := entity.UsersCoreToUsersModel(data)
 
-	tx := ur.db.Create(&dataInput)
+	tx := ur.db.Create(&request)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -112,117 +30,164 @@ func (ur *userRepository) Register(data entity.UsersCore) error {
 	return nil
 }
 
+// GetById implements entity.UsersRepositoryInterface.
+func (ur *userRepository) GetById(id string) (entity.UsersCore, error) {
+	dataUsers := model.Users{}
+
+	tx := ur.db.Where("id = ?", id).First(&dataUsers)
+	if tx.Error != nil {
+		return entity.UsersCore{}, tx.Error
+	}
+
+	dataResponse := entity.UsersModelToUsersCore(dataUsers)
+	return dataResponse, nil
+}
+
+func (ur *userRepository) FindByEmail(email string) (entity.UsersCore, error) {
+	dataUsers := model.Users{}
+
+	tx := ur.db.Where("email = ?", email).First(&dataUsers)
+
+	if tx.Error != nil {
+		return entity.UsersCore{}, tx.Error
+	}
+
+	dataResponse := entity.UsersModelToUsersCore(dataUsers)
+	return dataResponse, nil
+}
+
 // UpdateById implements entity.UsersRepositoryInterface.
-func (ur *userRepository) UpdateById(id string, updated entity.UsersCore) (data entity.UsersCore, err error) {
-	var usersData model.Users
+func (ur *userRepository) UpdateById(id string, data entity.UsersCore) error {
 
-	errData := ur.db.Where("id = ?", id).First(&usersData).Error
-	if errData != nil {
-		if errors.Is(errData, gorm.ErrRecordNotFound) {
-			return entity.UsersCore{}, errors.New("pengguna tidak ditemukan")
-		}
-		return entity.UsersCore{}, errData
+	request := entity.UsersCoreToUsersModel(data)
+
+	tx := ur.db.Where("id = ?", id).Updates(&request)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
-	errUpdate := ur.db.Model(&usersData).Updates(entity.UsersCoreToUsersModel(updated))
-	if errUpdate != nil {
-		return entity.UsersCore{}, errUpdate.Error
-	}
-	data = entity.UsersModelToUsersCore(usersData)
+	return nil
+}
 
-	return data, nil
+// ForgetPassword implements entity.UsersRepositoryInterface.
+func (ur *userRepository) UpdatePassword(id string, data entity.UsersCore) error {
+
+	request := entity.UsersCoreToUsersModel(data)
+
+	tx := ur.db.Where("id = ?", id).Updates(&request)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	return nil
+}
+
+// GetByVerificationToken implements entity.UsersRepositoryInterface.
+func (ur *userRepository) GetByVerificationToken(token string) (entity.UsersCore, error) {
+	dataUsers := model.Users{}
+
+	tx := ur.db.Where("verification_token = ?", token).First(&dataUsers)
+	if tx.Error != nil {
+		return entity.UsersCore{}, tx.Error
+	}
+
+	userToken := entity.UsersModelToUsersCore(dataUsers)
+	return userToken, nil
 }
 
 // UpdateIsVerified implements entity.UsersRepositoryInterface.
 func (ur *userRepository) UpdateIsVerified(id string, isVerified bool) error {
-	uuidID, err := uuid.Parse(id)
-	if err != nil {
-		return err
+	dataUser := model.Users{}
+
+	tx := ur.db.First(&dataUser, id)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
-	var user model.Users
-	result := ur.db.First(&user, uuidID)
-	if result.Error != nil {
-		return result.Error
+	dataUser.IsVerified = isVerified
+
+	errSave := ur.db.Save(&dataUser).Error
+	if errSave != nil {
+		return errSave
 	}
 
-	user.IsVerified = isVerified
-	result = ur.db.Save(&user)
-
-	return result.Error
-}
-
-// EmailExists implements entity.UsersRepositoryInterface.
-func (ur *userRepository) EmailExists(email string) (bool, error) {
-	var user model.Users
-	result := ur.db.Select("id").Where("email = ?", email).First(&user)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return false, nil
-	}
-	if result.Error != nil {
-		return false, result.Error
-	}
-	return true, nil
+	return nil
 }
 
 // SendOTP implements entity.UsersRepositoryInterface.
-func (ur *userRepository) SendOTP(emailUser string, otp string, expiry time.Time) (data entity.UsersCore, err error) {
-	var usersData model.Users
+func (ur *userRepository) SendOTP(emailUser string, otp string, expiry int64) (data entity.UsersCore, err error) {
+	dataUsers := model.Users{}
 
-	errData := ur.db.Where("email = ?", emailUser).First(&usersData).Error
-	if errData != nil {
-		if errors.Is(errData, gorm.ErrRecordNotFound) {
-			return entity.UsersCore{}, errors.New("pengguna tidak ditemukan")
-		}
-		return entity.UsersCore{}, errData
-	}
-
-	usersData.Otp = otp
-	usersData.OtpExpiration = expiry
-
-	errUpdate := ur.db.Save(&usersData).Error
-	if errUpdate != nil {
-		return entity.UsersCore{}, errUpdate
-	}
-	data = entity.UsersModelToUsersCore(usersData)
-
-	return data, nil
-}
-
-// VerifyOTP implements entity.UsersRepositoryInterface.
-func (ur *userRepository) VerifyOTP(otp string) (entity.UsersCore, error) {
-	var user model.Users
-	tx := ur.db.Where("otp = ?", otp).First(&user)
+	tx := ur.db.Where("email = ?", emailUser).First(&dataUsers)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return entity.UsersCore{}, errors.New("otp tidak ditemukan")
+			return entity.UsersCore{}, errors.New("pengguna tidak ditemukan")
 		}
 		return entity.UsersCore{}, tx.Error
 	}
 
-	dataMain := entity.UsersModelToUsersCore(user)
-	return dataMain, nil
-}
+	dataUsers.Otp = otp
+	dataUsers.OtpExpiration = expiry
 
-// ResetOTP implements entity.UsersRepositoryInterface.
-func (ur *userRepository) ResetOTP(otp string) (data entity.UsersCore, err error) {
-	var usersData model.Users
-	errData := ur.db.Where("otp = ?", otp).First(&usersData).Error
-	if errData != nil {
-		if errors.Is(errData, gorm.ErrRecordNotFound) {
-			return entity.UsersCore{}, errData
-		}
-		return entity.UsersCore{}, errData
-	}
-
-	usersData.Otp = ""
-	usersData.OtpExpiration = time.Time{}
-
-	errUpdate := ur.db.Save(&usersData).Error
+	errUpdate := ur.db.Save(&dataUsers).Error
 	if errUpdate != nil {
 		return entity.UsersCore{}, errUpdate
 	}
 
-	data = entity.UsersModelToUsersCore(usersData)
-	return data, nil
+	dataResponse := entity.UsersModelToUsersCore(dataUsers)
+
+	return dataResponse, nil
+}
+
+// VerifyOTP implements entity.UsersRepositoryInterface.
+func (ur *userRepository) VerifyOTP(otp string) (entity.UsersCore, error) {
+	dataUsers := model.Users{}
+
+	tx := ur.db.Where("otp = ?", otp).First(&dataUsers)
+	if tx.Error != nil {
+		return entity.UsersCore{}, tx.Error
+	}
+
+	dataResponse := entity.UsersModelToUsersCore(dataUsers)
+	return dataResponse, nil
+}
+
+// ResetOTP implements entity.UsersRepositoryInterface.
+func (ur *userRepository) ResetOTP(otp string) (data entity.UsersCore, err error) {
+	dataUsers := model.Users{}
+
+	tx := ur.db.Where("otp = ?", otp).First(&dataUsers)
+	if tx.Error != nil {
+		return entity.UsersCore{}, tx.Error
+	}
+
+	dataUsers.Otp = ""
+	dataUsers.OtpExpiration = 0
+
+	errUpdate := ur.db.Save(&dataUsers).Error
+	if errUpdate != nil {
+		return entity.UsersCore{}, errUpdate
+	}
+
+	dataResponse := entity.UsersModelToUsersCore(dataUsers)
+	return dataResponse, nil
+}
+
+// ForgetPassword implements entity.UsersRepositoryInterface.
+func (ur *userRepository) NewPassword(otp string, data entity.UsersCore) (entity.UsersCore, error) {
+	dataUsers := model.Users{}
+
+	tx := ur.db.Where("otp = ?", otp).First(&dataUsers)
+	if tx.Error != nil {
+		return entity.UsersCore{}, tx.Error
+	}
+
+	errUpdate := ur.db.Model(&dataUsers).Updates(entity.UsersCoreToUsersModel(data))
+	if errUpdate != nil {
+		return entity.UsersCore{}, errUpdate.Error
+	}
+
+	dataResponse := entity.UsersModelToUsersCore(dataUsers)
+
+	return dataResponse, nil
 }

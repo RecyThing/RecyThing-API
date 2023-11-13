@@ -11,7 +11,7 @@ func AdminRequestToAdminCore(data AdminRequest) entity.AdminCore {
 	}
 }
 
-func RequestLoginToAdminCore(data RequestLogin) entity.AdminCore {
+func RequestLoginToAdminCore(data AdminLogin) entity.AdminCore {
 	return entity.AdminCore{
 		Email:    data.Email,
 		Password: data.Password,

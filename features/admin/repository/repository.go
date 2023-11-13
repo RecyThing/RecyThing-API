@@ -4,8 +4,10 @@ import (
 	"errors"
 	"recything/features/admin/entity"
 	"recything/features/admin/model"
+
 	report "recything/features/report/entity"
 	reportModel "recything/features/report/model"
+
 	user "recything/features/user/entity"
 	userModel "recything/features/user/model"
 	"recything/utils/helper"
@@ -23,46 +25,46 @@ func NewAdminRepository(db *gorm.DB) entity.AdminRepositoryInterface {
 	}
 }
 
-func (ar *AdminRepository) Insert(data entity.AdminCore) (entity.AdminCore, error) {
-	dataCreate := entity.AdminCoreToAdminModel(data)
+func (ar *AdminRepository) Create(data entity.AdminCore) (entity.AdminCore, error) {
+	dataAdmins := entity.AdminCoreToAdminModel(data)
 
-	tx := ar.db.Create(&dataCreate)
+	tx := ar.db.Create(&dataAdmins)
 	if tx.Error != nil {
 		return entity.AdminCore{}, tx.Error
 	}
 
-	adminData := entity.AdminModelToAdminCore(dataCreate)
-	return adminData, nil
+	dataResponse := entity.AdminModelToAdminCore(dataAdmins)
+	return dataResponse, nil
 }
 
 func (ar *AdminRepository) SelectAll() ([]entity.AdminCore, error) {
-	dataAdmin := []model.Admin{}
+	dataAdmins := []model.Admin{}
 
-	tx := ar.db.Where("role = ? ", helper.ADMIN).Find(&dataAdmin)
+	tx := ar.db.Where("role = ? ", helper.ADMIN).Find(&dataAdmins)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
 
-	result := entity.ListAdminModelToAdminCore(dataAdmin)
-	return result, nil
+	dataResponse := entity.ListAdminModelToAdminCore(dataAdmins)
+	return dataResponse, nil
 }
 
 func (ar *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) {
-	dataAdmin := model.Admin{}
+	dataAdmins := model.Admin{}
 
-	tx := ar.db.Where("id = ? AND role = ?", adminId, helper.ADMIN).First(&dataAdmin)
+	tx := ar.db.Where("id = ? AND role = ?", adminId, helper.ADMIN).First(&dataAdmins)
 	if tx.Error != nil {
 		return entity.AdminCore{}, tx.Error
 	}
 
-	result := entity.AdminModelToAdminCore(dataAdmin)
-	return result, nil
+	dataResponse := entity.AdminModelToAdminCore(dataAdmins)
+	return dataResponse, nil
 }
 
 func (ar *AdminRepository) Update(adminId string, data entity.AdminCore) error {
-	request := entity.AdminCoreToAdminModel(data)
+	dataAdmins := entity.AdminCoreToAdminModel(data)
 
-	tx := ar.db.Where("id = ?", adminId).Updates(&request)
+	tx := ar.db.Where("id = ?", adminId).Updates(&dataAdmins)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -71,14 +73,14 @@ func (ar *AdminRepository) Update(adminId string, data entity.AdminCore) error {
 }
 
 func (ar *AdminRepository) Delete(adminId string) error {
-	dataAdmin := model.Admin{}
+	dataAdmins := model.Admin{}
 
 	result, _ := ar.SelectById(adminId)
 	if result.Role == helper.SUPERADMIN {
 		return errors.New("can`t delete")
 	}
 
-	tx := ar.db.Where("id = ? AND role = ?", adminId, helper.ADMIN).Delete(&dataAdmin)
+	tx := ar.db.Where("id = ? AND role = ?", adminId, helper.ADMIN).Delete(&dataAdmins)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -87,9 +89,9 @@ func (ar *AdminRepository) Delete(adminId string) error {
 }
 
 func (ar *AdminRepository) FindByEmail(email string) error {
-	dataAdmin := model.Admin{}
+	dataAdmins := model.Admin{}
 
-	tx := ar.db.Where("email = ?", email).First(&dataAdmin)
+	tx := ar.db.Where("email = ?", email).First(&dataAdmins)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -98,50 +100,50 @@ func (ar *AdminRepository) FindByEmail(email string) error {
 }
 
 func (ar *AdminRepository) FindByEmailANDPassword(data entity.AdminCore) (entity.AdminCore, error) {
-	dataAdmin := model.Admin{}
+	dataAdmins := model.Admin{}
 
-	tx := ar.db.Where("email = ?", data.Email).First(&dataAdmin)
+	tx := ar.db.Where("email = ?", data.Email).First(&dataAdmins)
 	if tx.Error != nil {
 		return entity.AdminCore{}, tx.Error
 	}
 
-	if comparePass := helper.CompareHash(dataAdmin.Password, data.Password); !comparePass {
+	if comparePass := helper.CompareHash(dataAdmins.Password, data.Password); !comparePass {
 		return entity.AdminCore{}, errors.New("password tidak sama")
 	}
 
-	adminCore := entity.AdminModelToAdminCore(dataAdmin)
-	return adminCore, nil
+	dataResponse := entity.AdminModelToAdminCore(dataAdmins)
+	return dataResponse, nil
 }
 
 // Manage Users
-func (ar *AdminRepository) SelectAllUsers() ([]user.UsersCore, error) {
-	dataUser := []userModel.Users{}
+func (ar *AdminRepository) GetAllUsers() ([]user.UsersCore, error) {
+	dataUsers := []userModel.Users{}
 
-	tx := ar.db.Find(&dataUser)
+	tx := ar.db.Find(&dataUsers)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
 
-	var dataAllUser []user.UsersCore = user.ListUserModelToUserCore(dataUser)
-	return dataAllUser, nil
+	dataResponse := user.ListUserModelToUserCore(dataUsers)
+	return dataResponse, nil
 }
 
-func (ar *AdminRepository) SelectByIdUsers(userId string) (user.UsersCore, error) {
-	dataUser := userModel.Users{}
+func (ar *AdminRepository) GetByIdUser(userId string) (user.UsersCore, error) {
+	dataUsers := userModel.Users{}
 
-	tx := ar.db.Where("id = ?", userId).Find(&dataUser)
+	tx := ar.db.Where("id = ?", userId).Find(&dataUsers)
 	if tx.Error != nil {
 		return user.UsersCore{}, tx.Error
 	}
 
-	data := user.UsersModelToUsersCore(dataUser)
-	return data, nil
+	dataResponse := user.UsersModelToUsersCore(dataUsers)
+	return dataResponse, nil
 }
 
 func (ar *AdminRepository) DeleteUsers(userId string) error {
-	dataUser := userModel.Users{}
+	dataUsers := userModel.Users{}
 
-	tx := ar.db.Where("id = ?", userId).Delete(&dataUser)
+	tx := ar.db.Where("id = ?", userId).Delete(&dataUsers)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -151,7 +153,7 @@ func (ar *AdminRepository) DeleteUsers(userId string) error {
 
 // GetByStatusReport implements entity.AdminRepositoryInterface.
 func (ar *AdminRepository) GetByStatusReport(status string) ([]report.ReportCore, error) {
-	var dataReports []reportModel.Report
+	dataReports := []reportModel.Report{}
 	var result *gorm.DB
 
 	if status != "" {
@@ -160,7 +162,7 @@ func (ar *AdminRepository) GetByStatusReport(status string) ([]report.ReportCore
 		result = ar.db.Find(&dataReports)
 	}
 
-	if result.Error != nil {
+	if result != nil {
 		return nil, result.Error
 	}
 
@@ -169,24 +171,23 @@ func (ar *AdminRepository) GetByStatusReport(status string) ([]report.ReportCore
 }
 
 // // UpdateStatusReport implements entity.AdminRepositoryInterface.
-func (ar *AdminRepository) UpdateStatusReport(id string, status string) (report.ReportCore, error) {
-	var usersData reportModel.Report
+func (ar *AdminRepository) UpdateStatusReport(id ,status string) (report.ReportCore, error) {
+	dataReports := reportModel.Report{}
 
-    errData := ar.db.Where("id = ?", id).First(&usersData).Error
-    if errData != nil {
-        if errors.Is(errData, gorm.ErrRecordNotFound) {
-            return report.ReportCore{}, errors.New("data tidak ditemukan")
-        }
-        return report.ReportCore{}, errData
-    }
+	errData := ar.db.Where("id = ?", id).First(&dataReports)
+	if errData != nil {
+		if errors.Is(errData.Error, gorm.ErrRecordNotFound) {
+			return report.ReportCore{}, errors.New("data tidak ditemukan")
+		}
+		return report.ReportCore{}, errData.Error
+	}
 
-    usersData.Status = status
-    err := ar.db.Save(&usersData).Error
-    if err != nil {
-        return report.ReportCore{}, err
-    }
+	dataReports.Status = status
+	tx := ar.db.Save(&dataReports)
+	if tx.Error != nil {
+		return report.ReportCore{}, tx.Error
+	}
 
-	data := report.ReportModelToReportCore(usersData)
-
-	return data, nil
+	dataResponse := report.ReportModelToReportCore(dataReports)
+	return dataResponse, nil
 }

@@ -5,6 +5,7 @@ import (
 	"recything/features/admin/entity"
 	report "recything/features/report/entity"
 	user "recything/features/user/entity"
+	"recything/utils/helper"
 	"recything/utils/jwt"
 	"recything/utils/validation"
 )
@@ -21,19 +22,19 @@ func NewAdminService(ar entity.AdminRepositoryInterface) entity.AdminServiceInte
 
 func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) {
 
-	errEmpty := validation.CheckDataEmpty(data.Name,data.Email,data.Password,data.ConfirmPassword)
+	errEmpty := validation.CheckDataEmpty(data.Fullname, data.Email, data.Password, data.ConfirmPassword)
 	if errEmpty != nil {
-		return entity.AdminCore{},errEmpty
+		return entity.AdminCore{}, errEmpty
 	}
 
 	errEmail := validation.EmailFormat(data.Email)
 	if errEmail != nil {
-		return entity.AdminCore{},errEmail
+		return entity.AdminCore{}, errEmail
 	}
 
-	errLength := validation.MinLength(data.Password,8)
+	errLength := validation.MinLength(data.Password, 8)
 	if errLength != nil {
-		return entity.AdminCore{},errLength
+		return entity.AdminCore{}, errLength
 	}
 
 	errFind := as.AdminRepository.FindByEmail(data.Email)
@@ -75,6 +76,27 @@ func (as *AdminService) GetById(adminId string) (entity.AdminCore, error) {
 
 func (as *AdminService) UpdateById(adminId string, data entity.AdminCore) error {
 
+	errEmpty := validation.CheckDataEmpty(data.Fullname, data.Email, data.Password)
+	if errEmpty != nil {
+		return errEmpty
+	}
+
+	errEmail := validation.EmailFormat(data.Email)
+	if errEmail != nil {
+		return errEmail
+	}
+
+	errLength := validation.MinLength(data.Password, 8)
+	if errLength != nil {
+		return errLength
+	}
+
+	HashPassword, errHash := helper.HashPassword(data.Password)
+	if errHash != nil {
+		return errors.New("error hash password")
+	}
+	data.Password = HashPassword
+
 	err := as.AdminRepository.Update(adminId, data)
 	if err != nil {
 		return errors.New("gagal melakukan update data admin")
@@ -87,7 +109,7 @@ func (as *AdminService) DeleteById(adminId string) error {
 
 	err := as.AdminRepository.Delete(adminId)
 	if err != nil {
-		return errors.New("gagal menghapus data admin")
+		return err
 	}
 
 	return nil
@@ -95,14 +117,14 @@ func (as *AdminService) DeleteById(adminId string) error {
 
 func (as *AdminService) FindByEmailANDPassword(data entity.AdminCore) (entity.AdminCore, string, error) {
 
-	errEmpty := validation.CheckDataEmpty(data.Email,data.Password)
+	errEmpty := validation.CheckDataEmpty(data.Email, data.Password)
 	if errEmpty != nil {
-		return entity.AdminCore{},"",errEmpty
+		return entity.AdminCore{}, "", errEmpty
 	}
 
 	errEmail := validation.EmailFormat(data.Email)
 	if errEmail != nil {
-		return entity.AdminCore{},"",errEmail
+		return entity.AdminCore{}, "", errEmail
 	}
 
 	data, err := as.AdminRepository.FindByEmailANDPassword(data)
@@ -158,7 +180,7 @@ func (as *AdminService) DeleteUsers(userId string) error {
 // GetByStatusReport implements entity.AdminServiceInterface.
 func (as *AdminService) GetByStatusReport(status string) (data []report.ReportCore, err error) {
 	switch status {
-	case "Perlu Tinjauan", "Diterima", "Ditolak":
+	case "perlu ditinjau", "diterima", "ditolak":
 		data, err = as.AdminRepository.GetByStatusReport(status)
 	case "":
 		data, err = as.AdminRepository.GetByStatusReport("")
@@ -174,7 +196,7 @@ func (as *AdminService) GetByStatusReport(status string) (data []report.ReportCo
 }
 
 // UpdateStatusReport implements entity.AdminServiceInterface.
-func (as *AdminService) UpdateStatusReport(id string, status string) (report.ReportCore, error) {
+func (as *AdminService) UpdateStatusReport(id string, status string, reason string) (report.ReportCore, error) {
 	if id == "" {
 		return report.ReportCore{}, errors.New("id tidak valid")
 	}
@@ -183,12 +205,16 @@ func (as *AdminService) UpdateStatusReport(id string, status string) (report.Rep
 		return report.ReportCore{}, errors.New("status tidak valid")
 	}
 
-	data, err := as.AdminRepository.UpdateStatusReport(id, status)
-    if err != nil {
-        return report.ReportCore{}, errors.New("gagal update status")
-    }
+	if status == "ditolak" && reason == "" {
+		return report.ReportCore{}, errors.New("alasan harus diisi saat menolak laporan")
+	}
 
-	if data.Status == "Diterima" || data.Status == "Ditolak" {
+	data, err := as.AdminRepository.UpdateStatusReport(id, status)
+	if err != nil {
+		return report.ReportCore{}, errors.New("gagal update status")
+	}
+
+	if data.Status == "diterima" || data.Status == "ditolak" {
 		return report.ReportCore{}, errors.New("status sudah diterima atau ditolak, tidak bisa update data lagi")
 	}
 

@@ -5,7 +5,7 @@ import "recything/features/admin/entity"
 func AdminCoreToAdminResponse(admin entity.AdminCore) AdminRespon {
 	return AdminRespon{
 		ID:        admin.Id,
-		Name:      admin.Name,
+		Fullname:  admin.Fullname,
 		Email:     admin.Email,
 		Status:    admin.Status,
 		CreatedAt: admin.CreatedAt,

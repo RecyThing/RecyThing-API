@@ -199,8 +199,8 @@ func (ah *AdminHandler) GetAllUser(e echo.Context) error {
 		e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	response := userDto.UsersCoreToResponseUsersList(result)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil mendapatkan data user", response))
+	response := userDto.UsersCoreToResponseManageUsersList(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan data user", response))
 
 }
 
@@ -221,8 +221,8 @@ func (ah *AdminHandler) GetByIdUsers(e echo.Context) error {
 		e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	userResponse := userDto.UsersCoreToResponseUsers(UsersData)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil mendapatkan data user", userResponse))
+	userResponse := userDto.UsersCoreToResponseDetailManageUsers(UsersData)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan data user", userResponse))
 }
 
 func (ah *AdminHandler) DeleteUsers(e echo.Context) error {
@@ -290,7 +290,7 @@ func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 	
-	_, err = ah.AdminService.UpdateStatusReport(id, input.Status)
+	_, err = ah.AdminService.UpdateStatusReport(id, input.Status, input.RejectionDescription)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}

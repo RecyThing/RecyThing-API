@@ -19,7 +19,7 @@ type ReportRubbishRequest struct {
 }
 
 type ImageRequest struct {
-	Image string `json:"image"`
+	Image string `form:"images"`
 }
 
 type UpdateStatusReportRubbish struct {

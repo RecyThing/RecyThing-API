@@ -1,17 +1,23 @@
 package dto
 
 type ReportRubbishRequest struct {
-	ReportType   string         `json:"report_type" form:"report_type"`
-	Longitude    float64        `json:"longitude" form:"longitude"`
-	Latitude     float64        `json:"latitude" form:"latitude"`
-	Location     string         `json:"location" form:"location"`
-	TrashType    string         `json:"trash_type" form:"trash_type"`
-	Description  string         `json:"description" form:"description"`
-	ScaleType    string         `json:"scale_type" form:"scale_type"`
-	InsidentTime string         `json:"insident_time" form:"insident_time"`
-	Images       []ImageRequest `json:"images" form:"images"`
+	ReportType           string  `form:"report_type"`
+	Longitude            float64 `form:"longitude"`
+	Latitude             float64 `form:"latitude"`
+	Location             string  `form:"location"`
+	AddressPoint         string  `form:"address_point"`
+	Status               string  `form:"status"`
+	TrashType            string  `form:"trash_type"`
+	ScaleType            string  `form:"scale_type"`
+	InsidentDate         string  `form:"insident_date"`
+	InsidentTime         string  `form:"insident_time"`
+	CompanyName          string  `form:"company_name"`
+	DangerousWaste       bool    `form:"dangerous_waste"`
+	RejectionDescription string  `form:"rejection_description"`
+	Description          string  `form:"description"`
+	Images               []ImageRequest
 }
 
 type ImageRequest struct {
-	Image string `json:"image"`
+	Image string `form:"image"`
 }

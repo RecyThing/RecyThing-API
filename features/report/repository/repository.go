@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"fmt"
 	"mime/multipart"
 	"recything/features/report/entity"
 	"recything/features/report/model"
+	"recything/utils/storage"
 
 	"gorm.io/gorm"
 )
@@ -18,7 +20,7 @@ func NewReportRepository(db *gorm.DB) entity.ReportRepositoryInterface {
 
 // ReadAllReport implements entity.ReportRepositoryInterface.
 func (report *reportRepository) ReadAllReport(idUser string) ([]entity.ReportCore, error) {
-	dataReport := []model.Report {}
+	dataReport := []model.Report{}
 
 	tx := report.db.Where("users_id = ?", idUser).Find(&dataReport)
 	if tx.Error != nil {
@@ -34,13 +36,7 @@ func (report *reportRepository) ReadAllReport(idUser string) ([]entity.ReportCor
 	return mapData, nil
 }
 
-
-// UploadProof implements entity.ReportRepositoryInterface.
-func (*reportRepository) UploadProof(id string, data entity.ReportCore, image *multipart.FileHeader) (purchases entity.ReportCore, err error) {
-	panic("unimplemented")
-}
-
-func (report *reportRepository) Insert(reportInput entity.ReportCore) (entity.ReportCore, error) {
+func (report *reportRepository) Insert(reportInput entity.ReportCore, images []*multipart.FileHeader) (entity.ReportCore, error) {
 	dataReport := entity.ReportCoreToReportModel(reportInput)
 
 	tx := report.db.Create(&dataReport)
@@ -48,8 +44,28 @@ func (report *reportRepository) Insert(reportInput entity.ReportCore) (entity.Re
 		return entity.ReportCore{}, tx.Error
 	}
 
-	dataResponse := entity.ReportModelToReportCore(dataReport)
-	return dataResponse, nil
+	for _, image := range images {
+		imageURL, uploadErr := storage.UploadProof(image)
+		if uploadErr != nil {
+			return entity.ReportCore{}, uploadErr
+		}
+
+		ImageList := entity.ImageCore{}
+		ImageList.Image = imageURL
+		ImageList.ReportID = dataReport.Id
+		ImageSave := entity.ImageCoreToImageModel(ImageList)
+		if err := report.db.Create(&ImageSave).Error; err != nil {
+			return entity.ReportCore{}, err
+		}
+
+		// Tambahkan informasi file ke laporan
+		reportInput.Images = append(reportInput.Images, ImageList)
+	}
+
+	fmt.Println("repository : ", dataReport.InsidentDate)
+	ReportCreated := entity.ReportModelToReportCore(dataReport)
+
+	return ReportCreated, nil
 }
 
 func (report *reportRepository) SelectById(iDReport string) (entity.ReportCore, error) {

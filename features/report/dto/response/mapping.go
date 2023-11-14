@@ -25,20 +25,23 @@ func ListImageCoreToImageResponse(images []entity.ImageCore) []ImageResponse {
 
 func ReportCoreToReportResponse(report entity.ReportCore) ReportCreateResponse {
 	reportResponse := ReportCreateResponse{
-		Id:             report.ID,
-		ReportType:     report.ReportType,
-		Longitude:      report.Longitude,
-		Latitude:       report.Latitude,
-		Location:       report.Location,
-		TrashType:      report.TrashType,
-		Description:    report.Description,
-		ScaleType:      report.ScaleType,
-		InsidentTime:   report.InsidentTime,
-		Status:         report.Status,
-		CompanyName:    report.CompanyName,
-		DangerousWaste: report.DangerousWaste,
-		CreatedAt:      report.CreatedAt,
-		UpdatedAt:      report.UpdatedAt,
+		Id:                   report.ID,
+		ReportType:           report.ReportType,
+		Longitude:            report.Longitude,
+		Latitude:             report.Latitude,
+		Location:             report.Location,
+		Description:          report.Description,
+		AddressPoint:         report.AddressPoint,
+		Status:               report.Status,
+		TrashType:            report.TrashType,
+		ScaleType:            report.ScaleType,
+		InsidentDate:         report.InsidentDate,
+		InsidentTime:         report.InsidentTime,
+		DangerousWaste:       report.DangerousWaste,
+		RejectionDescription: report.RejectionDescription,
+		CompanyName:          report.CompanyName,
+		CreatedAt:            report.CreatedAt,
+		UpdatedAt:            report.UpdatedAt,
 	}
 	image := ListImageCoreToImageResponse(report.Images)
 	reportResponse.Images = image

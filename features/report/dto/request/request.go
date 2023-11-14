@@ -22,7 +22,7 @@ type ImageRequest struct {
 	Image string `json:"image"`
 }
 
-// Validasi harus sesuai dengan enumnya
 type UpdateStatusReportRubbish struct {
-	Status string `json:"status" valid:"required~update status tidak boleh kosong"`
+	Status               string `json:"status"`
+	RejectionDescription string `json:"rejection_description"`
 }

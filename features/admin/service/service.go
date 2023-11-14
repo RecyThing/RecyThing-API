@@ -6,6 +6,7 @@ import (
 	report "recything/features/report/entity"
 	user "recything/features/user/entity"
 	"recything/utils/jwt"
+	"recything/utils/validation"
 )
 
 type AdminService struct {
@@ -19,6 +20,21 @@ func NewAdminService(ar entity.AdminRepositoryInterface) entity.AdminServiceInte
 }
 
 func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) {
+
+	errEmpty := validation.CheckDataEmpty(data.Name,data.Email,data.Password,data.ConfirmPassword)
+	if errEmpty != nil {
+		return entity.AdminCore{},errEmpty
+	}
+
+	errEmail := validation.EmailFormat(data.Email)
+	if errEmail != nil {
+		return entity.AdminCore{},errEmail
+	}
+
+	errLength := validation.MinLength(data.Password,8)
+	if errLength != nil {
+		return entity.AdminCore{},errLength
+	}
 
 	errFind := as.AdminRepository.FindByEmail(data.Email)
 	if errFind == nil {
@@ -78,6 +94,16 @@ func (as *AdminService) DeleteById(adminId string) error {
 }
 
 func (as *AdminService) FindByEmailANDPassword(data entity.AdminCore) (entity.AdminCore, string, error) {
+
+	errEmpty := validation.CheckDataEmpty(data.Email,data.Password)
+	if errEmpty != nil {
+		return entity.AdminCore{},"",errEmpty
+	}
+
+	errEmail := validation.EmailFormat(data.Email)
+	if errEmail != nil {
+		return entity.AdminCore{},"",errEmail
+	}
 
 	data, err := as.AdminRepository.FindByEmailANDPassword(data)
 	if err != nil {

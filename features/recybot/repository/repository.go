@@ -4,6 +4,7 @@ import (
 	"errors"
 	"recything/features/recybot/entity"
 	"recything/features/recybot/model"
+	"recything/utils/constanta"
 
 	"gorm.io/gorm"
 )
@@ -20,54 +21,70 @@ func NewRecybotRepository(db *gorm.DB) entity.RecybotRepositoryInterface {
 
 func (rb *recybotRepository) Create(recybot entity.RecybotCore) (entity.RecybotCore, error) {
 	input := entity.CoreRecybotToModelRecybot(recybot)
-	err := rb.db.Create(&input).Error
-	if err != nil {
-		return entity.RecybotCore{}, err
+
+	tx := rb.db.Create(&input)
+	if tx.Error != nil {
+		return entity.RecybotCore{}, tx.Error
 	}
+
 	result := entity.ModelRecybotToCoreRecybot(input)
-	return result, err
+	return result, nil
+}
+
+func (rb *recybotRepository) GetAll() ([]entity.RecybotCore, error) {
+	dataRecybots := []model.Recybot{}
+
+	tx := rb.db.Find(&dataRecybots)
+	if tx.Error != nil {
+		return []entity.RecybotCore{}, tx.Error
+	}
+
+	result := entity.ListModelRecybotToCoreRecybot(dataRecybots)
+	return result, nil
+}
+
+func (rb *recybotRepository) GetById(idData string) (entity.RecybotCore, error) {
+	dataRecybots := model.Recybot{}
+
+	tx := rb.db.Where("id = ?", idData).First(&dataRecybots)
+	if tx.Error != nil {
+		return entity.RecybotCore{}, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return entity.RecybotCore{}, errors.New(constanta.ERROR_DATA_ID)
+	}
+
+	result := entity.ModelRecybotToCoreRecybot(dataRecybots)
+	return result, nil
 }
 
 func (rb *recybotRepository) Update(idData string, recybot entity.RecybotCore) (entity.RecybotCore, error) {
 	data := entity.CoreRecybotToModelRecybot(recybot)
 
-	err := rb.db.Where("id = ?", idData).Updates(&data).Error
-	if err != nil {
-		return entity.RecybotCore{}, err
+	tx := rb.db.Where("id = ?", idData).Updates(&data)
+	if tx.Error != nil {
+		return entity.RecybotCore{}, tx.Error
 	}
+
+	if tx.RowsAffected == 0 {
+		return entity.RecybotCore{},errors.New(constanta.ERROR_DATA_ID)
+	}
+
 	result := entity.ModelRecybotToCoreRecybot(data)
-	return result, err
+	return result, nil
 }
 
 func (rb *recybotRepository) Delete(idData string) error {
 	data := model.Recybot{}
-	err := rb.db.Where("id = ?", idData).Delete(&data).Error
-	if err != nil {
-		return err
+
+	tx := rb.db.Where("id = ?", idData).Delete(&data)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return errors.New(constanta.ERROR_DATA_ID)
 	}
 
-	return err
-}
-
-func (rb *recybotRepository) SelectAll() ([]entity.RecybotCore, error) {
-	data := []model.Recybot{}
-	err := rb.db.Find(&data).Error
-	if err != nil {
-		return []entity.RecybotCore{}, err
-	}
-	result := entity.ListModelRecybotToCoreRecybot(data)
-	return result, err
-}
-
-func (rb *recybotRepository) SelectById(idData string) (entity.RecybotCore, error) {
-	data := model.Recybot{}
-	err := rb.db.Where("id = ?", idData).First(&data).Error
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return entity.RecybotCore{}, errors.New("data tidak ditemukan")
-		}
-		return entity.RecybotCore{}, err
-	}
-	result := entity.ModelRecybotToCoreRecybot(data)
-	return result, err
+	return nil
 }

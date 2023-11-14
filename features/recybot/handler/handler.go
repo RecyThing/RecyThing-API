@@ -28,7 +28,7 @@ func (rb *recybotHandler) CreateData(e echo.Context) error {
 	input := req.RequestRecybotToCoreRecybot(request)
 	result, err := rb.Recybot.CreateData(input)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
 	response := response.CoreRecybotToResponRecybot(result)
@@ -36,7 +36,7 @@ func (rb *recybotHandler) CreateData(e echo.Context) error {
 }
 
 func (rb *recybotHandler) GetAllData(e echo.Context) error {
-	result, err := rb.Recybot.SelectAllData()
+	result, err := rb.Recybot.GetAllData()
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
@@ -47,7 +47,7 @@ func (rb *recybotHandler) GetAllData(e echo.Context) error {
 
 func (rb *recybotHandler) GetById(e echo.Context) error {
 	id := e.Param("id")
-	result, err := rb.Recybot.SelectById(id)
+	result, err := rb.Recybot.GetById(id)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}

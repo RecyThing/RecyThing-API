@@ -255,6 +255,12 @@ func (us *userService) SendOTP(emailUser string) error {
 
 // VerifyOTP implements entity.UsersUsecaseInterface.
 func (us *userService) VerifyOTP(email, otp string) error {
+
+	errEmpty := validation.CheckDataEmpty(email,otp)
+	if errEmpty != nil {
+		return  errEmpty
+	}
+
 	dataUsers, err := us.userRepo.VerifyOTP(email, otp)
 	if err != nil {
 		return errors.New("otp tidak ditemukan")

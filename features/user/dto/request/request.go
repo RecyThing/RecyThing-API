@@ -36,6 +36,6 @@ type UserSendOTP struct {
 }
 
 type UserVerifyOTP struct {
-	Email string `json:"email" valid:"required~harap lengkapi email,email~format email tidak valid"`
-	Otp   string `json:"otp" valid:"required~kode otp wajib di isi!"`
+	Email string `json:"email"`
+	Otp   string `json:"otp"`
 }

@@ -133,7 +133,7 @@ func (ar *AdminRepository) FindByEmailANDPassword(data entity.AdminCore) (entity
 	}
 
 	if comparePass := helper.CompareHash(dataAdmins.Password, data.Password); !comparePass {
-		return entity.AdminCore{}, errors.New("password tidak sama")
+		return entity.AdminCore{}, errors.New(constanta.ERROR_PASSWORD)
 	}
 
 	dataResponse := entity.AdminModelToAdminCore(dataAdmins)

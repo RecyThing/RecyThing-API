@@ -17,3 +17,12 @@ func RequestLoginToAdminCore(data AdminLogin) entity.AdminCore {
 		Password: data.Password,
 	}
 }
+
+func AdminRequestUpdateToAdminCore(data AdminRequestUpdate) entity.AdminCore {
+	return entity.AdminCore{
+		Fullname: data.Fullname,
+		Email:    data.Email,
+		Password: data.Password,
+		Status:   data.Status,
+	}
+}

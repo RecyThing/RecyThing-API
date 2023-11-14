@@ -11,3 +11,10 @@ type AdminLogin struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type AdminRequestUpdate struct {
+	Fullname string `json:"fullname"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Status   string `json:"status"`
+}

@@ -167,14 +167,14 @@ func (ah *AdminHandler) UpdateById(e echo.Context) error {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
-	input := request.AdminRequest{}
+	input := request.AdminRequestUpdate{}
 
 	err = helper.DecodeJSON(e, &input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	request := request.AdminRequestToAdminCore(input)
+	request := request.AdminRequestUpdateToAdminCore(input)
 	err = ah.AdminService.UpdateById(adminId, request)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))

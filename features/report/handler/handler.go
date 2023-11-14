@@ -37,15 +37,14 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 	form, err := e.MultipartForm()
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "Error getting multipart form",
+			"message": "gagal mendapatkan form multipart",
 		})
 	}
 
-	// Dapatkan semua file dengan nama "images"
 	images, ok := form.File["images"]
 	if !ok || len(images) == 0 {
 		return e.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "No file uploaded",
+			"message": "tidak ada file yang di upload",
 		})
 	}
 
@@ -56,7 +55,7 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 	reportResponse := response.ReportCoreToReportResponse(createdReport)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("success", reportResponse))
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil", reportResponse))
 }
 
 func (rco *reportHandler) SelectById(e echo.Context) error {
@@ -64,12 +63,12 @@ func (rco *reportHandler) SelectById(e echo.Context) error {
 
 	result, err := rco.reportService.SelectById(idParams)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("error reading data"))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal membaca data"))
 	}
 
 	var reportResponse = response.ReportCoreToReportResponse(result)
 
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("success get report data", reportResponse))
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan data laporan", reportResponse))
 }
 
 func (rco *reportHandler) ReadAllReport(e echo.Context) error {
@@ -80,11 +79,11 @@ func (rco *reportHandler) ReadAllReport(e echo.Context) error {
 
 	data, err := rco.reportService.ReadAllReport(userId)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("error get report data"))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mendapatkan data laporan"))
 	}
 
 	return e.JSON(http.StatusOK, map[string]any{
-		"messeage": "success get all report data",
+		"messeage": "berhasil mendapatkan semua data laporan",
 		"data":     data,
 	})
 }

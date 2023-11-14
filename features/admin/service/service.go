@@ -76,27 +76,28 @@ func (as *AdminService) GetById(adminId string) (entity.AdminCore, error) {
 
 func (as *AdminService) UpdateById(adminId string, data entity.AdminCore) error {
 
-	errEmpty := validation.CheckDataEmpty(data.Fullname, data.Email, data.Password)
-	if errEmpty != nil {
-		return errEmpty
+	if data.Email != "" {
+		errEmail := validation.EmailFormat(data.Email)
+		if errEmail != nil {
+			return errEmail
+		}
+
 	}
 
-	errEmail := validation.EmailFormat(data.Email)
-	if errEmail != nil {
-		return errEmail
-	}
+	if data.Password != "" {
+		errLength := validation.MinLength(data.Password, 8)
+		if errLength != nil {
+			return errLength
+		}
 
-	errLength := validation.MinLength(data.Password, 8)
-	if errLength != nil {
-		return errLength
-	}
+		HashPassword, errHash := helper.HashPassword(data.Password)
+		if errHash != nil {
+			return errors.New("error hash password")
+		}
+		data.Password = HashPassword
 
-	HashPassword, errHash := helper.HashPassword(data.Password)
-	if errHash != nil {
-		return errors.New("error hash password")
 	}
-	data.Password = HashPassword
-
+	
 	err := as.AdminRepository.Update(adminId, data)
 	if err != nil {
 		return errors.New("gagal melakukan update data admin")

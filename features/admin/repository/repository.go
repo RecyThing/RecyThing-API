@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+
 	"recything/features/admin/entity"
 	"recything/features/admin/model"
 
@@ -195,7 +196,7 @@ func (ar *AdminRepository) GetByStatusReport(status string) ([]report.ReportCore
 		result = ar.db.Find(&dataReports)
 	}
 
-	if result != nil {
+	if result.Error != nil {
 		return nil, result.Error
 	}
 
@@ -203,16 +204,17 @@ func (ar *AdminRepository) GetByStatusReport(status string) ([]report.ReportCore
 	return dataAllReport, nil
 }
 
-// // UpdateStatusReport implements entity.AdminRepositoryInterface.
-func (ar *AdminRepository) UpdateStatusReport(id, status string) (report.ReportCore, error) {
+// UpdateStatusReport implements entity.AdminRepositoryInterface.
+func (ar *AdminRepository) UpdateStatusReport(id, status, reason string) (report.ReportCore, error) {
 	dataReports := reportModel.Report{}
 
 	errData := ar.db.Where("id = ?", id).First(&dataReports)
-	if errData != nil {
+	if errData.Error != nil {
 		return report.ReportCore{}, errData.Error
 	}
 
 	dataReports.Status = status
+	dataReports.RejectionDescription = reason
 	tx := ar.db.Save(&dataReports)
 	if tx.Error != nil {
 		return report.ReportCore{}, tx.Error
@@ -224,4 +226,20 @@ func (ar *AdminRepository) UpdateStatusReport(id, status string) (report.ReportC
 
 	dataResponse := report.ReportModelToReportCore(dataReports)
 	return dataResponse, nil
+}
+
+func (ar *AdminRepository) GetReportByID(id string) (report.ReportCore, error) {
+    dataReports := reportModel.Report{}
+
+    tx := ar.db.Where("id = ?", id).First(&dataReports)
+    if tx.Error != nil {
+        return report.ReportCore{}, tx.Error
+    }
+
+    if tx.RowsAffected == 0 {
+        return report.ReportCore{}, errors.New(constanta.ERROR_DATA_ID)
+    }
+	
+	dataResponse := report.ReportModelToReportCore(dataReports)
+    return dataResponse, nil
 }

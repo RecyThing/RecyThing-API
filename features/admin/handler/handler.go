@@ -260,10 +260,11 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 	status := e.QueryParam("status")
 	result, err := ah.AdminService.GetByStatusReport(status)
 	if err != nil {
-		if err.Error() == "status tidak valid" {
-			return e.JSON(http.StatusBadRequest, helper.ErrorResponse("input status salah"))
-		}
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mendapatkan data"))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	if len(result) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
 	}
 
 	response := reportDto.ListReportCoresToReportResponseForDataReporting(result, ah.UserService)

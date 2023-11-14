@@ -1,4 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/alta-capstone/recything-api:latest', '.']
-images: ['gcr.io/alta-capstone/recything-api:latest']
+images: ['gcr.io/alta-capstone/recything-api:latest'] 
+
+logs_bucket: alta-capstone_cloudbuild

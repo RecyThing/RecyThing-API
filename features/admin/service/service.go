@@ -202,14 +202,19 @@ func (as *AdminService) UpdateStatusReport(id string, status string, reason stri
 		return report.ReportCore{}, errors.New("alasan harus diisi saat menolak laporan")
 	}
 
-	data, err := as.AdminRepository.UpdateStatusReport(id, status)
+	dataStatus, err := as.AdminRepository.GetReportByID(id)
+    if err != nil {
+        return report.ReportCore{}, errors.New("gagal mengambil data laporan")
+    }
+
+	if dataStatus.Status == "diterima" || dataStatus.Status == "ditolak" {
+        return report.ReportCore{}, errors.New("status sudah diterima atau ditolak, tidak bisa update data lagi")
+    }
+
+	data, err := as.AdminRepository.UpdateStatusReport(id, status, reason)
     if err != nil {
         return report.ReportCore{}, errors.New("gagal update status")
     }
-
-	if data.Status == "diterima" || data.Status == "ditolak" {
-		return report.ReportCore{}, errors.New("status sudah diterima atau ditolak, tidak bisa update data lagi")
-	}
 
 	return data, nil
 }

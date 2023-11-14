@@ -122,7 +122,7 @@ func (ur *userRepository) GetByVerificationToken(token string) (entity.UsersCore
 func (ur *userRepository) UpdateIsVerified(id string, isVerified bool) error {
 	dataUser := model.Users{}
 
-	tx := ur.db.First(&dataUser, id)
+	tx := ur.db.Where("id = ?", id).First(&dataUser)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -133,9 +133,9 @@ func (ur *userRepository) UpdateIsVerified(id string, isVerified bool) error {
 
 	dataUser.IsVerified = isVerified
 
-	errSave := ur.db.Save(&dataUser).Error
-	if errSave != nil {
-		return errSave
+	errSave := ur.db.Save(&dataUser)
+	if errSave.Error != nil {
+		return errSave.Error
 	}
 
 	return nil

@@ -130,7 +130,7 @@ func (uh *userHandler) VerifyAccount(e echo.Context) error {
 
 	alreadyVerified, err := uh.userUseCase.VerifyUser(token)
 	if err != nil {
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("token telah kadaluarsa atau salah"))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
 	if alreadyVerified {

@@ -36,21 +36,44 @@ func (report *reportRepository) ReadAllReport(idUser string) ([]entity.ReportCor
 	return mapData, nil
 }
 
-func (report *reportRepository) Insert(reportInput entity.ReportCore, image *multipart.FileHeader) (entity.ReportCore, error) {
+func (report *reportRepository) Insert(reportInput entity.ReportCore, images []*multipart.FileHeader) (entity.ReportCore, error) {
 	dataReport := entity.ReportCoreToReportModel(reportInput)
 	if err := report.db.Create(&dataReport).Error; err != nil {
 		return entity.ReportCore{}, err
 	}
 
-	imageURL, uploadErr := storage.UploadProof(image)
-	if uploadErr != nil {
-		return entity.ReportCore{}, uploadErr
+	// imageURL, uploadErr := storage.UploadProof(image)
+	// if uploadErr != nil {
+	// 	return entity.ReportCore{}, uploadErr
+	// }
+
+	// ImageList := entity.ImageCore{}
+	// ImageList.Image = imageURL
+	// ImageList.ReportID = dataReport.Id
+	// ImageSave := entity.ImageCoreToImageModel(ImageList)
+	// if err := report.db.Create(&ImageSave).Error; err != nil {
+	// 	return entity.ReportCore{}, err
+	// }
+	for _, image := range images {
+		imageURL, uploadErr := storage.UploadProof(image)
+		if uploadErr != nil {
+			return entity.ReportCore{}, uploadErr
+		}
+
+		ImageList := entity.ImageCore{}
+		ImageList.Image = imageURL
+		ImageList.ReportID = dataReport.Id
+		ImageSave := entity.ImageCoreToImageModel(ImageList)
+		if err := report.db.Create(&ImageSave).Error; err != nil {
+			return entity.ReportCore{}, err
+		}
+
+		// Tambahkan informasi file ke laporan
+		reportInput.Images = append(reportInput.Images, ImageList)
 	}
 
 	fmt.Println("repository : ", dataReport.InsidentDate)
 	ReportCreated := entity.ReportModelToReportCore(dataReport)
-	ImageList := entity.ImageCore{}
-	ImageList.Image = imageURL
 
 	return ReportCreated, nil
 }

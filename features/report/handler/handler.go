@@ -31,23 +31,26 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 	log.Println("images ", newReport.Images)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-	}	
-
-	image, err := e.FormFile("images")
-	if err != nil {
-		if err == http.ErrMissingFile {
-			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"message": "No file uploaded",
-			})
-		}
-		return e.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "Error uploading file",
-		})
 	}
 
+	form, err := e.MultipartForm()
+    if err != nil {
+        return e.JSON(http.StatusBadRequest, map[string]interface{}{
+            "message": "Error getting multipart form",
+        })
+    }
+
+    // Dapatkan semua file dengan nama "images"
+    images, ok := form.File["images"]
+    if !ok || len(images) == 0 {
+        return e.JSON(http.StatusBadRequest, map[string]interface{}{
+            "message": "No file uploaded",
+        })
+    }
+
 	reportInput := entity.ReportRequestToReportCore(newReport)
-	fmt.Println("handler : ",reportInput.InsidentDate)
-	createdReport, err := report.reportService.Create(reportInput, userId, image)
+	fmt.Println("handler : ", reportInput.InsidentDate)
+	createdReport, err := report.reportService.Create(reportInput, userId, images)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}

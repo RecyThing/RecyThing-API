@@ -52,7 +52,7 @@ func (*reportService) UploadProof(id string, data entity.ReportCore, image *mult
 	panic("unimplemented")
 }
 
-func (report *reportService) Create(reportInput entity.ReportCore, userId string, image *multipart.FileHeader) (entity.ReportCore, error) {
+func (report *reportService) Create(reportInput entity.ReportCore, userId string, images []*multipart.FileHeader) (entity.ReportCore, error) {
 
 	if reportInput.ReportType == "Pelanggaran Sampah" {
 
@@ -66,12 +66,14 @@ func (report *reportService) Create(reportInput entity.ReportCore, userId string
 		}
 	}
 
-	if image != nil && image.Size > 20*1024*1024 {
-		return entity.ReportCore{}, errors.New("image file size should be less than 10 MB")
-	}
+	for _, image := range images {
+        if image != nil && image.Size > 20*1024*1024 {
+            return entity.ReportCore{}, errors.New("image file size should be less than 20 MB")
+        }
+    }
 
 	reportInput.UserId = userId
-	createdReport, errinsert := report.ReportRepository.Insert(reportInput, image)
+	createdReport, errinsert := report.ReportRepository.Insert(reportInput, images)
 	if errinsert != nil {
 		return entity.ReportCore{}, errinsert
 	}

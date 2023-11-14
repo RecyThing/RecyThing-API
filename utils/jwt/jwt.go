@@ -53,3 +53,23 @@ func ExtractToken(e echo.Context) (string, string, error) {
 	return "","", errors.New("invalid token")
 }
 
+func CreateTokenVerifikasi(otp string)(string,error){
+	godotenv.Load()
+	claims := jwt.MapClaims{}
+	claims["otp"] = otp
+	claims["exp"] = time.Now().Add(time.Minute * 10).Unix()
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+}
+
+func ExtractTokenVerifikasi(e echo.Context) (string, error) {
+	user := e.Get("user").(*jwt.Token)
+	if user.Valid {
+		claims := user.Claims.(jwt.MapClaims)
+		otp := claims["otp"].(string)
+
+		return otp, nil
+	}
+	return "", errors.New("invalid token")
+}

@@ -6,10 +6,13 @@ import (
 )
 
 func New(e *echo.Echo, db *gorm.DB) {
-	admin := e.Group("/admins")
+	loginPage := e.Group("/")
 	user := e.Group("/users")
 	report := e.Group("/reports")
-	RouteAdmin(admin, db)
+	admin:=e.Group("/admins")
+
+	RouteLoginPage(loginPage,db)
 	RouteUser(user, db)
 	RouteReport(report, db)
+	RouteAdmin(admin, db)
 }

@@ -54,7 +54,9 @@ require (
 
 require (
 	cloud.google.com/go/storage v1.34.1
+	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/golang-jwt/jwt/v5 v5.0.0
+	github.com/gorilla/schema v1.2.1
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo-jwt/v4 v4.2.0
 	golang.org/x/sys v0.14.0 // indirect

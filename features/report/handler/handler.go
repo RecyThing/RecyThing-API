@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"recything/features/report/dto"
+	"recything/features/report/dto/request"
+	"recything/features/report/dto/response"
 	"recything/features/report/entity"
 	"recything/utils/helper"
 	"recything/utils/jwt"
@@ -26,7 +27,7 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
 	}
 
-	newReport := dto.ReportRubbishRequest{}
+	newReport := request.ReportRubbishRequest{}
 	err = e.Bind(&newReport)
 	log.Println("images ", newReport.Images)
 	if err != nil {
@@ -34,27 +35,27 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 	}
 
 	form, err := e.MultipartForm()
-    if err != nil {
-        return e.JSON(http.StatusBadRequest, map[string]interface{}{
-            "message": "Error getting multipart form",
-        })
-    }
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "Error getting multipart form",
+		})
+	}
 
-    // Dapatkan semua file dengan nama "images"
-    images, ok := form.File["images"]
-    if !ok || len(images) == 0 {
-        return e.JSON(http.StatusBadRequest, map[string]interface{}{
-            "message": "No file uploaded",
-        })
-    }
+	// Dapatkan semua file dengan nama "images"
+	images, ok := form.File["images"]
+	if !ok || len(images) == 0 {
+		return e.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "No file uploaded",
+		})
+	}
 
-	reportInput := entity.ReportRequestToReportCore(newReport)
+	reportInput := request.ReportRequestToReportCore(newReport)
 	fmt.Println("handler : ", reportInput.InsidentDate)
 	createdReport, err := report.reportService.Create(reportInput, userId, images)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
-	reportResponse := entity.ReportCoreToReportResponse(createdReport)
+	reportResponse := response.ReportCoreToReportResponse(createdReport)
 	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("success", reportResponse))
 }
 
@@ -66,7 +67,7 @@ func (rco *reportHandler) SelectById(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("error reading data"))
 	}
 
-	var reportResponse = entity.ReportCoreToReportResponse(result)
+	var reportResponse = response.ReportCoreToReportResponse(result)
 
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("success get report data", reportResponse))
 }

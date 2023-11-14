@@ -1,14 +1,13 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
-	"recything/features/user/dto"
+	"recything/features/user/dto/request"
+	"recything/features/user/dto/response"
 	"recything/features/user/entity"
 	"recything/utils/email"
 	"recything/utils/helper"
 	"recything/utils/jwt"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -23,116 +22,188 @@ func NewUserHandlers(uc entity.UsersUsecaseInterface) *userHandler {
 	}
 }
 
-func (uco *userHandler) UpdateById(c echo.Context) error {
-	dataUpdate := dto.UserUpdate{}
-	decoder := json.NewDecoder(c.Request().Body)
-	decoder.DisallowUnknownFields()
-
-	errBind := decoder.Decode(&dataUpdate)
+func (uh *userHandler) Register(e echo.Context) error {
+	input := request.UserRegister{}
+	
+	errBind := helper.DecodeJSON(e,&input)
 	if errBind != nil {
-		return c.JSON(http.StatusBadRequest, helper.ErrorResponse("invalid input"))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
 
-	idToken, _, err := jwt.ExtractToken(c)
-	if err != nil {
-		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
-	}
+	request := request.UsersRequestRegisterToUsersCore(input)
 
-	updateData := dto.RequestUpdate(dataUpdate)
-
-	_ , err = uco.userUseCase.UpdateById(idToken, updateData)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-	}
-
-	return c.JSON(http.StatusOK, helper.SuccessResponse("succes update data"))
-
-}
-
-func (uco *userHandler) Register(c echo.Context) error {
-	// Bind data
-	dataInput := dto.UserRegister{}
-	decoder := json.NewDecoder(c.Request().Body)
-	decoder.DisallowUnknownFields()
-
-	errBind := decoder.Decode(&dataInput)
-	if errBind != nil {
-		return c.JSON(http.StatusBadRequest, helper.ErrorResponse("invalid input"))
-	}
-
-	data := dto.RequestRegister(dataInput)
-
-	errCreate := uco.userUseCase.Register(data)
+	errCreate := uh.userUseCase.Register(request)
 	if errCreate != nil {
-		if strings.Contains(errCreate.Error(), "validation") {
-			return c.JSON(http.StatusBadRequest, helper.ErrorResponse(errCreate.Error()))
-		} else {
-			return c.JSON(http.StatusBadRequest, helper.ErrorResponse("failed to create data "+errCreate.Error()))
-		}
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errCreate.Error()))
 	}
 
-	return c.JSON(http.StatusCreated, helper.SuccessResponse("success create data"))
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil create data"))
 }
 
-func (uco *userHandler) VerifyAccount(c echo.Context) error {
-	token := c.QueryParam("token")
+func (uh *userHandler) Login(e echo.Context) error {
+	// Bind data
+	login := request.UserLogin{}
+	errBind := helper.DecodeJSON(e,&login)
+	if errBind != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
+	}
 
-	alreadyVerified, err := uco.userUseCase.VerifyUser(token)
+	dataUser, token, errLogin := uh.userUseCase.Login(login.Email, login.Password)
+	if errLogin != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errLogin.Error()))
+	}
+
+	jwt.SetTokenCookie(e, token)
+	response := response.UsersCoreToLoginResponse(dataUser)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("login berhasil", response))
+}
+
+
+func (uh *userHandler) GetUserById(e echo.Context) error {
+	idUser, _, errExtract := jwt.ExtractToken(e)
+	if errExtract != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(errExtract.Error()))
+	}
+
+	result, errGet := uh.userUseCase.GetById(idUser)
+	if errGet != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errGet.Error()))
+	}
+
+	response := response.UsersCoreToResponseProfile(result)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan profile", response))
+}
+
+
+func (uh *userHandler) UpdateById(e echo.Context) error {
+	input := request.UserUpdate{}
+	
+	errBind := helper.DecodeJSON(e,&input)
+	if errBind != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
+	}
+
+	idUser, _, errExtract := jwt.ExtractToken(e)
+	if errExtract != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(errExtract.Error()))
+	}
+
+	request := request.UsersRequestUpdateToUsersCore(input)
+
+	errUpdate := uh.userUseCase.UpdateById(idUser, request)
+	if errUpdate != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errUpdate.Error()))
+	}
+
+	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil melakukan update data"))
+
+}
+
+func (uh *userHandler) UpdatePassword(e echo.Context) error {
+	input := request.UserUpdatePassword{}
+	
+	errBind := helper.DecodeJSON(e,&input)
+	if errBind != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
+	}
+
+	idUser, _, errExtract := jwt.ExtractToken(e)
+	if errExtract != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(errExtract.Error()))
+	}
+
+	request := request.UsersRequestUpdatePasswordToUsersCore(input)
+
+	err := uh.userUseCase.UpdatePassword(idUser, request)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, helper.ErrorResponse("invalid or expired verification token"))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil update password"))
+}
+
+func (uh *userHandler) VerifyAccount(e echo.Context) error {
+	token := e.QueryParam("token")
+
+	alreadyVerified, err := uh.userUseCase.VerifyUser(token)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("token telah kadaluarsa atau salah"))
 	}
 
 	if alreadyVerified {
 		emailDone, err := email.ParseTemplate("verification_active.html", nil)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, helper.ErrorResponse("failed to parse template"))
+			return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal menguraikan template"))
 		}
-		return c.HTML(http.StatusOK, emailDone)
+		return e.HTML(http.StatusOK, emailDone)
 	}
 
 	emailContent, err := email.ParseTemplate("success_verification.html", nil)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.ErrorResponse("failed to parse template"))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal menguraikan template"))
 	}
-	return c.HTML(http.StatusOK, emailContent)
+	return e.HTML(http.StatusOK, emailContent)
 }
 
-func (uco *userHandler) Login(c echo.Context) error {
-	// Bind data
-	var login dto.UserLogin
-	errBind := c.Bind(&login)
+func (uh *userHandler) ForgotPassword(e echo.Context) error {
+	input := request.UserSendOTP{}
+
+	errBind := helper.DecodeJSON(e,&input)
 	if errBind != nil {
-		return c.JSON(http.StatusInternalServerError, helper.ErrorResponse("eror bind data"))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
 
-	// Memanggil func di usecase
-	user, token, err := uco.userUseCase.Login(login.Email, login.Password)
+	userCore := request.UsersRequestOTPToUsersCore(input)
+
+	err := uh.userUseCase.SendOTP(userCore.Email)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse("login failed"))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mengirim OTP"))
 	}
 
-	if !user.IsVerified {
-		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse("account not verified"))
-	}
-	jwt.SetTokenCookie(c, token)
-	response := dto.LoginResponse(user.Username, user.Email)
-
-	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("login successful", response))
+	return e.JSON(http.StatusOK, helper.SuccessResponse("otp berhasil dikirim"))
 }
 
-func (uco *userHandler) GetUser(c echo.Context) error {
-	// Extra token dari id
-	idToken, _, err := jwt.ExtractToken(c)
-	if err != nil {
-		return c.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
+func (uh *userHandler) VerifyOTP(e echo.Context) error {
+	input := request.UserVerifyOTP{}
+
+	errBind := helper.DecodeJSON(e,&input)
+	if errBind != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
 
-	result, err := uco.userUseCase.GetById(idToken)
+	request := request.UsersRequestVerifyOTPToUsersCore(input)
+
+	token, err := uh.userUseCase.VerifyOTP(request.Otp)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.ErrorResponse("error reading data"))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal verifikasi OTP " + err.Error()))
 	}
 
-	var usersResponse = dto.ResponseProfile(result)
+	jwt.SetTokenCookie(e, token)
 
-	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success get profile", usersResponse))
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("verifikasi OTP berhasil", token))
+}
+
+
+func (uh *userHandler) NewPassword(e echo.Context) error {
+	input := request.UserNewPassword{}
+
+	errBind := helper.DecodeJSON(e,&input)
+	if errBind != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
+	}
+
+	otp, errExtract := jwt.ExtractTokenVerifikasi(e)
+	if errExtract != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(errExtract.Error()))
+	}
+	
+	request := request.UsersRequestNewPasswordToUsersCore(input)
+	err := uh.userUseCase.NewPassword(otp, request)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil update password"))
 }

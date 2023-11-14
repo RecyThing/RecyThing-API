@@ -10,7 +10,7 @@ import (
 
 type Admin struct {
 	Id              string `gorm:"primary key"`
-	Fullname            string
+	Fullname        string
 	Role            string `gorm:"type:enum('admin', 'super_admin');default:'admin'"`
 	Email           string
 	Password        string
@@ -25,11 +25,6 @@ func (a *Admin) BeforeCreate(tx *gorm.DB) (err error) {
 	newUuid := uuid.New()
 	a.Id = newUuid.String()
 
-	a.Password, _ = helper.HashPassword(a.Password)
-	return nil
-}
-
-func (a *Admin) BeforeUpdate(tx *gorm.DB) (err error) {
 	a.Password, _ = helper.HashPassword(a.Password)
 	return nil
 }

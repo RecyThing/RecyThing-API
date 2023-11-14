@@ -3,6 +3,7 @@ package helper
 import (
 	"encoding/json"
 	"errors"
+
 	"github.com/asaskevich/govalidator"
 	"github.com/gorilla/schema"
 	"github.com/labstack/echo/v4"
@@ -10,20 +11,19 @@ import (
 
 func DecodeJSON(e echo.Context, input interface{}) error {
 
-    decoder := json.NewDecoder(e.Request().Body)
-    decoder.DisallowUnknownFields()
+	decoder := json.NewDecoder(e.Request().Body)
+	decoder.DisallowUnknownFields()
 
-    if err := decoder.Decode(input); err != nil {
-        return errors.New("input salah, periksa kembali")
-    }
+	if err := decoder.Decode(input); err != nil {
+		return errors.New("input salah, periksa kembali")
+	}
 
-    if _, err := govalidator.ValidateStruct(input); err != nil {
-        return err
-    }
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return err
+	}
 
-    return nil
+	return nil
 }
-
 
 func BindFormData(c echo.Context, input interface{}) error {
 

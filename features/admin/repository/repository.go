@@ -149,10 +149,6 @@ func (ar *AdminRepository) GetAllUsers() ([]user.UsersCore, error) {
 		return nil, tx.Error
 	}
 
-	if tx.RowsAffected == 0 {
-        return nil, errors.New(constanta.ERROR_GET_DATA)
-    }
-
 	dataResponse := user.ListUserModelToUserCore(dataUsers)
 	return dataResponse, nil
 }
@@ -208,7 +204,7 @@ func (ar *AdminRepository) GetByStatusReport(status string) ([]report.ReportCore
 }
 
 // // UpdateStatusReport implements entity.AdminRepositoryInterface.
-func (ar *AdminRepository) UpdateStatusReport(id ,status string) (report.ReportCore, error) {
+func (ar *AdminRepository) UpdateStatusReport(id, status string) (report.ReportCore, error) {
 	dataReports := reportModel.Report{}
 
 	errData := ar.db.Where("id = ?", id).First(&dataReports)

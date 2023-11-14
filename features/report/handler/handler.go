@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"recything/features/report/dto/request"
@@ -25,9 +26,6 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 	if err != nil {
 		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
 	}
-	// if role != helper.USER {
-	// 	return e.JSON(http.StatusForbidden, helper.ErrorResponse(err.Error()))
-	// }
 
 	newReport := request.ReportRubbishRequest{}
 	err = e.Bind(&newReport)
@@ -36,8 +34,24 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
+	form, err := e.MultipartForm()
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "Error getting multipart form",
+		})
+	}
+
+	// Dapatkan semua file dengan nama "images"
+	images, ok := form.File["images"]
+	if !ok || len(images) == 0 {
+		return e.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "No file uploaded",
+		})
+	}
+
 	reportInput := request.ReportRequestToReportCore(newReport)
-	createdReport, err := report.reportService.Create(reportInput, userId)
+	fmt.Println("handler : ", reportInput.InsidentDate)
+	createdReport, err := report.reportService.Create(reportInput, userId, images)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}

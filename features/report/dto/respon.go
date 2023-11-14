@@ -1,4 +1,4 @@
-package response
+package dto
 
 import (
 	"time"
@@ -30,13 +30,4 @@ type ImageResponse struct {
 	Image     string    `json:"image,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-}
-
-type ReportDetails struct {
-	Id           string `json:"id,omitempty"`
-	ReportType   string `json:"report_type,omitempty"`
-	Fullname     string `json:"name,omitempty"`
-	Location     string `json:"location,omitempty"`
-	InsidentTime string `json:"insident_time,omitempty"`
-	Status       string `json:"status,omitempty"`
 }

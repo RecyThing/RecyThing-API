@@ -1,4 +1,4 @@
-package request
+package dto
 
 type ReportRubbishRequest struct {
 	ReportType           string  `form:"report_type"`
@@ -19,10 +19,5 @@ type ReportRubbishRequest struct {
 }
 
 type ImageRequest struct {
-	Image string `json:"image"`
-}
-
-// Validasi harus sesuai dengan enumnya
-type UpdateStatusReportRubbish struct {
-	Status string `json:"status" valid:"required~update status tidak boleh kosong"`
+	Image string `form:"image"`
 }

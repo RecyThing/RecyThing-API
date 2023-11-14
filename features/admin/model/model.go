@@ -10,7 +10,7 @@ import (
 
 type Admin struct {
 	Id              string `gorm:"primary key"`
-	Name            string
+	Fullname            string
 	Role            string `gorm:"type:enum('admin', 'super_admin');default:'admin'"`
 	Email           string
 	Password        string

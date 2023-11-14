@@ -21,7 +21,7 @@ func NewAdminService(ar entity.AdminRepositoryInterface) entity.AdminServiceInte
 
 func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) {
 
-	errEmpty := validation.CheckDataEmpty(data.Name,data.Email,data.Password,data.ConfirmPassword)
+	errEmpty := validation.CheckDataEmpty(data.Fullname,data.Email,data.Password,data.ConfirmPassword)
 	if errEmpty != nil {
 		return entity.AdminCore{},errEmpty
 	}
@@ -75,6 +75,21 @@ func (as *AdminService) GetById(adminId string) (entity.AdminCore, error) {
 
 func (as *AdminService) UpdateById(adminId string, data entity.AdminCore) error {
 
+	errEmpty := validation.CheckDataEmpty(data.Fullname,data.Email,data.Password)
+	if errEmpty != nil {
+		return errEmpty
+	}
+
+	errEmail := validation.EmailFormat(data.Email)
+	if errEmail != nil {
+		return errEmail
+	}
+
+	errLength := validation.MinLength(data.Password,8)
+	if errLength != nil {
+		return errLength
+	}
+
 	err := as.AdminRepository.Update(adminId, data)
 	if err != nil {
 		return errors.New("gagal melakukan update data admin")
@@ -87,7 +102,7 @@ func (as *AdminService) DeleteById(adminId string) error {
 
 	err := as.AdminRepository.Delete(adminId)
 	if err != nil {
-		return errors.New("gagal menghapus data admin")
+		return err
 	}
 
 	return nil

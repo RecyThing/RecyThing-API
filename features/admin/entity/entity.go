@@ -4,7 +4,7 @@ import "time"
 
 type AdminCore struct {
 	Id              string
-	Name            string
+	Fullname            string
 	Role            string
 	Email           string
 	Password        string

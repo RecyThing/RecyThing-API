@@ -28,8 +28,3 @@ func (a *Admin) BeforeCreate(tx *gorm.DB) (err error) {
 	a.Password, _ = helper.HashPassword(a.Password)
 	return nil
 }
-
-func (a *Admin) BeforeUpdate(tx *gorm.DB) (err error) {
-	a.Password, _ = helper.HashPassword(a.Password)
-	return nil
-}

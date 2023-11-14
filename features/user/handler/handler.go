@@ -160,7 +160,7 @@ func (uh *userHandler) ForgotPassword(e echo.Context) error {
 
 	err := uh.userUseCase.SendOTP(userCore.Email)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mengirim otp"))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("otp berhasil dikirim"))

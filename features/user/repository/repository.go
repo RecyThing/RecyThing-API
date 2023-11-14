@@ -28,6 +28,7 @@ func (ur *userRepository) Register(data entity.UsersCore) error {
 		return tx.Error
 	}
 
+
 	return nil
 }
 
@@ -53,13 +54,14 @@ func (ur *userRepository) FindByEmail(email string) (entity.UsersCore, error) {
 
 	tx := ur.db.Where("email = ?", email).First(&dataUsers)
 
+	if tx.RowsAffected == 0 {
+		return entity.UsersCore{}, errors.New(constanta.ERROR_DATA_EMAIL)
+	}
+
 	if tx.Error != nil {
 		return entity.UsersCore{}, tx.Error
 	}
 
-	if tx.RowsAffected == 0 {
-		return entity.UsersCore{}, errors.New(constanta.ERROR_DATA_EMAIL)
-	}
 
 	dataResponse := entity.UsersModelToUsersCore(dataUsers)
 	return dataResponse, nil

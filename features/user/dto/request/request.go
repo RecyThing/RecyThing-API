@@ -1,38 +1,38 @@
 package request
 
 type UserRegister struct {
-	Fullname        string `json:"fullname" valid:"required~harap lengkapi nama"`
-	Email           string `json:"email" valid:"required~harap lengkapi email,email~format email tidak valid"`
-	Password        string `json:"password" valid:"required~harap lengkapi password,minstringlength(8)~password minimal 8 karakter"`
-	ConfirmPassword string `json:"confirm_password" valid:"required~harap konfirmasi password"`
+	Fullname        string `json:"fullname"`
+	Email           string `json:"email"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirm_password"`
 }
 
 type UserLogin struct {
-	Email    string `json:"email" valid:"required~harap lengkapi email,email~format email tidak valid"`
-	Password string `json:"password" valid:"required~harap lengkapi password"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type UserUpdate struct {
 	Fullname    string `json:"fullname"`
-	Phone       string `json:"phone" valid:"numeric~format nomor telepon tidak valid,minstringlength(11)~nomor minimal 11 digit,maxstringlength(15)~nomor maximal 15 digit"`
+	Phone       string `json:"phone"`
 	Address     string `json:"address"`
 	DateOfBirth string `json:"date_of_birth"`
 	Purpose     string `json:"purpose"`
 }
 
 type UserNewPassword struct {
-	Email           string `json:"email" valid:"required~harap lengkapi email,email~format email tidak valid"`
-	Password        string `json:"password" valid:"required~harap lengkapi password,minstringlength(8)~password minimal 8 karakter"`
-	ConfirmPassword string `json:"confirm_password" valid:"required~harap konfirmasi password"`
+	Email           string `json:"email"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirm_password"`
 }
 
 type UserUpdatePassword struct {
-	Password        string `json:"password" valid:"required~harap lengkapi password"`
-	NewPassword     string `json:"new_password" valid:"required~harap lengkapi password baru,minstringlength(8)~password minimal 8 karakter"`
-	ConfirmPassword string `json:"confirm_password" valid:"required~harap konfirmasi password"`
+	Password        string `json:"password"`
+	NewPassword     string `json:"new_password"`
+	ConfirmPassword string `json:"confirm_password"`
 }
 type UserSendOTP struct {
-	Email string `json:"email" valid:"required~harap lengkapi email,email~format email tidak valid"`
+	Email string `json:"email"`
 }
 
 type UserVerifyOTP struct {

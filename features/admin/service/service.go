@@ -180,7 +180,7 @@ func (as *AdminService) DeleteUsers(userId string) error {
 // GetByStatusReport implements entity.AdminServiceInterface.
 func (as *AdminService) GetByStatusReport(status string) (data []report.ReportCore, err error) {
 	switch status {
-	case "Perlu Tinjauan", "Diterima", "Ditolak":
+	case "perlu ditinjau", "diterima", "ditolak":
 		data, err = as.AdminRepository.GetByStatusReport(status)
 	case "":
 		data, err = as.AdminRepository.GetByStatusReport("")
@@ -196,7 +196,7 @@ func (as *AdminService) GetByStatusReport(status string) (data []report.ReportCo
 }
 
 // UpdateStatusReport implements entity.AdminServiceInterface.
-func (as *AdminService) UpdateStatusReport(id string, status string) (report.ReportCore, error) {
+func (as *AdminService) UpdateStatusReport(id string, status string, reason string) (report.ReportCore, error) {
 	if id == "" {
 		return report.ReportCore{}, errors.New("id tidak valid")
 	}
@@ -205,12 +205,16 @@ func (as *AdminService) UpdateStatusReport(id string, status string) (report.Rep
 		return report.ReportCore{}, errors.New("status tidak valid")
 	}
 
+	if status == "ditolak" && reason == "" {
+		return report.ReportCore{}, errors.New("alasan harus diisi saat menolak laporan")
+	}
+
 	data, err := as.AdminRepository.UpdateStatusReport(id, status)
 	if err != nil {
 		return report.ReportCore{}, errors.New("gagal update status")
 	}
 
-	if data.Status == "Diterima" || data.Status == "Ditolak" {
+	if data.Status == "diterima" || data.Status == "ditolak" {
 		return report.ReportCore{}, errors.New("status sudah diterima atau ditolak, tidak bisa update data lagi")
 	}
 

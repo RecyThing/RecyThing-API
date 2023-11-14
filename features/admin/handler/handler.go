@@ -290,7 +290,7 @@ func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 	
-	_, err = ah.AdminService.UpdateStatusReport(id, input.Status)
+	_, err = ah.AdminService.UpdateStatusReport(id, input.Status, input.RejectionDescription)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}

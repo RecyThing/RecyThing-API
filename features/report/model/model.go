@@ -19,7 +19,7 @@ type Report struct {
 	Description          string
 	Images               []Image `gorm:"foreignKey:ReportId"`
 	AddressPoint         string
-	Status               string `gorm:"default:'proses'"`
+	Status               string `gorm:"type:enum('perlu ditinjau','diterima','ditolak');default:'perlu ditinjau'"`
 	RejectionDescription string
 
 	//rubbish only
@@ -49,12 +49,12 @@ type Image struct {
 
 func (r *Report) BeforeCreate(tx *gorm.DB) (err error) {
 	newUuid := uuid.New()
-	if r.ReportType == "tumpukan sampah"{
+	if r.ReportType == "tumpukan sampah" {
 		trimmedUuid := strings.ReplaceAll(newUuid.String(), "-", "")[:15]
 		uppercasedUUID := strings.ToUpper(trimmedUuid)
 		r.Id = "TS-" + uppercasedUUID
 	}
-	if r.ReportType == "pelanggaran sampah"{
+	if r.ReportType == "pelanggaran sampah" {
 		trimmedUuid := strings.ReplaceAll(newUuid.String(), "-", "")[:15]
 		uppercasedUUID := strings.ToUpper(trimmedUuid)
 		r.Id = "PS-" + uppercasedUUID

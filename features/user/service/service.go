@@ -3,9 +3,11 @@ package service
 import (
 	"errors"
 	"recything/features/user/entity"
+	"recything/utils/constanta"
 	"recything/utils/email"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+	"recything/utils/validation"
 	"time"
 )
 
@@ -22,9 +24,24 @@ func NewUserService(userRepo entity.UsersRepositoryInterface) entity.UsersUsecas
 // Register implements entity.UsersUsecaseInterface.
 func (us *userService) Register(data entity.UsersCore) error {
 
-	_,err := us.userRepo.FindByEmail(data.Email)
+	errEmpty := validation.CheckDataEmpty(data.Fullname, data.Email, data.Password, data.ConfirmPassword)
+	if errEmpty != nil {
+		return errEmpty
+	}
+
+	errEmail := validation.EmailFormat(data.Email)
+	if errEmail != nil {
+		return errEmail
+	}
+
+	errLength := validation.MinLength(data.Password, 8)
+	if errLength != nil {
+		return errLength
+	}
+
+	_, err := us.userRepo.FindByEmail(data.Email)
 	if err == nil {
-		return errors.New("email sudah digunakan, silahkan gunakan yang lain")
+		return err
 	}
 
 	if data.Password != data.ConfirmPassword {
@@ -50,24 +67,31 @@ func (us *userService) Register(data entity.UsersCore) error {
 	return nil
 }
 
-
 // Login implements entity.UsersUsecaseInterface.
 func (us *userService) Login(email, password string) (entity.UsersCore, string, error) {
-	
-	dataUser,errEmail := us.userRepo.FindByEmail(email)
+
+	errEmpty := validation.CheckDataEmpty(email, password)
+	if errEmpty != nil {
+		return entity.UsersCore{}, "", errEmpty
+	}
+
+	errEmail := validation.EmailFormat(email)
 	if errEmail != nil {
-		return entity.UsersCore{},"",errors.New("email belum terdaftar")
+		return entity.UsersCore{}, "", errEmail
+	}
+
+	dataUser, errEmail := us.userRepo.FindByEmail(email)
+	if errEmail != nil {
+		return entity.UsersCore{}, "", errors.New("email belum terdaftar")
 	}
 
 	if !dataUser.IsVerified {
 		return entity.UsersCore{}, "", errors.New("akun belum terverifikasi")
 	}
 
-
-
 	comparePass := helper.CompareHash(dataUser.Password, password)
 	if !comparePass {
-		return entity.UsersCore{}, "", errors.New("password salah")
+		return entity.UsersCore{}, "", errors.New("password atau email salah")
 	}
 
 	token, err := jwt.CreateToken(dataUser.Id, "")
@@ -85,21 +109,25 @@ func (us *userService) GetById(id string) (entity.UsersCore, error) {
 
 	dataUser, err := us.userRepo.GetById(id)
 	if err != nil {
-		return entity.UsersCore{},errors.New("data user tidak ada")
+		return entity.UsersCore{}, errors.New("data user tidak ada")
 	}
 	return dataUser, nil
 }
 
-
 // UpdateById implements entity.UsersUsecaseInterface.
-func (us *userService) UpdateById(id string, data entity.UsersCore) error{
+func (us *userService) UpdateById(id string, data entity.UsersCore) error {
 	if id == "" {
 		return errors.New("invalid id")
 	}
 
 	_, errGet := us.userRepo.GetById(id)
 	if errGet != nil {
-		return errors.New("data user tidak ada")
+		return errGet
+	}
+
+	errPhone := validation.PhoneNumber(data.Phone)
+	if errPhone != nil {
+		return errPhone
 	}
 
 	if data.DateOfBirth != "" {
@@ -108,39 +136,42 @@ func (us *userService) UpdateById(id string, data entity.UsersCore) error{
 		}
 	}
 
-	if data.Phone != "" {
-		phone := helper.PhoneNumberValid(data.Phone)
-		if !phone {
-			return errors.New("nomor telepon tidak valid")
-		}
-	}
-
 	err := us.userRepo.UpdateById(id, data)
 	if err != nil {
-		return  err
+		return err
 	}
 
 	return nil
 }
 
 // UpdatePassword implements entity.UsersUsecaseInterface.
-func (us *userService) UpdatePassword(id string, data entity.UsersCore)  error {
+func (us *userService) UpdatePassword(id string, data entity.UsersCore) error {
 	if id == "" {
 		return errors.New("invalid id")
 	}
 
-	result ,err := us.GetById(id)
+	result, err := us.GetById(id)
 	if err != nil {
-		return errors.New("data tidak ada")
+		return err
 	}
 
-	ComparePass := helper.CompareHash(result.Password,data.Password) 
+	errEmpty := validation.CheckDataEmpty(data.Password, data.NewPassword, data.ConfirmPassword)
+	if errEmpty != nil {
+		return errEmpty
+	}
+
+	errLength := validation.MinLength(data.NewPassword, 8)
+	if errLength != nil {
+		return errLength
+	}
+
+	ComparePass := helper.CompareHash(result.Password, data.Password)
 	if !ComparePass {
-		return errors.New("password lama tidak sesuai") 
+		return errors.New(constanta.ERROR_PASSWORD)
 	}
 
 	if data.NewPassword != data.ConfirmPassword {
-		return errors.New("password tidak sama")
+		return errors.New(constanta.ERROR_PASSWORD)
 	}
 
 	HashPassword, errHash := helper.HashPassword(data.NewPassword)
@@ -180,7 +211,6 @@ func (us *userService) VerifyUser(token string) (bool, error) {
 	return false, nil
 }
 
-
 // UpdateIsVerified implements entity.UsersUsecaseInterface.
 func (us *userService) UpdateIsVerified(id string, isVerified bool) error {
 	if id == "" {
@@ -192,6 +222,16 @@ func (us *userService) UpdateIsVerified(id string, isVerified bool) error {
 
 // SendOTP implements entity.UsersUsecaseInterface.
 func (us *userService) SendOTP(emailUser string) error {
+
+	errEmpty := validation.CheckDataEmpty(emailUser)
+	if errEmpty != nil {
+		return errEmpty
+	}
+
+	errEmail := validation.EmailFormat(emailUser)
+	if errEmail != nil {
+		return errEmail
+	}
 
 	otp, errGenerate := email.GenerateOTP(4)
 	if errGenerate != nil {
@@ -214,32 +254,48 @@ func (us *userService) SendOTP(emailUser string) error {
 }
 
 // VerifyOTP implements entity.UsersUsecaseInterface.
-func (us *userService) VerifyOTP(otp string) (string, error) {
-	dataUsers, err := us.userRepo.VerifyOTP(otp)
+func (us *userService) VerifyOTP(email, otp string) error {
+	dataUsers, err := us.userRepo.VerifyOTP(email, otp)
 	if err != nil {
-		return "", errors.New("otp tidak ditemukan")
+		return errors.New("otp tidak ditemukan")
 	}
 
 	if dataUsers.OtpExpiration <= time.Now().Unix() {
-		return "", errors.New("otp sudah kadaluwarsa")
+		return errors.New("otp sudah kadaluwarsa")
 	}
 
 	if dataUsers.Otp != otp {
-		return "", errors.New("otp tidak valid")
+		return errors.New("otp tidak valid")
 	}
 
-	token, err := jwt.CreateTokenVerifikasi(otp)
-	if err != nil {
-		return "", errors.New("token gagal dibuat")
+	_, errReset := us.userRepo.ResetOTP(otp)
+	if errReset != nil {
+		return errors.New("gagal mengatur ulang OTP")
 	}
 
-	return token, nil
+	return nil
 }
 
 // ForgetPassword implements entity.UsersUsecaseInterface.
-func (us *userService) NewPassword(otp string, data entity.UsersCore) error {
+func (us *userService) NewPassword(email string, data entity.UsersCore) error {
+
+	errEmpty := validation.CheckDataEmpty(email, data.Password, data.ConfirmPassword)
+	if errEmpty != nil {
+		return errEmpty
+	}
+
+	errEmail := validation.EmailFormat(email)
+	if errEmail != nil {
+		return errEmail
+	}
+
+	errLength := validation.MinLength(data.Password, 8)
+	if errLength != nil {
+		return errLength
+	}
+
 	if data.Password != data.ConfirmPassword {
-		return errors.New("password tidak sama")
+		return errors.New(constanta.ERROR_PASSWORD)
 	}
 
 	HashPassword, errHash := helper.HashPassword(data.Password)
@@ -248,14 +304,9 @@ func (us *userService) NewPassword(otp string, data entity.UsersCore) error {
 	}
 	data.Password = HashPassword
 
-	_, errNew := us.userRepo.NewPassword(otp, data)
+	_, errNew := us.userRepo.NewPassword(email, data)
 	if errNew != nil {
-		return errors.New("otp tidak ditemukan")
-	}
-
-	_, errReset := us.userRepo.ResetOTP(otp)
-	if errReset != nil {
-		return errors.New("gagal mengatur ulang OTP")
+		return errNew
 	}
 
 	return nil

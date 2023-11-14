@@ -149,10 +149,6 @@ func (ar *AdminRepository) GetAllUsers() ([]user.UsersCore, error) {
 		return nil, tx.Error
 	}
 
-	if tx.RowsAffected == 0 {
-		return nil, errors.New(constanta.ERROR_GET_DATA)
-	}
-
 	dataResponse := user.ListUserModelToUserCore(dataUsers)
 	return dataResponse, nil
 }

@@ -3,12 +3,12 @@ package email
 import (
 	"log"
 	"os"
-	"recything/utils/helper"
+	"recything/utils/constanta"
 )
 
 func SendVerificationEmail(emailAddress string, token string) {
 	go func() {
-		verificationLink := helper.VERIFICATION_URL + token
+		verificationLink := constanta.VERIFICATION_URL + token
 		fileContent, err := os.ReadFile("utils/email/templates/account_registration.html")
 		if err != nil {
 			log.Printf("gagal membaca template email: %v", err)

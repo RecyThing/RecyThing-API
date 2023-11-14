@@ -47,9 +47,9 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 
 	//Manage Users
 	user := e.Group("/manage/users", jwt.JWTMiddleware())
-	user.GET("/users", adminHandler.GetAllUser)
-	user.GET("/users/:id", adminHandler.GetByIdUsers)
-	user.DELETE("/users/:id", adminHandler.DeleteUsers)
+	user.GET("", adminHandler.GetAllUser)
+	user.GET("/:id", adminHandler.GetByIdUsers)
+	user.DELETE("/:id", adminHandler.DeleteUsers)
 
 	//Manage Prompt
 	recybot := e.Group("/manage/prompts", jwt.JWTMiddleware())

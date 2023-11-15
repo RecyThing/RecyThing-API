@@ -20,16 +20,16 @@ func NewUserRepository(db *gorm.DB) entity.UsersRepositoryInterface {
 }
 
 // Register implements entity.UsersRepositoryInterface.
-func (ur *userRepository) Register(data entity.UsersCore) error {
+func (ur *userRepository) Register(data entity.UsersCore) (entity.UsersCore, error) {
 	request := entity.UsersCoreToUsersModel(data)
 
 	tx := ur.db.Create(&request)
 	if tx.Error != nil {
-		return tx.Error
+		return entity.UsersCore{},tx.Error
 	}
 
-
-	return nil
+	dataResponse := entity.UsersModelToUsersCore(request)
+	return dataResponse,nil
 }
 
 // GetById implements entity.UsersRepositoryInterface.

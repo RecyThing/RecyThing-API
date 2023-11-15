@@ -56,7 +56,7 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 	recybot.POST("", recybotHandler.CreateData)
 	recybot.GET("", recybotHandler.GetAllData)
 	recybot.GET("/:id", recybotHandler.GetById)
-	recybot.PUT("/:id", recybotHandler.DeleteById)
+	recybot.PUT("/:id", recybotHandler.UpdateData)
 	recybot.DELETE("/:id", recybotHandler.DeleteById)
 
 	// Manage Reporting

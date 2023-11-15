@@ -75,10 +75,14 @@ func (ah *AdminHandler) Login(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	jwt.SetTokenCookie(e, token)
 	response := response.AdminCoreToAdminResponse(result)
 
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_LOGIN, response))
+	responses := echo.Map {
+		"data":response,
+		"token":token,
+	}
+	
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_LOGIN, responses))
 }
 
 // mendapatkan semua data admin yang active maupun yang tidak active

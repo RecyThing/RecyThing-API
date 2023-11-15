@@ -10,7 +10,7 @@
 | Method                                                           | Url             | Description         |
 | ---------------------------------------------------------------- | --------------- | ------------------- |
 | ![](https://storage.kodeteks.com/POST.png)                       | `/admins`       | Add Admin           |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/admins/:id`   | View All Admin      |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/admins`   | View All Admin      |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/admins/:id`   | View Admin By Id    |
 | ![](https://storage.kodeteks.com/PUT.png)                        | `/admins/:id`   | Update Admin By Id  |
 | ![](https://storage.kodeteks.com/DELETE.png)                     | `/admins/:id`   | Delete Admin By Id  |

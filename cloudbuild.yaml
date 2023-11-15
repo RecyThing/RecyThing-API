@@ -1,15 +1,15 @@
 steps:
 
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/alta-capstone/recything-api:latest', '.']
+  args: ['build', '-t', 'gcr.io/alta-capstone/recything-api', '.']
 
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/alta-capstone/recything-api:latest']
+  args: ['push', 'gcr.io/alta-capstone/recything-api']
 
 - name: 'gcr.io/cloud-builders/gcloud'
-  args: ['run', 'deploy', 'recything:latest', '--image', 'gcr.io/alta-capstone/recything-api:latest', '--region', 'us-central1']
+  args: ['run', 'deploy', 'recything', '--image', 'gcr.io/alta-capstone/recything-api:latest', '--region', 'us-central1']
 
-images: ['gcr.io/alta-capstone/recything-api:latest']
+images: ['gcr.io/alta-capstone/recything-api']
 
 options:
   logging: CLOUD_LOGGING_ONLY

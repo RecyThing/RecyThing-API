@@ -10,3 +10,6 @@ steps:
   args: ['run', 'deploy', 'recything:latest', '--image', 'gcr.io/alta-capstone/recything-api:latest', '--region', 'us-central1']
 
 images: ['gcr.io/alta-capstone/recything-api:latest']
+
+options:
+  logging: CLOUD_LOGGING_ONLY

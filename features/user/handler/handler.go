@@ -38,7 +38,7 @@ func (uh *userHandler) Register(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errCreate.Error()))
 	}
 
-	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil create data"))
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil membuat data"))
 }
 
 func (uh *userHandler) Login(e echo.Context) error {

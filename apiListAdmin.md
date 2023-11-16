@@ -62,7 +62,7 @@
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/achivements`       | View All Achievements                |
 | ![](https://storage.kodeteks.com/PATCH.png)                         | `/admins/manage/achivements/:id`   | Update Achievement                   |
 
-## Manage Content
+## Manage Articles
 
 | Method                                                              | Url                             | Description                          |
 | ------------------------------------------------------------------- | ------------------------------  | ------------------------------------ |

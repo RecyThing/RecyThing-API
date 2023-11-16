@@ -22,12 +22,12 @@ func NewReportService(report entity.ReportRepositoryInterface) entity.ReportServ
 // ReadAllReport implements entity.ReportServiceInterface.
 func (rc *reportService) ReadAllReport(idUser string) ([]entity.ReportCore, error) {
 	if idUser == "" {
-		return []entity.ReportCore{}, errors.New("user not found")
+		return []entity.ReportCore{}, errors.New("pengguna tidak ditemukan")
 	}
 
 	reports, err := rc.ReportRepository.ReadAllReport(idUser)
 	if err != nil {
-		return []entity.ReportCore{}, errors.New("error get data")
+		return []entity.ReportCore{}, errors.New("gagal mendapatkan data")
 	}
 
 	return reports, nil
@@ -36,20 +36,15 @@ func (rc *reportService) ReadAllReport(idUser string) ([]entity.ReportCore, erro
 // SelectById implements entity.ReportRepositoryInterface.
 func (rc *reportService) SelectById(idReport string) (entity.ReportCore, error) {
 	if idReport == "" {
-		return entity.ReportCore{}, errors.New("invalid id")
+		return entity.ReportCore{}, errors.New("id tidak cocok")
 	}
 
 	reportData, err := rc.ReportRepository.SelectById(idReport)
 	if err != nil {
-		return entity.ReportCore{}, errors.New("failed to read report")
+		return entity.ReportCore{}, errors.New("gagal membaca data")
 	}
 
 	return reportData, nil
-}
-
-// UploadProof implements entity.ReportRepositoryInterface.
-func (*reportService) UploadProof(id string, data entity.ReportCore, image *multipart.FileHeader) (purchases entity.ReportCore, err error) {
-	panic("unimplemented")
 }
 
 func (report *reportService) Create(reportInput entity.ReportCore, userId string, images []*multipart.FileHeader) (entity.ReportCore, error) {
@@ -58,17 +53,17 @@ func (report *reportService) Create(reportInput entity.ReportCore, userId string
 
 		fmt.Println("service : ", reportInput.InsidentDate)
 		if _, parseErr := time.Parse("2006-01-02", reportInput.InsidentDate); parseErr != nil {
-			return entity.ReportCore{}, errors.New("error, date must be in the format 'yyyy-mm-dd'")
+			return entity.ReportCore{}, errors.New("error, tanggal harus dalam format 'yyyy-mm-dd'")
 		}
 
 		if _, errHour := time.Parse("15:04", reportInput.InsidentTime); errHour != nil {
-			return entity.ReportCore{}, errors.New("error, date must be in the format 'hh:mm'")
+			return entity.ReportCore{}, errors.New("error, jam harus dalam format 'hh:mm'")
 		}
 	}
 
 	for _, image := range images {
         if image != nil && image.Size > 20*1024*1024 {
-            return entity.ReportCore{}, errors.New("image file size should be less than 20 MB")
+            return entity.ReportCore{}, errors.New("ukuran file tidak boleh lebih dari 20 MB")
         }
     }
 

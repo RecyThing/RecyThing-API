@@ -82,7 +82,7 @@ func (us *userService) Login(email, password string) (entity.UsersCore, string, 
 
 	dataUser, errEmail := us.userRepo.FindByEmail(email)
 	if errEmail != nil {
-		return entity.UsersCore{}, "", errors.New("email belum terdaftar")
+		return entity.UsersCore{}, "", errors.New(constanta.EMAIL_NOT_REGISTER)
 	}
 
 	if !dataUser.IsVerified {
@@ -91,7 +91,7 @@ func (us *userService) Login(email, password string) (entity.UsersCore, string, 
 
 	comparePass := helper.CompareHash(dataUser.Password, password)
 	if !comparePass {
-		return entity.UsersCore{}, "", errors.New("password atau email salah")
+		return entity.UsersCore{}, "", errors.New("email atau password salah")
 	}
 
 	token, err := jwt.CreateToken(dataUser.Id, "")
@@ -104,7 +104,7 @@ func (us *userService) Login(email, password string) (entity.UsersCore, string, 
 // GetById implements entity.UsersUsecaseInterface.
 func (us *userService) GetById(id string) (entity.UsersCore, error) {
 	if id == "" {
-		return entity.UsersCore{}, errors.New("invalid id")
+		return entity.UsersCore{}, errors.New(constanta.ERROR_ID_INVALID)
 	}
 
 	dataUser, err := us.userRepo.GetById(id)
@@ -117,7 +117,7 @@ func (us *userService) GetById(id string) (entity.UsersCore, error) {
 // UpdateById implements entity.UsersUsecaseInterface.
 func (us *userService) UpdateById(id string, data entity.UsersCore) error {
 	if id == "" {
-		return errors.New("invalid id")
+		return errors.New(constanta.ERROR_ID_INVALID)
 	}
 
 	_, errGet := us.userRepo.GetById(id)
@@ -147,7 +147,7 @@ func (us *userService) UpdateById(id string, data entity.UsersCore) error {
 // UpdatePassword implements entity.UsersUsecaseInterface.
 func (us *userService) UpdatePassword(id string, data entity.UsersCore) error {
 	if id == "" {
-		return errors.New("invalid id")
+		return errors.New(constanta.ERROR_ID_INVALID)
 	}
 
 	result, err := us.GetById(id)
@@ -171,12 +171,12 @@ func (us *userService) UpdatePassword(id string, data entity.UsersCore) error {
 	}
 
 	if data.NewPassword != data.ConfirmPassword {
-		return errors.New(constanta.ERROR_PASSWORD)
+		return errors.New(constanta.ERROR_CONFIRM_PASSWORD)
 	}
 
 	HashPassword, errHash := helper.HashPassword(data.NewPassword)
 	if errHash != nil {
-		return errors.New("error hash password")
+		return errors.New(constanta.ERROR_HASH_PASSWORD)
 	}
 	data.Password = HashPassword
 
@@ -214,7 +214,7 @@ func (us *userService) VerifyUser(token string) (bool, error) {
 // UpdateIsVerified implements entity.UsersUsecaseInterface.
 func (us *userService) UpdateIsVerified(id string, isVerified bool) error {
 	if id == "" {
-		return errors.New("user id is required")
+		return errors.New(constanta.ERROR_ID_INVALID)
 	}
 
 	return us.userRepo.UpdateIsVerified(id, isVerified)
@@ -306,7 +306,7 @@ func (us *userService) NewPassword(email string, data entity.UsersCore) error {
 
 	HashPassword, errHash := helper.HashPassword(data.Password)
 	if errHash != nil {
-		return errors.New("error hash password")
+		return errors.New(constanta.ERROR_HASH_PASSWORD)
 	}
 	data.Password = HashPassword
 

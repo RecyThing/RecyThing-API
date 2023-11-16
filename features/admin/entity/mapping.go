@@ -7,7 +7,7 @@ import (
 func AdminModelToAdminCore(data model.Admin) AdminCore {
 	return AdminCore{
 		Id:              data.Id,
-		Name:            data.Name,
+		Fullname:        data.Fullname,
 		Role:            data.Role,
 		Email:           data.Email,
 		Password:        data.Password,
@@ -31,7 +31,7 @@ func ListAdminModelToAdminCore(admins []model.Admin) []AdminCore {
 func AdminCoreToAdminModel(admin AdminCore) model.Admin {
 	return model.Admin{
 		Id:        admin.Id,
-		Name:      admin.Name,
+		Fullname:  admin.Fullname,
 		Role:      admin.Role,
 		Email:     admin.Email,
 		Password:  admin.Password,

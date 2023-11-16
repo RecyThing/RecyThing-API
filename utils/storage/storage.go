@@ -3,9 +3,12 @@ package storage
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"io"
 	"mime/multipart"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"cloud.google.com/go/storage"
 	"github.com/google/uuid"
@@ -20,31 +23,38 @@ func UploadProof(image *multipart.FileHeader) (string, error) {
 	encodedCredentials := os.Getenv("STORAGE_KEY")
 	decodedCredentials, err := base64.StdEncoding.DecodeString(encodedCredentials)
 	if err != nil {
-		logrus.Error("Failed to decode Google Cloud credentials:", err)
+		logrus.Error("Gagal melakukan decode pada Google Cloud Credentials:", err)
 		return "", err
 	}
 
 	client, err := storage.NewClient(ctx, option.WithCredentialsJSON(decodedCredentials))
 	if err != nil {
-		logrus.Error("Failed to create GCP client:", err)
+		logrus.Error("Gagal membuat client GCP:", err)
 		return "", err
 	}
 	defer client.Close()
 
 	bucketName := "report_proof"
-	imagePath := "proof-file/" + uuid.New().String() + ".jpg"
+	extension := filepath.Ext(image.Filename)
+	allowedExtensions := map[string]bool{".jpg": true, ".png": true, ".mp4": true}
+
+	if !allowedExtensions[strings.ToLower(extension)] {
+		return "", errors.New("format file tidak diizinkan")
+	}
+
+	imagePath := "proof-file/" + uuid.New().String() + extension
 
 	wc := client.Bucket(bucketName).Object(imagePath).NewWriter(ctx)
 	defer wc.Close()
 
 	file, err := image.Open()
 	if err != nil {
-		logrus.Error("Failed to open image file:", err)
+		logrus.Error("gagal membuka file:", err)
 		return "", err
 	}
 
 	if _, err := io.Copy(wc, file); err != nil {
-		logrus.Error("Failed to copy image data:", err)
+		logrus.Error("gagal menyalin file:", err)
 		return "", err
 	}
 

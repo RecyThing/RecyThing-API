@@ -56,13 +56,9 @@ func (uh *userHandler) Login(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errLogin.Error()))
 	}
 
-	response := response.UsersCoreToLoginResponse(dataUser)
+	response := response.UsersCoreToLoginResponse(dataUser,token)
 
-	responses := echo.Map{
-		"data":  response,
-		"token": token,
-	}
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_LOGIN, responses))
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_LOGIN, response))
 }
 
 func (uh *userHandler) GetUserById(e echo.Context) error {

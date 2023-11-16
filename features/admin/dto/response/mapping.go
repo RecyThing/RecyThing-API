@@ -20,3 +20,12 @@ func ListAdminCoreToAdminResponse(admins []entity.AdminCore) []AdminRespon {
 	}
 	return listAdmin
 }
+
+func AdminCoreToAdminResponseLogin(admin entity.AdminCore, token string) AdminResponseLogin {
+	return AdminResponseLogin{
+		ID:       admin.Id,
+		Fullname: admin.Fullname,
+		Email:    admin.Email,
+		Token:    token,
+	}
+}

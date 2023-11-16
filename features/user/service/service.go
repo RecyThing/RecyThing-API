@@ -22,49 +22,49 @@ func NewUserService(userRepo entity.UsersRepositoryInterface) entity.UsersUsecas
 }
 
 // Register implements entity.UsersUsecaseInterface.
-func (us *userService) Register(data entity.UsersCore) error {
+func (us *userService) Register(data entity.UsersCore) (entity.UsersCore,error) {
 
 	errEmpty := validation.CheckDataEmpty(data.Fullname, data.Email, data.Password, data.ConfirmPassword)
 	if errEmpty != nil {
-		return errEmpty
+		return entity.UsersCore{},errEmpty
 	}
 
 	errEmail := validation.EmailFormat(data.Email)
 	if errEmail != nil {
-		return errEmail
+		return entity.UsersCore{},errEmail
 	}
 
 	errLength := validation.MinLength(data.Password, 8)
 	if errLength != nil {
-		return errLength
+		return entity.UsersCore{},errLength
 	}
 
 	_, err := us.userRepo.FindByEmail(data.Email)
 	if err == nil {
-		return err
+		return entity.UsersCore{},err
 	}
 
 	if data.Password != data.ConfirmPassword {
-		return errors.New(constanta.ERROR_CONFIRM_PASSWORD)
+		return entity.UsersCore{},errors.New(constanta.ERROR_CONFIRM_PASSWORD)
 	}
 
 	hashedPassword, err := helper.HashPassword(data.Password)
 	if err != nil {
-		return errors.New(constanta.ERROR_HASH_PASSWORD)
+		return entity.UsersCore{},errors.New(constanta.ERROR_HASH_PASSWORD)
 	}
 
 	data.Password = hashedPassword
 	uniqueToken := email.GenerateUniqueToken()
 	data.VerificationToken = uniqueToken
 
-	err = us.userRepo.Register(data)
+	dataUsers,err := us.userRepo.Register(data)
 	if err != nil {
-		return err
+		return entity.UsersCore{},err
 	}
 
 	email.SendVerificationEmail(data.Email, uniqueToken)
 
-	return nil
+	return dataUsers,nil
 }
 
 // Login implements entity.UsersUsecaseInterface.

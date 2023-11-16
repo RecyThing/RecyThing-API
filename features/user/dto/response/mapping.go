@@ -10,11 +10,12 @@ func UsersCoreToUsersCreateResponse(data entity.UsersCore ) UserCreateResponse {
 	}
 }
 
-func UsersCoreToLoginResponse(data entity.UsersCore) UserLoginResponse {
+func UsersCoreToLoginResponse(data entity.UsersCore, token string) UserLoginResponse {
 	return UserLoginResponse{
 		Id:       data.Id,
 		Fullname: data.Fullname,
 		Email:    data.Email,
+		Token:    token,
 	}
 }
 

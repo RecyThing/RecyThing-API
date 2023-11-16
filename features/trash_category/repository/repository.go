@@ -47,7 +47,7 @@ func (tc *trashCategoryRepository) Create(data entity.TrashCategoryCore) (entity
 // }
 
 func (tc *trashCategoryRepository) GetAll(page string, limit string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
-	// Convert limit and page to integers
+	
 
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {

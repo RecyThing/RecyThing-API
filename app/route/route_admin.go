@@ -29,7 +29,7 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 	// manage admin
 	adminRepository := adminRepository.NewAdminRepository(db)
 	adminService := adminService.NewAdminService(adminRepository)
-	adminHandler := adminHandler.NewAdminHandler(adminService,userService)
+	adminHandler := adminHandler.NewAdminHandler(adminService, userService)
 
 	//manage prompt
 	recybotRepository := recybotRepository.NewRecybotRepository(db)
@@ -54,6 +54,10 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 	// Manage Prompt
 	recybot := e.Group("/manage/prompts", jwt.JWTMiddleware())
 	recybot.POST("", recybotHandler.CreateData)
+	recybot.GET("", recybotHandler.GetAllData)
+	recybot.GET("/:id", recybotHandler.GetById)
+	recybot.PUT("/:id", recybotHandler.DeleteById)
+	recybot.DELETE("/:id", recybotHandler.DeleteById)
 
 	// Manage Reporting
 	report := e.Group("/manage/reports", jwt.JWTMiddleware())

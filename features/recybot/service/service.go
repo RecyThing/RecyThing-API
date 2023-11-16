@@ -1,22 +1,50 @@
 package service
 
 import (
+	"errors"
 	"recything/features/recybot/entity"
+	"recything/utils/validation"
 )
 
 type recybotService struct {
 	recybotRepo entity.RecybotRepositoryInterface
 }
 
-func NewRecybotService(recybotRepo entity.RecybotRepositoryInterface) entity.RecybotServiceInterface {
+func NewRecybotService(rc entity.RecybotRepositoryInterface) entity.RecybotServiceInterface {
 	return &recybotService{
-		recybotRepo: recybotRepo,
+		recybotRepo: rc,
 	}
 }
 
 // CreateData implements entity.RecybotServiceInterface.
-func (rb *recybotService) CreateData(recybot entity.RecybotCore) (entity.RecybotCore, error) {
-	result, err := rb.recybotRepo.Create(recybot)
+func (rb *recybotService) CreateData(data entity.RecybotCore) (entity.RecybotCore, error) {
+
+	errEmpty := validation.CheckDataEmpty(data.Category,data.Question)
+	if errEmpty != nil {
+		return entity.RecybotCore{},errEmpty
+	}
+
+	if data.Category != "sampah plastik" && data.Category != "sampah organik" {
+		return entity.RecybotCore{}, errors.New("jenis sampah harus diisi dengan 'sampah plastik' atau 'sampah organik'")
+	}
+
+	result, err := rb.recybotRepo.Create(data)
+	if err != nil {
+		return result, err
+	}
+	return result, nil
+}
+
+func (rb *recybotService) GetAllData() ([]entity.RecybotCore, error) {
+	result, err := rb.recybotRepo.GetAll()
+	if err != nil {
+		return result, err
+	}
+	return result, nil
+}
+
+func (rb *recybotService) GetById(idData string) (entity.RecybotCore, error) {
+	result, err := rb.recybotRepo.GetById(idData)
 	if err != nil {
 		return result, err
 	}
@@ -25,11 +53,8 @@ func (rb *recybotService) CreateData(recybot entity.RecybotCore) (entity.Recybot
 
 // Delete implements entity.RecybotServiceInterface.
 func (rb *recybotService) DeleteData(idData string) error {
-	_, err := rb.SelectById(idData)
-	if err != nil {
-		return err
-	}
-	err = rb.recybotRepo.Delete(idData)
+
+	err := rb.recybotRepo.Delete(idData)
 	if err != nil {
 		return err
 	}
@@ -37,32 +62,17 @@ func (rb *recybotService) DeleteData(idData string) error {
 }
 
 // UpdateData implements entity.RecybotServiceInterface.
-func (rb *recybotService) UpdateData(idData string, recybot entity.RecybotCore) (entity.RecybotCore, error) {
-	_, err := rb.recybotRepo.SelectById(idData)
-	if err != nil {
-		return entity.RecybotCore{}, err
+func (rb *recybotService) UpdateData(idData string, data entity.RecybotCore) (entity.RecybotCore, error) {
+
+	errEmpty := validation.CheckDataEmpty(data.Category, data.Question)
+	if errEmpty != nil {
+		return entity.RecybotCore{}, errEmpty
 	}
 
-	result, err := rb.recybotRepo.Update(idData, recybot)
+	result, err := rb.recybotRepo.Update(idData, data)
 	if err != nil {
 		return result, err
 	}
 	result.ID = idData
-	return result, nil
-}
-
-func (rb *recybotService) SelectAllData() ([]entity.RecybotCore, error) {
-	result, err := rb.recybotRepo.SelectAll()
-	if err != nil {
-		return result, err
-	}
-	return result, nil
-}
-
-func (rb *recybotService) SelectById(idData string) (entity.RecybotCore, error) {
-	result, err := rb.recybotRepo.SelectById(idData)
-	if err != nil {
-		return result, err
-	}
 	return result, nil
 }

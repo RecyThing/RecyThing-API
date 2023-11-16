@@ -66,11 +66,11 @@
 
 | Method                                                              | Url                             | Description                          |
 | ------------------------------------------------------------------- | ------------------------------  | ------------------------------------ |
-| ![](https://storage.kodeteks.com/POST.png)                          | `/admins/manage/contents`       | Add Content                          |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/contents`       | View All Contents                    |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/contents/:id`   | View Detail Content                  |
-| ![](https://storage.kodeteks.com/PUT.png)                           | `/admins/manage/contents/:id`   | Update Content By Id                 |
-| ![](https://storage.kodeteks.com/DELETE.png)                        | `/admins/manage/contents/:id`   | Delete Content By Id                 |
+| ![](https://storage.kodeteks.com/POST.png)                          | `/admins/manage/articles`       | Add Content                          |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/articles`       | View All articles                    |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/articles/:id`   | View Detail Content                  |
+| ![](https://storage.kodeteks.com/PUT.png)                           | `/admins/manage/articles/:id`   | Update articles By Id                 |
+| ![](https://storage.kodeteks.com/DELETE.png)                        | `/admins/manage/articles/:id`   | Delete articles By Id                 |
 
 ## Manage Mission
 

@@ -25,26 +25,27 @@ func NewUserHandlers(uc entity.UsersUsecaseInterface) *userHandler {
 
 func (uh *userHandler) Register(e echo.Context) error {
 	input := request.UserRegister{}
-	
-	errBind := helper.DecodeJSON(e,&input)
+
+	errBind := helper.DecodeJSON(e, &input)
 	if errBind != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
 
 	request := request.UsersRequestRegisterToUsersCore(input)
 
-	errCreate := uh.userUseCase.Register(request)
+	result, errCreate := uh.userUseCase.Register(request)
 	if errCreate != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errCreate.Error()))
 	}
+	response := response.UsersCoreToUsersCreateResponse(result)
 
-	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil membuat data"))
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil membuat data", response))
 }
 
 func (uh *userHandler) Login(e echo.Context) error {
 	// Bind data
 	login := request.UserLogin{}
-	errBind := helper.DecodeJSON(e,&login)
+	errBind := helper.DecodeJSON(e, &login)
 	if errBind != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
@@ -54,12 +55,14 @@ func (uh *userHandler) Login(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errLogin.Error()))
 	}
 
-	jwt.SetTokenCookie(e, token)
 	response := response.UsersCoreToLoginResponse(dataUser)
 
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_LOGIN, response))
+	responses := echo.Map{
+		"data":  response,
+		"token": token,
+	}
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_LOGIN, responses))
 }
-
 
 func (uh *userHandler) GetUserById(e echo.Context) error {
 	idUser, _, errExtract := jwt.ExtractToken(e)
@@ -77,11 +80,10 @@ func (uh *userHandler) GetUserById(e echo.Context) error {
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan profile", response))
 }
 
-
 func (uh *userHandler) UpdateById(e echo.Context) error {
 	input := request.UserUpdate{}
-	
-	errBind := helper.DecodeJSON(e,&input)
+
+	errBind := helper.DecodeJSON(e, &input)
 	if errBind != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
@@ -104,8 +106,8 @@ func (uh *userHandler) UpdateById(e echo.Context) error {
 
 func (uh *userHandler) UpdatePassword(e echo.Context) error {
 	input := request.UserUpdatePassword{}
-	
-	errBind := helper.DecodeJSON(e,&input)
+
+	errBind := helper.DecodeJSON(e, &input)
 	if errBind != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
@@ -151,7 +153,7 @@ func (uh *userHandler) VerifyAccount(e echo.Context) error {
 func (uh *userHandler) ForgotPassword(e echo.Context) error {
 	input := request.UserSendOTP{}
 
-	errBind := helper.DecodeJSON(e,&input)
+	errBind := helper.DecodeJSON(e, &input)
 	if errBind != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
@@ -169,7 +171,7 @@ func (uh *userHandler) ForgotPassword(e echo.Context) error {
 func (uh *userHandler) VerifyOTP(e echo.Context) error {
 	input := request.UserVerifyOTP{}
 
-	errBind := helper.DecodeJSON(e,&input)
+	errBind := helper.DecodeJSON(e, &input)
 	if errBind != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
@@ -178,21 +180,20 @@ func (uh *userHandler) VerifyOTP(e echo.Context) error {
 
 	err := uh.userUseCase.VerifyOTP(request.Email, request.Otp)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal verifikasi " + err.Error()))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal verifikasi "+err.Error()))
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("verifikasi otp berhasil"))
 }
 
-
 func (uh *userHandler) NewPassword(e echo.Context) error {
 	input := request.UserNewPassword{}
 
-	errBind := helper.DecodeJSON(e,&input)
+	errBind := helper.DecodeJSON(e, &input)
 	if errBind != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
-	
+
 	request := request.UsersRequestNewPasswordToUsersCore(input)
 	err := uh.userUseCase.NewPassword(request.Email, request)
 	if err != nil {

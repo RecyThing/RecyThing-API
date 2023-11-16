@@ -17,7 +17,7 @@ func JWTMiddleware() echo.MiddlewareFunc {
 	return echojwt.WithConfig(echojwt.Config{
 		SigningKey:    []byte(os.Getenv("JWT_SECRET")),
 		SigningMethod: "HS256",
-		TokenLookup:   "cookie:token",
+		//TokenLookup:   "cookie:token",
 	})
 }
 

@@ -2,14 +2,12 @@ package repository
 
 import (
 	"errors"
-	
 
 	"recything/features/trash_category/entity"
 	"recything/features/trash_category/model"
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"strconv"
-
 	"gorm.io/gorm"
 )
 
@@ -23,16 +21,26 @@ func NewTrashCategiryRepository(db *gorm.DB) entity.TrashCategoryRepositoryInter
 	}
 }
 
-func (tc *trashCategoryRepository) Create(data entity.TrashCategoryCore) (entity.TrashCategoryCore, error) {
+const mysqlErrNumDuplicateEntry = 1062
+
+func (tc *trashCategoryRepository) Create(data entity.TrashCategoryCore) error {
 	input := entity.CoreTrashCategoryToModelTrashCategory(data)
 
 	tx := tc.db.Create(&input)
+	// if tx.RowsAffected == 1 {
+	// 	return errors.New("kategori sampah sudah ada")
+	// }
 	if tx.Error != nil {
-		return entity.TrashCategoryCore{}, tx.Error
+		// if mysqlErr, ok := tx.Error.(*mysql.MySQLError); ok {
+		// 	if mysqlErr.Number == mysqlErrNumDuplicateEntry {
+		// 		return errors.New("kategori sampah sudah ada")
+		// 	}
+		// }
+
+		return tx.Error
 	}
 
-	result := entity.ModelTrashCategoryToCoreTrashCategory(input)
-	return result, nil
+	return nil
 }
 
 func (tc *trashCategoryRepository) GetAll(page string, limit string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
@@ -73,7 +81,6 @@ func (tc *trashCategoryRepository) GetAll(page string, limit string) ([]entity.T
 	paginationInfo := helper.CalculatePagination(int(totalCount), limitInt, pageInt)
 	return result, paginationInfo, nil
 }
-
 
 func (tc *trashCategoryRepository) GetById(idTrash string) (entity.TrashCategoryCore, error) {
 	dataTrashCategories := model.TrashCategory{}

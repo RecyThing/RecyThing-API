@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func  CheckDataEmpty(data ...any) error {
+func CheckDataEmpty(data ...any) error {
 	for _, value := range data {
 		if value == "" {
 			return errors.New(constanta.ERROR_EMPTY)
@@ -17,8 +17,8 @@ func  CheckDataEmpty(data ...any) error {
 	return nil
 }
 
-func CheckCategory(data string) error {
-	validCategories := []string{"sampah plastik", "sampah organik", "informasi", "batasan"}
+
+func CheckCategory(data string, validCategories []string) (string, error) {
 	inputCategory := strings.ToLower(data)
 
 	isValidCategory := false
@@ -30,10 +30,10 @@ func CheckCategory(data string) error {
 	}
 
 	if !isValidCategory {
-		return errors.New("jenis sampah harus diisi dengan 'sampah plastik' atau 'sampah organik'")
+		return "", errors.New("data yang diinput tidak sesuai")
 	}
 
-	return nil
+	return inputCategory, nil
 }
 
 func EmailFormat(email string) error {
@@ -61,7 +61,7 @@ func PhoneNumber(phone string) error {
 
 func MinLength(data string, minLength int) error {
 	if len(data) < minLength {
-		return errors.New("minimal "+ strconv.Itoa(minLength) +" karakter,ulangi kembali!")
+		return errors.New("minimal " + strconv.Itoa(minLength) + " karakter,ulangi kembali!")
 	}
 	return nil
 }

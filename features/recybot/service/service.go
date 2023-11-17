@@ -8,7 +8,7 @@ import (
 	"recything/features/recybot/entity"
 	"recything/utils/validation"
 	"strings"
-
+	"recything/utils/constanta"
 	"github.com/joho/godotenv"
 	"github.com/sashabaranov/go-openai"
 )
@@ -31,11 +31,12 @@ func (rb *recybotService) CreateData(data entity.RecybotCore) (entity.RecybotCor
 		return entity.RecybotCore{}, errEmpty
 	}
 
-	errCategory := validation.CheckCategory(data.Category)
+	validCategory, errCategory := validation.CheckCategory(data.Category, constanta.Category)
 	if errCategory != nil {
 		return entity.RecybotCore{}, errCategory
 	}
 
+	data.Category = validCategory
 	result, err := rb.recybotRepository.Create(data)
 	if err != nil {
 		return result, err
@@ -77,11 +78,12 @@ func (rb *recybotService) UpdateData(idData string, data entity.RecybotCore) (en
 		return entity.RecybotCore{}, errEmpty
 	}
 
-	errCategory := validation.CheckCategory(data.Category)
+	validCategory,errCategory := validation.CheckCategory(data.Category, constanta.Category)
 	if errCategory != nil {
 		return entity.RecybotCore{}, errCategory
 	}
 
+	data.Category = validCategory
 	result, err := rb.recybotRepository.Update(idData, data)
 	if err != nil {
 		return result, err

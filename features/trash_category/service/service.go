@@ -1,8 +1,8 @@
 package service
 
 import (
-	"errors"
 	"recything/features/trash_category/entity"
+	"recything/utils/constanta"
 	"recything/utils/validation"
 )
 
@@ -17,23 +17,24 @@ func NewTrashCategoryService(trashCategoryRepo entity.TrashCategoryRepositoryInt
 }
 
 // CreateData implements entity.trashCategoryServiceInterface.
-func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) (entity.TrashCategoryCore, error) {
+func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) error {
 
-	errEmpty := validation.CheckDataEmpty(data.Satuan, data.TrashType)
+	errEmpty := validation.CheckDataEmpty(data.Unit, data.TrashType, data.Point)
 	if errEmpty != nil {
-		return entity.TrashCategoryCore{}, errEmpty
-	}
-	errEmpty = validation.CheckDataEmptyNumber(data.Point)
-
-	if data.Satuan != "barang" && data.Satuan != "kilogram" {
-		return entity.TrashCategoryCore{}, errors.New("satuan tidak tersedia")
+		return errEmpty
 	}
 
-	result, err := tc.trashCategoryRepo.Create(data)
+	validUnit, errCheck := validation.CheckCategory(data.Unit, constanta.Unit)
+	if errEmpty != nil {
+		return errCheck
+	}
+
+	data.Unit = validUnit
+	err := tc.trashCategoryRepo.Create(data)
 	if err != nil {
-		return result, err
+		return err
 	}
-	return result, nil
+	return nil
 }
 
 func (tc *trashCategoryService) GetAllCategory(page, limit string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
@@ -65,7 +66,7 @@ func (tc *trashCategoryService) DeleteCategory(idTrash string) error {
 // UpdateData implements entity.trashCategoryServiceInterface.
 func (tc *trashCategoryService) UpdateCategory(idTrash string, data entity.TrashCategoryCore) (entity.TrashCategoryCore, error) {
 
-	errEmpty := validation.CheckDataEmpty(data.TrashType, data.Satuan)
+	errEmpty := validation.CheckDataEmpty(data.TrashType, data.Unit)
 	if errEmpty != nil {
 		return entity.TrashCategoryCore{}, errEmpty
 	}

@@ -8,8 +8,6 @@ func RequestTrashCategoryToCoreTrashCategory(trash TrashCategory) entity.TrashCa
 	return entity.TrashCategoryCore{
 		TrashType: trash.TrashType,
 		Point:     trash.Point,
-		Satuan:    trash.Satuan,
+		Unit:      trash.Unit,
 	}
 }
-
-

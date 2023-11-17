@@ -5,6 +5,7 @@ import (
 	"recything/features/admin/entity"
 	report "recything/features/report/entity"
 	user "recything/features/user/entity"
+	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
 	"recything/utils/validation"
@@ -97,7 +98,7 @@ func (as *AdminService) UpdateById(adminId string, data entity.AdminCore) error 
 		data.Password = HashPassword
 
 	}
-	
+
 	err := as.AdminRepository.Update(adminId, data)
 	if err != nil {
 		return errors.New("gagal melakukan update data admin")
@@ -210,19 +211,29 @@ func (as *AdminService) UpdateStatusReport(id string, status string, reason stri
 		return report.ReportCore{}, errors.New("alasan harus diisi saat menolak laporan")
 	}
 
-	dataStatus, err := as.AdminRepository.GetReportByID(id)
-    if err != nil {
-        return report.ReportCore{}, errors.New("gagal mengambil data laporan")
-    }
+	dataStatus, err := as.AdminRepository.GetReportById(id)
+	if err != nil {
+		return report.ReportCore{}, errors.New("gagal mengambil data laporan")
+	}
 
 	if dataStatus.Status == "diterima" || dataStatus.Status == "ditolak" {
-        return report.ReportCore{}, errors.New("status sudah diterima atau ditolak, tidak bisa update data lagi")
-    }
+		return report.ReportCore{}, errors.New("status sudah diterima atau ditolak, tidak bisa update data lagi")
+	}
 
 	data, err := as.AdminRepository.UpdateStatusReport(id, status, reason)
-    if err != nil {
-        return report.ReportCore{}, errors.New("gagal update status")
-    }
+	if err != nil {
+		return report.ReportCore{}, errors.New("gagal update status")
+	}
 
 	return data, nil
+}
+
+// GetReportById implements entity.AdminServiceInterface.
+func (as *AdminService) GetReportById(id string) (report.ReportCore, error) {
+	if id == "" {
+		return report.ReportCore{}, errors.New(constanta.ERROR_ID_INVALID)
+	}
+
+	idReport, err := as.AdminRepository.GetReportById(id)
+	return idReport, err
 }

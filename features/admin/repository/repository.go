@@ -228,10 +228,10 @@ func (ar *AdminRepository) UpdateStatusReport(id, status, reason string) (report
 	return dataResponse, nil
 }
 
-func (ar *AdminRepository) GetReportByID(id string) (report.ReportCore, error) {
+func (ar *AdminRepository) GetReportById(id string) (report.ReportCore, error) {
     dataReports := reportModel.Report{}
 
-    tx := ar.db.Where("id = ?", id).First(&dataReports)
+    tx := ar.db.Preload("Images").Where("id = ?", id).First(&dataReports)
     if tx.Error != nil {
         return report.ReportCore{}, tx.Error
     }
@@ -239,7 +239,7 @@ func (ar *AdminRepository) GetReportByID(id string) (report.ReportCore, error) {
     if tx.RowsAffected == 0 {
         return report.ReportCore{}, errors.New(constanta.ERROR_DATA_ID)
     }
-	
-	dataResponse := report.ReportModelToReportCore(dataReports)
+
+    dataResponse := report.ReportModelToReportCore(dataReports)
     return dataResponse, nil
 }

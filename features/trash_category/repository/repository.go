@@ -7,7 +7,9 @@ import (
 	"recything/features/trash_category/model"
 	"recything/utils/constanta"
 	"recything/utils/helper"
+	"recything/utils/validation"
 	"strconv"
+
 	"gorm.io/gorm"
 )
 
@@ -21,25 +23,16 @@ func NewTrashCategiryRepository(db *gorm.DB) entity.TrashCategoryRepositoryInter
 	}
 }
 
-const mysqlErrNumDuplicateEntry = 1062
-
 func (tc *trashCategoryRepository) Create(data entity.TrashCategoryCore) error {
 	input := entity.CoreTrashCategoryToModelTrashCategory(data)
 
 	tx := tc.db.Create(&input)
-	// if tx.RowsAffected == 1 {
-	// 	return errors.New("kategori sampah sudah ada")
-	// }
 	if tx.Error != nil {
-		// if mysqlErr, ok := tx.Error.(*mysql.MySQLError); ok {
-		// 	if mysqlErr.Number == mysqlErrNumDuplicateEntry {
-		// 		return errors.New("kategori sampah sudah ada")
-		// 	}
-		// }
-
+		if validation.IsDuplicateError(tx.Error) {
+			return errors.New(constanta.ERROR_DATA_EXIST)
+		}
 		return tx.Error
 	}
-
 	return nil
 }
 

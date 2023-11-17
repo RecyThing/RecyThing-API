@@ -37,8 +37,14 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
 	result, pagnation, err := tc.trashCategory.GetAllCategory(page, limit)
+
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	if len(result) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada kategori sampah"))
+
 	}
 
 	response := response.ListCoreTrashCategoryToReponseTrashCategory(result)

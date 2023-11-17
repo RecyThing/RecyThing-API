@@ -34,9 +34,10 @@ const (
 	ERROR_GET_DATA         = "data tidak ditemukan"
 	ERROR_EMPTY            = "harap lengkapi data dengan benar"
 	ERROR_HASH_PASSWORD    = "error hash password"
+	ERROR_DATA_EXIST       = "data sudah ada"
 )
 
 var (
-	Unit = []string{"barang", "kilogram"}
-	Category = []string{"sampah plastik","sampah organik"}
+	Unit     = []string{"barang", "kilogram"}
+	Category = []string{"sampah plastik", "sampah organik"}
 )

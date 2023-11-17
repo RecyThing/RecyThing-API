@@ -6,6 +6,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 func CheckDataEmpty(data ...any) error {
@@ -16,7 +18,6 @@ func CheckDataEmpty(data ...any) error {
 	}
 	return nil
 }
-
 
 func CheckCategory(data string, validCategories []string) (string, error) {
 	inputCategory := strings.ToLower(data)
@@ -64,4 +65,12 @@ func MinLength(data string, minLength int) error {
 		return errors.New("minimal " + strconv.Itoa(minLength) + " karakter,ulangi kembali!")
 	}
 	return nil
+}
+
+//for repository
+func IsDuplicateError(err error) bool {
+	if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+		return mysqlErr.Number == 1062
+	}
+	return false
 }

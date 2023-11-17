@@ -31,7 +31,7 @@ func (rb *recybotService) CreateData(data entity.RecybotCore) (entity.RecybotCor
 		return entity.RecybotCore{}, errEmpty
 	}
 
-	validCategory, errCategory := validation.CheckCategory(data.Category, constanta.Category)
+	validCategory, errCategory := validation.CheckEqualData(data.Category, constanta.Category)
 	if errCategory != nil {
 		return entity.RecybotCore{}, errCategory
 	}
@@ -78,7 +78,7 @@ func (rb *recybotService) UpdateData(idData string, data entity.RecybotCore) (en
 		return entity.RecybotCore{}, errEmpty
 	}
 
-	validCategory,errCategory := validation.CheckCategory(data.Category, constanta.Category)
+	validCategory,errCategory := validation.CheckEqualData(data.Category, constanta.Category)
 	if errCategory != nil {
 		return entity.RecybotCore{}, errCategory
 	}

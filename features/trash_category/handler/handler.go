@@ -2,8 +2,8 @@ package handler
 
 import (
 	"net/http"
-	req "recything/features/trash_category/dto/request"
-	resp "recything/features/trash_category/dto/response"
+	"recything/features/trash_category/dto/request"
+	"recything/features/trash_category/dto/response"
 	"recything/features/trash_category/entity"
 	"recything/utils/helper"
 
@@ -19,19 +19,19 @@ func NewTrashCategoryHandler(trashCategory entity.TrashCategoryServiceInterface)
 }
 
 func (tc *trashCategoryHandler) CreateCategory(e echo.Context) error {
-	request := req.TrashCategory{}
-	err := helper.DecodeJSON(e, &request)
+	requestCategory := request.TrashCategory{}
+	err := helper.DecodeJSON(e, &requestCategory)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	input := req.RequestTrashCategoryToCoreTrashCategory(request)
+	input := request.RequestTrashCategoryToCoreTrashCategory(requestCategory)
 	result, err := tc.trashCategory.CreateCategory(input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	response := resp.CoreTrashCategoryToReponseTrashCategory(result)
+	response := response.CoreTrashCategoryToReponseTrashCategory(result)
 	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("Berhasil menambahkan kategori sampah", response))
 }
 
@@ -43,11 +43,8 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	response := resp.ListCoreTrashCategoryToReponseTrashCategory(result)
-	// return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh kategori sampah", response), )
-	return e.JSON(200, echo.Map{
-		"data":       response,
-		"paganation": pagnation})
+	response := response.ListCoreTrashCategoryToReponseTrashCategory(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndDataResponse("Berhasil mendapatkan seluruh kategori sampah", response, pagnation))
 }
 
 func (tc *trashCategoryHandler) GetById(e echo.Context) error {
@@ -57,7 +54,7 @@ func (tc *trashCategoryHandler) GetById(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	response := resp.CoreTrashCategoryToReponseTrashCategory(result)
+	response := response.CoreTrashCategoryToReponseTrashCategory(result)
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan detail kategori sampah", response))
 }
 
@@ -73,18 +70,18 @@ func (tc *trashCategoryHandler) DeleteById(e echo.Context) error {
 
 func (tc *trashCategoryHandler) UpdateCategory(e echo.Context) error {
 	id := e.Param("id")
-	request := req.TrashCategory{}
-	err := helper.DecodeJSON(e, &request)
+	requestCategory := request.TrashCategory{}
+	err := helper.DecodeJSON(e, &requestCategory)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	input := req.RequestTrashCategoryToCoreTrashCategory(request)
+	input := request.RequestTrashCategoryToCoreTrashCategory(requestCategory)
 	result, err := tc.trashCategory.UpdateCategory(id, input)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	response := resp.CoreTrashCategoryToReponseTrashCategory(result)
+	response := response.CoreTrashCategoryToReponseTrashCategory(result)
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mengupdate kategori sampah", response))
 }

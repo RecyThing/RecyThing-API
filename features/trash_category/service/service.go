@@ -17,7 +17,7 @@ func NewTrashCategoryService(trashCategoryRepo entity.TrashCategoryRepositoryInt
 }
 
 // CreateData implements entity.trashCategoryServiceInterface.
-func (rb *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) (entity.TrashCategoryCore, error) {
+func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) (entity.TrashCategoryCore, error) {
 
 	errEmpty := validation.CheckDataEmpty(data.Satuan, data.TrashType)
 	if errEmpty != nil {
@@ -29,23 +29,23 @@ func (rb *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) (e
 		return entity.TrashCategoryCore{}, errors.New("satuan tidak tersedia")
 	}
 
-	result, err := rb.trashCategoryRepo.Create(data)
+	result, err := tc.trashCategoryRepo.Create(data)
 	if err != nil {
 		return result, err
 	}
 	return result, nil
 }
 
-func (rb *trashCategoryService) GetAllCategory(page, limit string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
-	result, paganation, err := rb.trashCategoryRepo.GetAll(page, limit)
+func (tc *trashCategoryService) GetAllCategory(page, limit string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
+	result, paganation, err := tc.trashCategoryRepo.GetAll(page, limit)
 	if err != nil {
 		return result, paganation, err
 	}
 	return result, paganation, nil
 }
 
-func (rb *trashCategoryService) GetById(idTrash string) (entity.TrashCategoryCore, error) {
-	result, err := rb.trashCategoryRepo.GetById(idTrash)
+func (tc *trashCategoryService) GetById(idTrash string) (entity.TrashCategoryCore, error) {
+	result, err := tc.trashCategoryRepo.GetById(idTrash)
 	if err != nil {
 		return result, err
 	}
@@ -53,9 +53,9 @@ func (rb *trashCategoryService) GetById(idTrash string) (entity.TrashCategoryCor
 }
 
 // Delete implements entity.trashCategoryServiceInterface.
-func (rb *trashCategoryService) DeleteCategory(idTrash string) error {
+func (tc *trashCategoryService) DeleteCategory(idTrash string) error {
 
-	err := rb.trashCategoryRepo.Delete(idTrash)
+	err := tc.trashCategoryRepo.Delete(idTrash)
 	if err != nil {
 		return err
 	}
@@ -63,14 +63,14 @@ func (rb *trashCategoryService) DeleteCategory(idTrash string) error {
 }
 
 // UpdateData implements entity.trashCategoryServiceInterface.
-func (rb *trashCategoryService) UpdateCategory(idTrash string, data entity.TrashCategoryCore) (entity.TrashCategoryCore, error) {
+func (tc *trashCategoryService) UpdateCategory(idTrash string, data entity.TrashCategoryCore) (entity.TrashCategoryCore, error) {
 
 	errEmpty := validation.CheckDataEmpty(data.TrashType, data.Satuan)
 	if errEmpty != nil {
 		return entity.TrashCategoryCore{}, errEmpty
 	}
 
-	result, err := rb.trashCategoryRepo.Update(idTrash, data)
+	result, err := tc.trashCategoryRepo.Update(idTrash, data)
 	if err != nil {
 		return result, err
 	}

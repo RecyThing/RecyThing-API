@@ -16,8 +16,8 @@ type recybotHandler struct {
 	RecybotService entity.RecybotServiceInterface
 }
 
-func NewRecybotHandler(rs entity.RecybotServiceInterface) *recybotHandler {
-	return &recybotHandler{RecybotService: rs}
+func NewRecybotHandler(recybot entity.RecybotServiceInterface) *recybotHandler {
+	return &recybotHandler{RecybotService: recybot}
 }
 
 func (rh *recybotHandler) CreateData(e echo.Context) error {

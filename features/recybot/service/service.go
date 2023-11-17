@@ -14,12 +14,12 @@ import (
 )
 
 type recybotService struct {
-	recybotRepo entity.RecybotRepositoryInterface
+	recybotRepository entity.RecybotRepositoryInterface
 }
 
-func NewRecybotService(rc entity.RecybotRepositoryInterface) entity.RecybotServiceInterface {
+func NewRecybotService(recybot entity.RecybotRepositoryInterface) entity.RecybotServiceInterface {
 	return &recybotService{
-		recybotRepo: rc,
+		recybotRepository: recybot,
 	}
 }
 
@@ -36,7 +36,7 @@ func (rb *recybotService) CreateData(data entity.RecybotCore) (entity.RecybotCor
 		return entity.RecybotCore{}, errCategory
 	}
 
-	result, err := rb.recybotRepo.Create(data)
+	result, err := rb.recybotRepository.Create(data)
 	if err != nil {
 		return result, err
 	}
@@ -44,7 +44,7 @@ func (rb *recybotService) CreateData(data entity.RecybotCore) (entity.RecybotCor
 }
 
 func (rb *recybotService) GetAllData() ([]entity.RecybotCore, error) {
-	result, err := rb.recybotRepo.GetAll()
+	result, err := rb.recybotRepository.GetAll()
 	if err != nil {
 		return result, err
 	}
@@ -52,7 +52,7 @@ func (rb *recybotService) GetAllData() ([]entity.RecybotCore, error) {
 }
 
 func (rb *recybotService) GetById(idData string) (entity.RecybotCore, error) {
-	result, err := rb.recybotRepo.GetById(idData)
+	result, err := rb.recybotRepository.GetById(idData)
 	if err != nil {
 		return result, err
 	}
@@ -62,7 +62,7 @@ func (rb *recybotService) GetById(idData string) (entity.RecybotCore, error) {
 // Delete implements entity.RecybotServiceInterface.
 func (rb *recybotService) DeleteData(idData string) error {
 
-	err := rb.recybotRepo.Delete(idData)
+	err := rb.recybotRepository.Delete(idData)
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (rb *recybotService) UpdateData(idData string, data entity.RecybotCore) (en
 		return entity.RecybotCore{}, errCategory
 	}
 
-	result, err := rb.recybotRepo.Update(idData, data)
+	result, err := rb.recybotRepository.Update(idData, data)
 	if err != nil {
 		return result, err
 	}
@@ -96,7 +96,7 @@ func (rb *recybotService) GetPrompt(question string) (string, error) {
 		log.Fatal("Error loading .env file")
 	}
 
-	dataRecybot, err := rb.recybotRepo.GetAll()
+	dataRecybot, err := rb.recybotRepository.GetAll()
 	if err != nil {
 		return "", err
 	}

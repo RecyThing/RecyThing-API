@@ -54,6 +54,7 @@ require (
 	github.com/gorilla/schema v1.2.1
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo-jwt/v4 v4.2.0
+	github.com/sashabaranov/go-openai v1.17.7
 	golang.org/x/sys v0.14.0 // indirect
 	gorm.io/driver/mysql v1.5.2
 )

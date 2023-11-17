@@ -5,6 +5,7 @@ import (
 	"recything/utils/constanta"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 func CheckDataEmpty(data ...string) error {
@@ -13,6 +14,25 @@ func CheckDataEmpty(data ...string) error {
 			return errors.New(constanta.ERROR_EMPTY)
 		}
 	}
+	return nil
+}
+
+func CheckCategory(data string) error {
+	validCategories := []string{"sampah plastik", "sampah organik", "informasi", "batasan"}
+	inputCategory := strings.ToLower(data)
+
+	isValidCategory := false
+	for _, category := range validCategories {
+		if inputCategory == strings.ToLower(category) {
+			isValidCategory = true
+			break
+		}
+	}
+
+	if !isValidCategory {
+		return errors.New("jenis sampah harus diisi dengan 'sampah plastik' atau 'sampah organik'")
+	}
+
 	return nil
 }
 

@@ -5,6 +5,7 @@ import (
 	"recything/utils/constanta"
 	"regexp"
 	"strconv"
+	"time"
 )
 
 func CheckDataEmpty(data ...string) error {
@@ -41,7 +42,25 @@ func PhoneNumber(phone string) error {
 
 func MinLength(data string, minLength int) error {
 	if len(data) < minLength {
-		return errors.New("minimal "+ strconv.Itoa(minLength) +" karakter,ulangi kembali!")
+		return errors.New("minimal " + strconv.Itoa(minLength) + " karakter,ulangi kembali!")
 	}
 	return nil
+}
+
+func ValidateTime(openTime, closeTime string) error {
+	open, err := time.Parse("15:04", openTime)
+    if err != nil {
+        return errors.New("format waktu buka tidak valid")
+    }
+
+    close, err := time.Parse("15:04", closeTime)
+    if err != nil {
+        return errors.New("format waktu tutup tidak valid")
+    }
+
+    if close.Before(open) {
+        return errors.New("waktu penutupan harus setelah waktu pembukaan")
+    }
+
+    return nil
 }

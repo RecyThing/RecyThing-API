@@ -7,8 +7,6 @@ func CoreRecybotToResponRecybot(recybot entity.RecybotCore) RecybotResponse {
 		ID:        recybot.ID,
 		Category:  recybot.Category,
 		Question:  recybot.Question,
-		CreatedAt: recybot.CreatedAt,
-		UpdatedAt: recybot.UpdatedAt,
 	}
 }
 

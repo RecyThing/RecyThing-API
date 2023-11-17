@@ -75,14 +75,9 @@ func (ah *AdminHandler) Login(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	response := response.AdminCoreToAdminResponse(result)
-
-	responses := echo.Map {
-		"data":response,
-		"token":token,
-	}
+	response := response.AdminCoreToAdminResponseLogin(result,token)
 	
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_LOGIN, responses))
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_LOGIN, response))
 }
 
 // mendapatkan semua data admin yang active maupun yang tidak active

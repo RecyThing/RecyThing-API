@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"recything/features/report/dto/request"
 	"recything/features/report/dto/response"
@@ -29,7 +28,7 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 
 	newReport := request.ReportRubbishRequest{}
 	err = e.Bind(&newReport)
-	log.Println("images ", newReport.Images)
+
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}

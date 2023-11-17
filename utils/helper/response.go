@@ -6,10 +6,16 @@ type ErrorResponseJson struct {
 }
 
 type SuccessResponseJson struct {
-	Status    bool        `json:"status"`
-	Message   string      `json:"message"`
-	Data      interface{} `json:"data,omitempty"`
-	Pagnation interface{} `json:"pagnation,omiempty"`
+	Status  bool        `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
+type SuccessResponseJsonWithPagenation struct {
+	Status     bool        `json:"status"`
+	Message    string      `json:"message"`
+	Data       interface{} `json:"data,omitempty"`
+	Pagination interface{} `json:"pagination,omitempty"`
 }
 
 func ErrorResponse(message string) ErrorResponseJson {
@@ -33,11 +39,12 @@ func SuccessWithDataResponse(message string, data interface{}) SuccessResponseJs
 		Data:    data,
 	}
 }
-func SuccessWithPagnationAndDataResponse(message string, data interface{}, pagnation interface{}) SuccessResponseJson {
-	return SuccessResponseJson{
-		Status:  true,
-		Message: message,
-		Data:    data,
-		Pagnation: pagnation,
+
+func SuccessWithPagnationAndDataResponse(message string, data interface{}, pagnation interface{}) SuccessResponseJsonWithPagenation {
+	return SuccessResponseJsonWithPagenation{
+		Status:     true,
+		Message:    message,
+		Data:       data,
+		Pagination: pagnation,
 	}
 }

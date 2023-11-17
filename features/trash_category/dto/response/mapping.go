@@ -9,7 +9,7 @@ func CoreTrashCategoryToReponseTrashCategory(trash entity.TrashCategoryCore) Tra
 		ID:        trash.ID,
 		TrashType: trash.TrashType,
 		Point:     trash.Point,
-		Satuan:    trash.Satuan,
+		Unit:    trash.Unit,
 		CreatedAt: trash.CreatedAt,
 		UpdatedAt: trash.UpdatedAt,
 	}

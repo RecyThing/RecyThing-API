@@ -6,9 +6,11 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/go-sql-driver/mysql"
 )
 
-func  CheckDataEmpty(data ...any) error {
+func CheckDataEmpty(data ...any) error {
 	for _, value := range data {
 		if value == "" {
 			return errors.New(constanta.ERROR_EMPTY)
@@ -17,23 +19,22 @@ func  CheckDataEmpty(data ...any) error {
 	return nil
 }
 
-func CheckCategory(data string) error {
-	validCategories := []string{"sampah plastik", "sampah organik", "informasi", "batasan"}
-	inputCategory := strings.ToLower(data)
+func CheckEqualData(data string, validData []string) (string, error) {
+	inputData := strings.ToLower(data)
 
-	isValidCategory := false
-	for _, category := range validCategories {
-		if inputCategory == strings.ToLower(category) {
-			isValidCategory = true
+	isValidData := false
+	for _, category := range validData {
+		if inputData == strings.ToLower(category) {
+			isValidData = true
 			break
 		}
 	}
 
-	if !isValidCategory {
-		return errors.New("jenis sampah harus diisi dengan 'sampah plastik' atau 'sampah organik'")
+	if !isValidData {
+		return "", errors.New("data yang diinput tidak sesuai")
 	}
 
-	return nil
+	return inputData, nil
 }
 
 func EmailFormat(email string) error {
@@ -61,7 +62,15 @@ func PhoneNumber(phone string) error {
 
 func MinLength(data string, minLength int) error {
 	if len(data) < minLength {
-		return errors.New("minimal "+ strconv.Itoa(minLength) +" karakter,ulangi kembali!")
+		return errors.New("minimal " + strconv.Itoa(minLength) + " karakter,ulangi kembali!")
 	}
 	return nil
+}
+
+//for repository
+func IsDuplicateError(err error) bool {
+	if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+		return mysqlErr.Number == 1062
+	}
+	return false
 }

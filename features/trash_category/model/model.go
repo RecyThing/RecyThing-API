@@ -11,7 +11,7 @@ type TrashCategory struct {
 	ID        string `gorm:"primary key"`
 	TrashType string `gorm:"not null;unique"`
 	Point     int    `gorm:"not null"`
-	Satuan    string `gorm:"type:enum('barang', 'kilogram');not null"`
+	Unit      string `gorm:"type:enum('barang', 'kilogram');not null"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`

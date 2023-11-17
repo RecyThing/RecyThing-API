@@ -2,20 +2,20 @@ package constanta
 
 // Constanta For Role
 const (
-	USER             = "user"
-	ADMIN            = "admin"
-	SUPERADMIN       = "super_admin"
+	USER       = "user"
+	ADMIN      = "admin"
+	SUPERADMIN = "super_admin"
 )
 
 // Constanta For Success
 const (
-	SUCCESS_LOGIN      = "berhasil melakukan login"
-	SUCCESS_NULL       = "data belum tersedia"
+	SUCCESS_LOGIN = "berhasil melakukan login"
+	SUCCESS_NULL  = "data belum tersedia"
 )
 
 // Constanta For Utils
 const (
-	VERIFICATION_URL = "https://api.recything.my.id/verify-token?token="
+	VERIFICATION_URL   = "https://api.recything.my.id/verify-token?token="
 	EMAIL_NOT_REGISTER = "email belum terdaftar"
 )
 
@@ -34,4 +34,10 @@ const (
 	ERROR_GET_DATA         = "data tidak ditemukan"
 	ERROR_EMPTY            = "harap lengkapi data dengan benar"
 	ERROR_HASH_PASSWORD    = "error hash password"
+	ERROR_DATA_EXIST       = "data sudah ada"
+)
+
+var (
+	Unit     = []string{"barang", "kilogram"}
+	Category = []string{"sampah plastik", "sampah organik"}
 )

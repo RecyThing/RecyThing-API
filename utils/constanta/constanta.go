@@ -39,5 +39,5 @@ const (
 
 var (
 	Unit     = []string{"barang", "kilogram"}
-	Category = []string{"sampah plastik", "sampah organik"}
+	Category = []string{"sampah anorganik", "sampah organik","informasi","batasan"}
 )

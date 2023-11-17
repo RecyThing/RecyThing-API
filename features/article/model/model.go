@@ -18,3 +18,4 @@ type Article struct {
 	UpdatedAt time.Time      `gorm:"type:DATETIME(0)"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
+

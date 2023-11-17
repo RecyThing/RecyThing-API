@@ -16,7 +16,7 @@ func RouteArticle(e *echo.Group, db *gorm.DB) {
 	articleServ := service.NewArticleService(articleRepo)
 	articleHand := handler.NewArticleHandler(articleServ)
 
-	article := e.Group("manage/articles", jwt.JWTMiddleware())
+	article := e.Group("/manage/articles", jwt.JWTMiddleware())
 	article.POST("", articleHand.CreateArticle)
 	article.GET("", articleHand.GetAllArticle)
 	article.GET("/:id", articleHand.GetSpecificArticle)

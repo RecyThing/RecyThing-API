@@ -8,7 +8,6 @@ type ArticleCore struct {
 	Image     string
 	Content   string
 	Category  string
-	PostDate  string
 	Like      int
 	Share     int
 	CreatedAt time.Time

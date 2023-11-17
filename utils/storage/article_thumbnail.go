@@ -20,7 +20,7 @@ func UploadThumbnail(image *multipart.FileHeader) (string, error) {
 	ctx := context.Background()
 
 	// Decode Google Cloud credentials from Base64
-	encodedCredentials := os.Getenv("GOOGLE_CLOUD_CREDENTIALS_PATH")
+	encodedCredentials := os.Getenv("STORAGE_KEY")
 	decodedCredentials, err := base64.StdEncoding.DecodeString(encodedCredentials)
 	if err != nil {
 		logrus.Error("Gagal melakukan decode pada Google Cloud Credentials:", err)
@@ -42,7 +42,7 @@ func UploadThumbnail(image *multipart.FileHeader) (string, error) {
 		return "", errors.New("format file tidak diizinkan")
 	}
 
-	imagePath := "proof-file/" + uuid.New().String() + extension
+	imagePath := "thumbnail/" + uuid.New().String() + extension
 
 	wc := client.Bucket(bucketName).Object(imagePath).NewWriter(ctx)
 	defer wc.Close()

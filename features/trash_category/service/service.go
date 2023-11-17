@@ -24,7 +24,7 @@ func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) er
 		return errEmpty
 	}
 
-	validUnit, errCheck := validation.CheckCategory(data.Unit, constanta.Unit)
+	validUnit, errCheck := validation.CheckEqualData(data.Unit, constanta.Unit)
 	if errEmpty != nil {
 		return errCheck
 	}

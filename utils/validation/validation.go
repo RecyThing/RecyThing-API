@@ -19,22 +19,22 @@ func CheckDataEmpty(data ...any) error {
 	return nil
 }
 
-func CheckCategory(data string, validCategories []string) (string, error) {
-	inputCategory := strings.ToLower(data)
+func CheckEqualData(data string, validData []string) (string, error) {
+	inputData := strings.ToLower(data)
 
-	isValidCategory := false
-	for _, category := range validCategories {
-		if inputCategory == strings.ToLower(category) {
-			isValidCategory = true
+	isValidData := false
+	for _, category := range validData {
+		if inputData == strings.ToLower(category) {
+			isValidData = true
 			break
 		}
 	}
 
-	if !isValidCategory {
+	if !isValidData {
 		return "", errors.New("data yang diinput tidak sesuai")
 	}
 
-	return inputCategory, nil
+	return inputData, nil
 }
 
 func EmailFormat(email string) error {

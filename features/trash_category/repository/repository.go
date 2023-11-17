@@ -2,11 +2,12 @@ package repository
 
 import (
 	"errors"
-	"math"
+	
 
 	"recything/features/trash_category/entity"
 	"recything/features/trash_category/model"
 	"recything/utils/constanta"
+	"recything/utils/helper"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -34,20 +35,17 @@ func (tc *trashCategoryRepository) Create(data entity.TrashCategoryCore) (entity
 	return result, nil
 }
 
-// func (tc *trashCategoryRepository) GetAll() ([]entity.TrashCategoryCore, error) {
-// 	dataTrashCategories := []model.TrashCategory{}
-
-// 	tx := tc.db.Find(&dataTrashCategories)
-// 	if tx.Error != nil {
-// 		return []entity.TrashCategoryCore{}, tx.Error
-// 	}
-
-// 	result := entity.ListModelTrashCategoryToCoreTrashCategory(dataTrashCategories)
-// 	return result, nil
-// }
-
 func (tc *trashCategoryRepository) GetAll(page string, limit string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
-	
+	dataTrashCategories := []model.TrashCategory{}
+
+	if limit == "" && page == "" {
+		tx := tc.db.Find(&dataTrashCategories)
+		if tx.Error != nil {
+			return nil, entity.PagnationInfo{}, tx.Error
+		}
+		result := entity.ListModelTrashCategoryToCoreTrashCategory(dataTrashCategories)
+		return result, entity.PagnationInfo{}, nil
+	}
 
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {
@@ -59,46 +57,23 @@ func (tc *trashCategoryRepository) GetAll(page string, limit string) ([]entity.T
 		return nil, entity.PagnationInfo{}, err
 	}
 
-	if limit == "" {
-		limitInt = 10
-	}
-
-	if page == "" {
-		pageInt = 10
-	}
-
-	
 	offsetInt := (pageInt - 1) * limitInt
-
-	
-	dataTrashCategories := []model.TrashCategory{}
-
 	tx := tc.db.Limit(limitInt).Offset(offsetInt).Find(&dataTrashCategories)
 	if tx.Error != nil {
 		return nil, entity.PagnationInfo{}, tx.Error
 	}
 
-	
 	result := entity.ListModelTrashCategoryToCoreTrashCategory(dataTrashCategories)
-
-	
 	var totalCount int64
 	err = tc.db.Model(&model.TrashCategory{}).Count(&totalCount).Error
 	if err != nil {
 		return nil, entity.PagnationInfo{}, err
 	}
 
-	lastPage := int(math.Ceil(float64(totalCount) / float64(limitInt)))
-
-	paginationInfo := entity.PagnationInfo{
-		Limit:       limitInt,
-		CurrentPage: pageInt,
-		LastPage:    lastPage,
-	}
-
-	// Combine result and pagination info
+	paginationInfo := helper.CalculatePagination(int(totalCount), limitInt, pageInt)
 	return result, paginationInfo, nil
 }
+
 
 func (tc *trashCategoryRepository) GetById(idTrash string) (entity.TrashCategoryCore, error) {
 	dataTrashCategories := model.TrashCategory{}

@@ -22,20 +22,15 @@ func NewArticleRepository(db *gorm.DB) entity.ArticleRepositoryInterface {
 
 // DeleteArticle implements entity.ArticleRepositoryInterface.
 func (article *articleRepository) DeleteArticle(id string) error {
-	var checkId model.Article
+	checkId := model.Article{}
 
-	articleId := article.db.Where("id = ?", checkId).First(&checkId)
-	if articleId != nil {
-		return articleId.Error
+	tx := article.db.Where("id = ?", id).Delete(&checkId)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
-	errData := article.db.Where("id = ?", id).Delete(&checkId)
-	if errData != nil {
-		return errData.Error
-	}
-
-	if errData.RowsAffected == 0 {
-		return errors.New("data not found")
+	if tx.RowsAffected == 0 {
+		return errors.New("tidak ada data yang dihapus")
 	}
 
 	return nil
@@ -45,7 +40,7 @@ func (article *articleRepository) DeleteArticle(id string) error {
 func (article *articleRepository) GetSpecificArticle(idArticle string) (entity.ArticleCore, error) {
 	articleData := model.Article{}
 
-	tx := article.db.Where("id = ?", idArticle).Preload("Images").First(&articleData)
+	tx := article.db.Where("id = ?", idArticle).Preload("image").First(&articleData)
 	if tx.Error != nil {
 		return entity.ArticleCore{}, tx.Error
 	}

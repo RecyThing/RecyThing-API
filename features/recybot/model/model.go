@@ -9,7 +9,7 @@ import (
 
 type Recybot struct {
 	ID        string `gorm:"primary key"`
-	Category  string `gorm:"type:enum('sampah organik', 'sampah plastik')"`
+	Category  string `gorm:"type:enum('sampah organik', 'sampah anorganik', 'informasi', 'batasan')"`
 	Question  string `gorm:"not null"`
 	CreatedAt time.Time
 	UpdatedAt time.Time

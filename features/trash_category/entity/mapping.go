@@ -7,24 +7,24 @@ func CoreTrashCategoryToModelTrashCategory(trash TrashCategoryCore) model.TrashC
 		ID:        trash.ID,
 		TrashType: trash.TrashType,
 		Point:     trash.Point,
-		Satuan:    trash.Satuan,
-		CreatedAt: trash.CreatedAt,
-		UpdatedAt: trash.UpdatedAt, 
-	}
-}
-
-func ModelTrashCategoryToCoreTrashCategory(trash model.TrashCategory)  TrashCategoryCore{
-	return TrashCategoryCore{
-		ID:        trash.ID,
-		TrashType: trash.TrashType,
-		Point:     trash.Point,
-		Satuan:    trash.Satuan,
+		Unit:      trash.Unit,
 		CreatedAt: trash.CreatedAt,
 		UpdatedAt: trash.UpdatedAt,
 	}
 }
 
-func ListCoreTrashCategoryToModelTrashCategory(trash []TrashCategoryCore ) []model.TrashCategory {
+func ModelTrashCategoryToCoreTrashCategory(trash model.TrashCategory) TrashCategoryCore {
+	return TrashCategoryCore{
+		ID:        trash.ID,
+		TrashType: trash.TrashType,
+		Point:     trash.Point,
+		Unit:      trash.Unit,
+		CreatedAt: trash.CreatedAt,
+		UpdatedAt: trash.UpdatedAt,
+	}
+}
+
+func ListCoreTrashCategoryToModelTrashCategory(trash []TrashCategoryCore) []model.TrashCategory {
 	list := []model.TrashCategory{}
 	for _, v := range trash {
 		result := CoreTrashCategoryToModelTrashCategory(v)

@@ -69,3 +69,12 @@ func ListReportCoresToReportResponseForDataReporting(reports []entity.ReportCore
 	}
 	return responReporting
 }
+
+func ListReportCoresToReportResponse(reports []entity.ReportCore) []ReportCreateResponse {
+	responReporting := []ReportCreateResponse{}
+	for _, report := range reports {
+		reports := ReportCoreToReportResponse(report)
+		responReporting = append(responReporting, reports)
+	}
+	return responReporting
+}

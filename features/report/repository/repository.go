@@ -22,7 +22,7 @@ func NewReportRepository(db *gorm.DB) entity.ReportRepositoryInterface {
 func (report *reportRepository) ReadAllReport(idUser string) ([]entity.ReportCore, error) {
 	dataReport := []model.Report{}
 
-	tx := report.db.Where("users_id = ?", idUser).Find(&dataReport)
+	tx := report.db.Preload("Images").Where("users_id = ?", idUser).Find(&dataReport)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
@@ -70,7 +70,7 @@ func (report *reportRepository) Insert(reportInput entity.ReportCore, images []*
 func (report *reportRepository) SelectById(iDReport string) (entity.ReportCore, error) {
 	dataReports := model.Report{}
 
-	tx := report.db.Where("id = ?", iDReport).Preload("Images").First(&dataReports)
+	tx := report.db.Preload("Images").Where("id = ?", iDReport).First(&dataReports)
 	if tx.Error != nil {
 		return entity.ReportCore{}, tx.Error
 	}

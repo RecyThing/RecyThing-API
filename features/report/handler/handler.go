@@ -82,8 +82,7 @@ func (rco *reportHandler) ReadAllReport(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mendapatkan data laporan"))
 	}
 
-	return e.JSON(http.StatusOK, map[string]any{
-		"messeage": "berhasil mendapatkan semua data laporan",
-		"data":     data,
-	})
+	response := response.ListReportCoresToReportResponse(data)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan semua data laporan", response))
 }

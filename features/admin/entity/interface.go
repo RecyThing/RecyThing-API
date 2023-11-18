@@ -3,6 +3,7 @@ package entity
 import (
 	report "recything/features/report/entity"
 	user "recything/features/user/entity"
+	"recything/utils/pagination"
 )
 
 type AdminRepositoryInterface interface {
@@ -18,7 +19,7 @@ type AdminRepositoryInterface interface {
 	GetByIdUser(userId string) (user.UsersCore, error)
 	DeleteUsers(adminId string) error
 	// Manage Reporting
-	GetByStatusReport(status string) ([]report.ReportCore, error)
+	GetByStatusReport(status string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error)
 	UpdateStatusReport(id, status, reason string) (report.ReportCore, error)
 	GetReportById(id string) (report.ReportCore, error)
 }
@@ -35,7 +36,7 @@ type AdminServiceInterface interface {
 	GetByIdUsers(adminId string) (user.UsersCore, error)
 	DeleteUsers(adminId string) error
 	// Manage Reporting
-	GetByStatusReport(status string) (data []report.ReportCore, err error)
+	GetByStatusReport(status string, page, limit int) (data []report.ReportCore, paginationInfo pagination.PageInfo, err error)
 	UpdateStatusReport(id, status, reason string) (report.ReportCore, error)
 	GetReportById(id string) (report.ReportCore, error)
 }

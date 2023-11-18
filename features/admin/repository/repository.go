@@ -13,6 +13,7 @@ import (
 	userModel "recything/features/user/model"
 	"recything/utils/constanta"
 	"recything/utils/helper"
+	"recything/utils/pagination"
 
 	"gorm.io/gorm"
 )
@@ -186,22 +187,35 @@ func (ar *AdminRepository) DeleteUsers(userId string) error {
 }
 
 // GetByStatusReport implements entity.AdminRepositoryInterface.
-func (ar *AdminRepository) GetByStatusReport(status string) ([]report.ReportCore, error) {
+func (ar *AdminRepository) GetByStatusReport(status string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error) {
 	dataReports := []reportModel.Report{}
 	var result *gorm.DB
 
+	offset := (page - 1) * limit
+
 	if status != "" {
-		result = ar.db.Where("status = ?", status).Find(&dataReports)
+		result = ar.db.Where("status = ?", status).Offset(offset).Limit(limit).Find(&dataReports)
 	} else {
-		result = ar.db.Find(&dataReports)
+		result = ar.db.Offset(offset).Limit(limit).Find(&dataReports)
 	}
 
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, pagination.PageInfo{}, result.Error
 	}
 
 	dataAllReport := report.ListReportModelToReportCore(dataReports)
-	return dataAllReport, nil
+
+	// Get total count for pagination
+	var totalCount int64
+	err := ar.db.Model(&reportModel.Report{}).Count(&totalCount).Error
+	if err != nil {
+		return nil, pagination.PageInfo{}, err
+	}
+
+	// Menggunakan fungsi CalculatePagination
+	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
+
+	return dataAllReport, paginationInfo, nil
 }
 
 // UpdateStatusReport implements entity.AdminRepositoryInterface.

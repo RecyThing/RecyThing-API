@@ -12,6 +12,8 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+	"recything/utils/pagination"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -75,8 +77,8 @@ func (ah *AdminHandler) Login(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	response := response.AdminCoreToAdminResponseLogin(result,token)
-	
+	response := response.AdminCoreToAdminResponseLogin(result, token)
+
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_LOGIN, response))
 }
 
@@ -93,11 +95,11 @@ func (ah *AdminHandler) GetAll(e echo.Context) error {
 
 	result, err := ah.AdminService.GetAll()
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))	
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	if len(result) == 0 {
-		return e.JSON(http.StatusOK, helper.SuccessResponse("data admin belum ada"))	
+		return e.JSON(http.StatusOK, helper.SuccessResponse("data admin belum ada"))
 	}
 
 	response := response.ListAdminCoreToAdminResponse(result)
@@ -107,8 +109,8 @@ func (ah *AdminHandler) GetAll(e echo.Context) error {
 
 // mendapatkan data admin detail lengkap
 func (ah *AdminHandler) GetById(e echo.Context) error {
-	
-	adminId:= e.Param("id")
+
+	adminId := e.Param("id")
 
 	_, role, err := jwt.ExtractToken(e)
 	if role != constanta.SUPERADMIN {
@@ -125,14 +127,14 @@ func (ah *AdminHandler) GetById(e echo.Context) error {
 	}
 
 	// if len(result.Id) == 0 {
-	// 	return e.JSON(http.StatusOK, helper.SuccessResponse("data admin belum ada"))	
+	// 	return e.JSON(http.StatusOK, helper.SuccessResponse("data admin belum ada"))
 	// }
 
 	response := response.AdminCoreToAdminResponse(result)
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mengambil data admin", response))
 }
 
-// menghapus data admin 
+// menghapus data admin
 func (ah *AdminHandler) Delete(e echo.Context) error {
 	adminId := e.Param("id")
 
@@ -181,13 +183,12 @@ func (ah *AdminHandler) UpdateById(e echo.Context) error {
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil melakukan pembaruan data admin"))
 }
 
-
 // Manage User
 func (ah *AdminHandler) GetAllUser(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
 	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
-        return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-    }
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
 
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
@@ -208,8 +209,8 @@ func (ah *AdminHandler) GetByIdUsers(e echo.Context) error {
 
 	_, role, err := jwt.ExtractToken(e)
 	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
-        return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-    }
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
 
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
@@ -229,8 +230,8 @@ func (ah *AdminHandler) DeleteUsers(e echo.Context) error {
 
 	_, role, err := jwt.ExtractToken(e)
 	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
-        return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-    }
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
 
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
@@ -249,15 +250,18 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
 
 	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
-        return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-    }
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
 
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
 	status := e.QueryParam("status")
-	result, err := ah.AdminService.GetByStatusReport(status)
+	page, _ := strconv.Atoi(e.QueryParam("page"))
+	limit, _ := strconv.Atoi(e.QueryParam("limit"))
+
+	result, paginationInfo, err := ah.AdminService.GetByStatusReport(status, page, limit)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
@@ -266,17 +270,18 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
 	}
 
-	response := reportDto.ListReportCoresToReportResponseForDataReporting(result, ah.UserService)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil mendapatkan data reporting", response))
+	totalData := len(result)
 
+	response := reportDto.ListReportCoresToReportResponseForDataReporting(result, ah.UserService)
+	return e.JSON(http.StatusCreated, helper.SuccessWithPaginationAndDataResponse("berhasil mendapatkan data reporting", pagination.PaginationMessage(paginationInfo, totalData), response, paginationInfo, totalData))
 }
 
 func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
 
 	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
-        return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-    }
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
 
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
@@ -289,7 +294,7 @@ func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
-	
+
 	_, err = ah.AdminService.UpdateStatusReport(id, input.Status, input.RejectionDescription)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))

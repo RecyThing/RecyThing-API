@@ -17,4 +17,5 @@ func New(e *echo.Echo, db *gorm.DB) {
 	RouteReport(report, db)
 	RouteAdmin(admin, db)
 	RouteRecybot(recybot,db)
+	RouteAchievement(admin, db)
 }

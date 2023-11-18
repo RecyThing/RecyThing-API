@@ -71,6 +71,7 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 	// Manage Reporting
 	report := e.Group("/manage/reports", jwt.JWTMiddleware())
 	report.GET("", adminHandler.GetByStatusReport)
+	report.GET("/:id", adminHandler.GetReportById)
 	report.PATCH("/:id", adminHandler.UpdateStatusReport)
 
 	//Manage trash category

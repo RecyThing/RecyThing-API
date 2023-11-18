@@ -26,21 +26,25 @@ func (tc *trashCategoryHandler) CreateCategory(e echo.Context) error {
 	}
 
 	input := request.RequestTrashCategoryToCoreTrashCategory(requestCategory)
-	result, err := tc.trashCategory.CreateCategory(input)
+	err = tc.trashCategory.CreateCategory(input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
-
-	response := response.CoreTrashCategoryToReponseTrashCategory(result)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("Berhasil menambahkan kategori sampah", response))
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan kategori sampah"))
 }
 
 func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
 	result, pagnation, err := tc.trashCategory.GetAllCategory(page, limit)
+
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	if len(result) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada kategori sampah"))
+
 	}
 
 	response := response.ListCoreTrashCategoryToReponseTrashCategory(result)

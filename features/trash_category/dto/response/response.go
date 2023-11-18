@@ -6,7 +6,7 @@ type TrashCategory struct {
 	ID        string    `json:"id"`
 	TrashType string    `json:"trash_type"`
 	Point     int       `json:"point"`
-	Satuan    string    `json:"satuan"`
+	Unit      string    `json:"unit"`
 	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

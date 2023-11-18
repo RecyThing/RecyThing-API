@@ -55,7 +55,7 @@ func ReportCoreToReportResponseForDataReporting(report entity.ReportCore, user u
 		ReportType:   report.ReportType,
 		Fullname:     user.Fullname,
 		Location:     report.Location,
-		InsidentTime: report.InsidentTime,
+		InsidentDate: report.InsidentDate,
 		Status:       report.Status,
 	}
 }
@@ -68,4 +68,41 @@ func ListReportCoresToReportResponseForDataReporting(reports []entity.ReportCore
 		responReporting = append(responReporting, reports)
 	}
 	return responReporting
+}
+
+func ListReportCoresToReportResponse(reports []entity.ReportCore) []ReportCreateResponse{
+	responReporting := []ReportCreateResponse{}
+	for _, report := range reports {
+		reports := ReportCoreToReportResponse(report)
+		responReporting = append(responReporting, reports)
+	}
+	return responReporting
+}
+
+
+func ReportCoreToReportResponseForDataReportingId(report entity.ReportCore, user user.UsersCore) ReportDetailsById {
+	reportResponse := ReportDetailsById{
+		Id:                   report.ID,
+		ReportType:           report.ReportType,
+		Longitude:            report.Longitude,
+		Latitude:             report.Latitude,
+		Location:             report.Location,
+		Description:          report.Description,
+		AddressPoint:         report.AddressPoint,
+		Status:               report.Status,
+		TrashType:            report.TrashType,
+		ScaleType:            report.ScaleType,
+		InsidentDate:         report.InsidentDate,
+		InsidentTime:         report.InsidentTime,
+		DangerousWaste:       report.DangerousWaste,
+		RejectionDescription: report.RejectionDescription,
+		CompanyName:          report.CompanyName,
+	}
+
+	// Menambahkan informasi pengguna ke respons
+	reportResponse.Fullname = user.Fullname
+
+	image := ListImageCoreToImageResponse(report.Images)
+	reportResponse.Images = image
+	return reportResponse
 }

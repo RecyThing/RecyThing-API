@@ -12,6 +12,10 @@ import (
 	recybotHandler "recything/features/recybot/handler"
 	recybotRepository "recything/features/recybot/repository"
 	recybotService "recything/features/recybot/service"
+	
+	trashCategoryHandler "recything/features/trash_category/handler"
+	trashCategoryRepository "recything/features/trash_category/repository"
+	trashCategoryService "recything/features/trash_category/service"
 
 	"recything/utils/jwt"
 
@@ -36,6 +40,11 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 	recybotService := recybotService.NewRecybotService(recybotRepository)
 	recybotHandler := recybotHandler.NewRecybotHandler(recybotService)
 
+	//manage trash category
+	trashCategoryRepository:=trashCategoryRepository.NewTrashCategiryRepository(db)
+	trashCategoryService:=trashCategoryService.NewTrashCategoryService(trashCategoryRepository)
+	trashCategoryHandler:=trashCategoryHandler.NewTrashCategoryHandler(trashCategoryService)
+
 	e.POST("/login", adminHandler.Login)
 
 	admin := e.Group("", jwt.JWTMiddleware())
@@ -56,11 +65,20 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 	recybot.POST("", recybotHandler.CreateData)
 	recybot.GET("", recybotHandler.GetAllData)
 	recybot.GET("/:id", recybotHandler.GetById)
-	recybot.PUT("/:id", recybotHandler.DeleteById)
+	recybot.PUT("/:id", recybotHandler.UpdateData)
 	recybot.DELETE("/:id", recybotHandler.DeleteById)
 
 	// Manage Reporting
 	report := e.Group("/manage/reports", jwt.JWTMiddleware())
 	report.GET("", adminHandler.GetByStatusReport)
+	report.GET("/:id", adminHandler.GetReportById)
 	report.PATCH("/:id", adminHandler.UpdateStatusReport)
+
+	//Manage trash category
+	trashCategory := e.Group("/manage/trashes", jwt.JWTMiddleware())
+	trashCategory.POST("", trashCategoryHandler.CreateCategory)
+	trashCategory.GET("", trashCategoryHandler.GetAllCategory)
+	trashCategory.GET("/:id", trashCategoryHandler.GetById)
+	trashCategory.PUT("/:id", trashCategoryHandler.UpdateCategory)
+	trashCategory.DELETE("/:id", trashCategoryHandler.DeleteById)
 }

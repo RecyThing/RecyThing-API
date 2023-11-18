@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"mime/multipart"
 	"recything/features/report/entity"
 	"recything/features/report/model"
@@ -62,7 +61,6 @@ func (report *reportRepository) Insert(reportInput entity.ReportCore, images []*
 		reportInput.Images = append(reportInput.Images, ImageList)
 	}
 
-	fmt.Println("repository : ", dataReport.InsidentDate)
 	ReportCreated := entity.ReportModelToReportCore(dataReport)
 
 	return ReportCreated, nil

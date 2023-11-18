@@ -37,6 +37,26 @@ type ReportDetails struct {
 	ReportType   string `json:"report_type,omitempty"`
 	Fullname     string `json:"name,omitempty"`
 	Location     string `json:"location,omitempty"`
-	InsidentTime string `json:"insident_time,omitempty"`
+	InsidentDate string `json:"insident_date,omitempty"`
 	Status       string `json:"status,omitempty"`
+}
+
+type ReportDetailsById struct {
+	Id                   string          `json:"Id,omitempty"`
+	ReportType           string          `json:"report_type,omitempty"`
+	Longitude            float64         `json:"longitude,omitempty"`
+	Latitude             float64         `json:"latitude,omitempty"`
+	Location             string          `json:"location,omitempty"`
+	Description          string          `json:"description,omitempty"`
+	AddressPoint         string          `json:"address_point,omitempty"`
+	Status               string          `json:"status,omitempty"`
+	Images               []ImageResponse `json:"images,omitempty"`
+	TrashType            string          `json:"trash_type,omitempty"`
+	ScaleType            string          `json:"scale_type,omitempty"`
+	InsidentDate         string          `json:"insident_date,omitempty"`
+	InsidentTime         string          `json:"insident_time,omitempty"`
+	DangerousWaste       bool            `json:"dangerous_waste,omitempty"`
+	RejectionDescription string          `json:"rejection_description,omitempty"`
+	CompanyName          string          `json:"company_name,omitempty"`
+	Fullname             string          `json:"fullname"`
 }

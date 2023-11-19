@@ -26,6 +26,7 @@ const (
 	ERROR_ID_INVALID       = "id salah"
 	ERROR_DATA_EMAIL       = "email tidak ditemukan"
 	ERROR_FORMAT_EMAIL     = "format email tidak valid"
+	ERROR_EMAIL_EXIST      = "email sudah digunakan"
 	ERROR_AKSES_ROLE       = "akses ditolak"
 	ERROR_PASSWORD         = "password lama tidak sesuai"
 	ERROR_CONFIRM_PASSWORD = "konfirmasi password tidak sesuai"
@@ -39,5 +40,5 @@ const (
 
 var (
 	Unit     = []string{"barang", "kilogram"}
-	Category = []string{"sampah anorganik", "sampah organik","informasi","batasan"}
+	Category = []string{"sampah anorganik", "sampah organik", "informasi", "batasan"}
 )

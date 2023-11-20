@@ -81,4 +81,5 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 	trashCategory.GET("/:id", trashCategoryHandler.GetById)
 	trashCategory.PUT("/:id", trashCategoryHandler.UpdateCategory)
 	trashCategory.DELETE("/:id", trashCategoryHandler.DeleteById)
+	
 }

@@ -8,6 +8,7 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+	"recything/utils/pagination"
 	"recything/utils/validation"
 )
 
@@ -180,21 +181,34 @@ func (as *AdminService) DeleteUsers(userId string) error {
 
 // Manage Reporting
 // GetByStatusReport implements entity.AdminServiceInterface.
-func (as *AdminService) GetByStatusReport(status string) (data []report.ReportCore, err error) {
-	switch status {
-	case "perlu ditinjau", "diterima", "ditolak":
-		data, err = as.AdminRepository.GetByStatusReport(status)
-	case "":
-		data, err = as.AdminRepository.GetByStatusReport("")
-	default:
-		return nil, errors.New("status tidak valid")
-	}
+func (as *AdminService) GetByStatusReport(status, name, id string, page, limit int) (data []report.ReportCore, paginationInfo pagination.PageInfo, err error) {
+	if limit > 10 {
+        return nil, pagination.PageInfo{}, errors.New("limit tidak boleh lebih dari 10")
+    }
+
+	page, limit = validation.ValidatePaginationParameters(page, limit)
+	
+	validStatus := map[string]bool{
+        "perlu ditinjau": true,
+        "diterima":       true,
+        "ditolak":        true,
+    }
+
+    if _, ok := validStatus[status]; status != "" && !ok {
+        return nil, pagination.PageInfo{}, errors.New("status tidak valid")
+    }
+
+    if status != "" || name != "" || id != "" {
+        data, paginationInfo, err = as.AdminRepository.GetByStatusReport(status, name, id, page, limit)
+    } else {
+        data, paginationInfo, err = as.AdminRepository.GetByStatusReport("", "", "", page, limit)
+    }
 
 	if err != nil {
-		return nil, err
+		return nil, pagination.PageInfo{}, err
 	}
 
-	return data, nil
+	return data, paginationInfo, nil
 }
 
 // UpdateStatusReport implements entity.AdminServiceInterface.

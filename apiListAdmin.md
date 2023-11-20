@@ -49,11 +49,11 @@
 
 ## Manage Report
 
-| Method                                                              | Url                            | Query Param | Description                          |
-| ------------------------------------------------------------------- | ------------------------------ | ----------- | ------------------------------------ |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/reports`       | `status`    | View All Report & filter status      |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/reports/:id`   |             | View Detail Report                   |
-| ![](https://storage.kodeteks.com/PATCH.png)                         | `/admins/manage/reports/:id`   |             | Update Report                        |
+| Method                                                              | Url                            | Query Param           | Description                          |
+| ------------------------------------------------------------------- | ------------------------------ | --------------------- | ------------------------------------ |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/reports`       | `status` `name` `id`  | View All Report & filter status      |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/reports/:id`   |                       | View Detail Report                   |
+| ![](https://storage.kodeteks.com/PATCH.png)                         | `/admins/manage/reports/:id`   |                       | Update Report                        |
 
 ## Manage Achievement
 
@@ -102,12 +102,12 @@
 
 ## Manage Drop Point
 
-| Method                                                              | Url                                | Description                    |
-| ------------------------------------------------------------------- | ---------------------------------- | ------------------------------ |
-| ![](https://storage.kodeteks.com/POST.png)                          | `/admins/manage/drop-points`       | Add Drop Point                 |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/drop-points`       | View All Drop Points           |
-| ![](https://storage.kodeteks.com/PUT.png)                           | `/admins/manage/drop-points/:id`   | Update Drop Point By Id        |
-| ![](https://storage.kodeteks.com/DELETE.png)                        | `/admins/manage/drop-points/:id`   | Delete Drop Point By Id        |
+| Method                                                              | Url                                | Query Param       | Description                    |
+| ------------------------------------------------------------------- | ---------------------------------- | ----------------- | ------------------------------ |
+| ![](https://storage.kodeteks.com/POST.png)                          | `/admins/manage/drop-points`       |                   | Add Drop Point                 |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/drop-points`       | `name` `address`  | View All Drop Points           |
+| ![](https://storage.kodeteks.com/PUT.png)                           | `/admins/manage/drop-points/:id`   |                   | Update Drop Point By Id        |
+| ![](https://storage.kodeteks.com/DELETE.png)                        | `/admins/manage/drop-points/:id`   |                   | Delete Drop Point By Id        |
 
 ## Manage Penukaran Sampah
 

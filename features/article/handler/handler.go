@@ -77,7 +77,7 @@ func (article *articleHandler) GetSpecificArticle(e echo.Context) error {
 
 	var articleResponse = response.ArticleCoreToArticleResponse(articleData)
 
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan artikel",articleResponse))
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan artikel", articleResponse))
 }
 
 func (article *articleHandler) UpdateArticle(e echo.Context) error {

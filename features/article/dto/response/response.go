@@ -1,12 +1,15 @@
 package response
 
-import "time"
+import (
+	"time"
+)
 
 type ArticleCreateResponse struct {
-	Id        string    `json:"Id,omitempty"`
-	Title     string    `json:"title,omitempty"`
-	Image     string    `json:"image,omitempty"`
-	Content   string    `json:"content,omitempty"`
+	Id      string `json:"Id,omitempty"`
+	Title   string `json:"title,omitempty"`
+	Image   string `json:"image,omitempty"`
+	Content string `json:"content,omitempty"`
+	// Category  []response.TrashCategory `json:"category,omitempty"`
 	Category  string    `json:"category,omitempty"`
 	Like      int       `json:"like,omitempty"`
 	Share     int       `json:"share,omitempty"`

@@ -53,7 +53,7 @@ func (article *articleRepository) GetSpecificArticle(idArticle string) (entity.A
 func (article *articleRepository) UpdateArticle(idArticle string, articleInput entity.ArticleCore, image *multipart.FileHeader) (entity.ArticleCore, error) {
 	var articleData model.Article
 
-	check := article.db.Where("id = ?", idArticle).First(&articleData)
+	check := article.db.Where("id = ?", idArticle).Preload("Category").First(&articleData)
 	if check.Error != nil {
 		return entity.ArticleCore{}, check.Error
 	}
@@ -68,7 +68,17 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 
 	articleData.Title = articleInput.Title
 	articleData.Content = articleInput.Content
-	articleData.Category = articleInput.Category
+	
+	if len(articleInput.Category) > 0 {
+		association := article.db.Model(&articleData).Association("Category")
+		if err := association.Clear(); err != nil {
+			return entity.ArticleCore{}, err
+		}
+	
+		if err := association.Append(articleInput.Category); err != nil {
+			return entity.ArticleCore{}, err
+		}
+	}
 
 	tx := article.db.Updates(&articleData)
 	if tx.Error != nil {

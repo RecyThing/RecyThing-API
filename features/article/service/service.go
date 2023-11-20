@@ -18,7 +18,7 @@ func NewArticleService(article entity.ArticleRepositoryInterface) entity.Article
 
 // DeleteArticle implements entity.ArticleServiceInterface.
 func (ac *articleService) DeleteArticle(id string) error {
-	if id == ""{
+	if id == "" {
 		return errors.New("id artikel tidak ditemukan")
 	}
 
@@ -27,17 +27,17 @@ func (ac *articleService) DeleteArticle(id string) error {
 		return errors.New("gagal menghapus artikel " + errArticle.Error())
 	}
 
-	return nil	
+	return nil
 }
 
 // GetSpecificArticle implements entity.ArticleServiceInterface.
 func (ac *articleService) GetSpecificArticle(idArticle string) (entity.ArticleCore, error) {
-	if idArticle == ""{
+	if idArticle == "" {
 		return entity.ArticleCore{}, errors.New("id tidak cocok")
 	}
 
 	articleData, err := ac.ArticleRepository.GetSpecificArticle(idArticle)
-	if err != nil{
+	if err != nil {
 		return entity.ArticleCore{}, errors.New("gagal membaca data")
 	}
 
@@ -47,7 +47,7 @@ func (ac *articleService) GetSpecificArticle(idArticle string) (entity.ArticleCo
 // UpdateArticle implements entity.ArticleServiceInterface.
 func (article *articleService) UpdateArticle(idArticle string, articleInput entity.ArticleCore, image *multipart.FileHeader) (entity.ArticleCore, error) {
 
-	if idArticle == ""{
+	if idArticle == "" {
 		return entity.ArticleCore{}, errors.New("id tidak ditemukan")
 	}
 
@@ -55,7 +55,7 @@ func (article *articleService) UpdateArticle(idArticle string, articleInput enti
 		return entity.ArticleCore{}, errors.New("artikel tidak boleh kosong")
 	}
 
-	if articleInput.Category == "" {
+	if len(articleInput.Category) == 0 {
 		return entity.ArticleCore{}, errors.New("kategori tidak boleh kosong")
 	}
 
@@ -88,7 +88,7 @@ func (article *articleService) CreateArticle(articleInput entity.ArticleCore, im
 		return entity.ArticleCore{}, errors.New("artikel tidak boleh kosong")
 	}
 
-	if articleInput.Category == "" {
+	if len(articleInput.Category) == 0 {
 		return entity.ArticleCore{}, errors.New("kategori tidak boleh kosong")
 	}
 
@@ -96,10 +96,10 @@ func (article *articleService) CreateArticle(articleInput entity.ArticleCore, im
 		return entity.ArticleCore{}, errors.New("ukuran file tidak boleh lebih dari 5 MB")
 	}
 
-	articleCreated, errinsert := article.ArticleRepository.CreateArticle(articleInput, image)
+	articleUpdate, errinsert := article.ArticleRepository.CreateArticle(articleInput, image)
 	if errinsert != nil {
 		return entity.ArticleCore{}, errinsert
 	}
 
-	return articleCreated, nil
+	return articleUpdate, nil
 }

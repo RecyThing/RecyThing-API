@@ -1,13 +1,17 @@
 package request
 
-import "recything/features/article/entity"
+import (
+	"recything/features/article/entity"
+)
 
-func ArticleRequestToArticleCore(article ArticleRequest) entity.ArticleCore{
-	return entity.ArticleCore{
-		Title: article.Title,
-		Image: article.Image,
-		Content: article.Content,
+func ArticleRequestToArticleCore(article ArticleRequest) entity.ArticleCore {
+	articleReq := entity.ArticleCore{
+		Title:    article.Title,
+		Image:    article.Image,
+		Content:  article.Content,
 		Category: article.Category,
 	}
+	// category := request.ListTrashCategoryRequestToTrashCategoryCore(article.Category)
+	// articleReq.Category = category
+	return articleReq
 }
-

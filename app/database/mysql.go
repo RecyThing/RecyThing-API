@@ -5,11 +5,11 @@ import (
 	"recything/app/config"
 
 	admin "recything/features/admin/model"
+	article "recything/features/article/model"
 	recybot "recything/features/recybot/model"
 	report "recything/features/report/model"
-	user "recything/features/user/model"
-	article "recything/features/article/model"
 	trashCategory "recything/features/trash_category/model"
+	user "recything/features/user/model"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

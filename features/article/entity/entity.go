@@ -1,12 +1,15 @@
 package entity
 
-import "time"
+import (
+	"time"
+)
 
 type ArticleCore struct {
-	ID        string
-	Title     string
-	Image     string
-	Content   string
+	ID      string
+	Title   string
+	Image   string
+	Content string
+	// Category  []entity.TrashCategoryCore
 	Category  string
 	Like      int
 	Share     int

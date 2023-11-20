@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"recything/features/report/dto/request"
 	"recything/features/report/dto/response"
@@ -29,23 +28,19 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 
 	newReport := request.ReportRubbishRequest{}
 	err = e.Bind(&newReport)
-	log.Println("images ", newReport.Images)
+
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
 	form, err := e.MultipartForm()
 	if err != nil {
-		return e.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "gagal mendapatkan form multipart",
-		})
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan form multipart"))
 	}
 
 	images, ok := form.File["images"]
 	if !ok || len(images) == 0 {
-		return e.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "tidak ada file yang di upload",
-		})
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("tidak ada file yang di upload"))
 	}
 
 	reportInput := request.ReportRequestToReportCore(newReport)
@@ -82,8 +77,7 @@ func (rco *reportHandler) ReadAllReport(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mendapatkan data laporan"))
 	}
 
-	return e.JSON(http.StatusOK, map[string]any{
-		"messeage": "berhasil mendapatkan semua data laporan",
-		"data":     data,
-	})
+	reportData := response.ListReportCoresToReportResponse(data)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan semua data laporan",reportData))
 }

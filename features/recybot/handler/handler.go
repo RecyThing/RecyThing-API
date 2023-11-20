@@ -2,31 +2,43 @@ package handler
 
 import (
 	"net/http"
-	req "recything/features/recybot/dto/request"
+	"recything/features/recybot/dto/request"
 	"recything/features/recybot/dto/response"
 	"recything/features/recybot/entity"
+	"recything/utils/constanta"
 	"recything/utils/helper"
+	"recything/utils/jwt"
 
 	"github.com/labstack/echo/v4"
 )
 
 type recybotHandler struct {
-	Recybot entity.RecybotServiceInterface
+	RecybotService entity.RecybotServiceInterface
 }
 
-func NewRecybotHandler(Recybot entity.RecybotServiceInterface) *recybotHandler {
-	return &recybotHandler{Recybot: Recybot}
+func NewRecybotHandler(recybot entity.RecybotServiceInterface) *recybotHandler {
+	return &recybotHandler{RecybotService: recybot}
 }
 
-func (rb *recybotHandler) CreateData(e echo.Context) error {
-	request := req.RecybotRequest{}
-	err := helper.DecodeJSON(e, &request)
-	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+func (rh *recybotHandler) CreateData(e echo.Context) error {
+	input := request.RecybotManageRequest{}
+
+	_, role, errExtract := jwt.ExtractToken(e)
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
 
-	input := req.RequestRecybotToCoreRecybot(request)
-	result, err := rb.Recybot.CreateData(input)
+	if errExtract != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	err := helper.DecodeJSON(e, &input)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	request := request.ManageRequestRecybotToCoreRecybot(input)
+	result, err := rh.RecybotService.CreateData(request)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
@@ -35,51 +47,114 @@ func (rb *recybotHandler) CreateData(e echo.Context) error {
 	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("Berhasil menambahkan data", response))
 }
 
-func (rb *recybotHandler) GetAllData(e echo.Context) error {
-	result, err := rb.Recybot.GetAllData()
+func (rh *recybotHandler) GetAllData(e echo.Context) error {
+	_, role, errExtract := jwt.ExtractToken(e)
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if errExtract != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	result, err := rh.RecybotService.GetAllData()
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
 	response := response.ListCoreRecybotToCoreRecybot(result)
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh data", response))
 }
 
-func (rb *recybotHandler) GetById(e echo.Context) error {
+func (rh *recybotHandler) GetById(e echo.Context) error {
+	_, role, errExtract := jwt.ExtractToken(e)
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if errExtract != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
 	id := e.Param("id")
-	result, err := rb.Recybot.GetById(id)
+	result, err := rh.RecybotService.GetById(id)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
 	response := response.CoreRecybotToResponRecybot(result)
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan data", response))
 }
 
-func (rb *recybotHandler) DeleteById(e echo.Context) error {
+func (rh *recybotHandler) DeleteById(e echo.Context) error {
+	_, role, errExtract := jwt.ExtractToken(e)
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if errExtract != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
 	id := e.Param("id")
-	err := rb.Recybot.DeleteData(id)
+	err := rh.RecybotService.DeleteData(id)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil menghapus data"))
 }
 
-func (rb *recybotHandler) UpdateData(e echo.Context) error {
-	id := e.Param("id")
-	request := req.RecybotRequest{}
-	err := helper.DecodeJSON(e, &request)
-	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+func (rh *recybotHandler) UpdateData(e echo.Context) error {
+	_, role, errExtract := jwt.ExtractToken(e)
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
 
-	input := req.RequestRecybotToCoreRecybot(request)
-	result, err := rb.Recybot.UpdateData(id, input)
+	if errExtract != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	id := e.Param("id")
+	input := request.RecybotManageRequest{}
+	err := helper.DecodeJSON(e, &input)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	request := request.ManageRequestRecybotToCoreRecybot(input)
+	result, err := rh.RecybotService.UpdateData(id, request)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
 	response := response.CoreRecybotToResponRecybot(result)
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mengupdate data", response))
+}
+
+func (rh *recybotHandler) RecyBotChat(e echo.Context) error {
+	input := request.RecybotRequest{}
+
+	idUser, _, errExtract := jwt.ExtractToken(e)
+	if idUser == "" {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if errExtract != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	err := helper.DecodeJSON(e, &input)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	request := request.RequestRecybotToCoreRecybot(input)
+	result, err := rh.RecybotService.GetPrompt(request.Question)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil melakukan request chat", result))
+
 }

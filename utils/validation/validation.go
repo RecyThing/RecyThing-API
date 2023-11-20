@@ -5,16 +5,37 @@ import (
 	"recything/utils/constanta"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
+
+	"github.com/go-sql-driver/mysql"
 )
 
-func CheckDataEmpty(data ...string) error {
+func CheckDataEmpty(data ...any) error {
 	for _, value := range data {
 		if value == "" {
 			return errors.New(constanta.ERROR_EMPTY)
 		}
 	}
 	return nil
+}
+
+func CheckEqualData(data string, validData []string) (string, error) {
+	inputData := strings.ToLower(data)
+
+	isValidData := false
+	for _, category := range validData {
+		if inputData == strings.ToLower(category) {
+			isValidData = true
+			break
+		}
+	}
+
+	if !isValidData {
+		return "", errors.New("data yang diinput tidak sesuai")
+	}
+
+	return inputData, nil
 }
 
 func EmailFormat(email string) error {
@@ -49,18 +70,26 @@ func MinLength(data string, minLength int) error {
 
 func ValidateTime(openTime, closeTime string) error {
 	open, err := time.Parse("15:04", openTime)
-    if err != nil {
-        return errors.New("format waktu buka tidak valid")
-    }
+	if err != nil {
+		return errors.New("format waktu buka tidak valid")
+	}
 
-    close, err := time.Parse("15:04", closeTime)
-    if err != nil {
-        return errors.New("format waktu tutup tidak valid")
-    }
+	close, err := time.Parse("15:04", closeTime)
+	if err != nil {
+		return errors.New("format waktu tutup tidak valid")
+	}
 
-    if close.Before(open) {
-        return errors.New("waktu penutupan harus setelah waktu pembukaan")
-    }
+	if close.Before(open) {
+		return errors.New("waktu penutupan harus setelah waktu pembukaan")
+	}
 
-    return nil
+	return nil
+}
+
+// for repository
+func IsDuplicateError(err error) bool {
+	if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+		return mysqlErr.Number == 1062
+	}
+	return false
 }

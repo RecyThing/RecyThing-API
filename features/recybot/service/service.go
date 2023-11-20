@@ -1,34 +1,43 @@
 package service
 
 import (
-	"errors"
+	"context"
+	"fmt"
+	"log"
+	"os"
 	"recything/features/recybot/entity"
+	"recything/utils/constanta"
 	"recything/utils/validation"
+
+	"github.com/joho/godotenv"
+	"github.com/sashabaranov/go-openai"
 )
 
 type recybotService struct {
-	recybotRepo entity.RecybotRepositoryInterface
+	recybotRepository entity.RecybotRepositoryInterface
 }
 
-func NewRecybotService(rc entity.RecybotRepositoryInterface) entity.RecybotServiceInterface {
+func NewRecybotService(recybot entity.RecybotRepositoryInterface) entity.RecybotServiceInterface {
 	return &recybotService{
-		recybotRepo: rc,
+		recybotRepository: recybot,
 	}
 }
 
 // CreateData implements entity.RecybotServiceInterface.
 func (rb *recybotService) CreateData(data entity.RecybotCore) (entity.RecybotCore, error) {
 
-	errEmpty := validation.CheckDataEmpty(data.Category,data.Question)
+	errEmpty := validation.CheckDataEmpty(data.Category, data.Question)
 	if errEmpty != nil {
-		return entity.RecybotCore{},errEmpty
+		return entity.RecybotCore{}, errEmpty
 	}
 
-	if data.Category != "sampah plastik" && data.Category != "sampah organik" {
-		return entity.RecybotCore{}, errors.New("jenis sampah harus diisi dengan 'sampah plastik' atau 'sampah organik'")
+	validCategory, errCategory := validation.CheckEqualData(data.Category, constanta.Category)
+	if errCategory != nil {
+		return entity.RecybotCore{}, errCategory
 	}
 
-	result, err := rb.recybotRepo.Create(data)
+	data.Category = validCategory
+	result, err := rb.recybotRepository.Create(data)
 	if err != nil {
 		return result, err
 	}
@@ -36,7 +45,7 @@ func (rb *recybotService) CreateData(data entity.RecybotCore) (entity.RecybotCor
 }
 
 func (rb *recybotService) GetAllData() ([]entity.RecybotCore, error) {
-	result, err := rb.recybotRepo.GetAll()
+	result, err := rb.recybotRepository.GetAll()
 	if err != nil {
 		return result, err
 	}
@@ -44,7 +53,7 @@ func (rb *recybotService) GetAllData() ([]entity.RecybotCore, error) {
 }
 
 func (rb *recybotService) GetById(idData string) (entity.RecybotCore, error) {
-	result, err := rb.recybotRepo.GetById(idData)
+	result, err := rb.recybotRepository.GetById(idData)
 	if err != nil {
 		return result, err
 	}
@@ -54,7 +63,7 @@ func (rb *recybotService) GetById(idData string) (entity.RecybotCore, error) {
 // Delete implements entity.RecybotServiceInterface.
 func (rb *recybotService) DeleteData(idData string) error {
 
-	err := rb.recybotRepo.Delete(idData)
+	err := rb.recybotRepository.Delete(idData)
 	if err != nil {
 		return err
 	}
@@ -69,10 +78,70 @@ func (rb *recybotService) UpdateData(idData string, data entity.RecybotCore) (en
 		return entity.RecybotCore{}, errEmpty
 	}
 
-	result, err := rb.recybotRepo.Update(idData, data)
+	validCategory,errCategory := validation.CheckEqualData(data.Category, constanta.Category)
+	if errCategory != nil {
+		return entity.RecybotCore{}, errCategory
+	}
+
+	data.Category = validCategory
+	result, err := rb.recybotRepository.Update(idData, data)
 	if err != nil {
 		return result, err
 	}
 	result.ID = idData
 	return result, nil
+}
+
+func (rb *recybotService) GetPrompt(question string) (string, error) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	dataRecybot, err := rb.recybotRepository.GetAll()
+	if err != nil {
+		return "", err
+	}
+
+	output := make(map[string][]string)
+	for _, item := range dataRecybot {
+		output[item.Category] = append(output[item.Category], item.Question)
+	}
+
+var prompt string
+for category, questions := range output {
+    prompt += "\n" + fmt.Sprintf("kategori %s:\n", category)
+    for _, question := range questions {
+        prompt += fmt.Sprintf("%s\n", question)
+    }
+}
+
+	log.Println(prompt)
+	ctx := context.Background()
+	client := openai.NewClient(os.Getenv("OPEN_AI_KEY"))
+	model := openai.GPT3Dot5Turbo
+	messages := []openai.ChatCompletionMessage{
+		{
+			Role:    "system",
+			Content: prompt,
+		},
+		{
+			Role:    "user",
+			Content: question,
+		},
+	}
+
+	response, err := client.CreateChatCompletion(
+		ctx,
+		openai.ChatCompletionRequest{
+			Model:    model,
+			Messages: messages,
+		},
+	)
+	if err != nil {
+		return "", err
+	}
+
+	answer := response.Choices[0].Message.Content
+	return answer, nil
 }

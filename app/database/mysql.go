@@ -9,6 +9,9 @@ import (
 	report "recything/features/report/model"
 	user "recything/features/user/model"
 	dropPoint "recything/features/drop-point/model"
+	trashCategory "recything/features/trash_category/model"
+	achievement "recything/features/achievement/model"
+	faq "recything/features/faq/model"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -34,4 +37,7 @@ func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&report.Report{}, &report.Image{})
 	db.AutoMigrate(&recybot.Recybot{})
 	db.AutoMigrate(&dropPoint.DropPoint{}, &dropPoint.OperationalSchedules{})
+	db.AutoMigrate(&faq.Faq{})
+	db.AutoMigrate(&trashCategory.TrashCategory{})
+	db.AutoMigrate(&achievement.Achievement{})
 }

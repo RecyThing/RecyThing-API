@@ -297,3 +297,25 @@ func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil memperbarui status"))
 }
+
+func (dph *AdminHandler) GetReportById(e echo.Context) error {
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	idParams := e.Param("id")
+	result, err := dph.AdminService.GetReportById(idParams)
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal membaca data"))
+	}
+
+	user, _ := dph.UserService.GetById(result.UserId)
+	var reportResponse = reportDto.ReportCoreToReportResponseForDataReportingId(result, user)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan data", reportResponse))
+}

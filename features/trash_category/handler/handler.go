@@ -52,7 +52,7 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 	}
 
 	if len(result) == 0 {
-		return e.JSON(http.StatusNotFound, helper.ErrorResponse("Belum ada kategori sampah"))
+		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada kategori sampah"))
 	}
 
 	response := response.ListCoreTrashCategoryToReponseTrashCategory(result)

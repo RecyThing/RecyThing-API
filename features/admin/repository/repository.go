@@ -187,17 +187,28 @@ func (ar *AdminRepository) DeleteUsers(userId string) error {
 }
 
 // GetByStatusReport implements entity.AdminRepositoryInterface.
-func (ar *AdminRepository) GetByStatusReport(status string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error) {
+func (ar *AdminRepository) GetByStatusReport(status, name, id string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error) {
 	dataReports := []reportModel.Report{}
 	var result *gorm.DB
 
 	offset := (page - 1) * limit
 
+	query := ar.db.Offset(offset).Limit(limit)
+
 	if status != "" {
-		result = ar.db.Where("status = ?", status).Offset(offset).Limit(limit).Find(&dataReports)
-	} else {
-		result = ar.db.Offset(offset).Limit(limit).Find(&dataReports)
+		query = query.Where("status = ?", status)
 	}
+
+	if name != "" {
+		query = query.Joins("JOIN users AS u ON reports.users_id = u.id").
+			Where("u.fullname LIKE ?", "%"+name+"%")
+	}
+	
+	if id != "" {
+		query = query.Where("id = ?", id)
+	}
+
+	result = query.Find(&dataReports)
 
 	if result.Error != nil {
 		return nil, pagination.PageInfo{}, result.Error
@@ -207,9 +218,9 @@ func (ar *AdminRepository) GetByStatusReport(status string, page, limit int) ([]
 
 	// Get total count for pagination
 	var totalCount int64
-	err := ar.db.Model(&reportModel.Report{}).Count(&totalCount).Error
-	if err != nil {
-		return nil, pagination.PageInfo{}, err
+	tx := ar.db.Model(&reportModel.Report{}).Joins("JOIN users AS u ON reports.users_id = u.id").Where("reports.id = ?", id).Count(&totalCount)
+	if tx.Error != nil {
+		return nil, pagination.PageInfo{}, tx.Error
 	}
 
 	// Menggunakan fungsi CalculatePagination

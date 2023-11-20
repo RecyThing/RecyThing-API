@@ -258,10 +258,12 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 	}
 
 	status := e.QueryParam("status")
+	name := e.QueryParam("name")
+	id := e.QueryParam("id")
 	page, _ := strconv.Atoi(e.QueryParam("page"))
 	limit, _ := strconv.Atoi(e.QueryParam("limit"))
 
-	result, paginationInfo, err := ah.AdminService.GetByStatusReport(status, page, limit)
+	result, paginationInfo, err := ah.AdminService.GetByStatusReport(status, name, id, page, limit)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}

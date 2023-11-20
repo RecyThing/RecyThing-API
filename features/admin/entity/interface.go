@@ -19,7 +19,7 @@ type AdminRepositoryInterface interface {
 	GetByIdUser(userId string) (user.UsersCore, error)
 	DeleteUsers(adminId string) error
 	// Manage Reporting
-	GetByStatusReport(status string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error)
+	GetByStatusReport(status, name, id string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error)
 	UpdateStatusReport(id, status, reason string) (report.ReportCore, error)
 	GetReportById(id string) (report.ReportCore, error)
 }
@@ -36,7 +36,7 @@ type AdminServiceInterface interface {
 	GetByIdUsers(adminId string) (user.UsersCore, error)
 	DeleteUsers(adminId string) error
 	// Manage Reporting
-	GetByStatusReport(status string, page, limit int) (data []report.ReportCore, paginationInfo pagination.PageInfo, err error)
+	GetByStatusReport(status, name, id string, page, limit int) (data []report.ReportCore, paginationInfo pagination.PageInfo, err error)
 	UpdateStatusReport(id, status, reason string) (report.ReportCore, error)
 	GetReportById(id string) (report.ReportCore, error)
 }

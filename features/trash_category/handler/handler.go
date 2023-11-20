@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"recything/features/trash_category/dto/request"
 	"recything/features/trash_category/dto/response"
 	"recything/features/trash_category/entity"
 	"recything/utils/helper"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -36,15 +38,21 @@ func (tc *trashCategoryHandler) CreateCategory(e echo.Context) error {
 func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
-	result, pagnation, err := tc.trashCategory.GetAllCategory(page, limit)
+	trashType := e.QueryParam("trash_type")
 
+	result, pagnation, err := tc.trashCategory.GetAllCategory(page, trashType, limit)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
+	pageInt, _ := strconv.Atoi(page)
+	errMessage := fmt.Sprintf("page %s tidak ada", page)
+	if pageInt > pagnation.LastPage {
+		return e.JSON(http.StatusNotFound, helper.ErrorResponse(errMessage))
+	}
+
 	if len(result) == 0 {
 		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada kategori sampah"))
-
 	}
 
 	response := response.ListCoreTrashCategoryToReponseTrashCategory(result)
@@ -53,6 +61,7 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 
 func (tc *trashCategoryHandler) GetById(e echo.Context) error {
 	id := e.Param("id")
+	
 	result, err := tc.trashCategory.GetById(id)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))

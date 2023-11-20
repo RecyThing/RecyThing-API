@@ -37,11 +37,29 @@ func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) er
 	return nil
 }
 
-func (tc *trashCategoryService) GetAllCategory(page, limit string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
-	result, paganation, err := tc.trashCategoryRepo.GetAll(page, limit)
+func (tc *trashCategoryService) GetAllCategory(page, trashType, limit string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
+	if limit == "" && page == "" {
+		if trashType != "" {
+			data, pagnationInfo, err := tc.trashCategoryRepo.FindByTrashType(trashType)
+			if err != nil {
+				return nil, entity.PagnationInfo{}, err
+			}
+			return data, pagnationInfo, nil
+		}
+
+		result, pagnationInfo, err := tc.trashCategoryRepo.FindAll()
+		if err != nil {
+			return nil, entity.PagnationInfo{}, err
+		}
+		return result, pagnationInfo, nil
+	}
+
+	result, paganation, err := tc.trashCategoryRepo.FindAllWithSearchAndPagnation(page, trashType, limit)
+
 	if err != nil {
 		return result, paganation, err
 	}
+
 	return result, paganation, nil
 }
 

@@ -5,6 +5,7 @@ import (
 	"recything/features/drop-point/entity"
 	"recything/features/drop-point/model"
 	"recything/utils/constanta"
+	"recything/utils/pagination"
 
 	"gorm.io/gorm"
 )
@@ -49,12 +50,25 @@ func (dpr *dropPointRepository) DeleteDropPointById(id string) error {
 }
 
 // GetAllDropPoint implements entity.DropPointRepositoryInterface.
-func (dpr *dropPointRepository) GetAllDropPoint() ([]entity.DropPointCore, error) {
+func (dpr *dropPointRepository) GetAllDropPoint(page, limit int, name, address string) ([]entity.DropPointCore, pagination.PageInfo, error) {
 	dropPoint := []model.DropPoint{}
 
-	tx := dpr.db.Preload("OperationalSchedules").Find(&dropPoint)
+	// Hitung offset berdasarkan halaman dan batasan
+	offset := (page - 1) * limit
+
+	query := dpr.db.Preload("OperationalSchedules").Offset(offset).Limit(limit)
+
+	if name != "" {
+		query = query.Where("name LIKE ?", "%"+name+"%")
+	}
+
+	if address != "" {
+		query = query.Where("address LIKE ?", "%"+address+"%")
+	}
+
+	tx := query.Find(&dropPoint)
 	if tx.Error != nil {
-		return nil, tx.Error
+		return nil, pagination.PageInfo{}, tx.Error
 	}
 
 	dropPointCores := []entity.DropPointCore{}
@@ -63,7 +77,18 @@ func (dpr *dropPointRepository) GetAllDropPoint() ([]entity.DropPointCore, error
 		dropPointCores = append(dropPointCores, dropPointCore)
 	}
 
-	return dropPointCores, nil
+	// Hitung total data untuk paginasi
+	var totalCount int64
+	tx = query.Model(&model.DropPoint{}).Count(&totalCount)
+	if tx.Error != nil {
+		return nil, pagination.PageInfo{}, tx.Error
+	}
+
+	// Menghitung informasi paginasi
+	pageInfo := pagination.CalculateData(int(totalCount), limit, page)
+
+	return dropPointCores, pageInfo, nil
+
 }
 
 // GetById implements entity.DropPointRepositoryInterface.

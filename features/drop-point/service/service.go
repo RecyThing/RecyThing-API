@@ -5,6 +5,7 @@ import (
 	"log"
 	"recything/features/drop-point/entity"
 	"recything/utils/constanta"
+	"recything/utils/pagination"
 	"recything/utils/validation"
 )
 
@@ -76,13 +77,19 @@ func (dps *dropPointService) DeleteDropPointById(id string) error {
 }
 
 // GetAllDropPoint implements entity.DropPointServiceInterface.
-func (dps *dropPointService) GetAllDropPoint() ([]entity.DropPointCore, error) {
-	dropPoint, err := dps.dropPointRepository.GetAllDropPoint()
+func (dps *dropPointService) GetAllDropPoint(page, limit int, name, address string) ([]entity.DropPointCore, pagination.PageInfo, error) {
+	if limit > 10 {
+        return nil, pagination.PageInfo{}, errors.New("limit tidak boleh lebih dari 10")
+    }
+
+	page, limit = validation.ValidatePaginationParameters(page, limit)
+	
+	dropPointCores, pageInfo, err := dps.dropPointRepository.GetAllDropPoint(page, limit, name, address)
 	if err != nil {
-		return nil, err
+		return nil, pagination.PageInfo{}, err
 	}
 
-	return dropPoint, nil
+	return dropPointCores, pageInfo, nil
 }
 
 // GetById implements entity.DropPointServiceInterface.
@@ -129,7 +136,7 @@ func (dps *dropPointService) UpdateDropPointById(id string, data entity.DropPoin
 	updatedData, err := dps.dropPointRepository.UpdateDropPointById(id, data)
 	if err != nil {
 		return entity.DropPointCore{}, errors.New("gagal melakukan update data")
-	} 
+	}
 
 	return updatedData, nil
 }

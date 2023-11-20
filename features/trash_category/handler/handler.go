@@ -6,9 +6,8 @@ import (
 	"recything/features/trash_category/dto/request"
 	"recything/features/trash_category/dto/response"
 	"recything/features/trash_category/entity"
-	"recything/utils/constanta"
 	"recything/utils/helper"
-	"recything/utils/jwt"
+
 	"strconv"
 
 	"github.com/labstack/echo/v4"

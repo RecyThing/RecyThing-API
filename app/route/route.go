@@ -9,10 +9,12 @@ func New(e *echo.Echo, db *gorm.DB) {
 	loginPage := e.Group("/")
 	user := e.Group("/users")
 	admin:=e.Group("/admins")
+	recybot := e.Group("/recybot")
 
 	RouteLoginPage(loginPage,db)
 	RouteUser(user, db)
 	RouteReport(user, db)
 	RouteAdmin(admin, db)
 	RouteArticle(admin,db)
+	RouteRecybot(recybot,db)
 }

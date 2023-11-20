@@ -64,6 +64,7 @@ func (tc *trashCategoryService) GetAllCategory(page, trashType, limit string) ([
 }
 
 func (tc *trashCategoryService) GetById(idTrash string) (entity.TrashCategoryCore, error) {
+
 	result, err := tc.trashCategoryRepo.GetById(idTrash)
 	if err != nil {
 		return result, err

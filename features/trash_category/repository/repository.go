@@ -17,7 +17,6 @@ type trashCategoryRepository struct {
 	db *gorm.DB
 }
 
-
 func NewTrashCategiryRepository(db *gorm.DB) entity.TrashCategoryRepositoryInterface {
 	return &trashCategoryRepository{
 		db: db,
@@ -81,15 +80,16 @@ func (tc *trashCategoryRepository) FindByTrashType(trashType string) ([]entity.T
 }
 
 func (tc *trashCategoryRepository) GetById(idTrash string) (entity.TrashCategoryCore, error) {
-	dataTrashCategories := model.TrashCategory{}
 
+	dataTrashCategories := model.TrashCategory{}
 	tx := tc.db.Where("id = ?", idTrash).First(&dataTrashCategories)
 	if tx.Error != nil {
-		return entity.TrashCategoryCore{}, tx.Error
-	}
+		
+		if tx.RowsAffected == 0 {
+			return entity.TrashCategoryCore{}, errors.New(constanta.ERROR_DATA_ID)
+		}
 
-	if tx.RowsAffected == 0 {
-		return entity.TrashCategoryCore{}, errors.New(constanta.ERROR_DATA_ID)
+		return entity.TrashCategoryCore{}, tx.Error
 	}
 
 	result := entity.ModelTrashCategoryToCoreTrashCategory(dataTrashCategories)

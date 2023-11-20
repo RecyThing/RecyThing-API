@@ -6,7 +6,9 @@ import (
 	"recything/features/trash_category/dto/request"
 	"recything/features/trash_category/dto/response"
 	"recything/features/trash_category/entity"
+	"recything/utils/constanta"
 	"recything/utils/helper"
+	"recything/utils/jwt"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -61,7 +63,6 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 
 func (tc *trashCategoryHandler) GetById(e echo.Context) error {
 	id := e.Param("id")
-	
 	result, err := tc.trashCategory.GetById(id)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))

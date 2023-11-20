@@ -61,6 +61,7 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 
 func (tc *trashCategoryHandler) GetById(e echo.Context) error {
 	id := e.Param("id")
+	
 	result, err := tc.trashCategory.GetById(id)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))

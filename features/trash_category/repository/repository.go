@@ -8,7 +8,6 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/validation"
-	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -17,8 +16,7 @@ type trashCategoryRepository struct {
 	db *gorm.DB
 }
 
-
-func NewTrashCategiryRepository(db *gorm.DB) entity.TrashCategoryRepositoryInterface {
+func NewTrashCategoryRepository(db *gorm.DB) entity.TrashCategoryRepositoryInterface {
 	return &trashCategoryRepository{
 		db: db,
 	}
@@ -37,15 +35,22 @@ func (tc *trashCategoryRepository) Create(data entity.TrashCategoryCore) error {
 	return nil
 }
 
-func (tc *trashCategoryRepository) FindAllWithSearchAndPagnation(page, trashType, limit string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
+func (tc *trashCategoryRepository) FindAll(page, limit int, trashType string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
 	dataTrashCategories := []model.TrashCategory{}
-	limitInt, _ := strconv.Atoi(limit)
-	pageInt, _ := strconv.Atoi(page)
 
-	offsetInt := (pageInt - 1) * limitInt
-	tx := tc.db.Where("trash_type LIKE ?", "%"+trashType+"%").Limit(limitInt).Offset(offsetInt).Find(&dataTrashCategories)
-	if tx.Error != nil {
-		return nil, entity.PagnationInfo{}, tx.Error
+	offsetInt := (page - 1) * limit
+	if trashType == "" {
+		tx := tc.db.Limit(limit).Offset(offsetInt).Find(&dataTrashCategories)
+		if tx.Error != nil {
+			return nil, entity.PagnationInfo{}, tx.Error
+		}
+	}
+
+	if trashType != "" {
+		tx := tc.db.Where("trash_type LIKE ?", "%"+trashType+"%").Limit(limit).Offset(offsetInt).Find(&dataTrashCategories)
+		if tx.Error != nil {
+			return nil, entity.PagnationInfo{}, tx.Error
+		}
 	}
 
 	result := entity.ListModelTrashCategoryToCoreTrashCategory(dataTrashCategories)
@@ -55,41 +60,21 @@ func (tc *trashCategoryRepository) FindAllWithSearchAndPagnation(page, trashType
 		return nil, entity.PagnationInfo{}, err
 	}
 
-	paginationInfo := helper.CalculatePagination(int(totalCount), limitInt, pageInt)
+	paginationInfo := helper.CalculatePagination(int(totalCount), limit, page)
 	return result, paginationInfo, nil
 }
 
-func (tc *trashCategoryRepository) FindAll() ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
-	dataTrashCategories := []model.TrashCategory{}
-	tx := tc.db.Find(&dataTrashCategories)
-	if tx.Error != nil {
-		return nil, entity.PagnationInfo{}, tx.Error
-	}
-	result := entity.ListModelTrashCategoryToCoreTrashCategory(dataTrashCategories)
-	return result, entity.PagnationInfo{}, nil
-}
-
-func (tc *trashCategoryRepository) FindByTrashType(trashType string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
-	dataTrashCategories := []model.TrashCategory{}
-	tx := tc.db.Where("trash_type LIKE ?", "%"+trashType+"%").Find(&dataTrashCategories)
-	if tx.Error != nil {
-		return nil, entity.PagnationInfo{}, tx.Error
-
-	}
-	result := entity.ListModelTrashCategoryToCoreTrashCategory(dataTrashCategories)
-	return result, entity.PagnationInfo{}, nil
-}
-
 func (tc *trashCategoryRepository) GetById(idTrash string) (entity.TrashCategoryCore, error) {
-	dataTrashCategories := model.TrashCategory{}
 
+	dataTrashCategories := model.TrashCategory{}
 	tx := tc.db.Where("id = ?", idTrash).First(&dataTrashCategories)
 	if tx.Error != nil {
-		return entity.TrashCategoryCore{}, tx.Error
-	}
 
-	if tx.RowsAffected == 0 {
-		return entity.TrashCategoryCore{}, errors.New(constanta.ERROR_DATA_ID)
+		if tx.RowsAffected == 0 {
+			return entity.TrashCategoryCore{}, errors.New(constanta.ERROR_DATA_ID)
+		}
+
+		return entity.TrashCategoryCore{}, tx.Error
 	}
 
 	result := entity.ModelTrashCategoryToCoreTrashCategory(dataTrashCategories)

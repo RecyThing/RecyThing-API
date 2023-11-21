@@ -15,7 +15,8 @@ const (
 
 // Constanta For Utils
 const (
-	VERIFICATION_URL   = "https://api.recything.my.id/verify-token?token="
+	VERIFICATION_URL = "http://localhost:8080/verify-token?token="
+	// VERIFICATION_URL   = "https://api.recything.my.id/verify-token?token="
 	EMAIL_NOT_REGISTER = "email belum terdaftar"
 )
 
@@ -37,6 +38,7 @@ const (
 	ERROR_HASH_PASSWORD    = "error hash password"
 	ERROR_DATA_EXIST       = "data sudah ada"
 	ERROR_INVALID_INPUT    = "data yang diinput tidak sesuai"
+	ERROR_NOT_FOUND        = "data tidak ditemukan"
 )
 
 var (

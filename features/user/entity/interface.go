@@ -23,6 +23,6 @@ type UsersUsecaseInterface interface {
 	UpdateIsVerified(id string, isVerified bool) error
 	UpdatePassword(id string, data UsersCore)  error 
 	SendOTP(emailUser string) error
-	VerifyOTP(email, otp string) error
-	NewPassword(otp string, data UsersCore) error
+	VerifyOTP(email, otp string) (string, error)
+	NewPassword(email string, data UsersCore) error
 }

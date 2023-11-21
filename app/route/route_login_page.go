@@ -4,6 +4,7 @@ import (
 	"recything/features/user/handler"
 	"recything/features/user/repository"
 	"recything/features/user/service"
+	"recything/utils/jwt"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -21,7 +22,7 @@ func RouteLoginPage(e *echo.Group, db *gorm.DB) {
 	
 	e.POST("forgot-password", userHandler.ForgotPassword)
 	e.POST("verify-otp", userHandler.VerifyOTP)
-	e.PATCH("new-password", userHandler.NewPassword)
+	e.PATCH("new-password", userHandler.NewPassword, jwt.JWTMiddleware())
 	
 
 }

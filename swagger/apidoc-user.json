@@ -1,0 +1,1244 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "RecyThing",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "https://api.recything.my.id/"
+        }
+    ],
+    "externalDocs": {
+        "description": "RecyThing Github",
+        "url": "https://api.server.test/v1"
+    },
+    "paths": {
+        "/login": {
+            "post": {
+                "tags": [
+                    "Login Page User"
+                ],
+                "summary": "login for user",
+                "description": "",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestLogin"
+                            },
+                            "examples": {
+                                "user": {
+                                    "value": {
+                                        "email": "recythinguser@gmail.com",
+                                        "password": "recything003"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil melakukan login",
+                                            "data": {
+                                                "id": "c84a71c9-526a-4622-9de2-22584f1690e2",
+                                                "fullname": "recything",
+                                                "email": "recythinguser@gmail.com",
+                                                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDAxMDQzOTksImlkIjoiYzg0YTcxYzktNTI2YS00NjIyLTlkZTItMjI1ODRmMTY5MGUyIiwicm9sZSI6IiJ9.cd68WXniUznvZKcoYNmadSs25yYfep80JLF-RlPLw90"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "tags": [
+                    "Login Page User"
+                ],
+                "summary": "register user",
+                "description": "register only for user",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestRegister"
+                            },
+                            "examples": {
+                                "success": {
+                                    "value": {
+                                        "fullname": "recything",
+                                        "email": "recythinguser@gmail.com",
+                                        "password": "recythingalta",
+                                        "confirm_password": "recythingalta"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil membuat data",
+                                            "data": {
+                                                "id": "c84a71c9-526a-4622-9de2-22584f1690e2",
+                                                "fullname": "recything",
+                                                "email": "recythinguser@gmail.com"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/forgot-password": {
+            "post": {
+                "tags": [
+                    "Login Page User"
+                ],
+                "summary": "forget password",
+                "description": "user send the email registered in the application",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "email"
+                                ]
+                            },
+                            "examples": {
+                                "request": {
+                                    "value": {
+                                        "email": "recythinguser@gmail.com"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "otp berhasil dikirim"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/verify-otp": {
+            "post": {
+                "tags": [
+                    "Login Page User"
+                ],
+                "summary": "verification otp",
+                "description": "this endpoint for verification otp which has been sent by email",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "otp": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "otp"
+                                ]
+                            },
+                            "examples": {
+                                "example": {
+                                    "value": {
+                                        "email": "recythinguser@gmail.com",
+                                        "otp": "3612"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "verifikasi otp berhasil"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/new-password": {
+            "patch": {
+                "tags": [
+                    "Login Page User"
+                ],
+                "summary": "new password for forgot password",
+                "description": "Update the password when you have completed the OTP verification stage",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    },
+                                    "confirm_password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "confirm_password"
+                                ]
+                            },
+                            "examples": {
+                                "example": {
+                                    "value": {
+                                        "email": "recythinguser@gmail.com",
+                                        "password": "recything003",
+                                        "confirm_password": "recything003"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil update password"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/profile": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Users Profile"
+                ],
+                "summary": "profile user",
+                "description": "view all data user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RequestResponseDataUser"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan profile",
+                                            "data": {
+                                                "id": "c84a71c9-526a-4622-9de2-22584f1690e2",
+                                                "fullname": "recything",
+                                                "email": "recythinguser@gmail.com",
+                                                "date_of_birth": "",
+                                                "point": 0,
+                                                "phone": "",
+                                                "address": "",
+                                                "purpose": ""
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Users Profile"
+                ],
+                "summary": "update profile user",
+                "description": "update data user except password",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestResponseDataUser"
+                            },
+                            "examples": {
+                                "example": {
+                                    "value": {
+                                        "fullname": "recything",
+                                        "phone": "6282287653245",
+                                        "address": "kota palu",
+                                        "date_of_birth": "2002-03-07",
+                                        "purpose": "saya ingin melestarkan lingkungan"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil melakukan update data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/profile/reset-password": {
+            "patch": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Users Profile"
+                ],
+                "summary": "reset password user",
+                "description": "The user can update the password, but must remember the previous password",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "boolean",
+                                "properties": {
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    },
+                                    "new-password": {
+                                        "type": "string"
+                                    },
+                                    "confirm_password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "password",
+                                    "new_password",
+                                    "confirm_password"
+                                ]
+                            },
+                            "examples": {
+                                "example": {
+                                    "value": {
+                                        "password": "recything003",
+                                        "new_password": "alterra002",
+                                        "confirm_password": "alterra002"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil update password"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/recybot": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Home & Info"
+                ],
+                "summary": "chatbot",
+                "description": "post your question",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "question": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "question"
+                                ]
+                            },
+                            "examples": {
+                                "example": {
+                                    "value": {
+                                        "question": "berikan 3 contoh sampah organik"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil melakukan request chat",
+                                            "data": "Berikut adalah 3 contoh sampah organik:\n\n1. Sisa makanan: Sisa-sisa makanan seperti kulit buah, sayuran yang busuk, potongan daging, atau tulang adalah contoh sampah organik yang dapat terurai dengan mudah.\n\n2. Daun kering: Daun-daun yang sudah jatuh dari pohon adalah contoh sampah organik yang dapat diuraikan menjadi kompos.\n\n3. Serasah tumbuhan: Serasah adalah lapisan bahan organik yang terbentuk dari bahan-bahan yang jatuh dari tumbuhan seperti ranting, daun, dan bunga yang layu. Sampah organik ini juga dapat dijadikan kompos."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/faq": {
+            "get": {
+                "tags": [
+                    "Home & Info"
+                ],
+                "summary": "Frequently Asked Questions",
+                "description": "",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data faq",
+                                            "data": [
+                                                {
+                                                    "Id": 1,
+                                                    "Title": "Cara mengelola sampah",
+                                                    "Description": "Cara mengelola sampah dapat melibatkan beberapa langkah, termasuk: 1. Pemilahan Sampah: Pisahkan sampah menjadi kategori berbeda, seperti organik, kertas, plastik, logam, dan sebagainya. 2. Daur Ulang: Maksimalkan daur ulang dengan mengumpulkan, mendaur ulang, dan menggunakan kembali bahan-bahan yang bisa didaur ulang. 3. Pengomposan: Buat kompos dari sisa makanan dan limbah organik untuk menghasilkan pupuk alami. 4. Pengurangan Sampah: Kurangi penggunaan kantong plastik sekali pakai dan barang-barang sekali pakai."
+                                                },
+                                                {
+                                                    "Id": 2,
+                                                    "Title": "Cara menukarkan sampah",
+                                                    "Description": "Berikut merupakan langkah langkah untuk menukarkan sampah : 1. Klik fitur Daur Ulang  kemudian pilih menu Tukarkan Sampahmu. 2. Selanjutnya pilih lokasi daur ulang yang terdekat dari lokasi anda. 3. Lihat detail jam operasional dari lokasi penukaran sampah. 4. Klik arahkan untuk mempermudah anda dalam menemukan lokasi atau bisa langsung ke lokasi drop point jika anda sudah mengetahui lokasi penukaran."
+                                                },
+                                                {
+                                                    "Id": 3,
+                                                    "Title": "Cara menukar poin",
+                                                    "Description": "Berikut ini merupakan langkah untuk menukarkan poin: 1. Pergi ke fitur tukar poin pada halaman homescreen aplikasi. 2. Pada bagian voucher, pilih item penukaran sesuai dengan poin yang anda miliki saat ini. 3. Selanjutnya klik Tukar dan kemudian masukkan nomor handphone anda untuk melakukan verifikasi nomor. 4. Klik konfirmasi jika nomor yang dimasukkan sudah sesuai kemudian tunggu beberapa saat untuk memproses penukaran poin. 5. Cek riwayat penukaran pada tab Riwayat"
+                                                },
+                                                {
+                                                    "Id": 4,
+                                                    "Title": "Bergabung komunitas",
+                                                    "Description": "Jika anda bingung bagaimana cara bergabung dengan kokmunitas berikut merupakan cara untuk anda bisa bergabung dengan komunitas : 1. Klik menu komunitas untuk melihat rekomendasi komunitas atau mencari komunitas. 2. Pada kolom pencarian masukkan kata kunci komunitas yang relevan dengan keinginan anda atau anda bisa mencari komunitas pada halaman rekomendasi komunitas. 3. Setelah menemukan komunitas yang sesuai dengan yang anda cari, klik komunitas tersebut untuk melihat detail komunitas. 4. Klik pada bagian Ikuti Komunitas untuk anda dapat bergabung dan berpartisipasi dalam event yang tersedia pada komunitas tersebut."
+                                                },
+                                                {
+                                                    "Id": 5,
+                                                    "Title": "Cara melaporkan tumpukan sampah",
+                                                    "Description": "Cara untuk melaporkan tumpukan sampah dapat dilakukan dengan cara sebagi berikut: 1. Klik pada menu pelaporan kemudian pilih pada bagian Tumpukan Sampah. 2. Selanjutnya silahkan isi detail pelaporan seperti lokasi sampah, Jenis sampah, Tuliskan kondisi sampah dan menyertakan bukti foto/video 3. Selanjutkan pastikan data detail pelaporan anda sudah lengkap. 4. Klik kirim untuk untuk melaporkan tumpukan sampah. 5. Anda dapat melihat riwayat pelaporan anda paga bagian awal menu pelaporan."
+                                                },
+                                                {
+                                                    "Id": 6,
+                                                    "Title": "Cara mengerjakan daily mission",
+                                                    "Description": "Berikut merupakan cara yang ada bisa lakukan untuk mengerkjakan daily mission:: 1. Klik pada menu mission 2. Pada menu mission ini akan ada beberapa misi yang tersedia yang bisa anda kerjakan. 3. Klik terima tantangan untuk anda dapat mengerjakan mission tersebut. 4. Lengkapi tugas/misi dengan mengunggah bukti dari masing tugas yang diperintahkan. 5. Klik Kirim jika bukti dari misi sudah dilengkapi. 6. Selanjutnya silahkan tunggu untuk beberapa saat karena misi yang anda dikerjakan akan diverivikasi terlebih dahulu oleh admin. 7. Jika misi anda diterima maka anda akan mendapatkan perolehan poin hadiah dari misi yang anda kerjakan."
+                                                },
+                                                {
+                                                    "Id": 7,
+                                                    "Title": "Voucher tidak masuk",
+                                                    "Description": "Jika setelah anda melakukan penukaran poin dan voucher yang anda tukarkan belum masuk, maka ada beberapa halk yang bisa anda lakukan : 1. Pastikan bahwa nomor yang anda gunakan untuk menerima reward penukaran sudah sesuai. 2. Jika nomor yang anda masukkan sebelumnya sudah sesuai namun voucher juga masih belum masuk, anda dapat menghubungi kami langsung dengan cara masuk kedalam menu profil kemudian pilih Hubungi Kami. 3. Anda dapat menghubungi dan konfirmasi dengan kami secara langsung untuk mendapatkan penanganan lebih lanjut."
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/faq/{id}": {
+            "get": {
+                "tags": [
+                    "Home & Info"
+                ],
+                "summary": "Frequently Asked Questions detail",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id faq",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "examples": {
+                            "example": {
+                                "value": 2
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan faq",
+                                            "data": {
+                                                "Id": 2,
+                                                "Title": "Cara menukarkan sampah",
+                                                "Description": "Berikut merupakan langkah langkah untuk menukarkan sampah : 1. Klik fitur Daur Ulang  kemudian pilih menu Tukarkan Sampahmu. 2. Selanjutnya pilih lokasi daur ulang yang terdekat dari lokasi anda. 3. Lihat detail jam operasional dari lokasi penukaran sampah. 4. Klik arahkan untuk mempermudah anda dalam menemukan lokasi atau bisa langsung ke lokasi drop point jika anda sudah mengetahui lokasi penukaran."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/reports": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Reporting"
+                ],
+                "summary": "Report Rubbish",
+                "description": "Endpoint for Reporting Rubbish and Literring, example input form, see application json example",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestReportingUser"
+                            },
+                            "encoding": {
+                                "images": {
+                                    "style": "form"
+                                }
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestReportingUser"
+                            },
+                            "examples": {
+                                "Report Rubbish": {
+                                    "description": "Contoh request form report rubbish",
+                                    "value": {
+                                        "report_type": "tumpukan sampah",
+                                        "location": "Jalan Jati Makmur No.15 Jatiwaringin Pondokgede, RT No.003, RT.001/RW.002, Jatirahayu, Kec. Pd. Melati, Kota Bks, Jawa Barat 17411",
+                                        "longitude": 106.9124904,
+                                        "latitude": -6.2846906,
+                                        "address_point": "samping pager biru",
+                                        "trash_type": "sampah kering",
+                                        "description": "Disamping mall banyak sampah numpuk",
+                                        "images": [
+                                            {
+                                                "image1": "image1"
+                                            },
+                                            {
+                                                "image2": "image2"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "Report Literring (Kecil)": {
+                                    "description": "Contoh request form report literring skala besar",
+                                    "value": {
+                                        "report_type": "pelanggaran sampah",
+                                        "scale_type": "skala kecil",
+                                        "location": "Jalan Jati Kramat Indah 2 ",
+                                        "longitude": 106.9124904,
+                                        "latitude": -6.2846906,
+                                        "address_point": "lapangan bola",
+                                        "insident_date": "2023-10-03",
+                                        "insident_time": "15:00",
+                                        "description": "Seseorang membuang sampah sembarangan hingga banyak sekali",
+                                        "images": [
+                                            {
+                                                "image1": "image1"
+                                            },
+                                            {
+                                                "image2": "image2"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "Report Literring (Besar)": {
+                                    "description": "Contoh request form report literring skala besar",
+                                    "value": {
+                                        "report_type": "pelanggaran sampah",
+                                        "scale_type": "skala besar",
+                                        "location": "Jalan Jati Kramat Estate ",
+                                        "longitude": 106.9124904,
+                                        "latitude": -6.2846906,
+                                        "address_point": "depan ruko teratai",
+                                        "insident_date": "2023-10-03",
+                                        "insident_time": "15:00",
+                                        "company_name": "PD.Kertas Teratai Skema",
+                                        "dangerous_waste": false,
+                                        "description": "perusahaan ini sering membuang sisa-sisa kertas kebelakang gedungnya",
+                                        "images": [
+                                            {
+                                                "image1": "image1"
+                                            },
+                                            {
+                                                "image2": "image2"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil melaporkan"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/reports/history": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Reporting"
+                ],
+                "summary": "Report history user",
+                "description": "Report all history user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan semua data laporan",
+                                            "data": [
+                                                {
+                                                    "Id": "PS-1CA5CC1E1D8F463",
+                                                    "report_type": "pelanggaran sampah",
+                                                    "longitude": 106.9124904,
+                                                    "latitude": -6.2846906,
+                                                    "location": "Jalan Jati Mekar satu",
+                                                    "description": "seseorang membuang sampah ke sungai",
+                                                    "address_point": "dekat masjid",
+                                                    "status": "perlu ditinjau",
+                                                    "scale_type": "skala Kecil",
+                                                    "insident_date": "2023-10-03",
+                                                    "insident_time": "15:00",
+                                                    "created_at": "2023-11-21T04:44:00Z",
+                                                    "updated_at": "2023-11-21T04:44:00Z"
+                                                },
+                                                {
+                                                    "Id": "TS-A8AE4C89C1594E9",
+                                                    "report_type": "tumpukan sampah",
+                                                    "longitude": 106.9124904,
+                                                    "latitude": -6.2846906,
+                                                    "location": "Jalan Jati Makmur No.15 Jatiwaringin Pondokgede, RT No.003, RT.001/RW.002, Jatirahayu, Kec. Pd. Melati, Kota Bks, Jawa Barat 17411",
+                                                    "description": "terdapat banyak sekali ",
+                                                    "address_point": "samping pager biru",
+                                                    "status": "perlu ditinjau",
+                                                    "trash_type": "sampah kering",
+                                                    "created_at": "2023-11-21T03:46:06Z",
+                                                    "updated_at": "2023-11-21T03:46:06Z"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/reports/history/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Reporting"
+                ],
+                "summary": "Detail Report User",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id report",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "ID Report": {
+                                "value": "PS-1CA5CC1E1D8F463"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data laporan",
+                                            "data": {
+                                                "Id": "PS-1CA5CC1E1D8F463",
+                                                "report_type": "pelanggaran sampah",
+                                                "longitude": 106.9124904,
+                                                "latitude": -6.2846906,
+                                                "location": "Jalan Jati Mekar satu",
+                                                "description": "seseorang membuang sampah ke sungai",
+                                                "address_point": "dekat masjid",
+                                                "status": "perlu ditinjau",
+                                                "images": [
+                                                    {
+                                                        "id": "350b28aa-79a4-4756-a900-9b3af482272b",
+                                                        "image": "https://storage.googleapis.com/report_proof/proof-file/bc52e1b1-d0f4-43b1-9f5c-40b9b31b7edb.png",
+                                                        "created_at": "2023-11-21T04:44:03Z",
+                                                        "updated_at": "2023-11-21T04:44:03Z"
+                                                    },
+                                                    {
+                                                        "id": "61414e1c-ea57-4798-b271-5477ea4f8285",
+                                                        "image": "https://storage.googleapis.com/report_proof/proof-file/0c060794-ca77-4108-b12b-3134e3723f38.png",
+                                                        "created_at": "2023-11-21T04:44:05Z",
+                                                        "updated_at": "2023-11-21T04:44:05Z"
+                                                    }
+                                                ],
+                                                "scale_type": "skala Kecil",
+                                                "insident_date": "2023-10-03",
+                                                "insident_time": "15:00",
+                                                "created_at": "2023-11-21T04:44:00Z",
+                                                "updated_at": "2023-11-21T04:44:00Z"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "parameters": {
+            "IdAdmin": {
+                "name": "id",
+                "in": "path",
+                "description": "id admin",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "admin": {
+                        "value": "0c97e17e-d1be-4b54-a40c-78098c5714ac"
+                    }
+                }
+            },
+            "IdUser": {
+                "name": "id",
+                "in": "path",
+                "description": "id user",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "user": {
+                        "value": "0c97e17e-d1be-4b54-a40c-78098c5714ac"
+                    }
+                }
+            },
+            "IdReport": {
+                "name": "id",
+                "in": "path",
+                "description": "id report",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "id": {
+                        "value": "e81d8dc5-533c-4071-bcf9-d9f2e810140b"
+                    }
+                }
+            },
+            "idPrompt": {
+                "name": "id",
+                "in": "path",
+                "description": "id prompt",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "id": {
+                        "value": "e81d8dc5-533c-4071-bcf9-d9f2e810140b"
+                    }
+                }
+            },
+            "FilterReport": {
+                "name": "status",
+                "in": "query",
+                "description": "status reporting",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "perlu ditinjau",
+                        "diterima",
+                        "ditolak"
+                    ]
+                }
+            }
+        },
+        "schemas": {
+            "RequestRegister": {
+                "type": "object",
+                "properties": {
+                    "fullname": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "confirm_password": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "full_name",
+                    "email",
+                    "password",
+                    "confirm_password"
+                ]
+            },
+            "RequestPrompt": {
+                "type": "object",
+                "properties": {
+                    "category": {
+                        "type": "string"
+                    },
+                    "Question": {
+                        "type": "string",
+                        "enum": [
+                            "sampah plastik",
+                            "sampah organik"
+                        ]
+                    }
+                },
+                "required": [
+                    "category",
+                    "question"
+                ]
+            },
+            "RequestLogin": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "email",
+                    "password"
+                ]
+            },
+            "ResponseReport": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "report_type": {
+                        "type": "string",
+                        "enum": [
+                            "tumpukan sampah",
+                            "pelanggaran sampah"
+                        ]
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "date_time": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "perlu ditinjau",
+                            "diterima",
+                            "ditolak"
+                        ]
+                    }
+                }
+            },
+            "ResponsesReportDetail": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "report_type": {
+                        "type": "string",
+                        "enum": [
+                            "tumpukan sampah",
+                            "pelanggaran sampah"
+                        ]
+                    },
+                    "trash_type": {
+                        "type": "string",
+                        "enum": [
+                            "sampah kering",
+                            "sampah basah"
+                        ]
+                    },
+                    "scala_type": {
+                        "type": "string",
+                        "enum": [
+                            "skala besar",
+                            "skala kecil"
+                        ]
+                    },
+                    "reporter": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "benchmark": {
+                        "type": "string"
+                    },
+                    "time_incident": {
+                        "type": "string"
+                    },
+                    "company information": {
+                        "type": "string"
+                    },
+                    "danger_trash": {
+                        "type": "boolean"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "date_time": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "perlu tinjauan",
+                            "diterima",
+                            "ditolak"
+                        ]
+                    }
+                }
+            },
+            "RequesAndResponseUpdateReport": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ResponsePromptDetail": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "question": {
+                        "type": "string"
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "sampah organik",
+                            "sampah plastik"
+                        ]
+                    }
+                }
+            },
+            "ResponsePrompts": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "question": {
+                        "type": "string"
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "sampah organik",
+                            "sampah plastik"
+                        ]
+                    }
+                }
+            },
+            "RequestResponseDataUser": {
+                "type": "object",
+                "properties": {
+                    "fullname": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "date_of_birth": {
+                        "type": "string"
+                    },
+                    "point": {
+                        "type": "integer"
+                    },
+                    "phone": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "purpose": {
+                        "type": "string"
+                    }
+                }
+            },
+            "RequestReportingUser": {
+                "type": "object",
+                "properties": {
+                    "report_type": {
+                        "type": "string",
+                        "enum": [
+                            "tumpukan sampah",
+                            "pelanggaran sampah"
+                        ]
+                    },
+                    "scale_type": {
+                        "type": "string",
+                        "enum": [
+                            "skala kecil",
+                            "skala besar"
+                        ]
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "longitude": {
+                        "type": "number"
+                    },
+                    "latitude": {
+                        "type": "number"
+                    },
+                    "address_point": {
+                        "type": "string"
+                    },
+                    "insident_date": {
+                        "type": "string"
+                    },
+                    "insident_time": {
+                        "type": "string"
+                    },
+                    "company_name": {
+                        "type": "string"
+                    },
+                    "dangerous_waste": {
+                        "type": "boolean"
+                    },
+                    "trash_type": {
+                        "type": "string",
+                        "enum": [
+                            "sampah kering",
+                            "sampah basah"
+                        ]
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "binary"
+                        },
+                        "nullable": false
+                    }
+                },
+                "required": [
+                    "images",
+                    "description",
+                    "address_point",
+                    "latitude",
+                    "longitude",
+                    "location",
+                    "report_type"
+                ]
+            }
+        },
+        "securitySchemes": {
+            "token": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "Authorization"
+            }
+        }
+    }
+}

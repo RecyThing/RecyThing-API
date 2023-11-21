@@ -1,0 +1,1255 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "RecyThing",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "https://api.recything.my.id/"
+        }
+    ],
+    "externalDocs": {
+        "description": "RecyThing Github",
+        "url": "https://api.server.test/v1"
+        
+    },
+    
+    "paths": {
+        "/admins/login": {
+            "post": {
+                "tags": [
+                    "Login Admin"
+                ],
+                "summary": "login admin & super admin",
+                "description": "endpoint for login admin and super admin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestLogin"
+                            },
+                            "examples": {
+                                "superadmin": {
+                                    "value": {
+                                        "email": "superadmin@gmail.com",
+                                        "password": "123456"
+                                    }
+                                },
+                                "admin": {
+                                    "value": {
+                                        "email": "admin@gmail.com",
+                                        "password": "12345678"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "succes login admin",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "description": "contoh response berhasil login",
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil login",
+                                            "data": {
+                                                "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                "name": "alta",
+                                                "email": "alta@gmail.com"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Admin"
+                ],
+                "summary": "create admin",
+                "description": "crete admin, only super admin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestRegister"
+                            },
+                            "examples": {
+                                "contoh": {
+                                    "value": {
+                                        "fullname": "alta",
+                                        "email": "alta@gmailcom",
+                                        "password": "12345678",
+                                        "confirm_password":"12345678"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "succes create admins",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "description": "contoh response membuat admin",
+                                        "value": {
+                                            "status": "true",
+                                            "message": "berhasil membuat admin",
+                                            "data": {
+                                                "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                "fullname": "superadmin",
+                                                "email": "superadmin@gmail.com"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Admin"
+                ],
+                "summary": "get all admins",
+                "description": "get all active and non active admins",
+                "responses": {
+                    "200": {
+                        "description": "berhasil mengambil data",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "description": "contoh response berhasil mengambil semua admin",
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mengambil semua admin",
+                                            "data": [
+                                                {
+                                                    "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                    "name": "superadmin",
+                                                    "email": "superadmin@gmail.com",
+                                                    "status": "active"
+                                                },
+                                                {
+                                                    "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                    "name": "admin_name_1",
+                                                    "email": "admin_email_1",
+                                                    "status": "active"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Admin"
+                ],
+                "summary": "get detail admins",
+                "description": "get detail active and non active admins",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdAdmin"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "description": "contoh response berhasil mengambil detail admin",
+                                        "value": {
+                                            "status": true,
+                                            "message": "success get detail admin",
+                                            "data": {
+                                                "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                "name": "superadmin",
+                                                "email": "superadmin@gmail.com",
+                                                "status": "active"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Admin"
+                ],
+                "summary": "update admin",
+                "description": "update admin, only super admin",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdAdmin"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestRegister"
+                            },
+                            "examples": {
+                                "contoh": {
+                                    "value": {
+                                        "full_name": "alterra",
+                                        "email": "alterra@gmailcom",
+                                        "password": "123456789"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "description": "berhasil update data admin",
+                                        "value": {
+                                            "status": true,
+                                            "message": "success updated admin",
+                                            "data": {
+                                                "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                "full_name": "alterra",
+                                                "email": "alterra@gmail.com"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Admin"
+                ],
+                "summary": "delete admin",
+                "description": "delete admin by super admin",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdAdmin"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "success deleted admin"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/users": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage User"
+                ],
+                "summary": "get all users",
+                "description": "get all active and non active users",
+                "responses": {
+                    "200": {
+                        "description": "berhasil mengambil data users",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "description": "contoh response berhasil mengambil semua user",
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mengambil semua admin",
+                                            "data": [
+                                                {
+                                                    "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                    "name": "superadmin",
+                                                    "email": "superadmin@gmail.com",
+                                                    "status": "active"
+                                                },
+                                                {
+                                                    "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                    "name": "admin_name_1",
+                                                    "email": "admin_email_1",
+                                                    "status": "active"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/users/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage User"
+                ],
+                "summary": "get all users",
+                "description": "get all active and non active users",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdUser"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "description": "contoh response berhasil menampilkan semua user",
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil menampilkan data user",
+                                            "data": [
+                                                {
+                                                    "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                    "name": "alta",
+                                                    "email": "alta@gmail.com",
+                                                    "status": "active"
+                                                },
+                                                {
+                                                    "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                    "name": "alter",
+                                                    "email": "alter@gmail.com",
+                                                    "status": "active"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage User"
+                ],
+                "summary": "delete user",
+                "description": "delete user by id, this action only for admin",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdUser"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "description": "response delete user",
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil menghapus user"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/reports": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Report"
+                ],
+                "summary": "get all report",
+                "description": "get all report status and filtering status",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/FilterReport"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "All data report",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseReport"
+                                },
+                                "examples": {
+                                    "get all report": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mengambil semua data report",
+                                            "data": [
+                                                {
+                                                    "id": "e81d8dc5-533c-4071-bcf9-d9f2e810140b",
+                                                    "report_type": "tumpukan sampah",
+                                                    "reporter": "jiddan",
+                                                    "location": "palu",
+                                                    "date_time": "2023-12-07T12:00:00Z",
+                                                    "status": "perlu tinjauan"
+                                                },
+                                                {
+                                                    "id": "e61d8dc5-333c-4071-bcf9-d9f2e810140b",
+                                                    "report_type": "pelanggaran sampah",
+                                                    "reporter": "mamad",
+                                                    "location": "jakarta",
+                                                    "date_time": "2023-13-07T13:00:00Z",
+                                                    "status": "diterima"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "get by status": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mengambil data report",
+                                            "data": [
+                                                {
+                                                    "id": "e81d8dc5-533c-4071-bcf9-d9f2e810140b",
+                                                    "report_type": "tumpukan sampah",
+                                                    "reporter": "jiddan",
+                                                    "location": "palu",
+                                                    "date_time": "2023-12-07T12:00:00Z",
+                                                    "status": "perlu tinjauan"
+                                                },
+                                                {
+                                                    "id": "e61d8dc5-333c-4071-bcf9-d9f2e810140b",
+                                                    "report_type": "pelanggaran sampah",
+                                                    "reporter": "andi",
+                                                    "location": "jakarta",
+                                                    "date_time": "2023-13-07T13:00:00Z",
+                                                    "status": "perlu tinjauan"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/reports/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Report"
+                ],
+                "summary": "!THIS ENDPOINT ISSUE!",
+                "description": "get detail report all status.",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdReport"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "detail data report",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponsesReportDetail"
+                                },
+                                "examples": {
+                                    "report rubbish": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mengambil detail data report rubbish",
+                                            "data": [
+                                                {
+                                                    "id": "e81d8dc5-533c-4071-bcf9-d9f2e810140b",
+                                                    "date_time": "2023-12-07T12:00:00Z",
+                                                    "report_type": "tumpukan sampah",
+                                                    "trash_type": "sampah kering",
+                                                    "reporter": "jiddan",
+                                                    "location": "palu",
+                                                    "benchmark": "samping warung pak ita",
+                                                    "description": "saya lihat sampah itu sudah menggunduk seperti gunung dan bau",
+                                                    "images": [
+                                                        "cloud.google.storage/241432424",
+                                                        "cloud.google.storage/2414gyuih34",
+                                                        "cloud.google.storage/241ewt231"
+                                                    ],
+                                                    "status": "perlu tinjauan"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "report literring (kecil)": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mengambil data report literring",
+                                            "data": [
+                                                {
+                                                    "id": "e81d8dc5-533c-4071-bcf9-d9f2e810140b",
+                                                    "date_time": "2023-12-07T12:00:00Z",
+                                                    "report_type": "pelanggaran sampah",
+                                                    "scala_type": "skala kecil",
+                                                    "reporter": "marky",
+                                                    "location": "tanggerang",
+                                                    "benchmark": "dibelakang warteg duren tiga",
+                                                    "time_incident": "2023-12-07T12:00:00Z",
+                                                    "description": "saya lihat seseorang membuang sampah ke laut",
+                                                    "images": [
+                                                        "cloud.google.storage/241432424",
+                                                        "cloud.google.storage/2414gyuih34",
+                                                        "cloud.google.storage/241ewt231"
+                                                    ],
+                                                    "status": "perlu tinjauan"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "report literring (besar)": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mengambil data report literring",
+                                            "data": [
+                                                {
+                                                    "id": "e81d8dc5-533c-4071-bcf9-d9f2e810140b",
+                                                    "date_time": "2023-12-07T12:00:00Z",
+                                                    "report_type": "pelanggaran sampah",
+                                                    "scala_type": "skala besar",
+                                                    "reporter": "hilal",
+                                                    "location": "sulteng",
+                                                    "benchmark": "dibelakang warteg duren tiga",
+                                                    "time_incident": "2023-12-07T12:00:00Z",
+                                                    "danger_trash": true,
+                                                    "company_information": "PT.Traktir Bersama",
+                                                    "description": "saya lihat sampah itu sudah menggunduk seperti gunung dan bau",
+                                                    "images": [
+                                                        "cloud.google.storage/241432424",
+                                                        "cloud.google.storage/2414gyuih34",
+                                                        "cloud.google.storage/241ewt231"
+                                                    ],
+                                                    "status": "perlu tinjauan"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Report"
+                ],
+                "summary": "Update report",
+                "description": "Update report by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdReport"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequesAndResponseUpdateReport"
+                            },
+                            "examples": {
+                                "diterima": {
+                                    "description": "contoh request diterima",
+                                    "value": {
+                                        "status": "diterima"
+                                    }
+                                },
+                                "ditolak": {
+                                    "description": "contoh request ditolak",
+                                    "value": {
+                                        "status": "ditolak",
+                                        "reason": "foto buram"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "boolean"
+                                },
+                                "examples": {
+                                    "diterima": {
+                                        "description": "response status report diterima",
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil memperbarui status"
+                                        }
+                                    },
+                                    "ditolak": {
+                                        "description": "response status report ditolak",
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil update report status",
+                                            "data": {
+                                                "id": "e81d8dc5-533c-4071-bcf9-d9f2e810140b",
+                                                "report_type": "pelanggaran sampah",
+                                                "reporter": "sani",
+                                                "status": "ditolak",
+                                                "reason": "foto sangat buram"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/prompts": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Prompt"
+                ],
+                "summary": "create  prompt",
+                "description": "create prompt for AI ",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestPrompt"
+                            },
+                            "examples": {
+                                "contoh": {
+                                    "description": "ini contoh",
+                                    "value": {
+                                        "question": "sampah botol",
+                                        "category": "sampah plastik"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "succes create prompt",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "description": "contoh response membuat prompt",
+                                        "value": {
+                                            "status": "true",
+                                            "message": "berhasil membuat prompt",
+                                            "data": {
+                                                "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                "question": "sampah plastik",
+                                                "category": "sampah botol"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Prompt"
+                ],
+                "summary": "get all prompt",
+                "description": "get  all prompt",
+                "responses": {
+                    "200": {
+                        "description": "data prompts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponsePromptDetail"
+                                },
+                                "examples": {
+                                    "succes": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": {
+                                                "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                "category": "sampah plastik",
+                                                "question": "cara mendaur ulang kemasan makanan ringan"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/prompts/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Prompt"
+                ],
+                "summary": "get detail prompt",
+                "description": "get detail all prompt",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idPrompt"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "deatil data prompt",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponsePromptDetail"
+                                },
+                                "examples": {
+                                    "succes": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": {
+                                                "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                "category": "sampah plastik",
+                                                "question": "cara mendaur ulang kemasan makanan ringan"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Prompt"
+                ],
+                "description": "update data prompt by id",
+                "summary": "update by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idPrompt"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestPrompt"
+                            },
+                            "examples": {
+                                "contoh": {
+                                    "value": {
+                                        "category": "sampah organik",
+                                        "question": "sampah organik contohnya daun daunan"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "mengupdate data prompt",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponsePromptDetail"
+                                },
+                                "examples": {
+                                    "succes": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mengupdate data",
+                                            "data": {
+                                                "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                "category": "sampah organik",
+                                                "question": "sampah organik contohnya daun daunan"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Prompt"
+                ],
+                "summary": "Delete Prompt By id",
+                "description": "Delete Prompt by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idPrompt"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data prompt",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil menghapus data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "parameters": {
+            "IdAdmin": {
+                "name": "id",
+                "in": "path",
+                "description": "id admin",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "admin": {
+                        "value": "0c97e17e-d1be-4b54-a40c-78098c5714ac"
+                    }
+                }
+            },
+            "IdUser": {
+                "name": "id",
+                "in": "path",
+                "description": "id user",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "user": {
+                        "value": "0c97e17e-d1be-4b54-a40c-78098c5714ac"
+                    }
+                }
+            },
+            "IdReport": {
+                "name": "id",
+                "in": "path",
+                "description": "id report",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "id": {
+                        "value": "e81d8dc5-533c-4071-bcf9-d9f2e810140b"
+                    }
+                }
+            },
+            "idPrompt": {
+                "name": "id",
+                "in": "path",
+                "description": "id prompt",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "id": {
+                        "value": "e81d8dc5-533c-4071-bcf9-d9f2e810140b"
+                    }
+                }
+            },
+            "FilterReport": {
+                "name": "status",
+                "in": "query",
+                "description": "status reporting",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "perlu ditinjau",
+                        "diterima",
+                        "ditolak"
+                    ]
+                }
+            }
+        },
+        "schemas": {
+            "RequestRegister": {
+                "type": "object",
+                "properties": {
+                    "fullname": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "confirm_password": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "full_name",
+                    "email",
+                    "password",
+                    "confirm_password"
+                ]
+            },
+            "RequestPrompt": {
+                "type": "object",
+                "properties": {
+                    "category": {
+                        "type": "string"
+                    },
+                    "Question": {
+                        "type": "string",
+                        "enum": [
+                            "sampah plastik",
+                            "sampah organik"
+                        ]
+                    }
+                },
+                "required": [
+                    "category",
+                    "question"
+                ]
+            },
+            "RequestLogin": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "email",
+                    "password"
+                ]
+            },
+            "ResponseReport": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "report_type": {
+                        "type": "string",
+                        "enum": [
+                            "tumpukan sampah",
+                            "pelanggaran sampah"
+                        ]
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "date_time": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "perlu ditinjau",
+                            "diterima",
+                            "ditolak"
+                        ]
+                    }
+                }
+            },
+            "ResponsesReportDetail": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "report_type": {
+                        "type": "string",
+                        "enum": [
+                            "tumpukan sampah",
+                            "pelanggaran sampah"
+                        ]
+                    },
+                    "trash_type": {
+                        "type": "string",
+                        "enum": [
+                            "sampah kering",
+                            "sampah basah"
+                        ]
+                    },
+                    "scala_type": {
+                        "type": "string",
+                        "enum": [
+                            "skala besar",
+                            "skala kecil"
+                        ]
+                    },
+                    "reporter": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "benchmark": {
+                        "type": "string"
+                    },
+                    "time_incident": {
+                        "type": "string"
+                    },
+                    "company information": {
+                        "type": "string"
+                    },
+                    "danger_trash": {
+                        "type": "boolean"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "date_time": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "perlu tinjauan",
+                            "diterima",
+                            "ditolak"
+                        ]
+                    }
+                }
+            },
+            "RequesAndResponseUpdateReport": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ResponsePromptDetail": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "question": {
+                        "type": "string"
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "sampah organik",
+                            "sampah plastik"
+                        ]
+                    }
+                }
+            },
+            "ResponsePrompts": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "question": {
+                        "type": "string"
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "sampah organik",
+                            "sampah plastik"
+                        ]
+                    }
+                }
+            },
+            "RequestResponseDataUser": {
+                "type": "object",
+                "properties": {
+                    "fullname": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "date_of_birth": {
+                        "type": "string"
+                    },
+                    "point": {
+                        "type": "integer"
+                    },
+                    "phone": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "purpose": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "token": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "Authorization"
+            }
+        }
+    }
+}

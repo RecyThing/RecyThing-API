@@ -259,32 +259,37 @@ func (us *userService) SendOTP(emailUser string) error {
 }
 
 // VerifyOTP implements entity.UsersUsecaseInterface.
-func (us *userService) VerifyOTP(email, otp string) error {
+func (us *userService) VerifyOTP(email, otp string) (string, error) {
 
 	errEmpty := validation.CheckDataEmpty(email,otp)
 	if errEmpty != nil {
-		return  errEmpty
+		return  "", errEmpty
 	}
 
 	dataUsers, err := us.userRepo.VerifyOTP(email, otp)
 	if err != nil {
-		return errors.New("otp tidak ditemukan")
+		return "", errors.New("email atau otp salah")
 	}
 
 	if dataUsers.OtpExpiration <= time.Now().Unix() {
-		return errors.New("otp sudah kadaluwarsa")
+		return "", errors.New("otp sudah kadaluwarsa")
 	}
 
 	if dataUsers.Otp != otp {
-		return errors.New("otp tidak valid")
+		return "", errors.New("otp tidak valid")
+	}
+
+	token, err := jwt.CreateTokenVerifikasi(email)
+	if err != nil {
+		return "", errors.New("token gagal dibuat")
 	}
 
 	_, errReset := us.userRepo.ResetOTP(otp)
 	if errReset != nil {
-		return errors.New("gagal mengatur ulang OTP")
+		return "", errors.New("gagal mengatur ulang OTP")
 	}
 
-	return nil
+	return token, nil
 }
 
 // ForgetPassword implements entity.UsersUsecaseInterface.

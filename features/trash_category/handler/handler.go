@@ -59,7 +59,7 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 	}
 
 	response := response.ListCoreTrashCategoryToReponseTrashCategory(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndDataResponse("Berhasil mendapatkan seluruh kategori sampah", response, pagnation))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("Berhasil mendapatkan seluruh kategori sampah", response, pagnation))
 }
 
 func (tc *trashCategoryHandler) GetById(e echo.Context) error {

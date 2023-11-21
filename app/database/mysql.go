@@ -31,11 +31,12 @@ func InitDBMysql(cfg *config.AppConfig) *gorm.DB {
 }
 
 func InitMigrationMysql(db *gorm.DB) {
+	db.AutoMigrate(&achievement.Achievement{})
 	db.AutoMigrate(&user.Users{})
 	db.AutoMigrate(&admin.Admin{})
 	db.AutoMigrate(&report.Report{}, &report.Image{})
 	db.AutoMigrate(&recybot.Recybot{})
 	db.AutoMigrate(&faq.Faq{})
 	db.AutoMigrate(&trashCategory.TrashCategory{})
-	db.AutoMigrate(&achievement.Achievement{})
+	
 }

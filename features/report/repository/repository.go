@@ -23,7 +23,6 @@ func (report *reportRepository) ReadAllReport(idUser string) ([]entity.ReportCor
 
 	tx := report.db.Where("users_id = ?", idUser).Find(&dataReport)
 	if tx.Error != nil {
-
 		return nil, tx.Error
 	}
 

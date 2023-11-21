@@ -36,6 +36,7 @@ const (
 	ERROR_EMPTY            = "harap lengkapi data dengan benar"
 	ERROR_HASH_PASSWORD    = "error hash password"
 	ERROR_DATA_EXIST       = "data sudah ada"
+	ERROR_INVALID_INPUT    = "data yang diinput tidak sesuai"
 )
 
 var (

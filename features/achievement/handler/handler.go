@@ -8,6 +8,7 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -65,7 +66,11 @@ func (ah *achievementHandler) UpdateById(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	id := e.Param("id")
+	id, err := strconv.Atoi(e.Param("id"))
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+
+	}
 
 	request := request.AchievementRequestToAchievementCore(input)
 	err = ah.achievementService.UpdateById(id, request)

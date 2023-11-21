@@ -28,8 +28,8 @@ func (as *achievementService) GetAllAchievement() ([]entity.AchievementCore, err
 }
 
 // UpdateById implements entity.AchievementServiceInterface.
-func (as *achievementService) UpdateById(id string, data entity.AchievementCore) error {
-	if id == "" {
+func (as *achievementService) UpdateById(id int, data entity.AchievementCore) error {
+	if id == 0 {
 		return errors.New(constanta.ERROR_ID_INVALID)
 	}
 
@@ -40,7 +40,7 @@ func (as *achievementService) UpdateById(id string, data entity.AchievementCore)
 		return errors.New("gagal memeriksa keberadaan data achievement")
 	}
 
-	if existingAchievement.Id != "" && existingAchievement.Id != id {
+	if existingAchievement.Id != 0 && existingAchievement.Id != id {
 		return errors.New("achievement dengan nama yang sama sudah ada di database")
 	}
 

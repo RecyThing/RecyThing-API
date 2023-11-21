@@ -7,7 +7,7 @@ import (
 )
 
 type Achievement struct {
-	Id          string `gorm:"primary key"`
+	Id          int `gorm:"primary key"`
 	Name        string `gorm:"type:enum('platinum', 'gold', 'silver', 'bronze');not null"`
 	TargetPoint int    `gorm:"not null"`
 	TotalUser   int

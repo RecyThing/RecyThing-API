@@ -41,7 +41,7 @@ func (rc *reportService) SelectById(idReport string) (entity.ReportCore, error) 
 
 	reportData, err := rc.ReportRepository.SelectById(idReport)
 	if err != nil {
-		return entity.ReportCore{}, errors.New("gagal membaca data")
+		return entity.ReportCore{}, errors.New(err.Error())
 	}
 
 	return reportData, nil

@@ -9,6 +9,7 @@ import (
 	"recything/utils/email"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -158,6 +159,9 @@ func (uh *userHandler) ForgotPassword(e echo.Context) error {
 
 	err := uh.userUseCase.SendOTP(userCore.Email)
 	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_DATA_EMAIL) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(err.Error()))
+		}
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 

@@ -1,15 +1,13 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"recything/features/trash_category/dto/request"
 	"recything/features/trash_category/dto/response"
 	"recything/features/trash_category/entity"
+	"recything/utils/constanta"
 	"recything/utils/helper"
-
-	"strconv"
-
+	"recything/utils/jwt"
 	"github.com/labstack/echo/v4"
 )
 
@@ -22,8 +20,16 @@ func NewTrashCategoryHandler(trashCategory entity.TrashCategoryServiceInterface)
 }
 
 func (tc *trashCategoryHandler) CreateCategory(e echo.Context) error {
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
 	requestCategory := request.TrashCategory{}
-	err := helper.DecodeJSON(e, &requestCategory)
+	err = helper.DecodeJSON(e, &requestCategory)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
@@ -37,6 +43,7 @@ func (tc *trashCategoryHandler) CreateCategory(e echo.Context) error {
 }
 
 func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
+
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
 	trashType := e.QueryParam("trash_type")
@@ -46,11 +53,6 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	pageInt, _ := strconv.Atoi(page)
-	errMessage := fmt.Sprintf("page %s tidak ada", page)
-	if pageInt > pagnation.LastPage {
-		return e.JSON(http.StatusNotFound, helper.ErrorResponse(errMessage))
-	}
 
 	if len(result) == 0 {
 		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada kategori sampah"))
@@ -72,8 +74,16 @@ func (tc *trashCategoryHandler) GetById(e echo.Context) error {
 }
 
 func (tc *trashCategoryHandler) DeleteById(e echo.Context) error {
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
 	id := e.Param("id")
-	err := tc.trashCategory.DeleteCategory(id)
+	err = tc.trashCategory.DeleteCategory(id)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
@@ -82,9 +92,16 @@ func (tc *trashCategoryHandler) DeleteById(e echo.Context) error {
 }
 
 func (tc *trashCategoryHandler) UpdateCategory(e echo.Context) error {
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
 	id := e.Param("id")
 	requestCategory := request.TrashCategory{}
-	err := helper.DecodeJSON(e, &requestCategory)
+	err = helper.DecodeJSON(e, &requestCategory)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}

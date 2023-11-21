@@ -5,9 +5,7 @@ type TrashCategoryRepositoryInterface interface {
 	Update(idTrash string, data TrashCategoryCore) (TrashCategoryCore, error)
 	Delete(idTrash string) error
 	GetById(idTrash string) (TrashCategoryCore, error)
-	FindByTrashType(trashType string) ([]TrashCategoryCore, PagnationInfo, error)
-	FindAll() ([]TrashCategoryCore, PagnationInfo, error)
-	FindAllWithSearchAndPagnation(page, trashType, limit string) ([]TrashCategoryCore, PagnationInfo, error)
+	FindAll(page, limit int, trashType string)([]TrashCategoryCore, PagnationInfo, error)
 }
 
 type TrashCategoryServiceInterface interface {

@@ -13,6 +13,7 @@ import (
 	userModel "recything/features/user/model"
 	"recything/utils/constanta"
 	"recything/utils/helper"
+	"recything/utils/pagination"
 
 	"gorm.io/gorm"
 )
@@ -186,22 +187,46 @@ func (ar *AdminRepository) DeleteUsers(userId string) error {
 }
 
 // GetByStatusReport implements entity.AdminRepositoryInterface.
-func (ar *AdminRepository) GetByStatusReport(status string) ([]report.ReportCore, error) {
+func (ar *AdminRepository) GetByStatusReport(status, name, id string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error) {
 	dataReports := []reportModel.Report{}
 	var result *gorm.DB
 
+	offset := (page - 1) * limit
+
+	query := ar.db.Offset(offset).Limit(limit)
+
 	if status != "" {
-		result = ar.db.Where("status = ?", status).Find(&dataReports)
-	} else {
-		result = ar.db.Find(&dataReports)
+		query = query.Where("status = ?", status)
 	}
 
+	if name != "" {
+		query = query.Joins("JOIN users AS u ON reports.users_id = u.id").
+			Where("u.fullname LIKE ?", "%"+name+"%")
+	}
+	
+	if id != "" {
+		query = query.Where("id = ?", id)
+	}
+
+	result = query.Find(&dataReports)
+
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, pagination.PageInfo{}, result.Error
 	}
 
 	dataAllReport := report.ListReportModelToReportCore(dataReports)
-	return dataAllReport, nil
+
+	// Get total count for pagination
+	var totalCount int64
+	tx := ar.db.Model(&reportModel.Report{}).Joins("JOIN users AS u ON reports.users_id = u.id").Where("reports.id = ?", id).Count(&totalCount)
+	if tx.Error != nil {
+		return nil, pagination.PageInfo{}, tx.Error
+	}
+
+	// Menggunakan fungsi CalculatePagination
+	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
+
+	return dataAllReport, paginationInfo, nil
 }
 
 // UpdateStatusReport implements entity.AdminRepositoryInterface.

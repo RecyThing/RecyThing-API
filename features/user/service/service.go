@@ -125,6 +125,11 @@ func (us *userService) UpdateById(id string, data entity.UsersCore) error {
 		return errGet
 	}
 
+	errEmpty := validation.CheckDataEmpty(data.Fullname,data.Phone,data.Address,data.DateOfBirth,data.Purpose)
+	if errEmpty != nil {
+		return errEmpty
+	}
+	
 	errPhone := validation.PhoneNumber(data.Phone)
 	if errPhone != nil {
 		return errPhone

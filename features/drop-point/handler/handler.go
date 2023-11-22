@@ -9,6 +9,7 @@ import (
 	"recything/utils/helper"
 	"recything/utils/jwt"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -43,14 +44,12 @@ func (dph *dropPointHandler) CreateDropPoint(e echo.Context) error {
 
 	request := request.DropPointRequestToReportCore(input)
 
-	result, errCreate := dph.dropPointService.CreateDropPoint(request)
+	_, errCreate := dph.dropPointService.CreateDropPoint(request)
 	if errCreate != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errCreate.Error()))
 	}
 
-	response := response.DropPointCoreToDropPointResponse(result)
-
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse(constanta.SUCCESS_CREATE_DATA, response))
+	return e.JSON(http.StatusCreated, helper.SuccessResponse(constanta.SUCCESS_CREATE_DATA))
 }
 
 func (dph *dropPointHandler) UpdateDropPoint(e echo.Context) error {
@@ -76,8 +75,11 @@ func (dph *dropPointHandler) UpdateDropPoint(e echo.Context) error {
 	dropPointId := e.Param("id")
 	_, errUpdate := dph.dropPointService.UpdateDropPointById(dropPointId, request)
 	if errUpdate != nil {
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errUpdate.Error()))
-	}
+        if strings.Contains(errUpdate.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
+        return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errUpdate.Error()))
+    }
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil melakukan update data"))
 
@@ -96,6 +98,9 @@ func (dph *dropPointHandler) DeleteDropPoint(e echo.Context) error {
 	dropPointId := e.Param("id")
 	err = dph.dropPointService.DeleteDropPointById(dropPointId)
 	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_DATA_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(err.Error()))
+		}
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
@@ -148,7 +153,10 @@ func (dph *dropPointHandler) GetDropPointById(e echo.Context) error {
 	idParams := e.Param("id")
 	result, err := dph.dropPointService.GetDropPointById(idParams)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal membaca data"))
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	var reportResponse = response.DropPointCoreToDropPointResponse(result)

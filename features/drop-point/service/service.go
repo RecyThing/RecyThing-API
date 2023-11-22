@@ -99,6 +99,10 @@ func (dps *dropPointService) GetDropPointById(id string) (entity.DropPointCore, 
 	}
 
 	idDropPoint, err := dps.dropPointRepository.GetDropPointById(id)
+	if err != nil {
+		return entity.DropPointCore{}, err
+	}
+	
 	return idDropPoint, err
 }
 
@@ -135,7 +139,7 @@ func (dps *dropPointService) UpdateDropPointById(id string, data entity.DropPoin
 
 	updatedData, err := dps.dropPointRepository.UpdateDropPointById(id, data)
 	if err != nil {
-		return entity.DropPointCore{}, errors.New("gagal melakukan update data")
+		return entity.DropPointCore{}, err
 	}
 
 	return updatedData, nil

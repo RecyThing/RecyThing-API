@@ -1215,6 +1215,11 @@
         },
         "/admins/manage/achievements": {
             "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
                 "tags": [
                     "Manage Achievement"
                 ],
@@ -1281,6 +1286,11 @@
         },
         "/admins/manage/achievements/{id}": {
             "patch": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
                 "tags": [
                     "Manage Achievement"
                 ],

@@ -2,6 +2,7 @@ package validation
 
 import (
 	"errors"
+
 	"recything/utils/constanta"
 	"regexp"
 	"strconv"
@@ -32,7 +33,7 @@ func CheckEqualData(data string, validData []string) (string, error) {
 	}
 
 	if !isValidData {
-		return "", errors.New("data yang diinput tidak sesuai")
+		return "", errors.New(constanta.ERROR_INVALID_INPUT)
 	}
 
 	return inputData, nil

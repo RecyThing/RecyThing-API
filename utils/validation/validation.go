@@ -2,18 +2,40 @@ package validation
 
 import (
 	"errors"
+
 	"recything/utils/constanta"
 	"regexp"
 	"strconv"
+	"strings"
+
+	"github.com/go-sql-driver/mysql"
 )
 
-func CheckDataEmpty(data ...string) error {
+func CheckDataEmpty(data ...any) error {
 	for _, value := range data {
 		if value == "" {
 			return errors.New(constanta.ERROR_EMPTY)
 		}
 	}
 	return nil
+}
+
+func CheckEqualData(data string, validData []string) (string, error) {
+	inputData := strings.ToLower(data)
+
+	isValidData := false
+	for _, category := range validData {
+		if inputData == strings.ToLower(category) {
+			isValidData = true
+			break
+		}
+	}
+
+	if !isValidData {
+		return "", errors.New(constanta.ERROR_INVALID_INPUT)
+	}
+
+	return inputData, nil
 }
 
 func EmailFormat(email string) error {
@@ -41,7 +63,28 @@ func PhoneNumber(phone string) error {
 
 func MinLength(data string, minLength int) error {
 	if len(data) < minLength {
-		return errors.New("minimal "+ strconv.Itoa(minLength) +" karakter,ulangi kembali!")
+		return errors.New("minimal " + strconv.Itoa(minLength) + " karakter,ulangi kembali!")
 	}
 	return nil
+}
+
+// for repository
+func IsDuplicateError(err error) bool {
+	if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+		return mysqlErr.Number == 1062
+	}
+	return false
+}
+
+func ValidatePaginationParameters(page, limit int) (int, int) {
+	if page <= 0 {
+		page = 1
+	}
+
+	maxLimit := 10
+	if limit <= 0 || limit > maxLimit {
+		limit = maxLimit
+	}
+
+	return page, limit
 }

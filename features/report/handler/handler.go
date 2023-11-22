@@ -2,13 +2,14 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"recything/features/report/dto/request"
 	"recything/features/report/dto/response"
 	"recything/features/report/entity"
+	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -29,23 +30,19 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 
 	newReport := request.ReportRubbishRequest{}
 	err = e.Bind(&newReport)
-	log.Println("images ", newReport.Images)
+
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
 	form, err := e.MultipartForm()
 	if err != nil {
-		return e.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "gagal mendapatkan form multipart",
-		})
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan form multipart"))
 	}
 
 	images, ok := form.File["images"]
 	if !ok || len(images) == 0 {
-		return e.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "tidak ada file yang di upload",
-		})
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("tidak ada file yang di upload"))
 	}
 
 	reportInput := request.ReportRequestToReportCore(newReport)
@@ -63,7 +60,10 @@ func (rco *reportHandler) SelectById(e echo.Context) error {
 
 	result, err := rco.reportService.SelectById(idParams)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal membaca data"))
+		if strings.Contains(err.Error(), constanta.ERROR_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(err.Error()))
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	var reportResponse = response.ReportCoreToReportResponse(result)
@@ -82,8 +82,7 @@ func (rco *reportHandler) ReadAllReport(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mendapatkan data laporan"))
 	}
 
-	return e.JSON(http.StatusOK, map[string]any{
-		"messeage": "berhasil mendapatkan semua data laporan",
-		"data":     data,
-	})
+	reportData := response.ListReportCoresToReportResponse(data)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan semua data laporan",reportData))
 }

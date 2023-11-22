@@ -2,11 +2,20 @@ package response
 
 import "recything/features/user/entity"
 
-func UsersCoreToLoginResponse(data entity.UsersCore) UserLoginResponse {
+func UsersCoreToUsersCreateResponse(data entity.UsersCore ) UserCreateResponse {
+	return UserCreateResponse{
+		Id: data.Id,
+		Fullname: data.Fullname,
+		Email : data.Email,
+	}
+}
+
+func UsersCoreToLoginResponse(data entity.UsersCore, token string) UserLoginResponse {
 	return UserLoginResponse{
 		Id:       data.Id,
 		Fullname: data.Fullname,
 		Email:    data.Email,
+		Token:    token,
 	}
 }
 

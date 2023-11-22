@@ -1,7 +1,7 @@
 package entity
 
 type UsersRepositoryInterface interface {
-	Register(data UsersCore) error
+	Register(data UsersCore) (UsersCore, error)
 	GetById(id string) (UsersCore, error)
 	FindByEmail(email string) (UsersCore,error)
 	UpdateById(id string, data UsersCore) error 
@@ -15,7 +15,7 @@ type UsersRepositoryInterface interface {
 }
 
 type UsersUsecaseInterface interface {
-	Register(data UsersCore) error
+	Register(data UsersCore) (UsersCore,error)
 	Login(email, password string) (UsersCore, string, error)
 	GetById(id string) (UsersCore, error)
 	UpdateById(id string, data UsersCore) error
@@ -23,6 +23,6 @@ type UsersUsecaseInterface interface {
 	UpdateIsVerified(id string, isVerified bool) error
 	UpdatePassword(id string, data UsersCore)  error 
 	SendOTP(emailUser string) error
-	VerifyOTP(email, otp string) error
-	NewPassword(otp string, data UsersCore) error
+	VerifyOTP(email, otp string) (string, error)
+	NewPassword(email string, data UsersCore) error
 }

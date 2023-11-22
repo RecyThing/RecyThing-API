@@ -14,4 +14,5 @@ type RecybotServiceInterface interface {
 	DeleteData(idData string)  error
 	GetAllData() ([]RecybotCore, error)
 	GetById(idData string) (RecybotCore, error)
+	GetPrompt(question string) (string, error)
 }

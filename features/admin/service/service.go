@@ -5,8 +5,10 @@ import (
 	"recything/features/admin/entity"
 	report "recything/features/report/entity"
 	user "recything/features/user/entity"
+	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+	"recything/utils/pagination"
 	"recything/utils/validation"
 )
 
@@ -97,7 +99,7 @@ func (as *AdminService) UpdateById(adminId string, data entity.AdminCore) error 
 		data.Password = HashPassword
 
 	}
-	
+
 	err := as.AdminRepository.Update(adminId, data)
 	if err != nil {
 		return errors.New("gagal melakukan update data admin")
@@ -179,21 +181,34 @@ func (as *AdminService) DeleteUsers(userId string) error {
 
 // Manage Reporting
 // GetByStatusReport implements entity.AdminServiceInterface.
-func (as *AdminService) GetByStatusReport(status string) (data []report.ReportCore, err error) {
-	switch status {
-	case "perlu ditinjau", "diterima", "ditolak":
-		data, err = as.AdminRepository.GetByStatusReport(status)
-	case "":
-		data, err = as.AdminRepository.GetByStatusReport("")
-	default:
-		return nil, errors.New("status tidak valid")
-	}
+func (as *AdminService) GetByStatusReport(status, name, id string, page, limit int) (data []report.ReportCore, paginationInfo pagination.PageInfo, err error) {
+	if limit > 10 {
+        return nil, pagination.PageInfo{}, errors.New("limit tidak boleh lebih dari 10")
+    }
+
+	page, limit = validation.ValidatePaginationParameters(page, limit)
+	
+	validStatus := map[string]bool{
+        "perlu ditinjau": true,
+        "diterima":       true,
+        "ditolak":        true,
+    }
+
+    if _, ok := validStatus[status]; status != "" && !ok {
+        return nil, pagination.PageInfo{}, errors.New("status tidak valid")
+    }
+
+    if status != "" || name != "" || id != "" {
+        data, paginationInfo, err = as.AdminRepository.GetByStatusReport(status, name, id, page, limit)
+    } else {
+        data, paginationInfo, err = as.AdminRepository.GetByStatusReport("", "", "", page, limit)
+    }
 
 	if err != nil {
-		return nil, err
+		return nil, pagination.PageInfo{}, err
 	}
 
-	return data, nil
+	return data, paginationInfo, nil
 }
 
 // UpdateStatusReport implements entity.AdminServiceInterface.
@@ -210,19 +225,29 @@ func (as *AdminService) UpdateStatusReport(id string, status string, reason stri
 		return report.ReportCore{}, errors.New("alasan harus diisi saat menolak laporan")
 	}
 
-	dataStatus, err := as.AdminRepository.GetReportByID(id)
-    if err != nil {
-        return report.ReportCore{}, errors.New("gagal mengambil data laporan")
-    }
+	dataStatus, err := as.AdminRepository.GetReportById(id)
+	if err != nil {
+		return report.ReportCore{}, errors.New("gagal mengambil data laporan")
+	}
 
 	if dataStatus.Status == "diterima" || dataStatus.Status == "ditolak" {
-        return report.ReportCore{}, errors.New("status sudah diterima atau ditolak, tidak bisa update data lagi")
-    }
+		return report.ReportCore{}, errors.New("status sudah diterima atau ditolak, tidak bisa update data lagi")
+	}
 
 	data, err := as.AdminRepository.UpdateStatusReport(id, status, reason)
-    if err != nil {
-        return report.ReportCore{}, errors.New("gagal update status")
-    }
+	if err != nil {
+		return report.ReportCore{}, errors.New("gagal update status")
+	}
 
 	return data, nil
+}
+
+// GetReportById implements entity.AdminServiceInterface.
+func (as *AdminService) GetReportById(id string) (report.ReportCore, error) {
+	if id == "" {
+		return report.ReportCore{}, errors.New(constanta.ERROR_ID_INVALID)
+	}
+
+	idReport, err := as.AdminRepository.GetReportById(id)
+	return idReport, err
 }

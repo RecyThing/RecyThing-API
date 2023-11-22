@@ -12,7 +12,6 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
-	"recything/utils/pagination"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -272,10 +271,8 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
 	}
 
-	totalData := len(result)
-
 	response := reportDto.ListReportCoresToReportResponseForDataReporting(result, ah.UserService)
-	return e.JSON(http.StatusOK, helper.SuccessWithPaginationAndDataResponse("berhasil mendapatkan data reporting", pagination.PaginationMessage(paginationInfo, totalData), response, paginationInfo, totalData))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mendapatkan data reporting", response, paginationInfo))
 }
 
 func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {

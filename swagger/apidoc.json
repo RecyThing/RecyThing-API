@@ -1021,7 +1021,6 @@
                                     "$ref": "#/components/schemas/ResponseTrashCategories"
                                 },
                                 "examples": {
-                                    
                                     "succes ": {
                                         "description": "OK",
                                         "value": {
@@ -1205,6 +1204,138 @@
                                                 "created_at": "0001-01-01T00:00:00Z",
                                                 "updated_at": "2023-11-20T15:13:12.643+08:00"
                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/achievements": {
+            "get": {
+                "tags": [
+                    "Manage Achievement"
+                ],
+                "summary": "get all achievements with data total claimed",
+                "description": "",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "total_point": {
+                                            "type": "integer"
+                                        },
+                                        "total_claimed": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mengambil semua data",
+                                            "data": [
+                                                {
+                                                    "id": 1,
+                                                    "name": "platinum",
+                                                    "target_point": 250000,
+                                                    "total_claimed": 2
+                                                },
+                                                {
+                                                    "id": 2,
+                                                    "name": "gold",
+                                                    "target_point": 100000,
+                                                    "total_claimed": 0
+                                                },
+                                                {
+                                                    "id": 3,
+                                                    "name": "silver",
+                                                    "target_point": 50000,
+                                                    "total_claimed": 0
+                                                },
+                                                {
+                                                    "id": 4,
+                                                    "name": "bronze",
+                                                    "target_point": 0,
+                                                    "total_claimed": 26
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/achievements/{id}": {
+            "patch": {
+                "tags": [
+                    "Manage Achievement"
+                ],
+                "summary": "update point achievements",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id achievements",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "examples": {
+                            "platinum": {
+                                "value": 1
+                            },
+                            "gold": {
+                                "value": 2
+                            }
+                        }
+                    }
+                ],
+                "requestBody":{
+                    "content": {
+                        "application/json":{
+                            "schema":{
+                                "properties": {
+                                    "target_point":{
+                                        "type": "integer"
+                                    }
+                                },
+                                "required": ["total_point"]
+                            },
+                            "examples": {
+                                "example":{
+                                    "value":{
+                                        "target_point":250000
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil melakukan pembaruan data"
                                         }
                                     }
                                 }

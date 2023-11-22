@@ -3,6 +3,7 @@ package service
 import (
 	"recything/features/trash_category/entity"
 	"recything/utils/constanta"
+	"recything/utils/pagination"
 	"recything/utils/validation"
 	"strconv"
 )
@@ -38,7 +39,7 @@ func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) er
 	return nil
 }
 
-func (tc *trashCategoryService) GetAllCategory(page, trashType, limit string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
+func (tc *trashCategoryService) GetAllCategory(page, trashType, limit string) ([]entity.TrashCategoryCore, pagination.PageInfo, error) {
 
 	limitInt, _ := strconv.Atoi(limit)
 	pageInt, _ := strconv.Atoi(page)
@@ -46,7 +47,7 @@ func (tc *trashCategoryService) GetAllCategory(page, trashType, limit string) ([
 
 	data, pagnationInfo, err := tc.trashCategoryRepo.FindAll(validPage, validLimit, trashType)
 	if err != nil {
-		return nil, entity.PagnationInfo{}, err
+		return nil, pagination.PageInfo{}, err
 	}
 	return data, pagnationInfo, nil
 }

@@ -50,7 +50,7 @@ func SuccessWithDataResponse(message string, data interface{}) SuccessResponseJs
 	}
 }
 
-func SuccessWithPagnationAndDataResponse(message string, data interface{}, pagnation interface{}) SuccessResponseJsonWithPagenation {
+func SuccessWithPagnation(message string, data interface{}, pagnation interface{}) SuccessResponseJsonWithPagenation {
 	return SuccessResponseJsonWithPagenation{
 		Status:     true,
 		Message:    message,

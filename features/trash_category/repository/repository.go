@@ -6,7 +6,7 @@ import (
 	"recything/features/trash_category/entity"
 	"recything/features/trash_category/model"
 	"recything/utils/constanta"
-	"recything/utils/helper"
+	"recything/utils/pagination"
 	"recything/utils/validation"
 
 	"gorm.io/gorm"
@@ -35,21 +35,21 @@ func (tc *trashCategoryRepository) Create(data entity.TrashCategoryCore) error {
 	return nil
 }
 
-func (tc *trashCategoryRepository) FindAll(page, limit int, trashType string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
+func (tc *trashCategoryRepository) FindAll(page, limit int, trashType string) ([]entity.TrashCategoryCore, pagination.PageInfo, error) {
 	dataTrashCategories := []model.TrashCategory{}
 
 	offsetInt := (page - 1) * limit
 	if trashType == "" {
 		tx := tc.db.Limit(limit).Offset(offsetInt).Find(&dataTrashCategories)
 		if tx.Error != nil {
-			return nil, entity.PagnationInfo{}, tx.Error
+			return nil, pagination.PageInfo{}, tx.Error
 		}
 	}
 
 	if trashType != "" {
 		tx := tc.db.Where("trash_type LIKE ?", "%"+trashType+"%").Limit(limit).Offset(offsetInt).Find(&dataTrashCategories)
 		if tx.Error != nil {
-			return nil, entity.PagnationInfo{}, tx.Error
+			return nil, pagination.PageInfo{}, tx.Error
 		}
 	}
 
@@ -57,10 +57,10 @@ func (tc *trashCategoryRepository) FindAll(page, limit int, trashType string) ([
 	var totalCount int64
 	err := tc.db.Model(&model.TrashCategory{}).Count(&totalCount).Error
 	if err != nil {
-		return nil, entity.PagnationInfo{}, err
+		return nil, pagination.PageInfo{}, err
 	}
 
-	paginationInfo := helper.CalculatePagination(int(totalCount), limit, page)
+	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
 	return result, paginationInfo, nil
 }
 

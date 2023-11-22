@@ -17,6 +17,9 @@ func CheckDataEmpty(data ...any) error {
 		if value == "" {
 			return errors.New(constanta.ERROR_EMPTY)
 		}
+		if value == 0 {
+			return errors.New(constanta.ERROR_EMPTY)
+		}
 	}
 	return nil
 }

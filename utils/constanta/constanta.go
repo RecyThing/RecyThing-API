@@ -45,6 +45,7 @@ const (
 	ERROR_NOT_FOUND        = "data tidak ditemukan"
 	ERROR_RECORD_NOT_FOUND = "record not found"
 	ERROR_INVALID_TYPE     = "berupa angka"
+	ERROR
 )
 
 var (

@@ -8,7 +8,6 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
-	"recything/utils/pagination"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -127,15 +126,12 @@ func (dph *dropPointHandler) GetAllDropPoint(e echo.Context) error {
 		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
 	}
 
-	totalData := len(dropPoints)
-
-	// Ubah model ke format response yang diinginkan
 	responseDropPoint := make([]response.DropPointResponse, len(dropPoints))
 	for i, dp := range dropPoints {
 		responseDropPoint[i] = response.DropPointCoreToDropPointResponse(dp)
 	}
 
-	return e.JSON(http.StatusOK, helper.SuccessWithPaginationAndDataResponse("berhasil mendapatkan data", pagination.PaginationMessage(paginationInfo, totalData), responseDropPoint, paginationInfo, totalData))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mendapatkan data", responseDropPoint, paginationInfo))
 
 }
 

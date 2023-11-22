@@ -95,6 +95,32 @@ func IsDuplicateError(err error) bool {
 	return false
 }
 
+func ValidateTypePaginationParameters(limit, page string) (int, int, error) {
+	var limitInt int
+	var pageInt int
+	if limit == "" {
+		limitInt = 10
+	}
+
+	if page == "" {
+		pageInt = 1
+	}
+
+	if limit != "" {
+		limitInt, err := strconv.Atoi(limit)
+		if err != nil {
+			return 0, limitInt, errors.New("limit harus berupa angka")
+		}
+	}
+	if page != "" {
+		pageInt, err := strconv.Atoi(page)
+		if err != nil {
+			return pageInt, 0, errors.New("page harus berupa angka")
+		}
+	}
+	return pageInt, limitInt, nil
+}
+
 func ValidatePaginationParameters(page, limit int) (int, int) {
 	if page <= 0 {
 		page = 1

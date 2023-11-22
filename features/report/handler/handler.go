@@ -47,12 +47,12 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 
 	reportInput := request.ReportRequestToReportCore(newReport)
 	fmt.Println("handler : ", reportInput.InsidentDate)
-	createdReport, err := report.reportService.Create(reportInput, userId, images)
-	if err != nil {
+	_, errCreate := report.reportService.Create(reportInput, userId, images)
+	if errCreate != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
-	reportResponse := response.ReportCoreToReportResponse(createdReport)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil", reportResponse))
+	// reportResponse := response.ReportCoreToReportResponse(createdReport)
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil melaporkan"))
 }
 
 func (rco *reportHandler) SelectById(e echo.Context) error {

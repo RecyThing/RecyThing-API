@@ -949,7 +949,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage trash category"
+                    "Manage Trash Category"
                 ],
                 "summary": "create category trash",
                 "description": "create category trash",
@@ -997,7 +997,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage trash category"
+                    "Manage Trash Category"
                 ],
                 "description": "get all trash category",
                 "summary": "get all category trash",
@@ -1077,7 +1077,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage trash category"
+                    "Manage Trash Category"
                 ],
                 "summary": "get detail",
                 "description": "get detail category trash",
@@ -1123,7 +1123,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage trash category"
+                    "Manage Trash Category"
                 ],
                 "summary": "delete by id",
                 "description": "delete category trash",
@@ -1158,7 +1158,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage trash category"
+                    "Manage Trash Category"
                 ],
                 "summary": "update by id",
                 "description": "update category trash",

@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"recything/features/faq/entity"
-	"recything/utils/constanta"
 )
 
 type faqService struct {
@@ -17,13 +16,13 @@ func NewFaqService(faqRepo entity.FaqRepositoryInterface) entity.FaqServiceInter
 }
 
 func (fs *faqService) GetFaqsById(id uint) (entity.FaqCore, error) {
-	if id == 0 {
-		return entity.FaqCore{}, errors.New(constanta.ERROR_ID_INVALID)
-	}
+	// if id == 0 {
+	// 	return entity.FaqCore{}, errors.New(constanta.ERROR_ID_INVALID)
+	// }
 
 	dataFaqs, err := fs.faqRepo.GetFaqsById(id)
 	if err != nil {
-		return entity.FaqCore{}, errors.New("data Faqs tidak ada")
+		return entity.FaqCore{}, err
 	}
 	return dataFaqs, nil
 }

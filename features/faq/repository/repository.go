@@ -24,11 +24,10 @@ func (fr *faqRepository) GetFaqsById(id uint) (entity.FaqCore, error) {
 
 	tx := fr.db.Where("id = ?", id).First(&dataFaqs)
 	if tx.Error != nil {
+		if tx.RowsAffected == 0 {
+			return entity.FaqCore{}, errors.New(constanta.ERROR_DATA_ID)
+		}
 		return entity.FaqCore{}, tx.Error
-	}
-
-	if tx.RowsAffected == 0 {
-		return entity.FaqCore{}, errors.New(constanta.ERROR_DATA_ID)
 	}
 
 	dataResponse := entity.FaqsModelToFaqsCore(dataFaqs)

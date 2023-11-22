@@ -162,7 +162,7 @@ func (uh *userHandler) ForgotPassword(e echo.Context) error {
 		if strings.Contains(err.Error(), constanta.ERROR_DATA_EMAIL) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(err.Error()))
 		}
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("otp berhasil dikirim"))

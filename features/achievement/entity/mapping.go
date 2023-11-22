@@ -4,12 +4,12 @@ import "recything/features/achievement/model"
 
 func AchievementModelToAchievementCore(data model.Achievement) AchievementCore {
 	return AchievementCore{
-		Id:          data.Id,
-		Name:        data.Name,
-		TargetPoint: data.TargetPoint,
-		TotalUser:   data.TotalUser,
-		CreatedAt:   data.CreatedAt,
-		UpdatedAt:   data.UpdatedAt,
+		Id:           data.Id,
+		Name:         data.Name,
+		TargetPoint:  data.TargetPoint,
+		TotalClaimed: data.TotalClaimed,
+		CreatedAt:    data.CreatedAt,
+		UpdatedAt:    data.UpdatedAt,
 	}
 
 }
@@ -25,12 +25,12 @@ func ListAchievementModelToAchievementCore(data []model.Achievement) []Achieveme
 
 func AchievementCoreToAchievementModel(data AchievementCore) model.Achievement {
 	return model.Achievement{
-		Id:          data.Id,
-		Name:        data.Name,
-		TargetPoint: data.TargetPoint,
-		TotalUser:   data.TotalUser,
-		CreatedAt:   data.CreatedAt,
-		UpdatedAt:   data.UpdatedAt,
+		Id:           data.Id,
+		Name:         data.Name,
+		TargetPoint:  data.TargetPoint,
+		TotalClaimed: data.TotalClaimed,
+		CreatedAt:    data.CreatedAt,
+		UpdatedAt:    data.UpdatedAt,
 	}
 }
 

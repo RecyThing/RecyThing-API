@@ -4,6 +4,7 @@ import (
 	"errors"
 	"recything/features/achievement/entity"
 	"recything/features/achievement/model"
+
 	//users "recything/features/user/model"
 	"recything/utils/constanta"
 
@@ -24,7 +25,13 @@ func NewAchievementRepository(db *gorm.DB) entity.AchievementRepositoryInterface
 func (ar *achievementRepository) GetAllAchievement() ([]entity.AchievementCore, error) {
 	dataAchievement := []model.Achievement{}
 
-	tx := ar.db.Find(&dataAchievement)
+	tx := ar.db.
+		Table("achievements").
+		Select("achievements.*, COUNT(users.id) as total_claimed").
+		Joins("LEFT JOIN users ON achievements.name = users.badge").
+		Group("achievements.id").
+		Find(&dataAchievement)
+		
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
@@ -32,13 +39,6 @@ func (ar *achievementRepository) GetAllAchievement() ([]entity.AchievementCore, 
 	dataResponse := entity.ListAchievementModelToAchievementCore(dataAchievement)
 	return dataResponse, nil
 }
-
-// func (ar *achievementRepository) GetTotalClaimed() (users.Users,error) {
-// 	dataUsers := users.Users{}
-
-// 	tx := ar.db.
-// }
-
 
 // UpdateById implements entity.AchievementRepositoryInterface.
 func (ar *achievementRepository) UpdateById(id int, data entity.AchievementCore) error {

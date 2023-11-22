@@ -39,6 +39,7 @@ const (
 	ERROR_DATA_EXIST       = "data sudah ada"
 	ERROR_INVALID_INPUT    = "data yang diinput tidak sesuai"
 	ERROR_NOT_FOUND        = "data tidak ditemukan"
+	ERROR_INVALID_TYPE     = "berupa angka"
 )
 
 var (

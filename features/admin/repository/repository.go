@@ -218,7 +218,9 @@ func (ar *AdminRepository) GetByStatusReport(status, name, id string, page, limi
 
 	// Get total count for pagination
 	var totalCount int64
-	tx := ar.db.Model(&reportModel.Report{}).Joins("JOIN users AS u ON reports.users_id = u.id").Where("reports.id = ?", id).Count(&totalCount)
+	countQuery := query.Model(&reportModel.Report{})
+	tx := countQuery.Count(&totalCount)
+
 	if tx.Error != nil {
 		return nil, pagination.PageInfo{}, tx.Error
 	}

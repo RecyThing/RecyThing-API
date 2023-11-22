@@ -15,7 +15,7 @@ func RouteAchievement(e *echo.Group, db *gorm.DB) {
 	achievementService := service.NewAchievementService(achievementRepository)
 	achievementHandler := handler.NewAchievementHandler(achievementService)
 
-	user := e.Group("/manage/achivements", jwt.JWTMiddleware())
+	user := e.Group("/manage/achievements", jwt.JWTMiddleware())
 	user.GET("", achievementHandler.GetAllAchievement)
 	user.PATCH("/:id", achievementHandler.UpdateById)
 }

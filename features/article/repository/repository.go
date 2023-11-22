@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"mime/multipart"
 	"recything/features/article/entity"
 	"recything/features/article/model"
@@ -29,6 +30,12 @@ func (article *articleRepository) DeleteArticle(id string) error {
 		return tx.Error
 	}
 
+	categoryId := model.ArticleTrashCategory{}
+	categoryDel := article.db.Where("article_id = ?", id).Delete(&categoryId)
+	if categoryDel.Error != nil{
+		return categoryDel.Error
+	}
+
 	if tx.RowsAffected == 0 {
 		return errors.New("tidak ada data yang dihapus")
 	}
@@ -40,7 +47,7 @@ func (article *articleRepository) DeleteArticle(id string) error {
 func (article *articleRepository) GetSpecificArticle(idArticle string) (entity.ArticleCore, error) {
 	articleData := model.Article{}
 
-	tx := article.db.Where("id = ?", idArticle).Preload("image").First(&articleData)
+	tx := article.db.Where("id = ?", idArticle).First(&articleData)
 	if tx.Error != nil {
 		return entity.ArticleCore{}, tx.Error
 	}
@@ -68,17 +75,6 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 
 	articleData.Title = articleInput.Title
 	articleData.Content = articleInput.Content
-	
-	if len(articleInput.Category) > 0 {
-		association := article.db.Model(&articleData).Association("Category")
-		if err := association.Clear(); err != nil {
-			return entity.ArticleCore{}, err
-		}
-	
-		if err := association.Append(articleInput.Category); err != nil {
-			return entity.ArticleCore{}, err
-		}
-	}
 
 	tx := article.db.Updates(&articleData)
 	if tx.Error != nil {
@@ -104,12 +100,6 @@ func (article *articleRepository) GetAllArticle() ([]entity.ArticleCore, error) 
 		mapData[i] = entity.ArticleModelToArticleCore(value)
 	}
 
-	// var datas []model.Article
-
-	// for i, v := range articleData {
-	// 	datas[i] = entity.ArticleCoreToArticleModel(v)
-	// }
-
 	return mapData, nil
 
 }
@@ -130,6 +120,15 @@ func (article *articleRepository) CreateArticle(articleInput entity.ArticleCore,
 	}
 
 	articleCreated := entity.ArticleModelToArticleCore(articleData)
+
+	fmt.Println("panjang categori : ", len(articleInput.Category_id))
+	for _, categoryId := range articleInput.Category_id {
+		categories := new(model.ArticleTrashCategory)
+		categories.ArticleID = articleCreated.ID
+		categories.TrashCategoryID = categoryId
+
+		article.db.Create(&categories)
+	}
 
 	return articleCreated, nil
 }

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"recything/features/report/dto/request"
 	"recything/features/report/dto/response"
@@ -44,7 +43,6 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 	}
 
 	reportInput := request.ReportRequestToReportCore(newReport)
-	fmt.Println("handler : ", reportInput.InsidentDate)
 	createdReport, err := report.reportService.Create(reportInput, userId, images)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))

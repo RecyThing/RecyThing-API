@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"recything/features/article/dto/request"
 	"recything/features/article/dto/response"
@@ -49,13 +50,13 @@ func (article *articleHandler) CreateArticle(e echo.Context) error {
 	}
 
 	articleInput := request.ArticleRequestToArticleCore(newArticle)
-	createdArticle, errCreate := article.articleService.CreateArticle(articleInput, image)
+	_, errCreate := article.articleService.CreateArticle(articleInput, image)
 	if errCreate != nil {
+		fmt.Println("Error in CreateArticle:", errCreate)
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	articleResponse := response.ArticleCoreToArticleResponse(createdArticle)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil", articleResponse))
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil menambahkan artikel"))
 }
 
 func (article *articleHandler) GetAllArticle(e echo.Context) error {

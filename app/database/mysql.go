@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"recything/app/config"
 
+	achievement "recything/features/achievement/model"
 	admin "recything/features/admin/model"
 	article "recything/features/article/model"
+	faq "recything/features/faq/model"
 	recybot "recything/features/recybot/model"
 	report "recything/features/report/model"
 	trashCategory "recything/features/trash_category/model"
 	user "recything/features/user/model"
-	achievement "recything/features/achievement/model"
-	faq "recything/features/faq/model"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -27,7 +27,7 @@ func InitDBMysql(cfg *config.AppConfig) *gorm.DB {
 	if err != nil {
 		panic(err)
 	}
-	InitMigrationMysql(db)
+	// InitMigrationMysql(db)
 	return db
 }
 

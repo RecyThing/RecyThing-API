@@ -10,3 +10,9 @@ func (i *Article) BeforeCreate(tx *gorm.DB) (err error) {
 	i.Id = newUuid.String()
 	return nil
 }
+
+// func (i *ArticleTrashCategory) BeforeCreate(tx *gorm.DB) (err error) {
+// 	newUuid := uuid.New()
+// 	i.ID = newUuid.String()
+// 	return nil
+// }

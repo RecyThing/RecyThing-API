@@ -6,12 +6,29 @@ import (
 
 func ArticleRequestToArticleCore(article ArticleRequest) entity.ArticleCore {
 	articleReq := entity.ArticleCore{
-		Title:    article.Title,
-		Image:    article.Image,
-		Content:  article.Content,
-		Category: article.Category,
+		Title:       article.Title,
+		Image:       article.Image,
+		Content:     article.Content,
+		Category_id: article.Category_id,
 	}
-	// category := request.ListTrashCategoryRequestToTrashCategoryCore(article.Category)
-	// articleReq.Category = category
+	// category := ListCategoryRequestToCategoryCore(article.Category_id)
+	// articleReq.Category_id = category
 	return articleReq
 }
+
+// func CategotyrequestToCategotyCore(category ArticleTrashCategoryRequest) entity.CategoryCore {
+// 	return entity.CategoryCore{
+// 		ArticleID: category.ArticleID,
+// 		TrashCategoryID: category.TrashCategoryID,
+// 	}
+// }
+
+// func ListCategoryRequestToCategoryCore(categories []ArticleTrashCategoryRequest) []entity.CategoryCore {
+// 	listCategory := []entity.CategoryCore{}
+// 	for _, v := range categories {
+// 		category := CategotyrequestToCategotyCore(v)
+// 		listCategory = append(listCategory, category)
+// 	}
+
+// 	return listCategory
+// }

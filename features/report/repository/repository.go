@@ -49,9 +49,10 @@ func (report *reportRepository) Insert(reportInput entity.ReportCore, images []*
 		}
 
 		ImageList := entity.ImageCore{}
-		ImageList.Image = imageURL
 		ImageList.ReportID = dataReport.Id
+		ImageList.Image = imageURL
 		ImageSave := entity.ImageCoreToImageModel(ImageList)
+		
 		if err := report.db.Create(&ImageSave).Error; err != nil {
 			return entity.ReportCore{}, err
 		}

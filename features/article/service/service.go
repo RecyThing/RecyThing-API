@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"mime/multipart"
 	"recything/features/article/entity"
 )
@@ -38,6 +39,7 @@ func (ac *articleService) GetSpecificArticle(idArticle string) (entity.ArticleCo
 
 	articleData, err := ac.ArticleRepository.GetSpecificArticle(idArticle)
 	if err != nil {
+		fmt.Println("service", err)
 		return entity.ArticleCore{}, errors.New("gagal membaca data")
 	}
 
@@ -55,7 +57,7 @@ func (article *articleService) UpdateArticle(idArticle string, articleInput enti
 		return entity.ArticleCore{}, errors.New("artikel tidak boleh kosong")
 	}
 
-	if len(articleInput.Category) == 0 {
+	if len(articleInput.Category_id) == 0 {
 		return entity.ArticleCore{}, errors.New("kategori tidak boleh kosong")
 	}
 
@@ -85,10 +87,10 @@ func (ac *articleService) GetAllArticle() ([]entity.ArticleCore, error) {
 func (article *articleService) CreateArticle(articleInput entity.ArticleCore, image *multipart.FileHeader) (entity.ArticleCore, error) {
 
 	if articleInput.Title == "" || articleInput.Content == "" {
-		return entity.ArticleCore{}, errors.New("artikel tidak boleh kosong")
+		return entity.ArticleCore{}, errors.New("judul dan konten artikel tidak boleh kosong")
 	}
 
-	if len(articleInput.Category) == 0 {
+	if len(articleInput.Category_id) == 0 {
 		return entity.ArticleCore{}, errors.New("kategori tidak boleh kosong")
 	}
 

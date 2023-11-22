@@ -4,9 +4,10 @@ import "recything/features/achievement/entity"
 
 func AchievementCoreToAchievementResponse(data entity.AchievementCore) AchievementResponse {
 	return AchievementResponse{
-		Name:        data.Name,
-		TargetPoint: data.TargetPoint,
-		TotalUser:   data.TotalUser,
+		Id:           data.Id,
+		Name:         data.Name,
+		TargetPoint:  data.TargetPoint,
+		TotalClaimed: data.TotalClaimed,
 	}
 }
 

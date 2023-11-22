@@ -37,7 +37,6 @@ func (uh *userHandler) Register(e echo.Context) error {
 	if errCreate != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errCreate.Error()))
 	}
-
 	response := response.UsersCoreToUsersCreateResponse(result)
 
 	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil membuat data", response))

@@ -20,7 +20,7 @@ type AdminRepositoryInterface interface {
 	// Manage Reporting
 	GetByStatusReport(status string) ([]report.ReportCore, error)
 	UpdateStatusReport(id, status, reason string) (report.ReportCore, error)
-	GetReportByID(id string) (report.ReportCore, error)
+	GetReportById(id string) (report.ReportCore, error)
 }
 
 type AdminServiceInterface interface {
@@ -37,4 +37,5 @@ type AdminServiceInterface interface {
 	// Manage Reporting
 	GetByStatusReport(status string) (data []report.ReportCore, err error)
 	UpdateStatusReport(id, status, reason string) (report.ReportCore, error)
+	GetReportById(id string) (report.ReportCore, error)
 }

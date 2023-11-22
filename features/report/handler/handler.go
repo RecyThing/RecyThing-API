@@ -35,16 +35,12 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 
 	form, err := e.MultipartForm()
 	if err != nil {
-		return e.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "gagal mendapatkan form multipart",
-		})
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan form multipart"))
 	}
 
 	images, ok := form.File["images"]
 	if !ok || len(images) == 0 {
-		return e.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "tidak ada file yang di upload",
-		})
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("tidak ada file yang di upload"))
 	}
 
 	reportInput := request.ReportRequestToReportCore(newReport)

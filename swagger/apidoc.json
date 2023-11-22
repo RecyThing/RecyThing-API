@@ -12,9 +12,7 @@
     "externalDocs": {
         "description": "RecyThing Github",
         "url": "https://api.server.test/v1"
-        
     },
-    
     "paths": {
         "/admins/login": {
             "post": {
@@ -97,7 +95,7 @@
                                         "fullname": "alta",
                                         "email": "alta@gmailcom",
                                         "password": "12345678",
-                                        "confirm_password":"12345678"
+                                        "confirm_password": "12345678"
                                     }
                                 }
                             }
@@ -942,6 +940,279 @@
                     }
                 }
             }
+        },
+        "/admins/manage/trashes": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage trash category"
+                ],
+                "summary": "create category trash",
+                "description": "create category trash",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestTrashCategory"
+                            },
+                            "examples": {
+                                "contoh": {
+                                    "value": {
+                                        "trash_type": "kaca",
+                                        "unit": "kilogram",
+                                        "point": 100
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "succes create trash category",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil menambahkan kategori sampah"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage trash category"
+                ],
+                "description": "get all trash category",
+                "summary": "get all category trash",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/trashType"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limitTrashType"
+                    },
+                    {
+                        "$ref": "#/components/parameters/pageTrashType"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseTrashCategories"
+                                },
+                                "examples": {
+                                    
+                                    "succes ": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan seluruh kategori sampah",
+                                            "data": [
+                                                {
+                                                    "id": "1d357ee7-1010-4604-8e07-0cc0d7f60f6c",
+                                                    "trash_type": "drum",
+                                                    "point": 7000,
+                                                    "unit": "barang",
+                                                    "created_at": "2023-11-20T05:45:06.376+08:00",
+                                                    "updated_at": "2023-11-20T05:45:06.376+08:00"
+                                                },
+                                                {
+                                                    "id": "96cab047-aba4-4993-a4e6-deeab768ad2c",
+                                                    "trash_type": "ranting",
+                                                    "point": 5000,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-20T05:44:43.28+08:00",
+                                                    "updated_at": "2023-11-20T05:44:43.28+08:00"
+                                                },
+                                                {
+                                                    "id": "b393e1bc-3ee7-4a63-b521-a55cb544aac2",
+                                                    "trash_type": "kaca",
+                                                    "point": 5000,
+                                                    "unit": "barang",
+                                                    "created_at": "2023-11-20T05:44:30.32+08:00",
+                                                    "updated_at": "2023-11-20T05:44:30.32+08:00"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "pagination": {
+                                                    "Limit": 2,
+                                                    "CurrentPage": 1,
+                                                    "LastPage": 3
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/trashes/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage trash category"
+                ],
+                "summary": "get detail",
+                "description": "get detail category trash",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idTrashCategory"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "succes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseTrashCategories"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan detail kategori sampah",
+                                            "data": {
+                                                "id": "6f6dd30a-12c7-468a-a57a-bda6cf5cdaf5",
+                                                "trash_type": "kayu",
+                                                "point": 100,
+                                                "unit": "barang",
+                                                "created_at": "2023-11-20T13:23:09.262+08:00",
+                                                "updated_at": "2023-11-20T13:23:09.262+08:00"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage trash category"
+                ],
+                "summary": "delete by id",
+                "description": "delete category trash",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idTrashCategory"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil menghapus kategori"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage trash category"
+                ],
+                "summary": "update by id",
+                "description": "update category trash",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idTrashCategory"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestTrashCategory"
+                            },
+                            "examples": {
+                                "contoh": {
+                                    "value": {
+                                        "trash_type": "kaca",
+                                        "unit": "kilogram",
+                                        "point": 100
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mengupdate kategori sampah",
+                                            "data": {
+                                                "id": "96cab047-aba4-4993-a4e6-deeab768ad2c",
+                                                "trash_type": "sampah c update",
+                                                "point": 200,
+                                                "unit": "barang",
+                                                "created_at": "0001-01-01T00:00:00Z",
+                                                "updated_at": "2023-11-20T15:13:12.643+08:00"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -1013,6 +1284,44 @@
                         "diterima",
                         "ditolak"
                     ]
+                }
+            },
+            "idTrashCategory": {
+                "name": "id",
+                "in": "path",
+                "description": "id prompt",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "id": {
+                        "value": "e81d8dc5-533c-4071-bcf9-d9f2e810140b"
+                    }
+                }
+            },
+            "trashType": {
+                "name": "trash_type",
+                "in": "query",
+                "description": "name of trash type",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "limitTrashType": {
+                "name": "limit",
+                "in": "query",
+                "description": "limit of trash type",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "pageTrashType": {
+                "name": "page",
+                "in": "query",
+                "description": "page of trash type",
+                "schema": {
+                    "type": "string"
                 }
             }
         },
@@ -1239,6 +1548,53 @@
                         "type": "string"
                     },
                     "purpose": {
+                        "type": "string"
+                    }
+                }
+            },
+            "RequestTrashCategory": {
+                "type": "object",
+                "properties": {
+                    "trash_type": {
+                        "type": "string"
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "kilogram",
+                            "barang"
+                        ]
+                    },
+                    "point": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "trash_type",
+                    "unit",
+                    "point"
+                ]
+            },
+            "ResponseTrashCategories": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "trash_type": {
+                        "type": "string"
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "barang",
+                            "kilogram"
+                        ]
+                    },
+                    "last_page": {
+                        "type": "string"
+                    },
+                    "current_page": {
                         "type": "string"
                     }
                 }

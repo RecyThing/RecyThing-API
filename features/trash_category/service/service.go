@@ -1,12 +1,10 @@
 package service
 
 import (
-	"errors"
 	"recything/features/trash_category/entity"
 	"recything/utils/constanta"
 	"recything/utils/pagination"
 	"recything/utils/validation"
-	"strconv"
 )
 
 type trashCategoryService struct {
@@ -41,29 +39,11 @@ func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) er
 }
 
 func (tc *trashCategoryService) GetAllCategory(page, trashType, limit string) ([]entity.TrashCategoryCore, pagination.PageInfo, error) {
-	var limitInt int
-	var pageInt int
-	if limit == "" {
-		limitInt = 10
+	pageInt, limitInt, err := validation.ValidateTypePaginationParameters(limit, page)
+	if err != nil {
+		return nil, pagination.PageInfo{}, err
 	}
 	
-	if page == "" {
-		pageInt = 1
-	}
-
-	if limit != "" {
-		_, err := strconv.Atoi(limit)
-		if err != nil {
-			return nil, pagination.PageInfo{}, errors.New("limit harus berupa angka")
-		}
-	}
-	if page != "" {
-		_, err := strconv.Atoi(page)
-		if err != nil {
-			return nil, pagination.PageInfo{}, errors.New("page harus berupa angka")
-		}
-	}
-
 	validPage, validLimit := validation.ValidatePaginationParameters(pageInt, limitInt)
 	data, pagnationInfo, err := tc.trashCategoryRepo.FindAll(validPage, validLimit, trashType)
 	if err != nil {

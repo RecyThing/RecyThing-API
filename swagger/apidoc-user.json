@@ -360,7 +360,7 @@
                         "description": "OK",
                         "content": {
                             "application/json": {
-                                "example": {
+                                "examples": {
                                     "success": {
                                         "value": {
                                             "status": true,

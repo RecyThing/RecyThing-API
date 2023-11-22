@@ -35,6 +35,7 @@ func CheckEqualData(data string, validData []string) (string, error) {
 		return "", errors.New(constanta.ERROR_INVALID_INPUT)
 	}
 
+
 	return inputData, nil
 }
 

@@ -6,7 +6,7 @@ import (
 )
 
 type AchievementCore struct {
-	Id          string 
+	Id          int 
 	Name        string 
 	TargetPoint int 
 	TotalUser   int

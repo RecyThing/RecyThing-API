@@ -3,7 +3,9 @@ package service
 import (
 	"recything/features/trash_category/entity"
 	"recything/utils/constanta"
+	"recything/utils/pagination"
 	"recything/utils/validation"
+	"strconv"
 )
 
 type trashCategoryService struct {
@@ -25,7 +27,7 @@ func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) er
 	}
 
 	validUnit, errCheck := validation.CheckEqualData(data.Unit, constanta.Unit)
-	if errEmpty != nil {
+	if errCheck != nil {
 		return errCheck
 	}
 
@@ -37,33 +39,21 @@ func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) er
 	return nil
 }
 
-func (tc *trashCategoryService) GetAllCategory(page, trashType, limit string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
-	if limit == "" && page == "" {
-		if trashType != "" {
-			data, pagnationInfo, err := tc.trashCategoryRepo.FindByTrashType(trashType)
-			if err != nil {
-				return nil, entity.PagnationInfo{}, err
-			}
-			return data, pagnationInfo, nil
-		}
+func (tc *trashCategoryService) GetAllCategory(page, trashType, limit string) ([]entity.TrashCategoryCore, pagination.PageInfo, error) {
 
-		result, pagnationInfo, err := tc.trashCategoryRepo.FindAll()
-		if err != nil {
-			return nil, entity.PagnationInfo{}, err
-		}
-		return result, pagnationInfo, nil
-	}
+	limitInt, _ := strconv.Atoi(limit)
+	pageInt, _ := strconv.Atoi(page)
+	validPage, validLimit := validation.ValidatePaginationParameters(pageInt, limitInt)
 
-	result, paganation, err := tc.trashCategoryRepo.FindAllWithSearchAndPagnation(page, trashType, limit)
-
+	data, pagnationInfo, err := tc.trashCategoryRepo.FindAll(validPage, validLimit, trashType)
 	if err != nil {
-		return result, paganation, err
+		return nil, pagination.PageInfo{}, err
 	}
-
-	return result, paganation, nil
+	return data, pagnationInfo, nil
 }
 
 func (tc *trashCategoryService) GetById(idTrash string) (entity.TrashCategoryCore, error) {
+
 	result, err := tc.trashCategoryRepo.GetById(idTrash)
 	if err != nil {
 		return result, err

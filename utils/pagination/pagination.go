@@ -5,16 +5,16 @@ import (
 	"math"
 )
 
-type PageInfo  struct {
+type PageInfo struct {
 	Limit       int `json:"limit"`
 	CurrentPage int `json:"current_page"`
 	LastPage    int `json:"last_page"`
 }
 
-func CalculateData(totalCount, limitInt, pageInt int) PageInfo  {
+func CalculateData(totalCount, limitInt, pageInt int) PageInfo {
 	lastPage := int(math.Ceil(float64(totalCount) / float64(limitInt)))
 
-	paginationInfo := PageInfo {
+	paginationInfo := PageInfo{
 		Limit:       limitInt,
 		CurrentPage: pageInt,
 		LastPage:    lastPage,
@@ -22,7 +22,7 @@ func CalculateData(totalCount, limitInt, pageInt int) PageInfo  {
 	return paginationInfo
 }
 
-func PaginationMessage(paginationInfo PageInfo , totalData int) string {
+func PaginationMessage(paginationInfo PageInfo, totalData int) string {
 	limit := paginationInfo.Limit
 	currentPage := paginationInfo.CurrentPage
 

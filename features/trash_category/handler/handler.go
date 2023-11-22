@@ -60,6 +60,10 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 
 	result, pagnation, err := tc.trashCategory.GetAllCategory(page, trashType, limit)
 	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
+
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 

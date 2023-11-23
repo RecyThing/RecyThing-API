@@ -49,6 +49,13 @@ const (
 	ERROR_LIMIT            = "limit tidak boleh lebih dari 10"
 )
 
+// Message Handle 
+const (
+	ALREADY = "sudah"
+	NO      = "tidak"
+	MUST    = "harus"
+)
+
 var (
 	Unit     = []string{"barang", "kilogram"}
 	Category = []string{"sampah anorganik", "sampah organik", "informasi", "batasan"}

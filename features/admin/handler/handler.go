@@ -285,6 +285,8 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 }
 
 func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
+
+	input := reportRequest.UpdateStatusReportRubbish{}
 	_, role, err := jwt.ExtractToken(e)
 
 	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
@@ -297,7 +299,6 @@ func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
 
 	id := e.Param("id")
 
-	input := reportRequest.UpdateStatusReportRubbish{}
 	err = helper.DecodeJSON(e, &input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))

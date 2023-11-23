@@ -55,20 +55,3 @@ func (ar *achievementRepository) UpdateById(id int, data entity.AchievementCore)
 
 	return nil
 }
-
-// GetByName implements entity.AchievementRepositoryInterface.
-func (ar *achievementRepository) GetByName(name string) (entity.AchievementCore, error) {
-	dataAchievement := model.Achievement{}
-
-	tx := ar.db.Where("name = ?", name).Find(&dataAchievement)
-	if tx.Error != nil {
-		return entity.AchievementCore{}, tx.Error
-	}
-
-	if tx.RowsAffected == 0 {
-		return entity.AchievementCore{}, errors.New(constanta.ERROR_DATA_ID)
-	}
-
-	dataResponse := entity.AchievementModelToAchievementCore(dataAchievement)
-	return dataResponse, nil
-}

@@ -5,7 +5,6 @@ import (
 	"recything/features/admin/entity"
 	report "recything/features/report/entity"
 	user "recything/features/user/entity"
-	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
 	"recything/utils/pagination"
@@ -214,16 +213,18 @@ func (as *AdminService) GetAllReport(status, name, id, page, limit string) (data
 
 // UpdateStatusReport implements entity.AdminServiceInterface.
 func (as *AdminService) UpdateStatusReport(id string, status string, reason string) (report.ReportCore, error) {
-	if id == "" {
-		return report.ReportCore{}, errors.New("id tidak valid")
+
+	errEmpty := validation.CheckDataEmpty(status)
+	if errEmpty != nil {
+		return report.ReportCore{}, errEmpty
 	}
 
-	if status == "" {
-		return report.ReportCore{}, errors.New("status tidak valid")
+	if status == "diterima" && reason != "" {
+		return report.ReportCore{}, errors.New("tidak perlu memberikan alasan laporan")
 	}
 
 	if status == "ditolak" && reason == "" {
-		return report.ReportCore{}, errors.New("alasan harus diisi saat menolak laporan")
+		return report.ReportCore{}, errors.New("alasan harus dilengkapi saat menolak laporan")
 	}
 
 	dataStatus, err := as.AdminRepository.GetReportById(id)
@@ -232,7 +233,7 @@ func (as *AdminService) UpdateStatusReport(id string, status string, reason stri
 	}
 
 	if dataStatus.Status == "diterima" || dataStatus.Status == "ditolak" {
-		return report.ReportCore{}, errors.New("status sudah diterima atau ditolak, tidak bisa update data lagi")
+		return report.ReportCore{}, errors.New("status sudah diterima atau ditolak")
 	}
 
 	data, err := as.AdminRepository.UpdateStatusReport(id, status, reason)
@@ -245,10 +246,6 @@ func (as *AdminService) UpdateStatusReport(id string, status string, reason stri
 
 // GetReportById implements entity.AdminServiceInterface.
 func (as *AdminService) GetReportById(id string) (report.ReportCore, error) {
-	if id == "" {
-		return report.ReportCore{}, errors.New(constanta.ERROR_ID_INVALID)
-	}
-
 	idReport, err := as.AdminRepository.GetReportById(id)
 	if err != nil {
 		return report.ReportCore{}, err

@@ -40,6 +40,10 @@ const (
 	ERROR_INVALID_INPUT    = "data yang diinput tidak sesuai"
 	ERROR_NOT_FOUND        = "data tidak ditemukan"
 	ERROR_INVALID_TYPE     = "berupa angka"
+	ERROR_INVALID_STATUS   = "status tidak valid"
+	ERROR_LIMIT            = "limit tidak boleh lebih dari 10"
+	ERROR_RECORD_NOT_FOUND = "record not found"
+	ERROR_DATA_NOT_FOUND   = "data tidak ditemukan"
 )
 
 var (

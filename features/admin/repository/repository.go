@@ -187,7 +187,7 @@ func (ar *AdminRepository) DeleteUsers(userId string) error {
 }
 
 // GetByStatusReport implements entity.AdminRepositoryInterface.
-func (ar *AdminRepository) GetByStatusReport(status, name, id string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error) {
+func (ar *AdminRepository) GetAllReport(status, name, id string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error) {
 	dataReports := []reportModel.Report{}
 	var result *gorm.DB
 
@@ -248,7 +248,7 @@ func (ar *AdminRepository) UpdateStatusReport(id, status, reason string) (report
 	}
 
 	if tx.RowsAffected == 0 {
-		return report.ReportCore{}, errors.New(constanta.ERROR_DATA_ID)
+		return report.ReportCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	dataResponse := report.ReportModelToReportCore(dataReports)
@@ -264,7 +264,7 @@ func (ar *AdminRepository) GetReportById(id string) (report.ReportCore, error) {
     }
 
     if tx.RowsAffected == 0 {
-        return report.ReportCore{}, errors.New(constanta.ERROR_DATA_ID)
+        return report.ReportCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
     }
 
     dataResponse := report.ReportModelToReportCore(dataReports)

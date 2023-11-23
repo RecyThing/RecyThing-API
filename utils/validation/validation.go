@@ -114,3 +114,54 @@ func ValidatePaginationParameters(page, limit int) (int, int) {
 
 	return page, limit
 }
+
+func ValidateTypePaginationParameter(limit, page string) (int, int, error) {
+	var limitInt, pageInt int
+	var limitErr, pageErr error
+	var limitError, pageError bool
+
+	// Fungsi bantu untuk memeriksa apakah string berupa angka
+	isNumeric := func(s string) bool {
+		_, err := strconv.Atoi(s)
+		return err == nil
+	}
+
+	// Validasi untuk limit
+	if limit != "" {
+		limitInt, limitErr = strconv.Atoi(limit)
+		if limitErr != nil || !isNumeric(limit) {
+			limitError = true
+		} else if limitInt > 10 {
+			limitError = true
+			return 0, 0, errors.New("limit tidak boleh lebih dari 10")
+		}
+	}
+
+	// Validasi untuk page
+	if page != "" {
+		pageInt, pageErr = strconv.Atoi(page)
+		if pageErr != nil || !isNumeric(page) {
+			pageError = true
+		}
+	}
+
+	// Menambahkan validasi kedua parameter bersamaan
+	if limitError && pageError {
+		return 0, 0, errors.New("limit dan page harus berupa angka")
+	}
+
+	// Menambahkan validasi jika hanya limit yang error
+	if limitError {
+		return 0, 0, errors.New("limit harus berupa angka")
+	}
+
+	// Menambahkan validasi jika hanya page yang error
+	if pageError {
+		return 0, 0, errors.New("page harus berupa angka")
+	}
+
+	return pageInt, limitInt, nil
+}
+
+
+

@@ -181,28 +181,29 @@ func (as *AdminService) DeleteUsers(userId string) error {
 
 // Manage Reporting
 // GetByStatusReport implements entity.AdminServiceInterface.
-func (as *AdminService) GetByStatusReport(status, name, id string, page, limit int) (data []report.ReportCore, paginationInfo pagination.PageInfo, err error) {
-	if limit > 10 {
-        return nil, pagination.PageInfo{}, errors.New("limit tidak boleh lebih dari 10")
-    }
+func (as *AdminService) GetAllReport(status, name, id, page, limit string) (data []report.ReportCore, paginationInfo pagination.PageInfo, err error) {
+	pageInt, limitInt, validationErr := validation.ValidateTypePaginationParameter(limit, page)
+	if validationErr != nil {
+		return nil, pagination.PageInfo{}, validationErr
+	}
 
-	page, limit = validation.ValidatePaginationParameters(page, limit)
-	
+	pageValid, limitValid := validation.ValidatePaginationParameters(pageInt, limitInt)
+
 	validStatus := map[string]bool{
-        "perlu ditinjau": true,
-        "diterima":       true,
-        "ditolak":        true,
-    }
+		"perlu ditinjau": true,
+		"diterima":       true,
+		"ditolak":        true,
+	}
 
-    if _, ok := validStatus[status]; status != "" && !ok {
-        return nil, pagination.PageInfo{}, errors.New("status tidak valid")
-    }
+	if _, ok := validStatus[status]; status != "" && !ok {
+		return nil, pagination.PageInfo{}, errors.New("status tidak valid")
+	}
 
-    if status != "" || name != "" || id != "" {
-        data, paginationInfo, err = as.AdminRepository.GetByStatusReport(status, name, id, page, limit)
-    } else {
-        data, paginationInfo, err = as.AdminRepository.GetByStatusReport("", "", "", page, limit)
-    }
+	if status != "" || name != "" || id != "" {
+		data, paginationInfo, err = as.AdminRepository.GetAllReport(status, name, id, pageValid, limitValid)
+	} else {
+		data, paginationInfo, err = as.AdminRepository.GetAllReport("", "", "", pageValid, limitValid)
+	}
 
 	if err != nil {
 		return nil, pagination.PageInfo{}, err
@@ -227,7 +228,7 @@ func (as *AdminService) UpdateStatusReport(id string, status string, reason stri
 
 	dataStatus, err := as.AdminRepository.GetReportById(id)
 	if err != nil {
-		return report.ReportCore{}, errors.New("gagal mengambil data laporan")
+		return report.ReportCore{}, err
 	}
 
 	if dataStatus.Status == "diterima" || dataStatus.Status == "ditolak" {
@@ -249,5 +250,8 @@ func (as *AdminService) GetReportById(id string) (report.ReportCore, error) {
 	}
 
 	idReport, err := as.AdminRepository.GetReportById(id)
+	if err != nil {
+		return report.ReportCore{}, err
+	}
 	return idReport, err
 }

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/pagination"
 	"recything/utils/validation"
+	"strconv"
 
 	"github.com/joho/godotenv"
 	"github.com/sashabaranov/go-openai"
@@ -45,18 +47,54 @@ func (rb *recybotService) CreateData(data entity.RecybotCore) (entity.RecybotCor
 	return result, nil
 }
 
-func (rb *recybotService) FindAllData(page, category, limit string) ([]entity.RecybotCore, pagination.PageInfo, error) {
-	pageInt, limitInt, err := validation.ValidateTypePaginationParameters(limit, page)
-	if err != nil {
-		return nil, pagination.PageInfo{}, err
+func (rb *recybotService) FindAllData(page, category, limit string) ([]entity.RecybotCore, pagination.PageInfo, int, error) {
+	log.Println("page service sebelum validasi", page)
+	// pageInt, limitInt, err := validation.ValidateTypePaginationParameters(limit, page)
+	var limitInt int
+	var pageInt int
+	var err error
+	if limit == "" {
+		limitInt = 10
+	}
+	if limit != "" {
+		limitInt, err = strconv.Atoi(limit)
+		if err != nil {
+			return nil, pagination.PageInfo{}, 0, errors.New("limit harus berupa angka")
+		}
 	}
 
-	validPage, validLimit := validation.ValidatePaginationParameters(pageInt, limitInt)
-	result, pagnationInfo, err := rb.recybotRepository.FindAll(validPage, validLimit, category)
-	if err != nil {
-		return nil, pagination.PageInfo{}, err
+	if page == "" {
+		pageInt = 1
 	}
-	return result, pagnationInfo, nil
+	if page != "" {
+		pageInt, err = strconv.Atoi(page)
+		if err != nil {
+			return nil, pagination.PageInfo{}, 0, errors.New("page harus berupa angka")
+		}
+	}
+
+	if pageInt <= 0 {
+		pageInt = 1
+	}
+
+	maxLimit := 10
+
+	if limitInt <= 0 || limitInt > maxLimit {
+		limitInt = maxLimit
+	}
+
+	log.Println("limitservice : ", limitInt)
+	log.Println("pageservice :", pageInt)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
+
+	// validPage, validLimit := validation.ValidatePaginationParameters(pageInt, limitInt)
+	result, pagnationInfo, count, err := rb.recybotRepository.FindAll(pageInt, limitInt, category)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
+	return result, pagnationInfo, count, nil
 }
 
 func (rb *recybotService) GetById(idData string) (entity.RecybotCore, error) {

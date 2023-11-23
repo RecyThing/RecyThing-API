@@ -61,7 +61,7 @@ func (rh *recybotHandler) GetAllData(e echo.Context) error {
 	limit := e.QueryParam("limit")
 	category := e.QueryParam("category")
 
-	result, pagnation, err := rh.RecybotService.FindAllData(page, category, limit)
+	result, pagnation, count, err := rh.RecybotService.FindAllData(page, category, limit)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
@@ -74,7 +74,7 @@ func (rh *recybotHandler) GetAllData(e echo.Context) error {
 	}
 
 	response := response.ListCoreRecybotToCoreRecybot(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("Berhasil mendapatkan seluruh kategori sampah", response, pagnation))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("Berhasil mendapatkan seluruh kategori sampah", response, pagnation, count))
 }
 
 func (rh *recybotHandler) GetById(e echo.Context) error {

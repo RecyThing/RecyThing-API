@@ -13,7 +13,6 @@ import (
 	"recything/utils/helper"
 	"recything/utils/jwt"
 	"strconv"
-
 	"github.com/labstack/echo/v4"
 )
 
@@ -264,6 +263,11 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 
 	result, paginationInfo, err := ah.AdminService.GetByStatusReport(status, name, id, page, limit)
 	if err != nil {
+
+		if helper.HttpResponseCondition(err,"tidak") {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+
+		}
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
@@ -276,6 +280,8 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 }
 
 func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
+
+	input := reportRequest.UpdateStatusReportRubbish{}
 	_, role, err := jwt.ExtractToken(e)
 
 	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
@@ -288,7 +294,6 @@ func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
 
 	id := e.Param("id")
 
-	input := reportRequest.UpdateStatusReportRubbish{}
 	err = helper.DecodeJSON(e, &input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
@@ -296,6 +301,15 @@ func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
 
 	_, err = ah.AdminService.UpdateStatusReport(id, input.Status, input.RejectionDescription)
 	if err != nil {
+
+		if helper.HttpResponseCondition(err, constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+
+		}
+		if helper.HttpResponseCondition(err, "lengkapi", "sudah", "tidak perlu") {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+
+		}
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
@@ -315,7 +329,10 @@ func (dph *AdminHandler) GetReportById(e echo.Context) error {
 	idParams := e.Param("id")
 	result, err := dph.AdminService.GetReportById(idParams)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal membaca data"))
+		if helper.HttpResponseCondition(err, constanta.ERROR_RECORD_NOT_FOUND){
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	user, _ := dph.UserService.GetById(result.UserId)

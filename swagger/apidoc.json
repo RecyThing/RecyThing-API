@@ -729,8 +729,8 @@
                                 "contoh": {
                                     "description": "ini contoh",
                                     "value": {
-                                        "question": "sampah botol",
-                                        "category": "sampah plastik"
+                                        "question": "1. cara mendaur ullang sampah plastik",
+                                        "category": "sampah organik"
                                     }
                                 }
                             }
@@ -738,7 +738,7 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "succes create prompt",
                         "content": {
                             "application/json": {
@@ -1494,14 +1494,16 @@
                 "type": "object",
                 "properties": {
                     "category": {
-                        "type": "string"
-                    },
-                    "Question": {
                         "type": "string",
                         "enum": [
                             "sampah plastik",
-                            "sampah organik"
+                            "sampah organik",
+                            "batasan",
+                            "informasi"
                         ]
+                    },
+                    "Question": {
+                        "type": "string"
                     }
                 },
                 "required": [

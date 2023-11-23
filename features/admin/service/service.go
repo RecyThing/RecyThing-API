@@ -69,7 +69,7 @@ func (as *AdminService) GetById(adminId string) (entity.AdminCore, error) {
 
 	dataAdmins, err := as.AdminRepository.SelectById(adminId)
 	if err != nil {
-		return entity.AdminCore{}, errors.New("data admin tidak ada")
+		return entity.AdminCore{}, err
 	}
 
 	return dataAdmins, nil
@@ -101,7 +101,7 @@ func (as *AdminService) UpdateById(adminId string, data entity.AdminCore) error 
 
 	err := as.AdminRepository.Update(adminId, data)
 	if err != nil {
-		return errors.New("gagal melakukan update data admin")
+		return err
 	}
 
 	return nil
@@ -162,7 +162,7 @@ func (as *AdminService) GetByIdUsers(userId string) (user.UsersCore, error) {
 	}
 
 	if err != nil {
-		return user.UsersCore{}, errors.New("")
+		return user.UsersCore{}, err
 	}
 
 	return data, nil
@@ -180,12 +180,13 @@ func (as *AdminService) DeleteUsers(userId string) error {
 
 // Manage Reporting
 // GetByStatusReport implements entity.AdminServiceInterface.
-func (as *AdminService) GetByStatusReport(status, name, id string, page, limit int) (data []report.ReportCore, paginationInfo pagination.PageInfo, err error) {
-	if limit > 10 {
-		return nil, pagination.PageInfo{}, errors.New("limit tidak boleh lebih dari 10")
+func (as *AdminService) GetAllReport(status, name, id, page, limit string) (data []report.ReportCore, paginationInfo pagination.PageInfo, err error) {
+	pageInt, limitInt, validationErr := validation.ValidateTypePaginationParameter(limit, page)
+	if validationErr != nil {
+		return nil, pagination.PageInfo{}, validationErr
 	}
 
-	page, limit = validation.ValidatePaginationParameters(page, limit)
+	pageValid, limitValid := validation.ValidatePaginationParameters(pageInt, limitInt)
 
 	validStatus := map[string]bool{
 		"perlu ditinjau": true,
@@ -198,9 +199,9 @@ func (as *AdminService) GetByStatusReport(status, name, id string, page, limit i
 	}
 
 	if status != "" || name != "" || id != "" {
-		data, paginationInfo, err = as.AdminRepository.GetByStatusReport(status, name, id, page, limit)
+		data, paginationInfo, err = as.AdminRepository.GetAllReport(status, name, id, pageValid, limitValid)
 	} else {
-		data, paginationInfo, err = as.AdminRepository.GetByStatusReport("", "", "", page, limit)
+		data, paginationInfo, err = as.AdminRepository.GetAllReport("", "", "", pageValid, limitValid)
 	}
 
 	if err != nil {
@@ -247,7 +248,7 @@ func (as *AdminService) UpdateStatusReport(id string, status string, reason stri
 func (as *AdminService) GetReportById(id string) (report.ReportCore, error) {
 	idReport, err := as.AdminRepository.GetReportById(id)
 	if err != nil {
-		return report.ReportCore{},err
+		return report.ReportCore{}, err
 	}
-	return idReport, nil
+	return idReport, err
 }

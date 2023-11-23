@@ -264,7 +264,7 @@ func (ar *AdminRepository) GetReportById(id string) (report.ReportCore, error) {
     }
 
     if tx.RowsAffected == 0 {
-        return report.ReportCore{}, errors.New(constanta.ERROR_DATA_ID)
+        return report.ReportCore{}, tx.Error
     }
 
     dataResponse := report.ReportModelToReportCore(dataReports)

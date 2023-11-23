@@ -12,7 +12,7 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
-	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -50,13 +50,12 @@ func (ah *AdminHandler) Create(e echo.Context) error {
 
 	request := request.AdminRequestToAdminCore(input)
 
-	result, err := ah.AdminService.Create(request)
+	_, err = ah.AdminService.Create(request)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	response := response.AdminCoreToAdminResponse(result)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil membuat data admin", response))
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil membuat data admin"))
 
 }
 
@@ -94,8 +93,11 @@ func (ah *AdminHandler) GetAll(e echo.Context) error {
 
 	result, err := ah.AdminService.GetAll()
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
+        if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
+        return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+    }
 
 	if len(result) == 0 {
 		return e.JSON(http.StatusOK, helper.SuccessResponse("data admin belum ada"))
@@ -122,8 +124,11 @@ func (ah *AdminHandler) GetById(e echo.Context) error {
 
 	result, err := ah.AdminService.GetById(adminId)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
+        if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
+        return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+    }
 
 	// if len(result.Id) == 0 {
 	// 	return e.JSON(http.StatusOK, helper.SuccessResponse("data admin belum ada"))
@@ -148,8 +153,11 @@ func (ah *AdminHandler) Delete(e echo.Context) error {
 
 	err = ah.AdminService.DeleteById(adminId)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
+        if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
+        return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+    }
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil menghapus data admin"))
 }
@@ -177,8 +185,11 @@ func (ah *AdminHandler) UpdateById(e echo.Context) error {
 	request := request.AdminRequestUpdateToAdminCore(input)
 	err = ah.AdminService.UpdateById(adminId, request)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
+        if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
+        return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+    }
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil melakukan pembaruan data admin"))
 }
 
@@ -217,6 +228,9 @@ func (ah *AdminHandler) GetByIdUsers(e echo.Context) error {
 
 	UsersData, err := ah.AdminService.GetByIdUsers(userId)
 	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
 		e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
@@ -238,6 +252,9 @@ func (ah *AdminHandler) DeleteUsers(e echo.Context) error {
 
 	err = ah.AdminService.DeleteUsers(userId)
 	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
@@ -259,12 +276,21 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 	status := e.QueryParam("status")
 	name := e.QueryParam("name")
 	id := e.QueryParam("id")
-	page, _ := strconv.Atoi(e.QueryParam("page"))
-	limit, _ := strconv.Atoi(e.QueryParam("limit"))
+	page := e.QueryParam("page")
+	limit := e.QueryParam("limit")
 
-	result, paginationInfo, err := ah.AdminService.GetByStatusReport(status, name, id, page, limit)
+	result, paginationInfo, err := ah.AdminService.GetAllReport(status, name, id, page, limit)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+		switch {
+		case strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE):
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		case strings.Contains(err.Error(), constanta.ERROR_INVALID_STATUS):
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		case strings.Contains(err.Error(), constanta.ERROR_LIMIT):
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		default:
+			return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+		}
 	}
 
 	if len(result) == 0 {
@@ -276,6 +302,8 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 }
 
 func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
+
+	input := reportRequest.UpdateStatusReportRubbish{}
 	_, role, err := jwt.ExtractToken(e)
 
 	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
@@ -288,7 +316,6 @@ func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
 
 	id := e.Param("id")
 
-	input := reportRequest.UpdateStatusReportRubbish{}
 	err = helper.DecodeJSON(e, &input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
@@ -296,8 +323,11 @@ func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
 
 	_, err = ah.AdminService.UpdateStatusReport(id, input.Status, input.RejectionDescription)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
+        if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
+        return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+    }
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil memperbarui status"))
 }
@@ -315,8 +345,11 @@ func (dph *AdminHandler) GetReportById(e echo.Context) error {
 	idParams := e.Param("id")
 	result, err := dph.AdminService.GetReportById(idParams)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal membaca data"))
-	}
+        if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
+        return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+    }
 
 	user, _ := dph.UserService.GetById(result.UserId)
 	var reportResponse = reportDto.ReportCoreToReportResponseForDataReportingId(result, user)

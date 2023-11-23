@@ -45,7 +45,8 @@ const (
 	ERROR_NOT_FOUND        = "data tidak ditemukan"
 	ERROR_RECORD_NOT_FOUND = "record not found"
 	ERROR_INVALID_TYPE     = "berupa angka"
-	ERROR
+	ERROR_INVALID_STATUS   = "status tidak valid"
+	ERROR_LIMIT            = "limit tidak boleh lebih dari 10"
 )
 
 var (

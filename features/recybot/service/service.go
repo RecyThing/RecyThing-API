@@ -7,6 +7,7 @@ import (
 	"os"
 	"recything/features/recybot/entity"
 	"recything/utils/constanta"
+	"recything/utils/pagination"
 	"recything/utils/validation"
 
 	"github.com/joho/godotenv"
@@ -44,12 +45,18 @@ func (rb *recybotService) CreateData(data entity.RecybotCore) (entity.RecybotCor
 	return result, nil
 }
 
-func (rb *recybotService) GetAllData() ([]entity.RecybotCore, error) {
-	result, err := rb.recybotRepository.GetAll()
+func (rb *recybotService) FindAllData(page, category, limit string) ([]entity.RecybotCore, pagination.PageInfo, error) {
+	pageInt, limitInt, err := validation.ValidateTypePaginationParameters(limit, page)
 	if err != nil {
-		return result, err
+		return nil, pagination.PageInfo{}, err
 	}
-	return result, nil
+
+	validPage, validLimit := validation.ValidatePaginationParameters(pageInt, limitInt)
+	result, pagnationInfo, err := rb.recybotRepository.FindAll(validPage, validLimit, category)
+	if err != nil {
+		return nil, pagination.PageInfo{}, err
+	}
+	return result, pagnationInfo, nil
 }
 
 func (rb *recybotService) GetById(idData string) (entity.RecybotCore, error) {
@@ -78,7 +85,7 @@ func (rb *recybotService) UpdateData(idData string, data entity.RecybotCore) (en
 		return entity.RecybotCore{}, errEmpty
 	}
 
-	validCategory,errCategory := validation.CheckEqualData(data.Category, constanta.Category)
+	validCategory, errCategory := validation.CheckEqualData(data.Category, constanta.Category)
 	if errCategory != nil {
 		return entity.RecybotCore{}, errCategory
 	}
@@ -108,13 +115,13 @@ func (rb *recybotService) GetPrompt(question string) (string, error) {
 		output[item.Category] = append(output[item.Category], item.Question)
 	}
 
-var prompt string
-for category, questions := range output {
-    prompt += "\n" + fmt.Sprintf("kategori %s:\n", category)
-    for _, question := range questions {
-        prompt += fmt.Sprintf("%s\n", question)
-    }
-}
+	var prompt string
+	for category, questions := range output {
+		prompt += "\n" + fmt.Sprintf("kategori %s:\n", category)
+		for _, question := range questions {
+			prompt += fmt.Sprintf("%s\n", question)
+		}
+	}
 
 	log.Println(prompt)
 	ctx := context.Background()

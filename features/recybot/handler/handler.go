@@ -8,6 +8,7 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -56,14 +57,24 @@ func (rh *recybotHandler) GetAllData(e echo.Context) error {
 	if errExtract != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
+	page := e.QueryParam("page")
+	limit := e.QueryParam("limit")
+	category := e.QueryParam("category")
 
-	result, err := rh.RecybotService.GetAllData()
+	result, pagnation, err := rh.RecybotService.FindAllData(page, category, limit)
 	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
+
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+	if len(result) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada kategori sampah"))
 	}
 
 	response := response.ListCoreRecybotToCoreRecybot(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh data", response))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("Berhasil mendapatkan seluruh kategori sampah", response, pagnation))
 }
 
 func (rh *recybotHandler) GetById(e echo.Context) error {

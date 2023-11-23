@@ -49,7 +49,7 @@ func (ar *AdminRepository) SelectAll() ([]entity.AdminCore, error) {
 	}
 
 	if tx.RowsAffected == 0 {
-		return nil, errors.New("role tidak ditemukan")
+		return nil, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	dataResponse := entity.ListAdminModelToAdminCore(dataAdmins)
@@ -65,7 +65,7 @@ func (ar *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) 
 	}
 
 	if tx.RowsAffected == 0 {
-		return entity.AdminCore{}, errors.New(constanta.ERROR_ID_ROLE)
+		return entity.AdminCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	dataResponse := entity.AdminModelToAdminCore(dataAdmins)
@@ -81,7 +81,7 @@ func (ar *AdminRepository) Update(adminId string, data entity.AdminCore) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_ID)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
@@ -101,7 +101,7 @@ func (ar *AdminRepository) Delete(adminId string) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_ID_ROLE)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
@@ -116,7 +116,7 @@ func (ar *AdminRepository) FindByEmail(email string) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_EMAIL)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
@@ -131,7 +131,7 @@ func (ar *AdminRepository) FindByEmailANDPassword(data entity.AdminCore) (entity
 	}
 
 	if tx.RowsAffected == 0 {
-		return entity.AdminCore{}, errors.New(constanta.ERROR_DATA_EMAIL)
+		return entity.AdminCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	if comparePass := helper.CompareHash(dataAdmins.Password, data.Password); !comparePass {
@@ -164,7 +164,7 @@ func (ar *AdminRepository) GetByIdUser(userId string) (user.UsersCore, error) {
 	}
 
 	if tx.RowsAffected == 0 {
-		return user.UsersCore{}, errors.New(constanta.ERROR_DATA_ID)
+		return user.UsersCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	dataResponse := user.UsersModelToUsersCore(dataUsers)
@@ -180,7 +180,7 @@ func (ar *AdminRepository) DeleteUsers(userId string) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_ID)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil

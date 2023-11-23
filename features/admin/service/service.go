@@ -69,7 +69,7 @@ func (as *AdminService) GetById(adminId string) (entity.AdminCore, error) {
 
 	dataAdmins, err := as.AdminRepository.SelectById(adminId)
 	if err != nil {
-		return entity.AdminCore{}, errors.New("data admin tidak ada")
+		return entity.AdminCore{}, err
 	}
 
 	return dataAdmins, nil
@@ -101,7 +101,7 @@ func (as *AdminService) UpdateById(adminId string, data entity.AdminCore) error 
 
 	err := as.AdminRepository.Update(adminId, data)
 	if err != nil {
-		return errors.New("gagal melakukan update data admin")
+		return err
 	}
 
 	return nil
@@ -162,7 +162,7 @@ func (as *AdminService) GetByIdUsers(userId string) (user.UsersCore, error) {
 	}
 
 	if err != nil {
-		return user.UsersCore{}, errors.New("")
+		return user.UsersCore{}, err
 	}
 
 	return data, nil

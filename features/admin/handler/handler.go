@@ -50,13 +50,12 @@ func (ah *AdminHandler) Create(e echo.Context) error {
 
 	request := request.AdminRequestToAdminCore(input)
 
-	result, err := ah.AdminService.Create(request)
+	_, err = ah.AdminService.Create(request)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	response := response.AdminCoreToAdminResponse(result)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil membuat data admin", response))
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil membuat data admin"))
 
 }
 
@@ -94,8 +93,11 @@ func (ah *AdminHandler) GetAll(e echo.Context) error {
 
 	result, err := ah.AdminService.GetAll()
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
+        if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
+        return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+    }
 
 	if len(result) == 0 {
 		return e.JSON(http.StatusOK, helper.SuccessResponse("data admin belum ada"))
@@ -122,8 +124,11 @@ func (ah *AdminHandler) GetById(e echo.Context) error {
 
 	result, err := ah.AdminService.GetById(adminId)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
+        if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
+        return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+    }
 
 	// if len(result.Id) == 0 {
 	// 	return e.JSON(http.StatusOK, helper.SuccessResponse("data admin belum ada"))
@@ -148,8 +153,11 @@ func (ah *AdminHandler) Delete(e echo.Context) error {
 
 	err = ah.AdminService.DeleteById(adminId)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
+        if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
+        return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+    }
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil menghapus data admin"))
 }
@@ -177,8 +185,11 @@ func (ah *AdminHandler) UpdateById(e echo.Context) error {
 	request := request.AdminRequestUpdateToAdminCore(input)
 	err = ah.AdminService.UpdateById(adminId, request)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
+        if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
+        return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+    }
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil melakukan pembaruan data admin"))
 }
 
@@ -217,6 +228,9 @@ func (ah *AdminHandler) GetByIdUsers(e echo.Context) error {
 
 	UsersData, err := ah.AdminService.GetByIdUsers(userId)
 	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
 		e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
@@ -238,6 +252,9 @@ func (ah *AdminHandler) DeleteUsers(e echo.Context) error {
 
 	err = ah.AdminService.DeleteUsers(userId)
 	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+        }
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 

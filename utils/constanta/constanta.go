@@ -9,13 +9,17 @@ const (
 
 // Constanta For Success
 const (
-	SUCCESS_LOGIN = "berhasil melakukan login"
-	SUCCESS_NULL  = "data belum tersedia"
+	SUCCESS_LOGIN       = "berhasil melakukan login"
+	SUCCESS_NULL        = "data belum tersedia"
+	SUCCESS_CREATE_DATA = "berhasil membuat data"
+	SUCCESS_DELETE_DATA = "berhasil menghapus data"
+	SUCCESS_GET_DATA    = "berhasil mendapatkan data"
 )
 
 // Constanta For Utils
 const (
-	VERIFICATION_URL   = "https://api.recything.my.id/verify-token?token="
+	VERIFICATION_URL = "http://localhost:8080/verify-token?token="
+	// VERIFICATION_URL   = "https://api.recything.my.id/verify-token?token="
 	EMAIL_NOT_REGISTER = "email belum terdaftar"
 )
 
@@ -35,7 +39,21 @@ const (
 	ERROR_GET_DATA         = "data tidak ditemukan"
 	ERROR_EMPTY            = "harap lengkapi data dengan benar"
 	ERROR_HASH_PASSWORD    = "error hash password"
+	ERROR_DATA_NOT_FOUND   = "data tidak ditemukan"
 	ERROR_DATA_EXIST       = "data sudah ada"
+	ERROR_INVALID_INPUT    = "data yang diinput tidak sesuai"
+	ERROR_NOT_FOUND        = "data tidak ditemukan"
+	ERROR_RECORD_NOT_FOUND = "record not found"
+	ERROR_INVALID_TYPE     = "berupa angka"
+	ERROR_INVALID_STATUS   = "status tidak valid"
+	ERROR_LIMIT            = "limit tidak boleh lebih dari 10"
+)
+
+// Message Handle 
+const (
+	ALREADY = "sudah"
+	NO      = "tidak"
+	MUST    = "harus"
 )
 
 var (

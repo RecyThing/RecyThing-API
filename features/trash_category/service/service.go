@@ -3,6 +3,7 @@ package service
 import (
 	"recything/features/trash_category/entity"
 	"recything/utils/constanta"
+	"recything/utils/pagination"
 	"recything/utils/validation"
 )
 
@@ -25,7 +26,7 @@ func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) er
 	}
 
 	validUnit, errCheck := validation.CheckEqualData(data.Unit, constanta.Unit)
-	if errEmpty != nil {
+	if errCheck != nil {
 		return errCheck
 	}
 
@@ -37,15 +38,22 @@ func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) er
 	return nil
 }
 
-func (tc *trashCategoryService) GetAllCategory(page, limit string) ([]entity.TrashCategoryCore, entity.PagnationInfo, error) {
-	result, paganation, err := tc.trashCategoryRepo.GetAll(page, limit)
+func (tc *trashCategoryService) GetAllCategory(page, trashType, limit string) ([]entity.TrashCategoryCore, pagination.PageInfo, error) {
+	pageInt, limitInt, err := validation.ValidateTypePaginationParameters(limit, page)
 	if err != nil {
-		return result, paganation, err
+		return nil, pagination.PageInfo{}, err
 	}
-	return result, paganation, nil
+	
+	validPage, validLimit := validation.ValidatePaginationParameters(pageInt, limitInt)
+	data, pagnationInfo, err := tc.trashCategoryRepo.FindAll(validPage, validLimit, trashType)
+	if err != nil {
+		return nil, pagination.PageInfo{}, err
+	}
+	return data, pagnationInfo, nil
 }
 
 func (tc *trashCategoryService) GetById(idTrash string) (entity.TrashCategoryCore, error) {
+
 	result, err := tc.trashCategoryRepo.GetById(idTrash)
 	if err != nil {
 		return result, err

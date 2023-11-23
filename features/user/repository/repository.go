@@ -25,11 +25,11 @@ func (ur *userRepository) Register(data entity.UsersCore) (entity.UsersCore, err
 
 	tx := ur.db.Create(&request)
 	if tx.Error != nil {
-		return entity.UsersCore{},tx.Error
+		return entity.UsersCore{}, tx.Error
 	}
 
 	dataResponse := entity.UsersModelToUsersCore(request)
-	return dataResponse,nil
+	return dataResponse, nil
 }
 
 // GetById implements entity.UsersRepositoryInterface.
@@ -61,7 +61,6 @@ func (ur *userRepository) FindByEmail(email string) (entity.UsersCore, error) {
 	if tx.Error != nil {
 		return entity.UsersCore{}, tx.Error
 	}
-
 
 	dataResponse := entity.UsersModelToUsersCore(dataUsers)
 	return dataResponse, nil
@@ -147,11 +146,10 @@ func (ur *userRepository) SendOTP(emailUser string, otp string, expiry int64) (d
 
 	tx := ur.db.Where("email = ?", emailUser).First(&dataUsers)
 	if tx.Error != nil {
+		if tx.RowsAffected == 0 {
+			return entity.UsersCore{}, errors.New(constanta.ERROR_DATA_EMAIL)
+		}
 		return entity.UsersCore{}, tx.Error
-	}
-
-	if tx.RowsAffected == 0 {
-		return entity.UsersCore{}, errors.New(constanta.ERROR_DATA_EMAIL)
 	}
 
 	dataUsers.Otp = otp

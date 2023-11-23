@@ -13,6 +13,7 @@ import (
 	userModel "recything/features/user/model"
 	"recything/utils/constanta"
 	"recything/utils/helper"
+	"recything/utils/pagination"
 
 	"gorm.io/gorm"
 )
@@ -48,7 +49,7 @@ func (ar *AdminRepository) SelectAll() ([]entity.AdminCore, error) {
 	}
 
 	if tx.RowsAffected == 0 {
-		return nil, errors.New("role tidak ditemukan")
+		return nil, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	dataResponse := entity.ListAdminModelToAdminCore(dataAdmins)
@@ -64,7 +65,7 @@ func (ar *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) 
 	}
 
 	if tx.RowsAffected == 0 {
-		return entity.AdminCore{}, errors.New(constanta.ERROR_ID_ROLE)
+		return entity.AdminCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	dataResponse := entity.AdminModelToAdminCore(dataAdmins)
@@ -80,7 +81,7 @@ func (ar *AdminRepository) Update(adminId string, data entity.AdminCore) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_ID)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
@@ -100,7 +101,7 @@ func (ar *AdminRepository) Delete(adminId string) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_ID_ROLE)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
@@ -115,7 +116,7 @@ func (ar *AdminRepository) FindByEmail(email string) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_EMAIL)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
@@ -130,7 +131,7 @@ func (ar *AdminRepository) FindByEmailANDPassword(data entity.AdminCore) (entity
 	}
 
 	if tx.RowsAffected == 0 {
-		return entity.AdminCore{}, errors.New(constanta.ERROR_DATA_EMAIL)
+		return entity.AdminCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	if comparePass := helper.CompareHash(dataAdmins.Password, data.Password); !comparePass {
@@ -163,7 +164,7 @@ func (ar *AdminRepository) GetByIdUser(userId string) (user.UsersCore, error) {
 	}
 
 	if tx.RowsAffected == 0 {
-		return user.UsersCore{}, errors.New(constanta.ERROR_DATA_ID)
+		return user.UsersCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	dataResponse := user.UsersModelToUsersCore(dataUsers)
@@ -179,29 +180,55 @@ func (ar *AdminRepository) DeleteUsers(userId string) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_ID)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
 }
 
 // GetByStatusReport implements entity.AdminRepositoryInterface.
-func (ar *AdminRepository) GetByStatusReport(status string) ([]report.ReportCore, error) {
+func (ar *AdminRepository) GetAllReport(status, name, id string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error) {
 	dataReports := []reportModel.Report{}
 	var result *gorm.DB
 
+	offset := (page - 1) * limit
+
+	query := ar.db.Offset(offset).Limit(limit)
+
 	if status != "" {
-		result = ar.db.Where("status = ?", status).Find(&dataReports)
-	} else {
-		result = ar.db.Find(&dataReports)
+		query = query.Where("status = ?", status)
 	}
 
+	if name != "" {
+		query = query.Joins("JOIN users AS u ON reports.users_id = u.id").
+			Where("u.fullname LIKE ?", "%"+name+"%")
+	}
+	
+	if id != "" {
+		query = query.Where("id = ?", id)
+	}
+
+	result = query.Find(&dataReports)
+
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, pagination.PageInfo{}, result.Error
 	}
 
 	dataAllReport := report.ListReportModelToReportCore(dataReports)
-	return dataAllReport, nil
+
+	// Get total count for pagination
+	var totalCount int64
+	countQuery := query.Model(&reportModel.Report{})
+	tx := countQuery.Count(&totalCount)
+
+	if tx.Error != nil {
+		return nil, pagination.PageInfo{}, tx.Error
+	}
+
+	// Menggunakan fungsi CalculatePagination
+	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
+
+	return dataAllReport, paginationInfo, nil
 }
 
 // UpdateStatusReport implements entity.AdminRepositoryInterface.
@@ -221,7 +248,7 @@ func (ar *AdminRepository) UpdateStatusReport(id, status, reason string) (report
 	}
 
 	if tx.RowsAffected == 0 {
-		return report.ReportCore{}, errors.New(constanta.ERROR_DATA_ID)
+		return report.ReportCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	dataResponse := report.ReportModelToReportCore(dataReports)
@@ -237,7 +264,7 @@ func (ar *AdminRepository) GetReportById(id string) (report.ReportCore, error) {
     }
 
     if tx.RowsAffected == 0 {
-        return report.ReportCore{}, errors.New(constanta.ERROR_DATA_ID)
+        return report.ReportCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
     }
 
     dataResponse := report.ReportModelToReportCore(dataReports)

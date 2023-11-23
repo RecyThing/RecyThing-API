@@ -454,6 +454,18 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/FilterReport"
+                    },
+                    {
+                        "$ref": "#/components/parameters/searchID"
+                    },
+                    {
+                        "$ref": "#/components/parameters/name"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
                     }
                 ],
                 "responses": {
@@ -466,51 +478,30 @@
                                 },
                                 "examples": {
                                     "get all report": {
-                                        "value": {
+                                        "value":{
                                             "status": true,
-                                            "message": "berhasil mengambil semua data report",
+                                            "message": "berhasil mendapatkan data reporting",
                                             "data": [
                                                 {
-                                                    "id": "e81d8dc5-533c-4071-bcf9-d9f2e810140b",
+                                                    "id": "TS-DA0CD46CB8104B1",
                                                     "report_type": "tumpukan sampah",
-                                                    "reporter": "jiddan",
-                                                    "location": "palu",
-                                                    "date_time": "2023-12-07T12:00:00Z",
-                                                    "status": "perlu tinjauan"
-                                                },
-                                                {
-                                                    "id": "e61d8dc5-333c-4071-bcf9-d9f2e810140b",
-                                                    "report_type": "pelanggaran sampah",
-                                                    "reporter": "mamad",
-                                                    "location": "jakarta",
-                                                    "date_time": "2023-13-07T13:00:00Z",
+                                                    "name": "recything",
+                                                    "location": "bekasi",
                                                     "status": "diterima"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "get by status": {
-                                        "value": {
-                                            "status": true,
-                                            "message": "berhasil mengambil data report",
-                                            "data": [
-                                                {
-                                                    "id": "e81d8dc5-533c-4071-bcf9-d9f2e810140b",
-                                                    "report_type": "tumpukan sampah",
-                                                    "reporter": "jiddan",
-                                                    "location": "palu",
-                                                    "date_time": "2023-12-07T12:00:00Z",
-                                                    "status": "perlu tinjauan"
                                                 },
                                                 {
-                                                    "id": "e61d8dc5-333c-4071-bcf9-d9f2e810140b",
-                                                    "report_type": "pelanggaran sampah",
-                                                    "reporter": "andi",
-                                                    "location": "jakarta",
-                                                    "date_time": "2023-13-07T13:00:00Z",
-                                                    "status": "perlu tinjauan"
+                                                    "id": "TS-DA0CD46CB8104B2",
+                                                    "report_type": "tumpukan sampah",
+                                                    "name": "recything",
+                                                    "location": "palu",
+                                                    "status": "ditolak"
                                                 }
-                                            ]
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            }
                                         }
                                     }
                                 }
@@ -530,7 +521,7 @@
                 "tags": [
                     "Manage Report"
                 ],
-                "summary": "!THIS ENDPOINT ISSUE!",
+                "summary": "detail report",
                 "description": "get detail report all status.",
                 "parameters": [
                     {
@@ -547,79 +538,35 @@
                                 },
                                 "examples": {
                                     "report rubbish": {
-                                        "value": {
+                                        "value":{
                                             "status": true,
-                                            "message": "berhasil mengambil detail data report rubbish",
-                                            "data": [
-                                                {
-                                                    "id": "e81d8dc5-533c-4071-bcf9-d9f2e810140b",
-                                                    "date_time": "2023-12-07T12:00:00Z",
-                                                    "report_type": "tumpukan sampah",
-                                                    "trash_type": "sampah kering",
-                                                    "reporter": "jiddan",
-                                                    "location": "palu",
-                                                    "benchmark": "samping warung pak ita",
-                                                    "description": "saya lihat sampah itu sudah menggunduk seperti gunung dan bau",
-                                                    "images": [
-                                                        "cloud.google.storage/241432424",
-                                                        "cloud.google.storage/2414gyuih34",
-                                                        "cloud.google.storage/241ewt231"
-                                                    ],
-                                                    "status": "perlu tinjauan"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "report literring (kecil)": {
-                                        "value": {
-                                            "status": true,
-                                            "message": "berhasil mengambil data report literring",
-                                            "data": [
-                                                {
-                                                    "id": "e81d8dc5-533c-4071-bcf9-d9f2e810140b",
-                                                    "date_time": "2023-12-07T12:00:00Z",
-                                                    "report_type": "pelanggaran sampah",
-                                                    "scala_type": "skala kecil",
-                                                    "reporter": "marky",
-                                                    "location": "tanggerang",
-                                                    "benchmark": "dibelakang warteg duren tiga",
-                                                    "time_incident": "2023-12-07T12:00:00Z",
-                                                    "description": "saya lihat seseorang membuang sampah ke laut",
-                                                    "images": [
-                                                        "cloud.google.storage/241432424",
-                                                        "cloud.google.storage/2414gyuih34",
-                                                        "cloud.google.storage/241ewt231"
-                                                    ],
-                                                    "status": "perlu tinjauan"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "report literring (besar)": {
-                                        "value": {
-                                            "status": true,
-                                            "message": "berhasil mengambil data report literring",
-                                            "data": [
-                                                {
-                                                    "id": "e81d8dc5-533c-4071-bcf9-d9f2e810140b",
-                                                    "date_time": "2023-12-07T12:00:00Z",
-                                                    "report_type": "pelanggaran sampah",
-                                                    "scala_type": "skala besar",
-                                                    "reporter": "hilal",
-                                                    "location": "sulteng",
-                                                    "benchmark": "dibelakang warteg duren tiga",
-                                                    "time_incident": "2023-12-07T12:00:00Z",
-                                                    "danger_trash": true,
-                                                    "company_information": "PT.Traktir Bersama",
-                                                    "description": "saya lihat sampah itu sudah menggunduk seperti gunung dan bau",
-                                                    "images": [
-                                                        "cloud.google.storage/241432424",
-                                                        "cloud.google.storage/2414gyuih34",
-                                                        "cloud.google.storage/241ewt231"
-                                                    ],
-                                                    "status": "perlu tinjauan"
-                                                }
-                                            ]
+                                            "message": "berhasil mendapatkan data",
+                                            "data": {
+                                                "Id": "TS-DA0CD46CB8104B1",
+                                                "report_type": "tumpukan sampah",
+                                                "longitude": 111,
+                                                "latitude": 111,
+                                                "location": "bekasi",
+                                                "description": "sampah",
+                                                "address_point": "bekasi",
+                                                "status": "diterima",
+                                                "images": [
+                                                    {
+                                                        "id": "4895545d-1506-4e2a-80ea-1288374ef3c1",
+                                                        "image": "https://storage.googleapis.com/report_proof/proof-file/282aa6d7-7938-4a51-8cc8-99e76b8a558b.png",
+                                                        "created_at": "2023-11-21T13:49:02Z",
+                                                        "updated_at": "2023-11-21T13:49:02Z"
+                                                    },
+                                                    {
+                                                        "id": "838c9289-e199-4277-b508-27706c3957cd",
+                                                        "image": "https://storage.googleapis.com/report_proof/proof-file/46b41149-08cd-4dd2-bf55-7d98758a324b.png",
+                                                        "created_at": "2023-11-21T13:49:01Z",
+                                                        "updated_at": "2023-11-21T13:49:01Z"
+                                                    }
+                                                ],
+                                                "trash_type": "sampah kering",
+                                                "fullname": "recything"
+                                            }
                                         }
                                     }
                                 }
@@ -662,7 +609,7 @@
                                     "description": "contoh request ditolak",
                                     "value": {
                                         "status": "ditolak",
-                                        "reason": "foto buram"
+                                        "rejection_description": "foto buram"
                                     }
                                 }
                             }
@@ -1006,10 +953,10 @@
                         "$ref": "#/components/parameters/trashType"
                     },
                     {
-                        "$ref": "#/components/parameters/limitTrashType"
+                        "$ref": "#/components/parameters/limit"
                     },
                     {
-                        "$ref": "#/components/parameters/pageTrashType"
+                        "$ref": "#/components/parameters/page"
                     }
                 ],
                 "responses": {
@@ -1315,21 +1262,23 @@
                         }
                     }
                 ],
-                "requestBody":{
+                "requestBody": {
                     "content": {
-                        "application/json":{
-                            "schema":{
+                        "application/json": {
+                            "schema": {
                                 "properties": {
-                                    "target_point":{
+                                    "target_point": {
                                         "type": "integer"
                                     }
                                 },
-                                "required": ["total_point"]
+                                "required": [
+                                    "total_point"
+                                ]
                             },
                             "examples": {
-                                "example":{
-                                    "value":{
-                                        "target_point":250000
+                                "example": {
+                                    "value": {
+                                        "target_point": 250000
                                     }
                                 }
                             }
@@ -1340,10 +1289,10 @@
                     "200": {
                         "description": "OK",
                         "content": {
-                            "application/json":{
+                            "application/json": {
                                 "examples": {
-                                    "success":{
-                                        "value":{
+                                    "success": {
+                                        "value": {
                                             "status": true,
                                             "message": "berhasil melakukan pembaruan data"
                                         }
@@ -1449,18 +1398,35 @@
                     "type": "string"
                 }
             },
-            "limitTrashType": {
+            "limit": {
                 "name": "limit",
                 "in": "query",
-                "description": "limit of trash type",
+                "description": "limit of data",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 10
+                }
+            },
+            "page": {
+                "name": "page",
+                "in": "query",
+                "description": "page of data",
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "name": {
+                "name": "name",
+                "in": "query",
+                "description": "name of data",
                 "schema": {
                     "type": "string"
                 }
             },
-            "pageTrashType": {
-                "name": "page",
+            "searchID": {
+                "name": "id",
                 "in": "query",
-                "description": "page of trash type",
+                "description": "id of data",
                 "schema": {
                     "type": "string"
                 }

@@ -98,43 +98,37 @@ func IsDuplicateError(err error) bool {
 	return false
 }
 
-func ValidateTypePaginationParameters(limit, page string) (int, int, error) {
+
+func ValidateParamsPagination(page, limit string) (int, int, error) {
 	var limitInt int
-    var pageInt int
+	var pageInt int
+	var err error
+	if limit == "" {
+		limitInt = 10
+	}
+	if limit != "" {
+		limitInt, err = strconv.Atoi(limit)
+		if err != nil {
+			return 0, 0, errors.New("limit harus berupa angka")
+		}
+	}
 
-    if limit == "" {
-        limitInt = 10
-    } else {
-        limitInt, err := strconv.Atoi(limit)
-        if err != nil {
-            return 0, limitInt, errors.New("limit harus berupa angka")
-        }
-    }
+	if page == "" {
+		pageInt = 1
+	}
+	if page != "" {
+		pageInt, err = strconv.Atoi(page)
+		if err != nil {
+			return 0, 0, errors.New("page harus berupa angka")
+		}
+	}
 
-    if page == "" {
-        pageInt = 1
-    } else {
-        // Convert page string to integer
-        pageInt, err := strconv.Atoi(page)
-        if err != nil {
-            return pageInt, 0, errors.New("page harus berupa angka")
-        }
-    }
+	pageInt, limitInt = ValidateCountLimitAndPage(pageInt, limitInt)
+	return pageInt, limitInt, nil
 
-    if pageInt <= 0 {
-        pageInt = 1
-    }
-
-    maxLimit := 10
-
-    if limitInt <= 0 || limitInt > maxLimit {
-        limitInt = maxLimit
-    }
-
-    return pageInt, limitInt, nil
 }
 
-func ValidatePaginationParameters(page, limit int) (int, int) {
+func ValidateCountLimitAndPage(page, limit int) (int, int) {
 	if page <= 0 {
 		page = 1
 	}
@@ -194,6 +188,3 @@ func ValidateTypePaginationParameter(limit, page string) (int, int, error) {
 
 	return pageInt, limitInt, nil
 }
-
-
-

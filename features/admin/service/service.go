@@ -221,7 +221,7 @@ func (as *AdminService) GetAllReport(status, name, id, page, limit string) (data
 		return nil, pagination.PageInfo{}, validationErr
 	}
 
-	pageValid, limitValid := validation.ValidatePaginationParameters(pageInt, limitInt)
+	pageValid, limitValid := validation.ValidateCountLimitAndPage(pageInt, limitInt)
 
 	validStatus := map[string]bool{
 		"perlu ditinjau": true,

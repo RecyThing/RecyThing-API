@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"fmt"
 	"mime/multipart"
 	"recything/features/article/entity"
 	"recything/features/article/model"
@@ -32,7 +31,7 @@ func (article *articleRepository) DeleteArticle(id string) error {
 
 	categoryId := model.ArticleTrashCategory{}
 	categoryDel := article.db.Where("article_id = ?", id).Delete(&categoryId)
-	if categoryDel.Error != nil{
+	if categoryDel.Error != nil {
 		return categoryDel.Error
 	}
 
@@ -60,7 +59,7 @@ func (article *articleRepository) GetSpecificArticle(idArticle string) (entity.A
 func (article *articleRepository) UpdateArticle(idArticle string, articleInput entity.ArticleCore, image *multipart.FileHeader) (entity.ArticleCore, error) {
 	var articleData model.Article
 
-	check := article.db.Where("id = ?", idArticle).Preload("Category").First(&articleData)
+	check := article.db.Where("id = ?", idArticle).First(&articleData)
 	if check.Error != nil {
 		return entity.ArticleCore{}, check.Error
 	}
@@ -76,10 +75,34 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 	articleData.Title = articleInput.Title
 	articleData.Content = articleInput.Content
 
-	tx := article.db.Updates(&articleData)
-	if tx.Error != nil {
-		return entity.ArticleCore{}, tx.Error
+	tx := article.db.Begin()
+
+	// Hapus kategori yang terkait dengan artikel
+	categoryId := model.ArticleTrashCategory{}
+	categoryDel := tx.Where("article_id = ?", idArticle).Delete(&categoryId)
+	if categoryDel.Error != nil {
+		return entity.ArticleCore{}, categoryDel.Error
 	}
+
+	if err := tx.Save(&articleData).Error; err != nil {
+		tx.Rollback()
+		return entity.ArticleCore{}, err
+	}
+
+	// Tambahkan kategori yang baru
+	for _, categoryId := range articleInput.Category_id {
+		categories := new(model.ArticleTrashCategory)
+		categories.ArticleID = idArticle
+		categories.TrashCategoryID = categoryId
+
+		txLink := tx.Create(&categories)
+		if txLink.Error != nil {
+			tx.Rollback()
+			return entity.ArticleCore{}, txLink.Error
+		}
+	}
+
+	tx.Commit()
 
 	articleUpdate := entity.ArticleModelToArticleCore(articleData)
 
@@ -114,21 +137,30 @@ func (article *articleRepository) CreateArticle(articleInput entity.ArticleCore,
 	}
 
 	articleData.Image = imageURL
-	tx := article.db.Create(&articleData)
-	if tx.Error != nil {
-		return entity.ArticleCore{}, tx.Error
+
+	txOuter := article.db.Begin()
+
+	if err := txOuter.Create(&articleData).Error; err != nil {
+		txOuter.Rollback()
+		return entity.ArticleCore{}, err
 	}
 
 	articleCreated := entity.ArticleModelToArticleCore(articleData)
 
-	fmt.Println("panjang categori : ", len(articleInput.Category_id))
 	for _, categoryId := range articleInput.Category_id {
 		categories := new(model.ArticleTrashCategory)
 		categories.ArticleID = articleCreated.ID
 		categories.TrashCategoryID = categoryId
 
-		article.db.Create(&categories)
+		txInner := txOuter.Create(&categories)
+		if txInner.Error != nil {
+			txOuter.Rollback()
+			article.DeleteArticle(articleCreated.ID)
+			return entity.ArticleCore{}, txInner.Error
+		}
 	}
+
+	txOuter.Commit()
 
 	return articleCreated, nil
 }

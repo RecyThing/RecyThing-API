@@ -98,10 +98,10 @@ func (article *articleService) CreateArticle(articleInput entity.ArticleCore, im
 		return entity.ArticleCore{}, errors.New("ukuran file tidak boleh lebih dari 5 MB")
 	}
 
-	articleUpdate, errinsert := article.ArticleRepository.CreateArticle(articleInput, image)
+	articleCreate, errinsert := article.ArticleRepository.CreateArticle(articleInput, image)
 	if errinsert != nil {
 		return entity.ArticleCore{}, errinsert
 	}
 
-	return articleUpdate, nil
+	return articleCreate, nil
 }

@@ -10,7 +10,6 @@ import (
 	"recything/utils/jwt"
 	"recything/utils/pagination"
 	"recything/utils/validation"
-	"strconv"
 )
 
 type AdminService struct {
@@ -58,45 +57,15 @@ func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) 
 }
 
 func (as *AdminService) GetAll(page, limit, fullName string) ([]entity.AdminCore, pagination.PageInfo, error) {
-
-	var limitInt int
-	var pageInt int
-	var err error
-	if limit == "" {
-		limitInt = 10
-	}
-	if limit != "" {
-		limitInt, err = strconv.Atoi(limit)
-		if err != nil {
-			return nil, pagination.PageInfo{}, errors.New("limit harus berupa angka")
-		}
-	}
-
-	if page == "" {
-		pageInt = 1
-	}
-	if page != "" {
-		pageInt, err = strconv.Atoi(page)
-		if err != nil {
-			return nil, pagination.PageInfo{}, errors.New("page harus berupa angka")
-		}
-	}
-
-	if pageInt <= 0 {
-		pageInt = 1
-	}
-
-	maxLimit := 10
-
-	if limitInt <= 0 || limitInt > maxLimit {
-		limitInt = maxLimit
+	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
+	if err != nil {
+		return nil, pagination.PageInfo{}, err
 	}
 
 	dataAdmins, pagnationInfo, err := as.AdminRepository.SelectAll(pageInt, limitInt, fullName)
 	if err != nil {
 		return nil, pagination.PageInfo{}, errors.New("gagal mengambil semua data admin")
 	}
-
 	return dataAdmins, pagnationInfo, nil
 }
 

@@ -42,7 +42,6 @@ func (ah *AdminHandler) Create(e echo.Context) error {
 	}
 
 	input := request.AdminRequest{}
-
 	err = helper.DecodeJSON(e, &input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
@@ -52,6 +51,9 @@ func (ah *AdminHandler) Create(e echo.Context) error {
 
 	_, err = ah.AdminService.Create(request)
 	if err != nil {
+		if helper.HttpResponseCondition(err, constanta.ERROR_INVALID_TYPE, constanta.ERROR_EMAIL_EXIST, constanta.ERROR_INVALID_INPUT, constanta.ERROR_FORMAT_EMAIL, constanta.ERROR_CONFIRM_PASSWORD, constanta.ERROR_LENGTH_PASSWORD, constanta.ERROR_EMPTY) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
@@ -91,7 +93,11 @@ func (ah *AdminHandler) GetAll(e echo.Context) error {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
-	result, err := ah.AdminService.GetAll()
+	page := e.QueryParam("page")
+	limit := e.QueryParam("limit")
+	fullName := e.QueryParam("fullname")
+
+	result, pagnationInfo, err := ah.AdminService.GetAll(page, limit, fullName)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
@@ -104,7 +110,7 @@ func (ah *AdminHandler) GetAll(e echo.Context) error {
 	}
 
 	response := response.ListAdminCoreToAdminResponse(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mengambil semua data admin", response))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mengambil semua data admin", response, pagnationInfo))
 
 }
 

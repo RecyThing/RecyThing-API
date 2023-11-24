@@ -39,12 +39,12 @@ func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) er
 }
 
 func (tc *trashCategoryService) GetAllCategory(page, trashType, limit string) ([]entity.TrashCategoryCore, pagination.PageInfo, error) {
-	pageInt, limitInt, err := validation.ValidateTypePaginationParameters(limit, page)
+	pageInt, limitInt, err := validation.ValidateParamsPagination(limit, page)
 	if err != nil {
 		return nil, pagination.PageInfo{}, err
 	}
 	
-	validPage, validLimit := validation.ValidatePaginationParameters(pageInt, limitInt)
+	validPage, validLimit := validation.ValidateCountLimitAndPage(pageInt, limitInt)
 	data, pagnationInfo, err := tc.trashCategoryRepo.FindAll(validPage, validLimit, trashType)
 	if err != nil {
 		return nil, pagination.PageInfo{}, err

@@ -82,7 +82,7 @@ func (dps *dropPointService) GetAllDropPoint(page, limit int, name, address stri
         return nil, pagination.PageInfo{}, errors.New("limit tidak boleh lebih dari 10")
     }
 
-	page, limit = validation.ValidatePaginationParameters(page, limit)
+	page, limit = validation.ValidateCountLimitAndPage(page, limit)
 	
 	dropPointCores, pageInfo, err := dps.dropPointRepository.GetAllDropPoint(page, limit, name, address)
 	if err != nil {

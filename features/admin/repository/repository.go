@@ -40,20 +40,45 @@ func (ar *AdminRepository) Create(data entity.AdminCore) (entity.AdminCore, erro
 	return dataResponse, nil
 }
 
-func (ar *AdminRepository) SelectAll() ([]entity.AdminCore, error) {
+func (ar *AdminRepository) SelectAll(page, limit int, fullName string) ([]entity.AdminCore,pagination.PageInfo, error) {
 	dataAdmins := []model.Admin{}
+	offsetInt := (page - 1) * limit
+	var totalCount int64
+	if fullName == "" {
+		tx := ar.db.Model(&model.Admin{}).Limit(limit).Offset(offsetInt).Where("role = ? ", constanta.ADMIN).Count(&totalCount)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{},tx.Error
+		}
 
-	tx := ar.db.Where("role = ? ", constanta.ADMIN).Find(&dataAdmins)
-	if tx.Error != nil {
-		return nil, tx.Error
+		tx = ar.db.Limit(limit).Offset(offsetInt).Where("role = ? ", constanta.ADMIN).Find(&dataAdmins)
+		if tx.Error != nil {
+			return nil,pagination.PageInfo{}, tx.Error
+		}
+
+		if tx.RowsAffected == 0 {
+			return nil, pagination.PageInfo{},errors.New(constanta.ERROR_DATA_NOT_FOUND)
+		}
 	}
+	if fullName != "" {
 
-	if tx.RowsAffected == 0 {
-		return nil, errors.New(constanta.ERROR_DATA_NOT_FOUND)
+		tx := ar.db.Model(&model.Admin{}).Where("role = ? AND fullname LIKE ?", constanta.ADMIN, "%"+fullName+"%").Count(&totalCount)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{},tx.Error
+		}
+
+		tx = ar.db.Limit(limit).Offset(offsetInt).Where("role = ? AND fullname LIKE ?", constanta.ADMIN, "%"+fullName+"%").Find(&dataAdmins)
+		if tx.Error != nil {
+			return nil,pagination.PageInfo{}, tx.Error
+		}
+		if tx.RowsAffected == 0 {
+			return nil, pagination.PageInfo{},errors.New(constanta.ERROR_DATA_NOT_FOUND)
+		}
 	}
 
 	dataResponse := entity.ListAdminModelToAdminCore(dataAdmins)
-	return dataResponse, nil
+	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
+
+	return dataResponse,paginationInfo, nil
 }
 
 func (ar *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) {
@@ -203,7 +228,7 @@ func (ar *AdminRepository) GetAllReport(status, name, id string, page, limit int
 		query = query.Joins("JOIN users AS u ON reports.users_id = u.id").
 			Where("u.fullname LIKE ?", "%"+name+"%")
 	}
-	
+
 	if id != "" {
 		query = query.Where("id = ?", id)
 	}
@@ -256,17 +281,17 @@ func (ar *AdminRepository) UpdateStatusReport(id, status, reason string) (report
 }
 
 func (ar *AdminRepository) GetReportById(id string) (report.ReportCore, error) {
-    dataReports := reportModel.Report{}
+	dataReports := reportModel.Report{}
 
-    tx := ar.db.Preload("Images").Where("id = ?", id).First(&dataReports)
-    if tx.Error != nil {
-        return report.ReportCore{}, tx.Error
-    }
+	tx := ar.db.Preload("Images").Where("id = ?", id).First(&dataReports)
+	if tx.Error != nil {
+		return report.ReportCore{}, tx.Error
+	}
 
-    if tx.RowsAffected == 0 {
-        return report.ReportCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
-    }
+	if tx.RowsAffected == 0 {
+		return report.ReportCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	}
 
-    dataResponse := report.ReportModelToReportCore(dataReports)
-    return dataResponse, nil
+	dataResponse := report.ReportModelToReportCore(dataReports)
+	return dataResponse, nil
 }

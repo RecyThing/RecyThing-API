@@ -67,7 +67,7 @@ func PhoneNumber(phone string) error {
 
 func MinLength(data string, minLength int) error {
 	if len(data) < minLength {
-		return errors.New("minimal " + strconv.Itoa(minLength) + " karakter,ulangi kembali!")
+		return errors.New("minimal " + strconv.Itoa(minLength) + " karakter, ulangi kembali!")
 	}
 	return nil
 }

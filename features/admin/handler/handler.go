@@ -160,6 +160,7 @@ func (ah *AdminHandler) Delete(e echo.Context) error {
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil menghapus data admin"))
+
 }
 
 // melakukan pembaruan atau edit data admin
@@ -281,16 +282,10 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 
 	result, paginationInfo, err := ah.AdminService.GetAllReport(status, name, id, page, limit)
 	if err != nil {
-		switch {
-		case strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE):
+		if helper.HttpResponseCondition(err, constanta.ERROR_INVALID_TYPE, constanta.ERROR_INVALID_STATUS, constanta.ERROR_LIMIT) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-		case strings.Contains(err.Error(), constanta.ERROR_INVALID_STATUS):
-			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-		case strings.Contains(err.Error(), constanta.ERROR_LIMIT):
-			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-		default:
-			return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	if len(result) == 0 {
@@ -326,7 +321,12 @@ func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
 		}
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+
+		if helper.HttpResponseCondition(err, constanta.ALREADY, constanta.NO, constanta.MUST) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil memperbarui status"))
@@ -348,7 +348,7 @@ func (dph *AdminHandler) GetReportById(e echo.Context) error {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
 		}
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	user, _ := dph.UserService.GetById(result.UserId)

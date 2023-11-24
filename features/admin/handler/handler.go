@@ -160,6 +160,7 @@ func (ah *AdminHandler) Delete(e echo.Context) error {
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil menghapus data admin"))
+
 }
 
 // melakukan pembaruan atau edit data admin

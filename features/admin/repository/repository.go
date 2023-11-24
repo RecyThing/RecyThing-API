@@ -43,9 +43,10 @@ func (ar *AdminRepository) Create(data entity.AdminCore) (entity.AdminCore, erro
 func (ar *AdminRepository) SelectAll(page, limit int, fullName string) ([]entity.AdminCore,pagination.PageInfo, error) {
 	dataAdmins := []model.Admin{}
 	offsetInt := (page - 1) * limit
+
 	var totalCount int64
 	if fullName == "" {
-		tx := ar.db.Model(&model.Admin{}).Limit(limit).Offset(offsetInt).Where("role = ? ", constanta.ADMIN).Count(&totalCount)
+		tx := ar.db.Model(&model.Admin{}).Where("role = ? ", constanta.ADMIN).Count(&totalCount)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{},tx.Error
 		}
@@ -55,9 +56,7 @@ func (ar *AdminRepository) SelectAll(page, limit int, fullName string) ([]entity
 			return nil,pagination.PageInfo{}, tx.Error
 		}
 
-		if tx.RowsAffected == 0 {
-			return nil, pagination.PageInfo{},errors.New(constanta.ERROR_DATA_NOT_FOUND)
-		}
+		
 	}
 	if fullName != "" {
 
@@ -70,9 +69,7 @@ func (ar *AdminRepository) SelectAll(page, limit int, fullName string) ([]entity
 		if tx.Error != nil {
 			return nil,pagination.PageInfo{}, tx.Error
 		}
-		if tx.RowsAffected == 0 {
-			return nil, pagination.PageInfo{},errors.New(constanta.ERROR_DATA_NOT_FOUND)
-		}
+		
 	}
 
 	dataResponse := entity.ListAdminModelToAdminCore(dataAdmins)

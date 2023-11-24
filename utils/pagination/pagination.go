@@ -2,6 +2,7 @@ package pagination
 
 import (
 	"fmt"
+	"log"
 	"math"
 )
 
@@ -13,7 +14,10 @@ type PageInfo struct {
 
 func CalculateData(totalCount, limitInt, pageInt int) PageInfo {
 	lastPage := int(math.Ceil(float64(totalCount) / float64(limitInt)))
-
+	log.Println("count ", totalCount)
+	log.Println("page ", pageInt)
+	log.Println("limit ", limitInt)
+	log.Println("last page", lastPage)
 	paginationInfo := PageInfo{
 		Limit:       limitInt,
 		CurrentPage: pageInt,

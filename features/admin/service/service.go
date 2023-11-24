@@ -57,7 +57,7 @@ func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) 
 	return dataAdmins, nil
 }
 
-func (as *AdminService) GetAll(limit, page, fullName string) ([]entity.AdminCore, pagination.PageInfo, error) {
+func (as *AdminService) GetAll(page, limit, fullName string) ([]entity.AdminCore, pagination.PageInfo, error) {
 
 	var limitInt int
 	var pageInt int

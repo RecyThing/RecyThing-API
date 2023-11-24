@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 	"recything/features/recybot/entity"
-	"recything/utils/validation"
-	"strings"
 	"recything/utils/constanta"
+	"recything/utils/validation"
+
 	"github.com/joho/godotenv"
 	"github.com/sashabaranov/go-openai"
 )
@@ -108,22 +108,22 @@ func (rb *recybotService) GetPrompt(question string) (string, error) {
 		output[item.Category] = append(output[item.Category], item.Question)
 	}
 
-	var prompt strings.Builder
-	for category, questions := range output {
-		prompt.WriteString(fmt.Sprintln(" "))
-		prompt.WriteString(fmt.Sprintf("kategori %s:\n", category))
-		for _, question := range questions {
-			prompt.WriteString(fmt.Sprintf("%s\n", question))
-		}
-	}
-	log.Println(prompt.String())
+var prompt string
+for category, questions := range output {
+    prompt += "\n" + fmt.Sprintf("kategori %s:\n", category)
+    for _, question := range questions {
+        prompt += fmt.Sprintf("%s\n", question)
+    }
+}
+
+	log.Println(prompt)
 	ctx := context.Background()
 	client := openai.NewClient(os.Getenv("OPEN_AI_KEY"))
 	model := openai.GPT3Dot5Turbo
 	messages := []openai.ChatCompletionMessage{
 		{
 			Role:    "system",
-			Content: prompt.String(),
+			Content: prompt,
 		},
 		{
 			Role:    "user",

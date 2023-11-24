@@ -7,6 +7,7 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -30,6 +31,9 @@ func (fc *faqHandler) GetFaqsById(e echo.Context) error {
 
 	result, errGet := fc.faqService.GetFaqsById(uint(faqUser))
 	if errGet != nil {
+		if strings.Contains(errGet.Error(), constanta.ERROR_DATA_ID) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(errGet.Error()))
+		}
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errGet.Error()))
 	}
 

@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"errors"
 	"mime/multipart"
 	"recything/features/report/entity"
 	"recything/features/report/model"
+	"recything/utils/constanta"
 	"recything/utils/storage"
 
 	"gorm.io/gorm"
@@ -71,6 +73,9 @@ func (report *reportRepository) SelectById(iDReport string) (entity.ReportCore, 
 
 	tx := report.db.Preload("Images").Where("id = ?", iDReport).First(&dataReports)
 	if tx.Error != nil {
+		if tx.RowsAffected == 0 {
+			return entity.ReportCore{}, errors.New(constanta.ERROR_NOT_FOUND)
+		}
 		return entity.ReportCore{}, tx.Error
 	}
 

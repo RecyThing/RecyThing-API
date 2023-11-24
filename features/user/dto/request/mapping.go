@@ -31,7 +31,6 @@ func UsersRequestUpdatePasswordToUsersCore(data UserUpdatePassword) entity.Users
 
 func UsersRequestNewPasswordToUsersCore(data UserNewPassword) entity.UsersCore {
 	return entity.UsersCore{
-		Email:           data.Email,
 		Password:        data.Password,
 		ConfirmPassword: data.ConfirmPassword,
 	}

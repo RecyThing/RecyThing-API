@@ -41,7 +41,7 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 	recybotHandler := recybotHandler.NewRecybotHandler(recybotService)
 
 	//manage trash category
-	trashCategoryRepository:=trashCategoryRepository.NewTrashCategiryRepository(db)
+	trashCategoryRepository:=trashCategoryRepository.NewTrashCategoryRepository(db)
 	trashCategoryService:=trashCategoryService.NewTrashCategoryService(trashCategoryRepository)
 	trashCategoryHandler:=trashCategoryHandler.NewTrashCategoryHandler(trashCategoryService)
 
@@ -81,4 +81,5 @@ func RouteAdmin(e *echo.Group, db *gorm.DB) {
 	trashCategory.GET("/:id", trashCategoryHandler.GetById)
 	trashCategory.PUT("/:id", trashCategoryHandler.UpdateCategory)
 	trashCategory.DELETE("/:id", trashCategoryHandler.DeleteById)
+	
 }

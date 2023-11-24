@@ -1,12 +1,15 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"recything/features/report/dto/request"
 	"recything/features/report/dto/response"
 	"recything/features/report/entity"
+	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -43,12 +46,13 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 	}
 
 	reportInput := request.ReportRequestToReportCore(newReport)
-	createdReport, err := report.reportService.Create(reportInput, userId, images)
-	if err != nil {
+	fmt.Println("handler : ", reportInput.InsidentDate)
+	_, errCreate := report.reportService.Create(reportInput, userId, images)
+	if errCreate != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
-	reportResponse := response.ReportCoreToReportResponse(createdReport)
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil", reportResponse))
+	// reportResponse := response.ReportCoreToReportResponse(createdReport)
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil melaporkan"))
 }
 
 func (rco *reportHandler) SelectById(e echo.Context) error {
@@ -56,7 +60,10 @@ func (rco *reportHandler) SelectById(e echo.Context) error {
 
 	result, err := rco.reportService.SelectById(idParams)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal membaca data"))
+		if strings.Contains(err.Error(), constanta.ERROR_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(err.Error()))
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	var reportResponse = response.ReportCoreToReportResponse(result)

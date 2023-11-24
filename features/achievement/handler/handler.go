@@ -8,6 +8,8 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -57,6 +59,10 @@ func (ah *achievementHandler) UpdateById(e echo.Context) error {
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
+	id, err := strconv.Atoi(e.Param("id"))
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
 
 	input := request.AchievementRequest{}
 
@@ -65,12 +71,13 @@ func (ah *achievementHandler) UpdateById(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	id := e.Param("id")
-
 	request := request.AchievementRequestToAchievementCore(input)
 	err = ah.achievementService.UpdateById(id, request)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+		if strings.Contains(err.Error(), constanta.ERROR_DATA_ID) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil melakukan pembaruan data"))
 }

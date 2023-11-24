@@ -3,6 +3,7 @@ package helper
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gorilla/schema"
@@ -41,4 +42,13 @@ func BindFormData(c echo.Context, input interface{}) error {
 	}
 
 	return nil
+}
+
+func HttpResponseCondition(err error, Messages ...string) bool {
+    for _, Message := range Messages {
+        if strings.Contains(err.Error(), Message) {
+            return true
+        }
+    }
+    return false
 }

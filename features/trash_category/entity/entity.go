@@ -10,8 +10,4 @@ type TrashCategoryCore struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
-type PagnationInfo struct {
-	Limit       int
-	CurrentPage int
-	LastPage    int
-}
+

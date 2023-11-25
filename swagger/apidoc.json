@@ -137,31 +137,52 @@
                 ],
                 "summary": "get all admins",
                 "description": "get all active and non active admins",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/fullname"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "berhasil mengambil data",
                         "content": {
                             "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseAdmin"
+                                },
                                 "examples": {
                                     "succes": {
                                         "description": "contoh response berhasil mengambil semua admin",
                                         "value": {
                                             "status": true,
-                                            "message": "berhasil mengambil semua admin",
+                                            "message": "berhasil mengambil semua data admin",
                                             "data": [
                                                 {
-                                                    "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
-                                                    "name": "superadmin",
-                                                    "email": "superadmin@gmail.com",
-                                                    "status": "active"
+                                                    "id": "10a6d872-e1e1-4bf2-9d2c-d2e7a3e91f24",
+                                                    "fullname": "Putri Hidayah",
+                                                    "email": "putri@example.com",
+                                                    "status": "",
+                                                    "created_at": "0001-01-01T00:00:00Z"
                                                 },
                                                 {
-                                                    "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
-                                                    "name": "admin_name_1",
-                                                    "email": "admin_email_1",
-                                                    "status": "active"
+                                                    "id": "20635dd1-5cfc-4c03-8235-426143246c85",
+                                                    "fullname": "Irfan Hakim",
+                                                    "email": "irfan@example.com",
+                                                    "status": "",
+                                                    "created_at": "0001-01-01T00:00:00Z"
                                                 }
-                                            ]
+                                            ],
+                                            "pagination": {
+                                                "limit": 2,
+                                                "current_page": 1,
+                                                "last_page": 8
+                                            }
                                         }
                                     }
                                 }
@@ -478,7 +499,7 @@
                                 },
                                 "examples": {
                                     "get all report": {
-                                        "value":{
+                                        "value": {
                                             "status": true,
                                             "message": "berhasil mendapatkan data reporting",
                                             "data": [
@@ -538,7 +559,7 @@
                                 },
                                 "examples": {
                                     "report rubbish": {
-                                        "value":{
+                                        "value": {
                                             "status": true,
                                             "message": "berhasil mendapatkan data",
                                             "data": {
@@ -719,6 +740,17 @@
                 ],
                 "summary": "get all prompt",
                 "description": "get  all prompt",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/category"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "data prompts",
@@ -732,12 +764,30 @@
                                         "description": "OK",
                                         "value": {
                                             "status": true,
-                                            "message": "berhasil mendapatkan data",
-                                            "data": {
-                                                "id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
-                                                "category": "sampah plastik",
-                                                "question": "cara mendaur ulang kemasan makanan ringan"
-                                            }
+                                            "message": "Berhasil mendapatkan seluruh kategori sampah",
+                                            "data": [
+                                                {
+                                                    "id": "06bc555e-6569-4253-b5c6-7f9595b8cf06",
+                                                    "category": "batasan",
+                                                    "question": "ini question"
+                                                },
+                                                {
+                                                    "id": "0b06a353-ea0d-4716-b784-01d7043beabc",
+                                                    "category": "batasan",
+                                                    "question": "ini question"
+                                                },
+                                                {
+                                                    "id": "0b9410be-8e06-4087-89ab-a472ced3968c",
+                                                    "category": "batasan",
+                                                    "question": "ini question"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 3,
+                                                "current_page": 1,
+                                                "last_page": 8
+                                            },
+                                            "count_data": 24
                                         }
                                     }
                                 }
@@ -975,37 +1025,92 @@
                                             "message": "Berhasil mendapatkan seluruh kategori sampah",
                                             "data": [
                                                 {
-                                                    "id": "1d357ee7-1010-4604-8e07-0cc0d7f60f6c",
-                                                    "trash_type": "drum",
-                                                    "point": 7000,
+                                                    "id": "1afa0ba9-5e67-4e2d-a21f-a904aa8c0a56",
+                                                    "trash_type": "limbah 3",
+                                                    "point": 100,
                                                     "unit": "barang",
-                                                    "created_at": "2023-11-20T05:45:06.376+08:00",
-                                                    "updated_at": "2023-11-20T05:45:06.376+08:00"
+                                                    "created_at": "2023-11-20T20:20:26.441Z",
+                                                    "updated_at": "2023-11-20T20:20:26.441Z"
                                                 },
                                                 {
-                                                    "id": "96cab047-aba4-4993-a4e6-deeab768ad2c",
-                                                    "trash_type": "ranting",
-                                                    "point": 5000,
+                                                    "id": "28bac944-38f4-4f0a-9c03-41f5b64531df",
+                                                    "trash_type": "kaleng",
+                                                    "point": 100,
                                                     "unit": "kilogram",
-                                                    "created_at": "2023-11-20T05:44:43.28+08:00",
-                                                    "updated_at": "2023-11-20T05:44:43.28+08:00"
+                                                    "created_at": "2023-11-22T01:01:22.204Z",
+                                                    "updated_at": "2023-11-23T12:28:09.279Z"
                                                 },
                                                 {
-                                                    "id": "b393e1bc-3ee7-4a63-b521-a55cb544aac2",
-                                                    "trash_type": "kaca",
-                                                    "point": 5000,
+                                                    "id": "28c64e17-40f5-42fb-9ba5-9d82b81d26c5",
+                                                    "trash_type": "bahhh",
+                                                    "point": 100,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T00:57:46.253Z",
+                                                    "updated_at": "2023-11-22T00:57:46.253Z"
+                                                },
+                                                {
+                                                    "id": "29a14bb0-f1ff-45e3-afd9-1a4c35e28b73",
+                                                    "trash_type": "test",
+                                                    "point": 100,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T18:48:22.683Z",
+                                                    "updated_at": "2023-11-22T18:48:22.683Z"
+                                                },
+                                                {
+                                                    "id": "2e619697-8471-4230-aab5-b51715deb73d",
+                                                    "trash_type": "limbah 2",
+                                                    "point": 100,
                                                     "unit": "barang",
-                                                    "created_at": "2023-11-20T05:44:30.32+08:00",
-                                                    "updated_at": "2023-11-20T05:44:30.32+08:00"
+                                                    "created_at": "2023-11-20T20:16:12.983Z",
+                                                    "updated_at": "2023-11-20T20:16:12.983Z"
+                                                },
+                                                {
+                                                    "id": "2fb9235f-50f4-4f27-9a78-c3b1aa14d183",
+                                                    "trash_type": "seng",
+                                                    "point": 7000,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T18:42:50.176Z",
+                                                    "updated_at": "2023-11-22T18:42:50.176Z"
+                                                },
+                                                {
+                                                    "id": "3011c4aa-0d0f-436e-adb3-acafc9a9bf39",
+                                                    "trash_type": "bahhh 22",
+                                                    "point": 100,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T00:58:23.006Z",
+                                                    "updated_at": "2023-11-22T00:58:23.006Z"
+                                                },
+                                                {
+                                                    "id": "4de15e8a-c1d3-489f-b1d3-d16863c2e909",
+                                                    "trash_type": "bahhh 21",
+                                                    "point": 100,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T00:58:18.236Z",
+                                                    "updated_at": "2023-11-22T00:58:18.236Z"
+                                                },
+                                                {
+                                                    "id": "565d6795-852d-4470-88f2-6b6ac131f4f0",
+                                                    "trash_type": "test 1",
+                                                    "point": 100,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T18:52:38.065Z",
+                                                    "updated_at": "2023-11-22T18:52:38.065Z"
+                                                },
+                                                {
+                                                    "id": "6078292c-4701-4b88-a793-9c5afb1a6d26",
+                                                    "trash_type": "limbah minyak",
+                                                    "point": 100,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T03:33:34.648Z",
+                                                    "updated_at": "2023-11-22T03:33:34.648Z"
                                                 }
                                             ],
                                             "pagination": {
-                                                "pagination": {
-                                                    "Limit": 2,
-                                                    "CurrentPage": 1,
-                                                    "LastPage": 3
-                                                }
-                                            }
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 2
+                                            },
+                                            "count_data": 20
                                         }
                                     }
                                 }
@@ -1434,6 +1539,22 @@
                     "type": "string"
                 }
             },
+            "fullname": {
+                "name": "fullname",
+                "in": "query",
+                "description": "name of data",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "category": {
+                "name": "category",
+                "in": "query",
+                "description": "category of data",
+                "schema": {
+                    "type": "string"
+                }
+            },
             "searchID": {
                 "name": "id",
                 "in": "query",
@@ -1628,21 +1749,88 @@
                     }
                 }
             },
-            "ResponsePrompts": {
+            "ResponsePrompt": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "string"
+                    "data": {
+                        "type": "array",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "question": {
+                                "type": "string"
+                            },
+                            "category": {
+                                "type": "string",
+                                "enum": [
+                                    "sampah organik",
+                                    "sampah anorganik",
+                                    "batasan",
+                                    "informasi"
+                                ]
+                            }
+                        }
                     },
-                    "question": {
-                        "type": "string"
+                    "pagination": {
+                        "type": "object",
+                        "properties": {
+                            "last_page": {
+                                "type": "string"
+                            },
+                            "current_page": {
+                                "type": "string"
+                            },
+                            "limit": {
+                                "type": "integer"
+                            }
+                        }
                     },
-                    "category": {
-                        "type": "string",
-                        "enum": [
-                            "sampah organik",
-                            "sampah plastik"
-                        ]
+                    "count_data": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ResponseAdmin": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "fullname": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "string",
+                                "enum": [
+                                    "active",
+                                    "nonactive"
+                                ]
+                            }
+                        }
+                    },
+                    "pagination": {
+                        "type": "object",
+                        "properties": {
+                            "last_page": {
+                                "type": "string"
+                            },
+                            "current_page": {
+                                "type": "string"
+                            },
+                            "limit": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "count_data": {
+                        "type": "string"
                     }
                 }
             },
@@ -1698,23 +1886,39 @@
             "ResponseTrashCategories": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "string"
+                    "data": {
+                        "type": "array",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "trash_type": {
+                                "type": "string"
+                            },
+                            "unit": {
+                                "type": "string",
+                                "enum": [
+                                    "barang",
+                                    "kilogram"
+                                ]
+                            }
+                        }
                     },
-                    "trash_type": {
-                        "type": "string"
+                    "pagination": {
+                        "type": "object",
+                        "properties": {
+                            "last_page": {
+                                "type": "string"
+                            },
+                            "current_page": {
+                                "type": "string"
+                            },
+                            "limit": {
+                                "type": "integer"
+                            }
+                        }
                     },
-                    "unit": {
-                        "type": "string",
-                        "enum": [
-                            "barang",
-                            "kilogram"
-                        ]
-                    },
-                    "last_page": {
-                        "type": "string"
-                    },
-                    "current_page": {
+                    "count_data": {
                         "type": "string"
                     }
                 }

@@ -9,6 +9,7 @@ type ArticleCore struct {
 	Title       string
 	Image       string
 	Content     string
+	Categories  []ArticleTrashCategoryCore
 	Category_id []string
 	Like        int
 	Share       int
@@ -16,7 +17,7 @@ type ArticleCore struct {
 	UpdatedAt   time.Time
 }
 
-// type CategoryCore struct{
-// 	ArticleID string
-// 	TrashCategoryID string
-// }
+type ArticleTrashCategoryCore struct {
+	TrashCategoryID string
+	Category string
+}

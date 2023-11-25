@@ -46,7 +46,7 @@ func (article *articleRepository) DeleteArticle(id string) error {
 func (article *articleRepository) GetSpecificArticle(idArticle string) (entity.ArticleCore, error) {
 	articleData := model.Article{}
 
-	tx := article.db.Where("id = ?", idArticle).First(&articleData)
+	tx := article.db.Preload("Categories").Where("id = ?", idArticle).First(&articleData)
 	if tx.Error != nil {
 		return entity.ArticleCore{}, tx.Error
 	}
@@ -113,7 +113,7 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 func (article *articleRepository) GetAllArticle() ([]entity.ArticleCore, error) {
 	var articleData []model.Article
 
-	tx := article.db.Find(&articleData)
+	tx := article.db.Preload("Categories").Find(&articleData)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}

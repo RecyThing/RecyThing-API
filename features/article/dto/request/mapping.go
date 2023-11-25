@@ -11,24 +11,24 @@ func ArticleRequestToArticleCore(article ArticleRequest) entity.ArticleCore {
 		Content:     article.Content,
 		Category_id: article.Category_id,
 	}
-	// category := ListCategoryRequestToCategoryCore(article.Category_id)
-	// articleReq.Category_id = category
+	category := ListCategoryRequestToCategoryCore(article.Categories)
+	articleReq.Categories = category
 	return articleReq
 }
 
-// func CategotyrequestToCategotyCore(category ArticleTrashCategoryRequest) entity.CategoryCore {
-// 	return entity.CategoryCore{
-// 		ArticleID: category.ArticleID,
-// 		TrashCategoryID: category.TrashCategoryID,
-// 	}
-// }
+func CategotyrequestToCategotyCore(category ArticleTrashCategoryRequest) entity.ArticleTrashCategoryCore {
+	return entity.ArticleTrashCategoryCore{
+		TrashCategoryID: category.TrashCategoryID,
+		Category: category.Category,
+	}
+}
 
-// func ListCategoryRequestToCategoryCore(categories []ArticleTrashCategoryRequest) []entity.CategoryCore {
-// 	listCategory := []entity.CategoryCore{}
-// 	for _, v := range categories {
-// 		category := CategotyrequestToCategotyCore(v)
-// 		listCategory = append(listCategory, category)
-// 	}
+func ListCategoryRequestToCategoryCore(categories []ArticleTrashCategoryRequest) []entity.ArticleTrashCategoryCore {
+	listCategory := []entity.ArticleTrashCategoryCore{}
+	for _, v := range categories {
+		category := CategotyrequestToCategotyCore(v)
+		listCategory = append(listCategory, category)
+	}
 
-// 	return listCategory
-// }
+	return listCategory
+}

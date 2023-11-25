@@ -5,9 +5,10 @@ type ArticleRequest struct {
 	Image       string   `form:"image"`
 	Content     string   `form:"content"`
 	Category_id []string `form:"category_id"`
+	Categories  []ArticleTrashCategoryRequest
 }
 
-// type ArticleTrashCategoryRequest struct {
-// 	ArticleID       string
-// 	TrashCategoryID string
-// }
+type ArticleTrashCategoryRequest struct {
+	Category        string
+	TrashCategoryID string
+}

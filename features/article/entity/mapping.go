@@ -2,70 +2,69 @@ package entity
 
 import (
 	"recything/features/article/model"
+	tcm "recything/features/trash_category/model"
 )
 
-// func CategoryModelToCategoryCore(category model.ArticleTrashCategory) CategoryCore {
-// 	return CategoryCore{
-// 		ArticleID:       category.ArticleID,
-// 		TrashCategoryID: category.TrashCategoryID,
-// 	}
-// }
+func CategoryModelToCategoryCore(category tcm.TrashCategory) ArticleTrashCategoryCore {
+	return ArticleTrashCategoryCore{
+		TrashCategoryID: category.ID,
+		Category:        category.TrashType,
+	}
+}
 
-// func ListCategoryModelToCategoryCore(category []model.ArticleTrashCategory) []CategoryCore {
-// 	coreCategory := []CategoryCore{}
-// 	for _, v := range category {
-// 		category := CategoryModelToCategoryCore(v)
-// 		coreCategory = append(coreCategory, category)
-// 	}
-// 	return coreCategory
-// }
+func ListCategoryModelToCategoryCore(category []tcm.TrashCategory) []ArticleTrashCategoryCore {
+	coreCategory := []ArticleTrashCategoryCore{}
+	for _, v := range category {
+		category := CategoryModelToCategoryCore(v)
+		coreCategory = append(coreCategory, category)
+	}
+	return coreCategory
+}
 
 func ArticleModelToArticleCore(article model.Article) ArticleCore {
 	articleCore := ArticleCore{
-		ID:          article.Id,
-		Title:       article.Title,
-		Image:       article.Image,
-		Content:     article.Content,
-		Like:        article.Like,
-		Share:       article.Share,
-		// Category_id: article.Categories,
-		CreatedAt:   article.CreatedAt,
-		UpdatedAt:   article.UpdatedAt,
+		ID:        article.Id,
+		Title:     article.Title,
+		Image:     article.Image,
+		Content:   article.Content,
+		Like:      article.Like,
+		Share:     article.Share,
+		CreatedAt: article.CreatedAt,
+		UpdatedAt: article.UpdatedAt,
 	}
-	// category := ListCategoryModelToCategoryCore(article.Categories)
-	// articleCore.Category_id = category
+	category := ListCategoryModelToCategoryCore(article.Categories)
+	articleCore.Categories = category
 	return articleCore
 }
 
-// func CategoryCoreToCategoryModel(category CategoryCore) model.ArticleTrashCategory {
-// 	return model.ArticleTrashCategory{
-// 		ArticleID: category.ArticleID,
-// 		TrashCategoryID: category.TrashCategoryID,
-// 	}
-// }
+func CategoryCoreToCategoryModel(category ArticleTrashCategoryCore) tcm.TrashCategory {
+	return tcm.TrashCategory{
+		ID:        category.TrashCategoryID,
+		TrashType: category.Category,
+	}
+}
 
-// func ListCategoryCoreToCategoryModel(category []CategoryCore) []model.ArticleTrashCategory {
-// 	coreCategorys := []model.ArticleTrashCategory{}
-// 	for _, v := range category {
-// 		categorys := CategoryCoreToCategoryModel(v)
-// 		coreCategorys = append(coreCategorys, categorys)
-// 	}
-// 	return coreCategorys
-// }
+func ListCategoryCoreToCategoryModel(category []ArticleTrashCategoryCore) []tcm.TrashCategory {
+	coreCategorys := []tcm.TrashCategory{}
+	for _, v := range category {
+		categorys := CategoryCoreToCategoryModel(v)
+		coreCategorys = append(coreCategorys, categorys)
+	}
+	return coreCategorys
+}
 
 func ArticleCoreToArticleModel(article ArticleCore) model.Article {
 	articleModel := model.Article{
-		Id:         article.ID,
-		Title:      article.Title,
-		Image:      article.Image,
-		Content:    article.Content,
-		Like:       article.Like,
-		Share:      article.Share,
-		// Categories: article.Category_id,
-		CreatedAt:  article.CreatedAt,
-		UpdatedAt:  article.UpdatedAt,
+		Id:        article.ID,
+		Title:     article.Title,
+		Image:     article.Image,
+		Content:   article.Content,
+		Like:      article.Like,
+		Share:     article.Share,
+		CreatedAt: article.CreatedAt,
+		UpdatedAt: article.UpdatedAt,
 	}
-	// category := ListCategoryCoreToCategoryModel(article.Category_id)
-	// articleModel.Categories = category
+	category := ListCategoryCoreToCategoryModel(article.Categories)
+	articleModel.Categories = category
 	return articleModel
 }

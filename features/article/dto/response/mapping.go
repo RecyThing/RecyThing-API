@@ -4,21 +4,21 @@ import (
 	"recything/features/article/entity"
 )
 
-// func CategoryCoreToCategoryResponse(category entity.CategoryCore) TrashCategoryResponse {
-// 	return TrashCategoryResponse{
-// 		ArticleID: category.ArticleID,
-// 		TrashCategoryID: category.TrashCategoryID,
-// 	}
-// }
+func CategoryCoreToCategoryResponse(category entity.ArticleTrashCategoryCore) TrashCategoryResponse {
+	return TrashCategoryResponse{
+		TrashCategoryID: category.TrashCategoryID,
+		Category: category.Category,
+	}
+}
 
-// func ListCategoryCoreToCategoryResponse(categories []entity.CategoryCore) []TrashCategoryResponse {
-// 	ResponseCategory := []TrashCategoryResponse{}
-// 	for _, v := range categories {
-// 		category := CategoryCoreToCategoryResponse(v)
-// 		ResponseCategory = append(ResponseCategory, category)
-// 	}
-// 	return ResponseCategory
-// }
+func ListCategoryCoreToCategoryResponse(categories []entity.ArticleTrashCategoryCore) []TrashCategoryResponse {
+	ResponseCategory := []TrashCategoryResponse{}
+	for _, v := range categories {
+		category := CategoryCoreToCategoryResponse(v)
+		ResponseCategory = append(ResponseCategory, category)
+	}
+	return ResponseCategory
+}
 
 func ArticleCoreToArticleResponse(article entity.ArticleCore) ArticleCreateResponse {
 	articleResp := ArticleCreateResponse{
@@ -32,7 +32,7 @@ func ArticleCoreToArticleResponse(article entity.ArticleCore) ArticleCreateRespo
 		CreatedAt:   article.CreatedAt,
 		UpdatedAt:   article.UpdatedAt,
 	}
-	// category := ListCategoryCoreToCategoryResponse(article.Category_id)
-	// articleResp.Category_id = category
+	category := ListCategoryCoreToCategoryResponse(article.Categories)
+	articleResp.Categories = category
 	return articleResp
 }

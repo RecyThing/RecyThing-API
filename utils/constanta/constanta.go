@@ -48,7 +48,7 @@ const (
 	ERROR_INVALID_TYPE     = "berupa angka"
 	ERROR_INVALID_STATUS   = "status tidak valid"
 	ERROR_LIMIT            = "limit tidak boleh lebih dari 10"
-	ERROR_LENGTH_PASSWORD  = "minimal 8 karakter, ulangi kembali!"
+	ERROR_LENGTH_PASSWORD  = "minimal 8 karakter, ulangi kembali"
 )
 
 // Message Handle

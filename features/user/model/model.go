@@ -10,7 +10,7 @@ import (
 
 type Users struct {
 	Id                string            `gorm:"primaryKey;not null" json:"id"`
-	Email             string            `gorm:"unique;not null" json:"email"`
+	Email             string            `gorm:"not null" json:"email"`  // unique saya hapus jangan lupa masukin lagi
 	Password          string            `gorm:"not null" json:"password"`
 	Fullname          string            `gorm:"not null" json:"fullname"`
 	Phone             string            `json:"phone"`

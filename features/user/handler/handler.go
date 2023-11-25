@@ -34,13 +34,12 @@ func (uh *userHandler) Register(e echo.Context) error {
 
 	request := request.UsersRequestRegisterToUsersCore(input)
 
-	result, errCreate := uh.userUseCase.Register(request)
+	_, errCreate := uh.userUseCase.Register(request)
 	if errCreate != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errCreate.Error()))
 	}
-	response := response.UsersCoreToUsersCreateResponse(result)
 
-	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil membuat data", response))
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil membuat data"))
 }
 
 func (uh *userHandler) Login(e echo.Context) error {

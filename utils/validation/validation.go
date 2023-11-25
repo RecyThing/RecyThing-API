@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-sql-driver/mysql"
 )
@@ -14,6 +15,9 @@ import (
 func CheckDataEmpty(data ...any) error {
 	for _, value := range data {
 		if value == "" {
+			return errors.New(constanta.ERROR_EMPTY)
+		}
+		if value == 0 {
 			return errors.New(constanta.ERROR_EMPTY)
 		}
 	}
@@ -63,8 +67,26 @@ func PhoneNumber(phone string) error {
 
 func MinLength(data string, minLength int) error {
 	if len(data) < minLength {
-		return errors.New("minimal " + strconv.Itoa(minLength) + " karakter,ulangi kembali!")
+		return errors.New("minimal " + strconv.Itoa(minLength) + " karakter, ulangi kembali!")
 	}
+	return nil
+}
+
+func ValidateTime(openTime, closeTime string) error {
+	open, err := time.Parse("15:04", openTime)
+	if err != nil {
+		return errors.New("format waktu buka tidak valid")
+	}
+
+	close, err := time.Parse("15:04", closeTime)
+	if err != nil {
+		return errors.New("format waktu tutup tidak valid")
+	}
+
+	if close.Before(open) {
+		return errors.New("waktu penutupan harus setelah waktu pembukaan")
+	}
+
 	return nil
 }
 
@@ -76,7 +98,37 @@ func IsDuplicateError(err error) bool {
 	return false
 }
 
-func ValidatePaginationParameters(page, limit int) (int, int) {
+
+func ValidateParamsPagination(page, limit string) (int, int, error) {
+	var limitInt int
+	var pageInt int
+	var err error
+	if limit == "" {
+		limitInt = 10
+	}
+	if limit != "" {
+		limitInt, err = strconv.Atoi(limit)
+		if err != nil {
+			return 0, 0, errors.New("limit harus berupa angka")
+		}
+	}
+
+	if page == "" {
+		pageInt = 1
+	}
+	if page != "" {
+		pageInt, err = strconv.Atoi(page)
+		if err != nil {
+			return 0, 0, errors.New("page harus berupa angka")
+		}
+	}
+
+	pageInt, limitInt = ValidateCountLimitAndPage(pageInt, limitInt)
+	return pageInt, limitInt, nil
+
+}
+
+func ValidateCountLimitAndPage(page, limit int) (int, int) {
 	if page <= 0 {
 		page = 1
 	}
@@ -87,4 +139,52 @@ func ValidatePaginationParameters(page, limit int) (int, int) {
 	}
 
 	return page, limit
+}
+
+func ValidateTypePaginationParameter(limit, page string) (int, int, error) {
+	var limitInt, pageInt int
+	var limitErr, pageErr error
+	var limitError, pageError bool
+
+	// Fungsi bantu untuk memeriksa apakah string berupa angka
+	isNumeric := func(s string) bool {
+		_, err := strconv.Atoi(s)
+		return err == nil
+	}
+
+	// Validasi untuk limit
+	if limit != "" {
+		limitInt, limitErr = strconv.Atoi(limit)
+		if limitErr != nil || !isNumeric(limit) {
+			limitError = true
+		} else if limitInt > 10 {
+			limitError = true
+			return 0, 0, errors.New("limit tidak boleh lebih dari 10")
+		}
+	}
+
+	// Validasi untuk page
+	if page != "" {
+		pageInt, pageErr = strconv.Atoi(page)
+		if pageErr != nil || !isNumeric(page) {
+			pageError = true
+		}
+	}
+
+	// Menambahkan validasi kedua parameter bersamaan
+	if limitError && pageError {
+		return 0, 0, errors.New("limit dan page harus berupa angka")
+	}
+
+	// Menambahkan validasi jika hanya limit yang error
+	if limitError {
+		return 0, 0, errors.New("limit harus berupa angka")
+	}
+
+	// Menambahkan validasi jika hanya page yang error
+	if pageError {
+		return 0, 0, errors.New("page harus berupa angka")
+	}
+
+	return pageInt, limitInt, nil
 }

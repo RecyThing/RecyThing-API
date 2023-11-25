@@ -40,20 +40,55 @@ func (ar *AdminRepository) Create(data entity.AdminCore) (entity.AdminCore, erro
 	return dataResponse, nil
 }
 
-func (ar *AdminRepository) SelectAll() ([]entity.AdminCore, error) {
+func (ar *AdminRepository) SelectAll(page, limit int, fullName string) ([]entity.AdminCore, pagination.PageInfo, error) {
 	dataAdmins := []model.Admin{}
+	offsetInt := (page - 1) * limit
 
-	tx := ar.db.Where("role = ? ", constanta.ADMIN).Find(&dataAdmins)
-	if tx.Error != nil {
-		return nil, tx.Error
+	totalCount, err := ar.GetCount(fullName, constanta.ADMIN)
+	if err != nil {
+		return nil, pagination.PageInfo{}, err
 	}
 
-	if tx.RowsAffected == 0 {
-		return nil, errors.New("role tidak ditemukan")
+	paginationQuery := ar.db.Limit(limit).Offset(offsetInt)
+	if fullName == "" {
+		tx := paginationQuery.Where("role = ? ", constanta.ADMIN).Find(&dataAdmins)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, tx.Error
+		}
+	}
+
+	if fullName != "" {
+		tx := paginationQuery.Where("role = ? AND fullname LIKE ?", constanta.ADMIN, "%"+fullName+"%").Find(&dataAdmins)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, tx.Error
+		}
 	}
 
 	dataResponse := entity.ListAdminModelToAdminCore(dataAdmins)
-	return dataResponse, nil
+	paginationInfo := pagination.CalculateData(totalCount, limit, page)
+
+	return dataResponse, paginationInfo, nil
+}
+
+func (ar *AdminRepository) GetCount(fullName, role string) (int, error) {
+	var totalCount int64
+	model := ar.db.Model(&model.Admin{})
+	if fullName == "" {
+		tx := model.Where("role = ? ", constanta.ADMIN).Count(&totalCount)
+		if tx.Error != nil {
+			return 0, tx.Error
+		}
+
+	}
+
+	if fullName != "" {
+		tx := model.Where("role = ? AND fullname LIKE ?", constanta.ADMIN, "%"+fullName+"%").Count(&totalCount)
+		if tx.Error != nil {
+			return 0, tx.Error
+		}
+	}
+
+	return int(totalCount), nil
 }
 
 func (ar *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) {
@@ -65,7 +100,7 @@ func (ar *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) 
 	}
 
 	if tx.RowsAffected == 0 {
-		return entity.AdminCore{}, errors.New(constanta.ERROR_ID_ROLE)
+		return entity.AdminCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	dataResponse := entity.AdminModelToAdminCore(dataAdmins)
@@ -81,7 +116,7 @@ func (ar *AdminRepository) Update(adminId string, data entity.AdminCore) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_ID)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
@@ -101,7 +136,7 @@ func (ar *AdminRepository) Delete(adminId string) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_ID_ROLE)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
@@ -116,7 +151,7 @@ func (ar *AdminRepository) FindByEmail(email string) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_EMAIL)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
@@ -131,7 +166,7 @@ func (ar *AdminRepository) FindByEmailANDPassword(data entity.AdminCore) (entity
 	}
 
 	if tx.RowsAffected == 0 {
-		return entity.AdminCore{}, errors.New(constanta.ERROR_DATA_EMAIL)
+		return entity.AdminCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	if comparePass := helper.CompareHash(dataAdmins.Password, data.Password); !comparePass {
@@ -164,7 +199,7 @@ func (ar *AdminRepository) GetByIdUser(userId string) (user.UsersCore, error) {
 	}
 
 	if tx.RowsAffected == 0 {
-		return user.UsersCore{}, errors.New(constanta.ERROR_DATA_ID)
+		return user.UsersCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	dataResponse := user.UsersModelToUsersCore(dataUsers)
@@ -180,20 +215,18 @@ func (ar *AdminRepository) DeleteUsers(userId string) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_ID)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
 }
 
 // GetByStatusReport implements entity.AdminRepositoryInterface.
-func (ar *AdminRepository) GetByStatusReport(status, name, id string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error) {
+func (ar *AdminRepository) GetAllReport(status, name, id string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error) {
 	dataReports := []reportModel.Report{}
-	var result *gorm.DB
 
 	offset := (page - 1) * limit
-
-	query := ar.db.Offset(offset).Limit(limit)
+	query := ar.db.Model(&reportModel.Report{})
 
 	if status != "" {
 		query = query.Where("status = ?", status)
@@ -203,33 +236,28 @@ func (ar *AdminRepository) GetByStatusReport(status, name, id string, page, limi
 		query = query.Joins("JOIN users AS u ON reports.users_id = u.id").
 			Where("u.fullname LIKE ?", "%"+name+"%")
 	}
-	
+
 	if id != "" {
 		query = query.Where("id = ?", id)
 	}
 
-	result = query.Find(&dataReports)
+	var totalCount int64
+	if err := query.Count(&totalCount).Error; err != nil {
+		return nil, pagination.PageInfo{}, err
+	}
 
-	if result.Error != nil {
-		return nil, pagination.PageInfo{}, result.Error
+	query = query.Offset(offset).Limit(limit)
+
+	if err := query.Find(&dataReports).Error; err != nil {
+		return nil, pagination.PageInfo{}, err
 	}
 
 	dataAllReport := report.ListReportModelToReportCore(dataReports)
-
-	// Get total count for pagination
-	var totalCount int64
-	countQuery := query.Model(&reportModel.Report{})
-	tx := countQuery.Count(&totalCount)
-
-	if tx.Error != nil {
-		return nil, pagination.PageInfo{}, tx.Error
-	}
-
-	// Menggunakan fungsi CalculatePagination
 	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
 
 	return dataAllReport, paginationInfo, nil
 }
+
 
 // UpdateStatusReport implements entity.AdminRepositoryInterface.
 func (ar *AdminRepository) UpdateStatusReport(id, status, reason string) (report.ReportCore, error) {
@@ -248,7 +276,7 @@ func (ar *AdminRepository) UpdateStatusReport(id, status, reason string) (report
 	}
 
 	if tx.RowsAffected == 0 {
-		return report.ReportCore{}, errors.New(constanta.ERROR_DATA_ID)
+		return report.ReportCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	dataResponse := report.ReportModelToReportCore(dataReports)
@@ -256,17 +284,17 @@ func (ar *AdminRepository) UpdateStatusReport(id, status, reason string) (report
 }
 
 func (ar *AdminRepository) GetReportById(id string) (report.ReportCore, error) {
-    dataReports := reportModel.Report{}
+	dataReports := reportModel.Report{}
 
-    tx := ar.db.Preload("Images").Where("id = ?", id).First(&dataReports)
-    if tx.Error != nil {
-        return report.ReportCore{}, tx.Error
-    }
+	tx := ar.db.Preload("Images").Where("id = ?", id).First(&dataReports)
+	if tx.Error != nil {
+		return report.ReportCore{}, tx.Error
+	}
 
-    if tx.RowsAffected == 0 {
-        return report.ReportCore{}, errors.New(constanta.ERROR_DATA_ID)
-    }
+	if tx.RowsAffected == 0 {
+		return report.ReportCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	}
 
-    dataResponse := report.ReportModelToReportCore(dataReports)
-    return dataResponse, nil
+	dataResponse := report.ReportModelToReportCore(dataReports)
+	return dataResponse, nil
 }

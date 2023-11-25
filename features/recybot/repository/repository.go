@@ -5,6 +5,7 @@ import (
 	"recything/features/recybot/entity"
 	"recything/features/recybot/model"
 	"recything/utils/constanta"
+	"recything/utils/pagination"
 
 	"gorm.io/gorm"
 )
@@ -29,6 +30,57 @@ func (rb *recybotRepository) Create(recybot entity.RecybotCore) (entity.RecybotC
 
 	result := entity.ModelRecybotToCoreRecybot(input)
 	return result, nil
+}
+
+func (rb *recybotRepository) FindAll(page, limit int, category string) ([]entity.RecybotCore, pagination.PageInfo, int, error) {
+	dataRecybots := []model.Recybot{}
+
+	offsetInt := (page - 1) * limit
+	totalCount, err := rb.GetCount(category)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
+
+	paginationQuery := rb.db.Limit(limit).Offset(offsetInt)
+	if category == "" {
+		tx := paginationQuery.Find(&dataRecybots)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, 0, tx.Error
+		}
+	}
+
+	if category != "" {
+		tx := paginationQuery.Where("category LIKE ?", "%"+category+"%").Find(&dataRecybots)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, 0, tx.Error
+		}
+	}
+
+	result := entity.ListModelRecybotToCoreRecybot(dataRecybots)
+	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
+	return result, paginationInfo, totalCount, nil
+
+}
+
+func (rb *recybotRepository) GetCount(category string) (int, error) {
+	var totalCount int64
+	model := rb.db.Model(&model.Recybot{})
+	if category == "" {
+		err := model.Count(&totalCount).Error
+		if err != nil {
+			return 0, err
+		}
+
+	}
+	if category != "" {
+		tx := model.Where("category LIKE ?", "%"+category+"%").Count(&totalCount)
+		if tx.Error != nil {
+			return 0, tx.Error
+		}
+
+	}
+	return int(totalCount), nil
+
 }
 
 func (rb *recybotRepository) GetAll() ([]entity.RecybotCore, error) {
@@ -68,7 +120,7 @@ func (rb *recybotRepository) Update(idData string, recybot entity.RecybotCore) (
 	}
 
 	if tx.RowsAffected == 0 {
-		return entity.RecybotCore{},errors.New(constanta.ERROR_DATA_ID)
+		return entity.RecybotCore{}, errors.New(constanta.ERROR_DATA_ID)
 	}
 
 	result := entity.ModelRecybotToCoreRecybot(data)

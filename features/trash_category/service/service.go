@@ -5,7 +5,6 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/pagination"
 	"recything/utils/validation"
-	"strconv"
 )
 
 type trashCategoryService struct {
@@ -39,17 +38,17 @@ func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) er
 	return nil
 }
 
-func (tc *trashCategoryService) GetAllCategory(page, trashType, limit string) ([]entity.TrashCategoryCore, pagination.PageInfo, error) {
-
-	limitInt, _ := strconv.Atoi(limit)
-	pageInt, _ := strconv.Atoi(page)
-	validPage, validLimit := validation.ValidatePaginationParameters(pageInt, limitInt)
-
-	data, pagnationInfo, err := tc.trashCategoryRepo.FindAll(validPage, validLimit, trashType)
+func (tc *trashCategoryService) GetAllCategory(page, limit, trashType string) ([]entity.TrashCategoryCore, pagination.PageInfo, int, error) {
+	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
-		return nil, pagination.PageInfo{}, err
+		return nil, pagination.PageInfo{}, 0, err
 	}
-	return data, pagnationInfo, nil
+
+	data, pagnationInfo, count, err := tc.trashCategoryRepo.FindAll(pageInt, limitInt, trashType)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
+	return data, pagnationInfo, count, nil
 }
 
 func (tc *trashCategoryService) GetById(idTrash string) (entity.TrashCategoryCore, error) {

@@ -8,25 +8,26 @@ import (
 
 type AdminRepositoryInterface interface {
 	Create(data AdminCore) (AdminCore, error)
-	SelectAll() ([]AdminCore, error)
+	SelectAll(page, limit int, fullName string) ([]AdminCore, pagination.PageInfo, error)
 	SelectById(adminId string) (AdminCore, error)
 	Update(adminId string, data AdminCore) error
 	Delete(adminId string) error
 	FindByEmail(email string) error
 	FindByEmailANDPassword(data AdminCore) (AdminCore, error)
+	GetCount(fullName, role string) (int, error)
 	//Manage Users
 	GetAllUsers() ([]user.UsersCore, error)
 	GetByIdUser(userId string) (user.UsersCore, error)
 	DeleteUsers(adminId string) error
 	// Manage Reporting
-	GetByStatusReport(status, name, id string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error)
+	GetAllReport(status, name, id string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error)
 	UpdateStatusReport(id, status, reason string) (report.ReportCore, error)
 	GetReportById(id string) (report.ReportCore, error)
 }
 
 type AdminServiceInterface interface {
 	Create(data AdminCore) (AdminCore, error)
-	GetAll() ([]AdminCore, error)
+	GetAll(page, limit, fullName string) ([]AdminCore, pagination.PageInfo, error)
 	GetById(adminId string) (AdminCore, error)
 	UpdateById(adminId string, data AdminCore) error
 	DeleteById(adminId string) error
@@ -36,7 +37,7 @@ type AdminServiceInterface interface {
 	GetByIdUsers(adminId string) (user.UsersCore, error)
 	DeleteUsers(adminId string) error
 	// Manage Reporting
-	GetByStatusReport(status, name, id string, page, limit int) (data []report.ReportCore, paginationInfo pagination.PageInfo, err error)
+	GetAllReport(status, name, id, page, limit string) (data []report.ReportCore, paginationInfo pagination.PageInfo, err error)
 	UpdateStatusReport(id, status, reason string) (report.ReportCore, error)
 	GetReportById(id string) (report.ReportCore, error)
 }

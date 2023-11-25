@@ -58,7 +58,7 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 	limit := e.QueryParam("limit")
 	trashType := e.QueryParam("trash_type")
 
-	result, pagnation, err := tc.trashCategory.GetAllCategory(page, trashType, limit)
+	result, pagnation, count, err := tc.trashCategory.GetAllCategory(page, limit, trashType)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
@@ -72,7 +72,7 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 	}
 
 	response := response.ListCoreTrashCategoryToReponseTrashCategory(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("Berhasil mendapatkan seluruh kategori sampah", response, pagnation))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("Berhasil mendapatkan seluruh kategori sampah", response, pagnation, count))
 }
 
 func (tc *trashCategoryHandler) GetById(e echo.Context) error {

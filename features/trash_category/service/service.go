@@ -38,18 +38,17 @@ func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) er
 	return nil
 }
 
-func (tc *trashCategoryService) GetAllCategory(page, trashType, limit string) ([]entity.TrashCategoryCore, pagination.PageInfo, error) {
-	pageInt, limitInt, err := validation.ValidateParamsPagination(limit, page)
+func (tc *trashCategoryService) GetAllCategory(page, limit, trashType string) ([]entity.TrashCategoryCore, pagination.PageInfo, int, error) {
+	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
-		return nil, pagination.PageInfo{}, err
+		return nil, pagination.PageInfo{}, 0, err
 	}
-	
-	validPage, validLimit := validation.ValidateCountLimitAndPage(pageInt, limitInt)
-	data, pagnationInfo, err := tc.trashCategoryRepo.FindAll(validPage, validLimit, trashType)
+
+	data, pagnationInfo, count, err := tc.trashCategoryRepo.FindAll(pageInt, limitInt, trashType)
 	if err != nil {
-		return nil, pagination.PageInfo{}, err
+		return nil, pagination.PageInfo{}, 0, err
 	}
-	return data, pagnationInfo, nil
+	return data, pagnationInfo, count, nil
 }
 
 func (tc *trashCategoryService) GetById(idTrash string) (entity.TrashCategoryCore, error) {

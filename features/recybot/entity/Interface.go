@@ -9,6 +9,7 @@ type RecybotRepositoryInterface interface {
 	FindAll(page, limit int, category string) ([]RecybotCore, pagination.PageInfo, int, error)
 	GetAll() ([]RecybotCore, error)
 	GetById(idData string) (RecybotCore, error)
+	GetCount(category string) (int, error)
 }
 
 type RecybotServiceInterface interface {

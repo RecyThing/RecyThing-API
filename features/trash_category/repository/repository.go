@@ -35,33 +35,51 @@ func (tc *trashCategoryRepository) Create(data entity.TrashCategoryCore) error {
 	return nil
 }
 
-func (tc *trashCategoryRepository) FindAll(page, limit int, trashType string) ([]entity.TrashCategoryCore, pagination.PageInfo, error) {
+func (tc *trashCategoryRepository) FindAll(page, limit int, trashType string) ([]entity.TrashCategoryCore, pagination.PageInfo, int, error) {
 	dataTrashCategories := []model.TrashCategory{}
-
 	offsetInt := (page - 1) * limit
+
+	totalCount, err := tc.GetCount(trashType)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
+
 	if trashType == "" {
 		tx := tc.db.Limit(limit).Offset(offsetInt).Find(&dataTrashCategories)
 		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, tx.Error
+			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
 	}
 
 	if trashType != "" {
 		tx := tc.db.Where("trash_type LIKE ?", "%"+trashType+"%").Limit(limit).Offset(offsetInt).Find(&dataTrashCategories)
 		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, tx.Error
+			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
 	}
 
 	result := entity.ListModelTrashCategoryToCoreTrashCategory(dataTrashCategories)
-	var totalCount int64
-	err := tc.db.Model(&model.TrashCategory{}).Count(&totalCount).Error
-	if err != nil {
-		return nil, pagination.PageInfo{}, err
-	}
+	paginationInfo := pagination.CalculateData(totalCount, limit, page)
+	return result, paginationInfo, totalCount, nil
+}
 
-	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
-	return result, paginationInfo, nil
+func (tc *trashCategoryRepository) GetCount(trashType string) (int, error) {
+	var totalCount int64
+	if trashType == "" {
+		tx := tc.db.Model(&model.TrashCategory{}).Count(&totalCount)
+		if tx.Error != nil {
+			return 0, tx.Error
+		}
+
+	}
+	if trashType != "" {
+		tx := tc.db.Model(&model.TrashCategory{}).Where("trash_type LIKE ?", "%"+trashType+"%").Count(&totalCount)
+		if tx.Error != nil {
+			return 0, tx.Error
+		}
+
+	}
+	return int(totalCount), nil
 }
 
 func (tc *trashCategoryRepository) GetById(idTrash string) (entity.TrashCategoryCore, error) {

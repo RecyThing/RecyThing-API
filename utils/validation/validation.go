@@ -67,7 +67,7 @@ func PhoneNumber(phone string) error {
 
 func MinLength(data string, minLength int) error {
 	if len(data) < minLength {
-		return errors.New("minimal " + strconv.Itoa(minLength) + " karakter,ulangi kembali!")
+		return errors.New("minimal " + strconv.Itoa(minLength) + " karakter, ulangi kembali!")
 	}
 	return nil
 }
@@ -117,33 +117,37 @@ func IsDuplicateError(err error) bool {
 	return false
 }
 
-func ValidateTypePaginationParameters(limit, page string) (int, int, error) {
+
+func ValidateParamsPagination(page, limit string) (int, int, error) {
 	var limitInt int
 	var pageInt int
+	var err error
 	if limit == "" {
 		limitInt = 10
+	}
+	if limit != "" {
+		limitInt, err = strconv.Atoi(limit)
+		if err != nil {
+			return 0, 0, errors.New("limit harus berupa angka")
+		}
 	}
 
 	if page == "" {
 		pageInt = 1
 	}
-
-	if limit != "" {
-		limitInt, err := strconv.Atoi(limit)
-		if err != nil {
-			return 0, limitInt, errors.New("limit harus berupa angka")
-		}
-	}
 	if page != "" {
-		pageInt, err := strconv.Atoi(page)
+		pageInt, err = strconv.Atoi(page)
 		if err != nil {
-			return pageInt, 0, errors.New("page harus berupa angka")
+			return 0, 0, errors.New("page harus berupa angka")
 		}
 	}
+
+	pageInt, limitInt = ValidateCountLimitAndPage(pageInt, limitInt)
 	return pageInt, limitInt, nil
+
 }
 
-func ValidatePaginationParameters(page, limit int) (int, int) {
+func ValidateCountLimitAndPage(page, limit int) (int, int) {
 	if page <= 0 {
 		page = 1
 	}

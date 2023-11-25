@@ -5,6 +5,7 @@ import (
 	"recything/features/admin/entity"
 	report "recything/features/report/entity"
 	user "recything/features/user/entity"
+	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
 	"recything/utils/pagination"
@@ -25,26 +26,26 @@ func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) 
 
 	errEmpty := validation.CheckDataEmpty(data.Fullname, data.Email, data.Password, data.ConfirmPassword)
 	if errEmpty != nil {
-		return entity.AdminCore{}, errEmpty
+		return entity.AdminCore{}, errors.New(constanta.ERROR_EMPTY)
 	}
 
 	errEmail := validation.EmailFormat(data.Email)
 	if errEmail != nil {
-		return entity.AdminCore{}, errEmail
+		return entity.AdminCore{}, errors.New(constanta.ERROR_FORMAT_EMAIL)
 	}
 
 	errLength := validation.MinLength(data.Password, 8)
 	if errLength != nil {
-		return entity.AdminCore{}, errLength
+		return entity.AdminCore{}, errors.New(constanta.ERROR_LENGTH_PASSWORD)
 	}
 
 	errFind := as.AdminRepository.FindByEmail(data.Email)
 	if errFind == nil {
-		return entity.AdminCore{}, errors.New("email sudah ada, gunakan email lain")
+		return entity.AdminCore{}, errors.New(constanta.ERROR_EMAIL_EXIST)
 	}
 
 	if data.ConfirmPassword != data.Password {
-		return entity.AdminCore{}, errors.New("password tidak sesuai")
+		return entity.AdminCore{}, errors.New(constanta.ERROR_CONFIRM_PASSWORD)
 	}
 
 	dataAdmins, errCreate := as.AdminRepository.Create(data)
@@ -55,14 +56,17 @@ func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) 
 	return dataAdmins, nil
 }
 
-func (as *AdminService) GetAll() ([]entity.AdminCore, error) {
-
-	dataAdmins, err := as.AdminRepository.SelectAll()
+func (as *AdminService) GetAll(page, limit, fullName string) ([]entity.AdminCore, pagination.PageInfo, error) {
+	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
-		return nil, errors.New("gagal mengambil semua data admin")
+		return nil, pagination.PageInfo{}, err
 	}
 
-	return dataAdmins, nil
+	dataAdmins, pagnationInfo, err := as.AdminRepository.SelectAll(pageInt, limitInt, fullName)
+	if err != nil {
+		return nil, pagination.PageInfo{}, errors.New("gagal mengambil semua data admin")
+	}
+	return dataAdmins, pagnationInfo, nil
 }
 
 func (as *AdminService) GetById(adminId string) (entity.AdminCore, error) {
@@ -186,7 +190,7 @@ func (as *AdminService) GetAllReport(status, name, id, page, limit string) (data
 		return nil, pagination.PageInfo{}, validationErr
 	}
 
-	pageValid, limitValid := validation.ValidatePaginationParameters(pageInt, limitInt)
+	pageValid, limitValid := validation.ValidateCountLimitAndPage(pageInt, limitInt)
 
 	validStatus := map[string]bool{
 		"perlu ditinjau": true,

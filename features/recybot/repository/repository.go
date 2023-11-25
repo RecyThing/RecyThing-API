@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"log"
 	"recything/features/recybot/entity"
 	"recything/features/recybot/model"
 	"recything/utils/constanta"
@@ -35,32 +34,23 @@ func (rb *recybotRepository) Create(recybot entity.RecybotCore) (entity.RecybotC
 
 func (rb *recybotRepository) FindAll(page, limit int, category string) ([]entity.RecybotCore, pagination.PageInfo, int, error) {
 	dataRecybots := []model.Recybot{}
-	var totalCount int64
+
 	offsetInt := (page - 1) * limit
-	log.Println("offsetInt", offsetInt)
-	log.Println("page repo ", page)
-	log.Println("limit repo", limit)
+	totalCount, err := rb.GetCount(category)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
 
+	paginationQuery := rb.db.Limit(limit).Offset(offsetInt)
 	if category == "" {
-
-		err := rb.db.Model(&model.Recybot{}).Count(&totalCount).Error
-		if err != nil {
-			return nil, pagination.PageInfo{}, 0, err
-		}
-
-		tx := rb.db.Limit(limit).Offset(offsetInt).Find(&dataRecybots)
+		tx := paginationQuery.Find(&dataRecybots)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
 	}
 
 	if category != "" {
-		tx := rb.db.Model(&model.Recybot{}).Where("category LIKE ?", "%"+category+"%").Count(&totalCount)
-		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, 0, tx.Error
-		}
-
-		tx = rb.db.Limit(limit).Offset(offsetInt).Where("category LIKE ?", "%"+category+"%").Find(&dataRecybots)
+		tx := paginationQuery.Where("category LIKE ?", "%"+category+"%").Find(&dataRecybots)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
@@ -68,7 +58,28 @@ func (rb *recybotRepository) FindAll(page, limit int, category string) ([]entity
 
 	result := entity.ListModelRecybotToCoreRecybot(dataRecybots)
 	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
-	return result, paginationInfo, int(totalCount), nil
+	return result, paginationInfo, totalCount, nil
+
+}
+
+func (rb *recybotRepository) GetCount(category string) (int, error) {
+	var totalCount int64
+	model := rb.db.Model(&model.Recybot{})
+	if category == "" {
+		err := model.Count(&totalCount).Error
+		if err != nil {
+			return 0, err
+		}
+
+	}
+	if category != "" {
+		tx := model.Where("category LIKE ?", "%"+category+"%").Count(&totalCount)
+		if tx.Error != nil {
+			return 0, tx.Error
+		}
+
+	}
+	return int(totalCount), nil
 
 }
 

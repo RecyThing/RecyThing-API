@@ -4,12 +4,12 @@ import "recything/features/voucher/entity"
 
 func RequestVoucherToCoreVoucher(data VoucherRequest) entity.VoucherCore {
 	return entity.VoucherCore{
-		Image: data.Image,
-		RewardName: data.RewardName,
-		Point: data.Point,
+		Image:       data.Image,
+		RewardName:  data.Reward_Name,
+		Point:       data.Point,
 		Description: data.Description,
-		StartDate: data.StartDate,
-		EndDate: data.EndDate,
+		StartDate:   data.Start_Date,
+		EndDate:     data.End_Date,
 	}
 }
 

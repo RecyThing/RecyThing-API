@@ -8,13 +8,13 @@ import (
 
 type Voucher struct {
 	Id          string `gorm:"primary key"`
-	Image       string `gorm:"not null"`
-	RewardName  string `gorm:"not null"`
+	Image       string
+	RewardName  string
 	Point       int
-	Description string    `gorm:"not null"`
-	StartDate   time.Time `gorm:"not null"`
-	EndDate     time.Time `gorm:"not null"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	Description string
+	StartDate   string
+	EndDate     string
+	CreatedAt   time.Time      `gorm:"type:DATETIME(0)"`
+	UpdatedAt   time.Time      `gorm:"type:DATETIME(0)"`
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }

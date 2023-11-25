@@ -38,6 +38,7 @@ const (
 	ERROR_ID_ROLE          = "id atau role tidak ditemukan"
 	ERROR_GET_DATA         = "data tidak ditemukan"
 	ERROR_EMPTY            = "harap lengkapi data dengan benar"
+	ERROR_EMPTY_FILE       = "tidak ada file yang di upload"
 	ERROR_HASH_PASSWORD    = "error hash password"
 	ERROR_DATA_NOT_FOUND   = "data tidak ditemukan"
 	ERROR_DATA_EXIST       = "data sudah ada"
@@ -49,14 +50,16 @@ const (
 	ERROR_LIMIT            = "limit tidak boleh lebih dari 10"
 )
 
-// Message Handle 
+// Message Handle
 const (
 	ALREADY = "sudah"
 	NO      = "tidak"
 	MUST    = "harus"
+	FAILED  = "gagal"
 )
 
 var (
-	Unit     = []string{"barang", "kilogram"}
-	Category = []string{"sampah anorganik", "sampah organik", "informasi", "batasan"}
+	Unit          = []string{"barang", "kilogram"}
+	Category      = []string{"sampah anorganik", "sampah organik", "informasi", "batasan"}
+	ERROR_MESSAGE = []string{"sudah", "tidak", "harus", "gagal","harap"}
 )

@@ -1,12 +1,10 @@
 package request
 
-import "time"
-
 type VoucherRequest struct {
-	Image       string    `json:"image"`
-	RewardName  string    `json:"reward_name"`
-	Point       int       `json:"point"`
-	Description string    `json:"description"`
-	StartDate   time.Time `json:"start_date"`
-	EndDate     time.Time `json:"end_date"`
+	Image       string `form:"image"`
+	Reward_Name string `form:"reward_name"`
+	Point       int    `form:"point"`
+	Description string `form:"description"`
+	Start_Date  string `form:"start_date"`
+	End_Date    string `form:"end_date"`
 }

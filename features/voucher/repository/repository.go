@@ -2,9 +2,11 @@ package repository
 
 import (
 	"errors"
+	"mime/multipart"
 	"recything/features/voucher/entity"
 	"recything/features/voucher/model"
 	"recything/utils/constanta"
+	"recything/utils/storage"
 
 	"gorm.io/gorm"
 )
@@ -19,10 +21,15 @@ func NewVoucherRepository(db *gorm.DB) entity.VoucherRepositoryInterface {
 	}
 }
 
-func (vr *voucherRepository) Create(recybot entity.VoucherCore) error {
-	input := entity.CoreVoucherToModelVoucher(recybot)
+func (vr *voucherRepository) Create(image *multipart.FileHeader, data entity.VoucherCore) error {
+	input := entity.CoreVoucherToModelVoucher(data)
 
+	imageURL, errUpload := storage.UploadThumbnail(image)
+	if errUpload != nil {
+		return errUpload
+	}
 
+	input.Image = imageURL
 	tx := vr.db.Create(&input)
 	if tx.Error != nil {
 		return tx.Error
@@ -52,23 +59,30 @@ func (vr *voucherRepository) GetById(idVoucher string) (entity.VoucherCore, erro
 	}
 
 	if tx.RowsAffected == 0 {
-		return entity.VoucherCore{}, errors.New(constanta.ERROR_DATA_ID)
+		return entity.VoucherCore{}, tx.Error
 	}
 
 	result := entity.ModelVoucherToCoreVoucher(dataVouchers)
 	return result, nil
 }
 
-func (vr *voucherRepository) Update(idVoucher string, recybot entity.VoucherCore) error {
-	request := entity.CoreVoucherToModelVoucher(recybot)
+func (vr *voucherRepository) Update(idVoucher string, image *multipart.FileHeader, data entity.VoucherCore) error {
+	input := entity.CoreVoucherToModelVoucher(data)
 
-	tx := vr.db.Where("id = ?", idVoucher).Updates(&request)
+	imageURL, errUpload := storage.UploadThumbnail(image)
+	if errUpload != nil {
+		return errUpload
+	}
+
+	input.Image = imageURL
+
+	tx := vr.db.Where("id = ?", idVoucher).Updates(&input)
 	if tx.Error != nil {
 		return tx.Error
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_ID)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
@@ -82,7 +96,7 @@ func (vr *voucherRepository) Delete(idVoucher string) error {
 		return tx.Error
 	}
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_ID)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil

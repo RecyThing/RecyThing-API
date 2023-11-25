@@ -8,8 +8,8 @@ type VoucherCore struct {
 	RewardName  string
 	Point       int
 	Description string
-	StartDate   time.Time
-	EndDate     time.Time
+	StartDate   string
+	EndDate     string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

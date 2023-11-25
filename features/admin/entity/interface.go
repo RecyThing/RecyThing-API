@@ -14,6 +14,7 @@ type AdminRepositoryInterface interface {
 	Delete(adminId string) error
 	FindByEmail(email string) error
 	FindByEmailANDPassword(data AdminCore) (AdminCore, error)
+	GetCount(fullName, role string) (int, error)
 	//Manage Users
 	GetAllUsers() ([]user.UsersCore, error)
 	GetByIdUser(userId string) (user.UsersCore, error)

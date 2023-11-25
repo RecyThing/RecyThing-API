@@ -211,11 +211,9 @@ func (ar *AdminRepository) DeleteUsers(userId string) error {
 // GetByStatusReport implements entity.AdminRepositoryInterface.
 func (ar *AdminRepository) GetAllReport(status, name, id string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error) {
 	dataReports := []reportModel.Report{}
-	var result *gorm.DB
 
 	offset := (page - 1) * limit
-
-	query := ar.db.Offset(offset).Limit(limit)
+	query := ar.db.Model(&reportModel.Report{})
 
 	if status != "" {
 		query = query.Where("status = ?", status)
@@ -230,28 +228,23 @@ func (ar *AdminRepository) GetAllReport(status, name, id string, page, limit int
 		query = query.Where("id = ?", id)
 	}
 
-	result = query.Find(&dataReports)
+	var totalCount int64
+	if err := query.Count(&totalCount).Error; err != nil {
+		return nil, pagination.PageInfo{}, err
+	}
 
-	if result.Error != nil {
-		return nil, pagination.PageInfo{}, result.Error
+	query = query.Offset(offset).Limit(limit)
+
+	if err := query.Find(&dataReports).Error; err != nil {
+		return nil, pagination.PageInfo{}, err
 	}
 
 	dataAllReport := report.ListReportModelToReportCore(dataReports)
-
-	// Get total count for pagination
-	var totalCount int64
-	countQuery := query.Model(&reportModel.Report{})
-	tx := countQuery.Count(&totalCount)
-
-	if tx.Error != nil {
-		return nil, pagination.PageInfo{}, tx.Error
-	}
-
-	// Menggunakan fungsi CalculatePagination
 	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
 
 	return dataAllReport, paginationInfo, nil
 }
+
 
 // UpdateStatusReport implements entity.AdminRepositoryInterface.
 func (ar *AdminRepository) UpdateStatusReport(id, status, reason string) (report.ReportCore, error) {

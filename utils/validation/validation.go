@@ -103,7 +103,7 @@ func ValidateDate(startDate, endDate string) error {
 	}
 
 	if end.Before(start) || end.Equal(start) {
-		return errors.New("waktu penutupan harus setelah waktu pembukaan")
+		return errors.New("tanggal selesai harus berbeda dari tanggal mulai")
 	}
 
 	return nil
@@ -129,6 +129,10 @@ func ValidateParamsPagination(page, limit string) (int, int, error) {
 		limitInt, err = strconv.Atoi(limit)
 		if err != nil {
 			return 0, 0, errors.New("limit harus berupa angka")
+		}
+
+		if limitInt > 10 {
+			return 0, 0, errors.New("limit tidak boleh lebih dari 10")
 		}
 	}
 

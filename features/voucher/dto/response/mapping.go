@@ -10,8 +10,6 @@ func CoreVoucherToResponVoucher(data entity.VoucherCore) VoucherResponse {
 		Point:      data.Point,
 		StartDate:  data.StartDate,
 		EndDate:    data.EndDate,
-		CreatedAt: data.CreatedAt,
-		UpdatedAt: data.UpdatedAt,
 	}
 }
 

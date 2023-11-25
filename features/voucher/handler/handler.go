@@ -63,8 +63,15 @@ func (vh *voucherHandler) GetAllVoucher(e echo.Context) error {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
-	result, err := vh.VoucherService.GetAll()
+	page := e.QueryParam("page")
+	limit := e.QueryParam("limit")
+	search := e.QueryParam("search")
+
+	result, pagination, count, err := vh.VoucherService.GetAll(page, limit, search)
 	if err != nil {
+		if helper.HttpResponseCondition(err, constanta.ERROR_MESSAGE...) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
@@ -73,7 +80,7 @@ func (vh *voucherHandler) GetAllVoucher(e echo.Context) error {
 	}
 
 	response := response.ListCoreVoucherToCoreVoucher(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh data", response))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("Berhasil mendapatkan seluruh data", response, pagination, count))
 }
 
 func (vh *voucherHandler) GetVoucherById(e echo.Context) error {

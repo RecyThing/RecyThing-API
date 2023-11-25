@@ -2,10 +2,12 @@ package repository
 
 import (
 	"errors"
+	"log"
 	"mime/multipart"
 	"recything/features/voucher/entity"
 	"recything/features/voucher/model"
 	"recything/utils/constanta"
+	"recything/utils/pagination"
 	"recything/utils/storage"
 
 	"gorm.io/gorm"
@@ -30,6 +32,7 @@ func (vr *voucherRepository) Create(image *multipart.FileHeader, data entity.Vou
 	}
 
 	input.Image = imageURL
+	log.Println(input)
 	tx := vr.db.Create(&input)
 	if tx.Error != nil {
 		return tx.Error
@@ -38,16 +41,53 @@ func (vr *voucherRepository) Create(image *multipart.FileHeader, data entity.Vou
 	return nil
 }
 
-func (vr *voucherRepository) GetAll() ([]entity.VoucherCore, error) {
+func (vr *voucherRepository) GetAll(page, limit int, search string) ([]entity.VoucherCore, pagination.PageInfo, int, error) {
 	dataVouchers := []model.Voucher{}
+	offsetInt := (page - 1) * limit
 
-	tx := vr.db.Find(&dataVouchers)
-	if tx.Error != nil {
-		return []entity.VoucherCore{}, tx.Error
+	totalCount, err := vr.GetCount(search)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
+
+	if search == "" {
+		tx := vr.db.Limit(limit).Offset(offsetInt).Find(&dataVouchers)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, 0, tx.Error
+		}
+	}
+
+	if search != "" {
+		tx := vr.db.Where("reward_name LIKE ? or point LIKE ? ", "%"+search+"%","%"+search+"%").Limit(limit).Offset(offsetInt).Find(&dataVouchers)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, 0, tx.Error
+		}
 	}
 
 	dataResponse := entity.ListModelVoucherToCoreVoucher(dataVouchers)
-	return dataResponse, nil
+	paginationInfo := pagination.CalculateData(totalCount, limit, page)
+
+	return dataResponse, paginationInfo, totalCount, nil
+}
+
+func (vr *voucherRepository) GetCount(search string) (int, error) {
+	var totalCount int64
+
+	if search == "" {
+		tx := vr.db.Model(&model.Voucher{}).Count(&totalCount)
+		if tx.Error != nil {
+			return 0, tx.Error
+		}
+	}
+
+	if search != "" {
+		tx := vr.db.Model(&model.Voucher{}).Where("reward_name LIKE ? or point LIKE ? ", "%"+search+"%","%"+search+"%").Count(&totalCount)
+		if tx.Error != nil {
+			return 0, tx.Error
+		}
+
+	}
+	return int(totalCount), nil
 }
 
 func (vr *voucherRepository) GetById(idVoucher string) (entity.VoucherCore, error) {

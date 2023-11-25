@@ -3,6 +3,7 @@ package service
 import (
 	"mime/multipart"
 	"recything/features/voucher/entity"
+	"recything/utils/pagination"
 	"recything/utils/validation"
 )
 
@@ -35,13 +36,17 @@ func (vs *voucherService) Create(image *multipart.FileHeader, data entity.Vouche
 	return nil
 }
 
-func (vs *voucherService) GetAll() ([]entity.VoucherCore, error) {
-	result, err := vs.voucherRepository.GetAll()
+func (vs *voucherService) GetAll(page, limit, search string ) ([]entity.VoucherCore,pagination.PageInfo, int,error) {
+	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
-		return result, err
+		return nil, pagination.PageInfo{}, 0,err 
+	}
+	data, pagnationInfo,count, err := vs.voucherRepository.GetAll(pageInt,limitInt,search)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
 	}
 
-	return result, nil
+	return data, pagnationInfo,count, nil
 }
 
 func (vs *voucherService) GetById(idVoucher string) (entity.VoucherCore, error) {

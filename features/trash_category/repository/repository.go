@@ -44,15 +44,16 @@ func (tc *trashCategoryRepository) FindAll(page, limit int, trashType string) ([
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
+	paginationQuery:= tc.db.Limit(limit).Offset(offsetInt)
 	if trashType == "" {
-		tx := tc.db.Limit(limit).Offset(offsetInt).Find(&dataTrashCategories)
+		tx := paginationQuery.Find(&dataTrashCategories)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
 	}
 
 	if trashType != "" {
-		tx := tc.db.Where("trash_type LIKE ?", "%"+trashType+"%").Limit(limit).Offset(offsetInt).Find(&dataTrashCategories)
+		tx := paginationQuery.Where("trash_type LIKE ?", "%"+trashType+"%").Find(&dataTrashCategories)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
@@ -65,15 +66,16 @@ func (tc *trashCategoryRepository) FindAll(page, limit int, trashType string) ([
 
 func (tc *trashCategoryRepository) GetCount(trashType string) (int, error) {
 	var totalCount int64
+	model:=tc.db.Model(&model.TrashCategory{})
 	if trashType == "" {
-		tx := tc.db.Model(&model.TrashCategory{}).Count(&totalCount)
+		tx :=model.Count(&totalCount)
 		if tx.Error != nil {
 			return 0, tx.Error
 		}
-
 	}
+	
 	if trashType != "" {
-		tx := tc.db.Model(&model.TrashCategory{}).Where("trash_type LIKE ?", "%"+trashType+"%").Count(&totalCount)
+		tx := model.Where("trash_type LIKE ?", "%"+trashType+"%").Count(&totalCount)
 		if tx.Error != nil {
 			return 0, tx.Error
 		}

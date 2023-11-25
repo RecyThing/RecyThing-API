@@ -1409,16 +1409,346 @@
                 }
             }
         },
-        "/limit": {
-            "get": {
+        "/admins/manage/vouchers": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Voucher"
+                ],
+                "summary": "add new voucher",
                 "description": "",
-                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestVoucher"
+                            },
+                            "encoding": {
+                                "image": {
+                                    "style": "form"
+                                }
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil menambahkan data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Voucher"
+                ],
+                "summary": "view all voucher with pagination and search",
+                "description": "search voucher by reward name and point, view all with pagination limit max 10",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "schema":{
+                                    "$ref": "#/components/schemas/ResponseVoucher"
+                                },
+                                "examples": {
+                                    "default search":{
+                                        "value":{
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan seluruh data",
+                                            "data": [
+                                                {
+                                                    "id": "0857268a-bd5f-4f42-94ee-01a344c1ea54",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/cfbc02dd-87d0-4cfe-9b6c-39903fcd871d.png",
+                                                    "reward_name": "OVO",
+                                                    "point": 800,
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                },
+                                                {
+                                                    "id": "2f926f53-d2e6-4542-83c7-6ab75b9f7a30",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/9593aad1-f2fe-4f88-bfa0-37a2afd645b7.png",
+                                                    "reward_name": "Dana 5002",
+                                                    "point": 5000,
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                },
+                                                {
+                                                    "id": "3a12691c-b942-42ec-baf0-13ea023c2651",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/957b9832-3e54-42fb-b843-030ca998a565.png",
+                                                    "reward_name": "SEPULSA 50000",
+                                                    "point": 150000,
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                },
+                                                {
+                                                    "id": "58fd6796-4a6d-43d4-8632-99c4a0ef8cce",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/32955562-192a-4c52-8e0c-d1fd9db60445.png",
+                                                    "reward_name": "DANA 20000",
+                                                    "point": 20000,
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                },
+                                                {
+                                                    "id": "6597343e-4ab9-4b4b-96c2-a03175d1f1af",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/5cf5421d-1c17-437c-9c70-9818be10f066.png",
+                                                    "reward_name": "Dana",
+                                                    "point": 8000,
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                },
+                                                {
+                                                    "id": "6d0f8e23-2605-4841-b77f-c6c636e11a42",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/d42e407a-b8b7-4114-ab74-00ec5eb8fe6a.png",
+                                                    "reward_name": "DANA 10000",
+                                                    "point": 10000,
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                },
+                                                {
+                                                    "id": "8c1b4e4a-049a-4b48-9b3e-8a1eae3dc176",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/1a7db261-fb33-41fa-bf7b-cad8f85047f6.png",
+                                                    "reward_name": "GOPAY",
+                                                    "point": 800,
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                },
+                                                {
+                                                    "id": "96eeae23-8a03-45e4-93d4-3099d78c9866",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/317a7d43-5d85-4229-8f44-44b8576a4d25.png",
+                                                    "reward_name": "SEPULSA 150000",
+                                                    "point": 150000,
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                },
+                                                {
+                                                    "id": "9951eefe-6256-4683-976d-049c4e79dd94",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/6920081a-2e23-40b1-9f82-e2e142eb4bae.png",
+                                                    "reward_name": "OVO 10000",
+                                                    "point": 20000,
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                },
+                                                {
+                                                    "id": "c3920500-eefe-46ca-9c9e-6b35680c1580",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/e82a2c0c-3da8-4439-975b-d6335540cc90.png",
+                                                    "reward_name": "OVO 20000",
+                                                    "point": 20000,
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 2
+                                            },
+                                            "count_data": 12
+                                        }
+                                    },
+                                    "search":{
+                                        "description": "search by name 'ovo'",
+                                        "value":{
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan seluruh data",
+                                            "data": [
+                                                {
+                                                    "id": "0857268a-bd5f-4f42-94ee-01a344c1ea54",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/cfbc02dd-87d0-4cfe-9b6c-39903fcd871d.png",
+                                                    "reward_name": "OVO",
+                                                    "point": 800,
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                },
+                                                {
+                                                    "id": "9951eefe-6256-4683-976d-049c4e79dd94",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/6920081a-2e23-40b1-9f82-e2e142eb4bae.png",
+                                                    "reward_name": "OVO 10000",
+                                                    "point": 20000,
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                },
+                                                {
+                                                    "id": "c3920500-eefe-46ca-9c9e-6b35680c1580",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/e82a2c0c-3da8-4439-975b-d6335540cc90.png",
+                                                    "reward_name": "OVO 20000",
+                                                    "point": 20000,
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
+        },
+        "/admins/manage/vouchers/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Voucher"
+                ],
+                "summary": "get detail voucher",
+                "description": "",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idVoucher"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan data",
+                                            "data": {
+                                                "id": "c3920500-eefe-46ca-9c9e-6b35680c1580",
+                                                "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/e82a2c0c-3da8-4439-975b-d6335540cc90.png",
+                                                "reward_name": "OVO 20000",
+                                                "point": 20000,
+                                                "start_date": "2002-03-03",
+                                                "end_date": "2002-03-04"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Voucher"
+                ],
+                "summary": "update voucher",
+                "description": "",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idVoucher"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestVoucher"
+                            },
+                            "encoding": {
+                                "image": {
+                                    "style": "form"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mengupdate data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Voucher"
+                ],
+                "summary": "delete voucher",
+                "description": "delete voucher by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idVoucher"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status": true,
+                                            "message": "Berhasil menghapus data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+           
         }
     },
     "components": {
@@ -1504,6 +1834,28 @@
                     "id": {
                         "value": "e81d8dc5-533c-4071-bcf9-d9f2e810140b"
                     }
+                }
+            },
+            "idVoucher": {
+                "name": "id",
+                "in": "path",
+                "description": "id voucher",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "id": {
+                        "value": "d2744da0-57eb-4f49-a0c4-5ceac43f6629"
+                    }
+                }
+            },
+            "search":{
+                "name": "search",
+                "in": "query",
+                "description": "search of data name and point",
+                "schema": {
+                    "type": "string"
                 }
             },
             "trashType": {
@@ -1903,6 +2255,83 @@
                                 ]
                             }
                         }
+                    },
+                    "pagination": {
+                        "type": "object",
+                        "properties": {
+                            "last_page": {
+                                "type": "string"
+                            },
+                            "current_page": {
+                                "type": "string"
+                            },
+                            "limit": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "count_data": {
+                        "type": "string"
+                    }
+                }
+            },
+            "RequestVoucher": {
+                "type": "object",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "reward_name": {
+                        "type": "string"
+                    },
+                    "point": {
+                        "type": "integer"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "Date"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "Date"
+                    }
+                },
+                "required": [
+                    "image",
+                    "reward_name",
+                    "point",
+                    "description",
+                    "start_date",
+                    "end_date"
+                ]
+            },
+            "ResponseVoucher": {
+                "type": "object",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "reward_name": {
+                        "type": "string"
+                    },
+                    "point": {
+                        "type": "integer"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "Date"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "Date"
                     },
                     "pagination": {
                         "type": "object",

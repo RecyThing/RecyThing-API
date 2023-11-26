@@ -53,10 +53,8 @@ func (dpr *dropPointRepository) DeleteDropPointById(id string) error {
 func (dpr *dropPointRepository) GetAllDropPoint(page, limit int, name, address string) ([]entity.DropPointCore, pagination.PageInfo, error) {
 	dropPoint := []model.DropPoint{}
 
-	// Hitung offset berdasarkan halaman dan batasan
 	offset := (page - 1) * limit
-
-	query := dpr.db.Preload("OperationalSchedules").Offset(offset).Limit(limit)
+	query := dpr.db.Model(&model.DropPoint{}).Preload("OperationalSchedules")
 
 	if name != "" {
 		query = query.Where("name LIKE ?", "%"+name+"%")
@@ -66,7 +64,16 @@ func (dpr *dropPointRepository) GetAllDropPoint(page, limit int, name, address s
 		query = query.Where("address LIKE ?", "%"+address+"%")
 	}
 
-	tx := query.Find(&dropPoint)
+
+	var totalCount int64
+	tx := query.Count(&totalCount).Find(&dropPoint)
+	if tx.Error != nil {
+		return nil, pagination.PageInfo{}, tx.Error
+	}
+
+	query = query.Offset(offset).Limit(limit)
+
+	tx = query.Find(&dropPoint)
 	if tx.Error != nil {
 		return nil, pagination.PageInfo{}, tx.Error
 	}
@@ -75,13 +82,6 @@ func (dpr *dropPointRepository) GetAllDropPoint(page, limit int, name, address s
 	for _, dropPointModel := range dropPoint {
 		dropPointCore := entity.DropPointModelToDropPointCore(dropPointModel)
 		dropPointCores = append(dropPointCores, dropPointCore)
-	}
-
-	// Hitung total data untuk paginasi
-	var totalCount int64
-	tx = query.Model(&model.DropPoint{}).Count(&totalCount)
-	if tx.Error != nil {
-		return nil, pagination.PageInfo{}, tx.Error
 	}
 
 	// Menghitung informasi paginasi

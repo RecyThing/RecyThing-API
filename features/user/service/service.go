@@ -39,10 +39,10 @@ func (us *userService) Register(data entity.UsersCore) (entity.UsersCore,error) 
 		return entity.UsersCore{},errLength
 	}
 
-	_, err := us.userRepo.FindByEmail(data.Email)
-	if err == nil {
-		return entity.UsersCore{},errors.New(constanta.ERROR_EMAIL_EXIST)
-	}
+	// _, err := us.userRepo.FindByEmail(data.Email)
+	// if err == nil {
+	// 	return entity.UsersCore{},errors.New(constanta.ERROR_EMAIL_EXIST)
+	// }
 
 	if data.Password != data.ConfirmPassword {
 		return entity.UsersCore{},errors.New(constanta.ERROR_CONFIRM_PASSWORD)

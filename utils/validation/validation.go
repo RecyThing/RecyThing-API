@@ -67,7 +67,7 @@ func PhoneNumber(phone string) error {
 
 func MinLength(data string, minLength int) error {
 	if len(data) < minLength {
-		return errors.New("minimal " + strconv.Itoa(minLength) + " karakter,ulangi kembali!")
+		return errors.New("minimal " + strconv.Itoa(minLength) + " karakter, ulangi kembali!")
 	}
 	return nil
 }
@@ -90,6 +90,25 @@ func ValidateTime(openTime, closeTime string) error {
 	return nil
 }
 
+func ValidateDate(startDate, endDate string) error {
+	layout := "2006-01-02"
+	start, err := time.Parse(layout, startDate)
+	if err != nil {
+		return errors.New("tanggal harus dalam format 'yyyy-mm-dd'")
+	}
+
+	end, err := time.Parse(layout, endDate)
+	if err != nil {
+		return errors.New("tanggal harus dalam format 'yyyy-mm-dd'")
+	}
+
+	if end.Before(start) || end.Equal(start) {
+		return errors.New("tanggal selesai harus berbeda dari tanggal mulai")
+	}
+
+	return nil
+}
+
 // for repository
 func IsDuplicateError(err error) bool {
 	if mysqlErr, ok := err.(*mysql.MySQLError); ok {
@@ -98,33 +117,41 @@ func IsDuplicateError(err error) bool {
 	return false
 }
 
-func ValidateTypePaginationParameters(limit, page string) (int, int, error) {
+
+func ValidateParamsPagination(page, limit string) (int, int, error) {
 	var limitInt int
 	var pageInt int
+	var err error
 	if limit == "" {
 		limitInt = 10
+	}
+	if limit != "" {
+		limitInt, err = strconv.Atoi(limit)
+		if err != nil {
+			return 0, 0, errors.New("limit harus berupa angka")
+		}
+
+		if limitInt > 10 {
+			return 0, 0, errors.New("limit tidak boleh lebih dari 10")
+		}
 	}
 
 	if page == "" {
 		pageInt = 1
 	}
-
-	if limit != "" {
-		limitInt, err := strconv.Atoi(limit)
-		if err != nil {
-			return 0, limitInt, errors.New("limit harus berupa angka")
-		}
-	}
 	if page != "" {
-		pageInt, err := strconv.Atoi(page)
+		pageInt, err = strconv.Atoi(page)
 		if err != nil {
-			return pageInt, 0, errors.New("page harus berupa angka")
+			return 0, 0, errors.New("page harus berupa angka")
 		}
 	}
+
+	pageInt, limitInt = ValidateCountLimitAndPage(pageInt, limitInt)
 	return pageInt, limitInt, nil
+
 }
 
-func ValidatePaginationParameters(page, limit int) (int, int) {
+func ValidateCountLimitAndPage(page, limit int) (int, int) {
 	if page <= 0 {
 		page = 1
 	}
@@ -184,6 +211,3 @@ func ValidateTypePaginationParameter(limit, page string) (int, int, error) {
 
 	return pageInt, limitInt, nil
 }
-
-
-

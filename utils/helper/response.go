@@ -19,6 +19,13 @@ type SuccessResponseJsonWithPagenation struct {
 	Data       interface{} `json:"data,omitempty"`
 	Pagination interface{} `json:"pagination,omitempty"`
 }
+type SuccessResponseJsonWithPagenationAndCount struct {
+	Status     bool        `json:"status"`
+	Message    string      `json:"message"`
+	Data       interface{} `json:"data,omitempty"`
+	Pagination interface{} `json:"pagination,omitempty"`
+	Count      int         `json:"count_data,omitempty"`
+}
 
 type SuccessResponseJsonWithPagination struct {
 	Status      bool        `json:"status"`
@@ -56,6 +63,15 @@ func SuccessWithPagnation(message string, data interface{}, pagnation interface{
 		Message:    message,
 		Data:       data,
 		Pagination: pagnation,
+	}
+}
+func SuccessWithPagnationAndCount(message string, data interface{}, pagnation interface{}, count int) SuccessResponseJsonWithPagenationAndCount {
+	return SuccessResponseJsonWithPagenationAndCount{
+		Status:     true,
+		Message:    message,
+		Data:       data,
+		Pagination: pagnation,
+		Count:      count,
 	}
 }
 

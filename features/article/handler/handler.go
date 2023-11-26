@@ -7,6 +7,7 @@ import (
 	"recything/features/article/entity"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -58,14 +59,18 @@ func (article *articleHandler) CreateArticle(e echo.Context) error {
 }
 
 func (article *articleHandler) GetAllArticle(e echo.Context) error {
-	articleData, err := article.articleService.GetAllArticle()
+	title := e.QueryParam("title")
+	page, _ := strconv.Atoi(e.QueryParam("page"))
+	limit, _ := strconv.Atoi(e.QueryParam("limit"))
+
+	articleData, paginationInfo, err := article.articleService.GetAllArticle(page, limit, title)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mendapatkan artikel"))
 	}
 
 	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
 
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan semua data laporan", articleResponse))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mendapatkan semua article", articleResponse, paginationInfo))
 }
 
 func (article *articleHandler) GetSpecificArticle(e echo.Context) error {

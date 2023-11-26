@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"mime/multipart"
 	"recything/features/article/entity"
+	"recything/utils/pagination"
+	"recything/utils/validation"
 )
 
 type articleService struct {
@@ -74,13 +76,19 @@ func (article *articleService) UpdateArticle(idArticle string, articleInput enti
 }
 
 // GetAllArticle implements entity.ArticleServiceInterface.
-func (ac *articleService) GetAllArticle() ([]entity.ArticleCore, error) {
-	article, err := ac.ArticleRepository.GetAllArticle()
+func (ac *articleService) GetAllArticle(page, limit int, title string) ([]entity.ArticleCore, pagination.PageInfo ,error) {
+	if limit > 10 {
+        return nil, pagination.PageInfo{}, errors.New("limit tidak boleh lebih dari 10")
+    }
+
+	page, limit = validation.ValidateCountLimitAndPage(page, limit)
+
+	article, pageInfo ,err := ac.ArticleRepository.GetAllArticle(page, limit, title)
 	if err != nil {
-		return []entity.ArticleCore{}, errors.New("gagal mendapatkan artikel")
+		return []entity.ArticleCore{}, pagination.PageInfo{},errors.New("gagal mendapatkan artikel")
 	}
 
-	return article, nil
+	return article, pageInfo, nil
 }
 
 // CreateArticle implements entity.ArticleServiceInterface.

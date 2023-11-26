@@ -5,6 +5,7 @@ import (
 	"mime/multipart"
 	"recything/features/article/entity"
 	"recything/features/article/model"
+	"recything/utils/pagination"
 	"recything/utils/storage"
 
 	"gorm.io/gorm"
@@ -110,12 +111,32 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 }
 
 // GetAllArticle implements entity.ArticleRepositoryInterface.
-func (article *articleRepository) GetAllArticle() ([]entity.ArticleCore, error) {
+func (article *articleRepository) GetAllArticle(page, limit int, title string) ([]entity.ArticleCore, pagination.PageInfo, error) {
 	var articleData []model.Article
 
-	tx := article.db.Preload("Categories").Find(&articleData)
+	offset := (page - 1) * limit
+	query := article.db.Model(&model.Article{}).Preload("Categories")
+
+	if title != "" {
+		query = query.Where("title LIKE ?", "%"+title+"%")
+	}
+
+	var totalCount int64
+	tx := query.Count(&totalCount).Find(&articleData)
 	if tx.Error != nil {
-		return nil, tx.Error
+		return nil, pagination.PageInfo{}, tx.Error
+	}
+
+	query = query.Offset(offset).Limit(limit)
+
+	// txData := article.db.Preload("Categories").Find(&articleData)
+	// if txData.Error != nil {
+	// 	return nil, pagination.PageInfo{}, txData.Error
+	// }
+
+	tx = query.Find(&articleData)
+	if tx.Error != nil {
+		return nil, pagination.PageInfo{}, tx.Error
 	}
 
 	mapData := make([]entity.ArticleCore, len(articleData))
@@ -123,7 +144,9 @@ func (article *articleRepository) GetAllArticle() ([]entity.ArticleCore, error) 
 		mapData[i] = entity.ArticleModelToArticleCore(value)
 	}
 
-	return mapData, nil
+	pageInfo := pagination.CalculateData(int(totalCount), limit, page)
+
+	return mapData, pageInfo, nil
 
 }
 

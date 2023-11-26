@@ -40,5 +40,6 @@ func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&recybot.Recybot{})
 	db.AutoMigrate(&faq.Faq{})
 	db.AutoMigrate(&trashCategory.TrashCategory{})
-	
+	db.AutoMigrate(&voucher.Voucher{})
+	db.AutoMigrate(&article.Article{})
 }

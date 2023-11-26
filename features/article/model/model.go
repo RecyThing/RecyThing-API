@@ -22,6 +22,6 @@ type Article struct {
 }
 
 type ArticleTrashCategory struct{
-	ArticleID string
 	TrashCategoryID string
+	ArticleID string
 }

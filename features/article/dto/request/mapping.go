@@ -18,7 +18,7 @@ func ArticleRequestToArticleCore(article ArticleRequest) entity.ArticleCore {
 
 func CategotyrequestToCategotyCore(category ArticleTrashCategoryRequest) entity.ArticleTrashCategoryCore {
 	return entity.ArticleTrashCategoryCore{
-		TrashCategoryID: category.TrashCategoryID,
+		// TrashCategoryID: category.TrashCategoryID,
 		Category: category.Category,
 	}
 }

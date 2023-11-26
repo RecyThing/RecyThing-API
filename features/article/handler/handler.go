@@ -30,7 +30,7 @@ func (article *articleHandler) CreateArticle(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan role"))
 	}
 
-	if role != "admin" {
+	if role != "admin" && role != "super_admin"{
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("akses ditolak"))
 	}
 
@@ -63,7 +63,9 @@ func (article *articleHandler) GetAllArticle(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mendapatkan artikel"))
 	}
 
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan semua data laporan", articleData))
+	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan semua data laporan", articleResponse))
 }
 
 func (article *articleHandler) GetSpecificArticle(e echo.Context) error {
@@ -88,7 +90,7 @@ func (article *articleHandler) UpdateArticle(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan role"))
 	}
 
-	if role != "admin" {
+	if role != "admin" && role != "super_admin"{
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("akses ditolak"))
 	}
 
@@ -127,7 +129,7 @@ func (article *articleHandler) DeleteArticle(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan role"))
 	}
 
-	if role != "admin" {
+	if role != "admin" && role != "super_admin"{
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("akses ditolak"))
 	}
 

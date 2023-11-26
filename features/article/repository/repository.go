@@ -153,11 +153,13 @@ func (article *articleRepository) CreateArticle(articleInput entity.ArticleCore,
 		categories.TrashCategoryID = categoryId
 
 		txInner := txOuter.Create(&categories)
+
 		if txInner.Error != nil {
 			txOuter.Rollback()
 			article.DeleteArticle(articleCreated.ID)
 			return entity.ArticleCore{}, txInner.Error
 		}
+
 	}
 
 	txOuter.Commit()

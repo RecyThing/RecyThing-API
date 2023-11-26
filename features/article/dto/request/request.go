@@ -10,5 +10,5 @@ type ArticleRequest struct {
 
 type ArticleTrashCategoryRequest struct {
 	Category        string
-	TrashCategoryID string
+	// TrashCategoryID string
 }

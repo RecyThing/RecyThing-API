@@ -6,7 +6,7 @@ import (
 
 func CategoryCoreToCategoryResponse(category entity.ArticleTrashCategoryCore) TrashCategoryResponse {
 	return TrashCategoryResponse{
-		TrashCategoryID: category.TrashCategoryID,
+		// TrashCategoryID: category.TrashCategoryID,
 		Category: category.Category,
 	}
 }
@@ -34,5 +34,14 @@ func ArticleCoreToArticleResponse(article entity.ArticleCore) ArticleCreateRespo
 	}
 	category := ListCategoryCoreToCategoryResponse(article.Categories)
 	articleResp.Categories = category
+	return articleResp
+}
+
+func ListArticleCoreToListArticleResponse(articles []entity.ArticleCore) []ArticleCreateResponse {
+	articleResp := []ArticleCreateResponse{}
+	for _, article := range articles {
+		articlesData := ArticleCoreToArticleResponse(article)
+		articleResp = append(articleResp, articlesData)
+	}
 	return articleResp
 }

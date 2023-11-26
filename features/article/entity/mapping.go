@@ -7,7 +7,7 @@ import (
 
 func CategoryModelToCategoryCore(category tcm.TrashCategory) ArticleTrashCategoryCore {
 	return ArticleTrashCategoryCore{
-		TrashCategoryID: category.ID,
+		// TrashCategoryID: category.ID,
 		Category:        category.TrashType,
 	}
 }
@@ -39,7 +39,7 @@ func ArticleModelToArticleCore(article model.Article) ArticleCore {
 
 func CategoryCoreToCategoryModel(category ArticleTrashCategoryCore) tcm.TrashCategory {
 	return tcm.TrashCategory{
-		ID:        category.TrashCategoryID,
+		// ID:        category.TrashCategoryID,
 		TrashType: category.Category,
 	}
 }

@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/go-sql-driver/mysql"
 )
 
@@ -28,8 +29,8 @@ func CheckEqualData(data string, validData []string) (string, error) {
 	inputData := strings.ToLower(data)
 
 	isValidData := false
-	for _, category := range validData {
-		if inputData == strings.ToLower(category) {
+	for _, data := range validData {
+		if inputData == strings.ToLower(data) {
 			isValidData = true
 			break
 		}
@@ -83,7 +84,7 @@ func ValidateTime(openTime, closeTime string) error {
 		return errors.New("format waktu tutup tidak valid")
 	}
 
-	if close.Before(open) {
+	if close.Before(open) || close.Equal(open) {
 		return errors.New("waktu penutupan harus setelah waktu pembukaan")
 	}
 
@@ -116,7 +117,6 @@ func IsDuplicateError(err error) bool {
 	}
 	return false
 }
-
 
 func ValidateParamsPagination(page, limit string) (int, int, error) {
 	var limitInt int
@@ -210,4 +210,21 @@ func ValidateTypePaginationParameter(limit, page string) (int, int, error) {
 	}
 
 	return pageInt, limitInt, nil
+}
+
+func CheckLatLong(latitude, longitude float64) error {
+	dataLatitude := govalidator.ToString(latitude)
+	dataLongitude := govalidator.ToString(longitude)
+	
+	errLatLong := govalidator.IsLatitude(dataLatitude)
+	if !errLatLong {
+		return errors.New("bukan latitude")
+	}
+
+	errLongitude := govalidator.IsLongitude(dataLongitude)
+	if !errLongitude {
+		return errors.New("bukan longitude")
+	}
+
+	return nil
 }

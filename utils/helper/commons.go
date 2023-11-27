@@ -3,6 +3,7 @@ package helper
 import (
 	"encoding/json"
 	"errors"
+	"reflect"
 	"strings"
 
 	"github.com/asaskevich/govalidator"
@@ -51,4 +52,20 @@ func HttpResponseCondition(err error, Messages ...string) bool {
         }
     }
     return false
+}
+
+func FieldsEqual(a, b interface{}, fields ...string) bool {
+	valueA := reflect.ValueOf(a)
+	valueB := reflect.ValueOf(b)
+
+	for _, fieldName := range fields {
+		fieldA := valueA.FieldByName(fieldName)
+		fieldB := valueB.FieldByName(fieldName)
+
+		if !reflect.DeepEqual(fieldA.Interface(), fieldB.Interface()) {
+			return false
+		}
+	}
+
+	return true
 }

@@ -62,3 +62,4 @@ func UploadThumbnail(image *multipart.FileHeader) (string, error) {
 
 	return imageURL, nil
 }
+

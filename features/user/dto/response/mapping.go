@@ -2,11 +2,11 @@ package response
 
 import "recything/features/user/entity"
 
-func UsersCoreToUsersCreateResponse(data entity.UsersCore ) UserCreateResponse {
+func UsersCoreToUsersCreateResponse(data entity.UsersCore) UserCreateResponse {
 	return UserCreateResponse{
-		Id: data.Id,
+		Id:       data.Id,
 		Fullname: data.Fullname,
-		Email : data.Email,
+		Email:    data.Email,
 	}
 }
 
@@ -51,9 +51,12 @@ func UsersCoreToResponseManageUsersList(dataCore []entity.UsersCore) []UserRespo
 
 func UsersCoreToResponseDetailManageUsers(data entity.UsersCore) UserResponseDetailManageUsers {
 	return UserResponseDetailManageUsers{
-		Id:       data.Id,
-		Fullname: data.Fullname,
-		Email:    data.Email,
-		Point:    data.Point,
+		Id:          data.Id,
+		Fullname:    data.Fullname,
+		Email:       data.Email,
+		Point:       data.Point,
+		Address:     data.Address,
+		DateOfBirth: data.DateOfBirth,
+		Purpose:     data.Purpose,
 	}
 }

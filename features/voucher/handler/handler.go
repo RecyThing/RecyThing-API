@@ -118,7 +118,7 @@ func (vh *voucherHandler) UpdateVoucher(e echo.Context) error {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
-	err := helper.BindFormData(e, &input)
+	err := helper.BindFormData(e,&input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
@@ -128,7 +128,7 @@ func (vh *voucherHandler) UpdateVoucher(e echo.Context) error {
 		if err == http.ErrMissingFile {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_EMPTY_FILE))
 		}
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal upload file"))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
 	request := request.RequestVoucherToCoreVoucher(input)

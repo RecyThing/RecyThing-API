@@ -90,6 +90,25 @@ func ValidateTime(openTime, closeTime string) error {
 	return nil
 }
 
+func ValidateDate(startDate, endDate string) error {
+	layout := "2006-01-02"
+	start, err := time.Parse(layout, startDate)
+	if err != nil {
+		return errors.New("tanggal harus dalam format 'yyyy-mm-dd'")
+	}
+
+	end, err := time.Parse(layout, endDate)
+	if err != nil {
+		return errors.New("tanggal harus dalam format 'yyyy-mm-dd'")
+	}
+
+	if end.Before(start) || end.Equal(start) {
+		return errors.New("tanggal selesai harus berbeda dari tanggal mulai")
+	}
+
+	return nil
+}
+
 // for repository
 func IsDuplicateError(err error) bool {
 	if mysqlErr, ok := err.(*mysql.MySQLError); ok {
@@ -110,6 +129,10 @@ func ValidateParamsPagination(page, limit string) (int, int, error) {
 		limitInt, err = strconv.Atoi(limit)
 		if err != nil {
 			return 0, 0, errors.New("limit harus berupa angka")
+		}
+
+		if limitInt > 10 {
+			return 0, 0, errors.New("limit tidak boleh lebih dari 10")
 		}
 	}
 

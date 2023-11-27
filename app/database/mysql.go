@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"recything/app/config"
 
+	achievement "recything/features/achievement/model"
 	admin "recything/features/admin/model"
+	article "recything/features/article/model"
+	faq "recything/features/faq/model"
 	recybot "recything/features/recybot/model"
 	report "recything/features/report/model"
 	user "recything/features/user/model"
-	dropPoint "recything/features/drop-point/model"
 	trashCategory "recything/features/trash_category/model"
-	achievement "recything/features/achievement/model"
-	faq "recything/features/faq/model"
+	voucher "recything/features/voucher/model"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -27,7 +28,7 @@ func InitDBMysql(cfg *config.AppConfig) *gorm.DB {
 	if err != nil {
 		panic(err)
 	}
-	InitMigrationMysql(db)
+	// InitMigrationMysql(db)
 	return db
 }
 
@@ -37,8 +38,8 @@ func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&admin.Admin{})
 	db.AutoMigrate(&report.Report{}, &report.Image{})
 	db.AutoMigrate(&recybot.Recybot{})
-	db.AutoMigrate(&dropPoint.DropPoint{}, &dropPoint.OperationalSchedules{})
 	db.AutoMigrate(&faq.Faq{})
 	db.AutoMigrate(&trashCategory.TrashCategory{})
-	
+	db.AutoMigrate(&voucher.Voucher{})
+	db.AutoMigrate(&article.Article{})
 }

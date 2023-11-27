@@ -238,8 +238,8 @@ func (ar *AdminRepository) GetAllReport(status, name, id string, page, limit int
 	}
 
 	if id != "" {
-		query = query.Where("id = ?", id)
-	}
+		query = query.Where("reports.id = ?", id)
+	}	
 
 	var totalCount int64
 	if err := query.Count(&totalCount).Error; err != nil {

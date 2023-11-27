@@ -118,7 +118,7 @@ func (vh *voucherHandler) UpdateVoucher(e echo.Context) error {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
-	err := helper.BindFormData(e, &input)
+	err := e.Bind(&input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}

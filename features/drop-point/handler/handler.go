@@ -37,7 +37,7 @@ func (dph *dropPointHandler) CreateDropPoint(e echo.Context) error {
 
 	input := request.DropPointRequest{}
 
-	errBind := helper.DecodeJSON(e, &input)
+	errBind := e.Bind(&input)
 	if errBind != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
@@ -75,11 +75,11 @@ func (dph *dropPointHandler) UpdateDropPoint(e echo.Context) error {
 	dropPointId := e.Param("id")
 	_, errUpdate := dph.dropPointService.UpdateDropPointById(dropPointId, request)
 	if errUpdate != nil {
-        if strings.Contains(errUpdate.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
-            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
-        }
-        return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errUpdate.Error()))
-    }
+		if strings.Contains(errUpdate.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errUpdate.Error()))
+	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil melakukan update data"))
 

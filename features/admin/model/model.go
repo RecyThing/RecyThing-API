@@ -1,6 +1,7 @@
 package model
 
 import (
+	"recything/features/misssion/model"
 	"recything/utils/helper"
 	"time"
 
@@ -15,7 +16,8 @@ type Admin struct {
 	Email           string
 	Password        string
 	ConfirmPassword string
-	Status          string         `gorm:"type:enum('active', 'nonactive');default:'active'"`
+	Status          string `gorm:"type:enum('active', 'nonactive');default:'active'"`
+	Missions        []model.Mission
 	CreatedAt       time.Time      `gorm:"type:DATETIME(0)"`
 	UpdatedAt       time.Time      `gorm:"type:DATETIME(0)"`
 	DeletedAt       gorm.DeletedAt `gorm:"index"`

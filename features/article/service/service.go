@@ -76,16 +76,17 @@ func (article *articleService) UpdateArticle(idArticle string, articleInput enti
 }
 
 // GetAllArticle implements entity.ArticleServiceInterface.
-func (ac *articleService) GetAllArticle(page, limit int, title string) ([]entity.ArticleCore, pagination.PageInfo ,error) {
+func (ac *articleService) GetAllArticle(page, limit int, tittle string) ([]entity.ArticleCore, pagination.PageInfo ,error) {
+	
 	if limit > 10 {
-        return nil, pagination.PageInfo{}, errors.New("limit tidak boleh lebih dari 10")
+		return nil, pagination.PageInfo{}, errors.New("limit tidak boleh lebih dari 10")
     }
 
 	page, limit = validation.ValidateCountLimitAndPage(page, limit)
-
-	article, pageInfo ,err := ac.ArticleRepository.GetAllArticle(page, limit, title)
+	
+	article, pageInfo ,err := ac.ArticleRepository.GetAllArticle(page, limit, tittle)
 	if err != nil {
-		return []entity.ArticleCore{}, pagination.PageInfo{},errors.New("gagal mendapatkan artikel")
+		return []entity.ArticleCore{}, pagination.PageInfo{},err
 	}
 
 	return article, pageInfo, nil

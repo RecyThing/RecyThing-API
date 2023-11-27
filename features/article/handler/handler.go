@@ -59,13 +59,13 @@ func (article *articleHandler) CreateArticle(e echo.Context) error {
 }
 
 func (article *articleHandler) GetAllArticle(e echo.Context) error {
-	title := e.QueryParam("title")
+	tittle := e.QueryParam("tittle")
 	page, _ := strconv.Atoi(e.QueryParam("page"))
 	limit, _ := strconv.Atoi(e.QueryParam("limit"))
 
-	articleData, paginationInfo, err := article.articleService.GetAllArticle(page, limit, title)
+	articleData, paginationInfo, err := article.articleService.GetAllArticle(page, limit, tittle)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal mendapatkan artikel"))
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan artikel"))
 	}
 
 	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)

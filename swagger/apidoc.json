@@ -1420,7 +1420,7 @@
                     "Manage Voucher"
                 ],
                 "summary": "add new voucher",
-                "description": "",
+                "description": "add new voucher",
                 "requestBody": {
                     "content": {
                         "multipart/form-data": {
@@ -1479,13 +1479,13 @@
                     "200": {
                         "description": "OK",
                         "content": {
-                            "application/json":{
-                                "schema":{
+                            "application/json": {
+                                "schema": {
                                     "$ref": "#/components/schemas/ResponseVoucher"
                                 },
                                 "examples": {
-                                    "default search":{
-                                        "value":{
+                                    "default search": {
+                                        "value": {
                                             "status": true,
                                             "message": "Berhasil mendapatkan seluruh data",
                                             "data": [
@@ -1578,9 +1578,9 @@
                                             "count_data": 12
                                         }
                                     },
-                                    "search":{
+                                    "search": {
                                         "description": "search by name 'ovo'",
-                                        "value":{
+                                        "value": {
                                             "status": true,
                                             "message": "Berhasil mendapatkan seluruh data",
                                             "data": [
@@ -1644,10 +1644,10 @@
                     "200": {
                         "description": "OK",
                         "content": {
-                            "application/json":{
+                            "application/json": {
                                 "examples": {
-                                    "success":{
-                                        "value":{
+                                    "success": {
+                                        "value": {
                                             "status": true,
                                             "message": "Berhasil mendapatkan data",
                                             "data": {
@@ -1734,10 +1734,10 @@
                     "200": {
                         "description": "OK",
                         "content": {
-                            "application/json":{
+                            "application/json": {
                                 "examples": {
-                                    "success":{
-                                        "value":{
+                                    "success": {
+                                        "value": {
                                             "status": true,
                                             "message": "Berhasil menghapus data"
                                         }
@@ -1748,7 +1748,51 @@
                     }
                 }
             }
-           
+        },
+        "/admins/manage/articles": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage article"
+                ],
+                "summary": "add article",
+                "description": "create new article",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestArticle"
+                            },
+                            "encoding": {
+                                "image": {
+                                    "style": "form"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil menambahkan artikel"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -1850,7 +1894,7 @@
                     }
                 }
             },
-            "search":{
+            "search": {
                 "name": "search",
                 "in": "query",
                 "description": "search of data name and point",
@@ -2351,6 +2395,36 @@
                         "type": "string"
                     }
                 }
+            },
+            "RequestArticle": {
+                "type": "object",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "string"
+                        
+                    },
+                    "category_id": {
+                        "type": "array",
+                        "properties": {
+                            "category_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "image",
+                    "title",
+                    "content",
+                    "category_id"
+                ]
             }
         },
         "securitySchemes": {

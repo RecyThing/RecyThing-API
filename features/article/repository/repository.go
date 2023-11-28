@@ -179,11 +179,11 @@ func (article *articleRepository) CreateArticle(articleInput entity.ArticleCore,
 			 return entity.ArticleCore{}, err
 		 }
 	 
-		 // If the category doesn't exist, return an error
-		 if categoryCount == 0 {
-			 txOuter.Rollback()
-			 return entity.ArticleCore{}, errors.New("kategori tidak ditemukan")
-		 }
+		//  // If the category doesn't exist, return an error
+		//  if categoryCount == 0 {
+		// 	 txOuter.Rollback()
+		// 	 return entity.ArticleCore{}, errors.New("kategori tidak ditemukan")
+		//  }
 
 		categories := new(model.ArticleTrashCategory)
 		categories.ArticleID = articleCreated.ID

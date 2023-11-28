@@ -1792,6 +1792,233 @@
                         }
                     }
                 }
+            },
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage article"
+                ],
+                "summary": "view all article ",
+                "description": "view all article",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/title"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseArticle"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan semua article",
+                                            "data": [
+                                                {
+                                                    "id": "0c18a054-f86b-46df-b684-9dc99f6656dc",
+                                                    "title": "3 Sampah Berbahaya",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/8dd1a3f2-fdac-42ef-90b1-1581c3e15da1.jpg",
+                                                    "content": "sampah itu berbahaya",
+                                                    "categories": [
+                                                        {
+                                                            "category": "nuklir"
+                                                        },
+                                                        {
+                                                            "category": "laptop"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T02:18:27Z",
+                                                    "updated_at": "2023-11-28T02:18:27Z"
+                                                },
+                                                {
+                                                    "id": "38fbbfec-480c-43f4-92a2-9a7e5b65b3e0",
+                                                    "title": "Kontent",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/d93675cd-1e8a-4cb6-8124-a9e15bdd4918.png",
+                                                    "content": "ini artikel",
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T02:36:19Z",
+                                                    "updated_at": "2023-11-28T02:36:19Z"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 2,
+                                                "current_page": 1,
+                                                "last_page": 4
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/articles/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage article"
+                ],
+                "summary": "view detail article ",
+                "description": "view detail article by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idArticle"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseArticle"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan artikel",
+                                            "data": {
+                                                "id": "58314e02-3958-4499-b24e-3c3664c0a926",
+                                                "title": "sampah",
+                                                "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/1b5f51e3-f0e9-4238-8e26-1529441358dd.jpg",
+                                                "content": "sampah sampah",
+                                                "categories": [
+                                                    {
+                                                        "category": "limbah minyak"
+                                                    }
+                                                ],
+                                                "like": 0,
+                                                "share": 0,
+                                                "created_at": "2023-11-28T02:41:40Z",
+                                                "updated_at": "2023-11-28T02:41:40Z"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage article"
+                ],
+                "summary": "delete  article ",
+                "description": "delete article by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idArticle"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseArticle"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil menghapus artikel"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage article"
+                ],
+                "summary": "update article",
+                "description": "update article by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idArticle"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestArticle"
+                            },
+                            "encoding": {
+                                "image": {
+                                    "style": "form"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "updated",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil",
+                                            "data": {
+                                                "id": "fc5adbb3-ebd6-45e3-af7c-7fb395115195",
+                                                "title": "3 Sampah Berbahaya",
+                                                "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/e6a02203-4c0f-40dc-9798-7ea011abe68a.jpg",
+                                                "content": "sampah itu berbahaya",
+                                                "like": 0,
+                                                "share": 0,
+                                                "created_at": "2023-11-28T01:25:19Z",
+                                                "updated_at": "2023-11-28T04:57:20.889Z"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     },
@@ -1880,6 +2107,20 @@
                     }
                 }
             },
+            "idArticle": {
+                "name": "id",
+                "in": "path",
+                "description": "id article",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "id": {
+                        "value": "58314e02-3958-4499-b24e-3c3664c0a926"
+                    }
+                }
+            },
             "idVoucher": {
                 "name": "id",
                 "in": "path",
@@ -1931,6 +2172,14 @@
                 "name": "name",
                 "in": "query",
                 "description": "name of data",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "title": {
+                "name": "title",
+                "in": "query",
+                "description": "title of query",
                 "schema": {
                     "type": "string"
                 }
@@ -2408,7 +2657,6 @@
                     },
                     "content": {
                         "type": "string"
-                        
                     },
                     "category_id": {
                         "type": "array",
@@ -2425,6 +2673,54 @@
                     "content",
                     "category_id"
                 ]
+            },
+            "ResponseArticle": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "point": {
+                        "type": "integer"
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "image": {
+                        "type": "string"
+                    },
+                    "categories": {
+                        "type": "array",
+                        "properties": {
+                            "category": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "like": {
+                        "type": "string"
+                    },
+                    "share": {
+                        "type": "string"
+                    },
+                    "pagination": {
+                        "type": "object",
+                        "properties": {
+                            "last_page": {
+                                "type": "string"
+                            },
+                            "current_page": {
+                                "type": "string"
+                            },
+                            "limit": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
             }
         },
         "securitySchemes": {

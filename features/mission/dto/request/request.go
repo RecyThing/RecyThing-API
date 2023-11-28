@@ -34,16 +34,16 @@ func MissionRequestToMissionCore(missi Mission) entity.Mission {
 	return missionCore
 }
 
-func MissionStagesRequestToMissionStagesCore(missionStages MissionStage) entity.MissionStages {
-	missionStagesCore := entity.MissionStages{
+func MissionStagesRequestToMissionStagesCore(missionStages MissionStage) entity.MissionStage {
+	missionStagesCore := entity.MissionStage{
 		Title:       missionStages.Title,
 		Description: missionStages.Description,
 	}
 	return missionStagesCore
 }
 
-func ListMissionStagesRequestToMissionStagesCore(missionStages []MissionStage) []entity.MissionStages {
-	missionStagesCore := []entity.MissionStages{}
+func ListMissionStagesRequestToMissionStagesCore(missionStages []MissionStage) []entity.MissionStage {
+	missionStagesCore := []entity.MissionStage{}
 	for _, misiStages := range missionStages {
 		missi := MissionStagesRequestToMissionStagesCore(misiStages)
 		missionStagesCore = append(missionStagesCore, missi)

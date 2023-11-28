@@ -1,48 +1,55 @@
 package handler
 
-// import (
-// 	"net/http"
-// 	"recything/features/trash_category/dto/request"
-// 	"recything/features/trash_category/dto/response"
-// 	"recything/features/trash_category/entity"
-// 	"recything/utils/constanta"
-// 	"recything/utils/helper"
-// 	"recything/utils/jwt"
-// 	"strings"
+import (
+	"net/http"
+	"recything/features/mission/dto/request"
+	"recything/features/mission/entity"
 
-// 	"github.com/labstack/echo/v4"
-// )
+	"recything/utils/constanta"
+	"recything/utils/helper"
+	"recything/utils/jwt"
 
-// type trashCategoryHandler struct {
-// 	trashCategory entity.TrashCategoryServiceInterface
-// }
+	"github.com/labstack/echo/v4"
+)
 
-// func NewTrashCategoryHandler(trashCategory entity.TrashCategoryServiceInterface) *trashCategoryHandler {
-// 	return &trashCategoryHandler{trashCategory: trashCategory}
-// }
+type missionHandler struct {
+	missionService entity.MissionServiceInterface
+}
 
-// func (tc *trashCategoryHandler) CreateCategory(e echo.Context) error {
-// 	_, role, err := jwt.ExtractToken(e)
-// 	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
-// 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-// 	}
-// 	if err != nil {
-// 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
-// 	}
+func NewMissionHandler(missionService entity.MissionServiceInterface) *missionHandler {
+	return &missionHandler{missionService: missionService}
+}
 
-// 	requestCategory := request.TrashCategory{}
-// 	err = helper.DecodeJSON(e, &requestCategory)
-// 	if err != nil {
-// 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-// 	}
+func (mh *missionHandler) CreateMission(e echo.Context) error {
+	id, role, err := jwt.ExtractToken(e)
+	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
 
-// 	input := request.RequestTrashCategoryToCoreTrashCategory(requestCategory)
-// 	err = tc.trashCategory.CreateCategory(input)
-// 	if err != nil {
-// 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-// 	}
-// 	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan kategori sampah"))
-// }
+	requestMission := request.Mission{}
+	err = e.Bind(&requestMission)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	image, err := e.FormFile("mission_image")
+	if err != nil {
+		if err == http.ErrMissingFile {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_EMPTY_FILE))
+		}
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal upload file"))
+	}
+	input := request.MissionRequestToMissionCore(requestMission)
+	input.AdminID = id
+	err = mh.missionService.CreateMission(image, input)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan missi"))
+}
 
 // func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 
@@ -97,7 +104,7 @@ package handler
 // 	}
 
 // 	response := response.CoreTrashCategoryToReponseTrashCategory(result)
-// 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan detail kategori sampah", response))
+// 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan detail kategori sampah", responseMissionServiceInterface
 // }
 
 // func (tc *trashCategoryHandler) DeleteById(e echo.Context) error {

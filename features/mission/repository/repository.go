@@ -1,26 +1,37 @@
 package repository
 
-// import (
-// 	"errors"
+import (
+	"errors"
+	"recything/features/mission/entity"
+	"recything/utils/constanta"
+	"recything/utils/validation"
 
-// 	"recything/features/trash_category/entity"
-// 	"recything/features/trash_category/model"
-// 	"recything/utils/constanta"
-// 	"recything/utils/pagination"
-// 	"recything/utils/validation"
+	"gorm.io/gorm"
+)
 
-// 	"gorm.io/gorm"
-// )
+type MissionRepository struct {
+	db *gorm.DB
+}
 
-// type trashCategoryRepository struct {
-// 	db *gorm.DB
-// }
+func NewMissionRepository(db *gorm.DB) entity.MissionRepositoryInterface {
+	return &MissionRepository{
+		db: db,
+	}
+}
 
-// func NewTrashCategoryRepository(db *gorm.DB) entity.TrashCategoryRepositoryInterface {
-// 	return &trashCategoryRepository{
-// 		db: db,
-// 	}
-// }
+// Create implements entity.MissionRepositoryInterface.
+func (mr *MissionRepository) Create(input entity.Mission) error {
+	data := entity.MissionCoreToMissionModel(input)
+
+	tx := mr.db.Create(&data)
+	if tx.Error != nil {
+		if validation.IsDuplicateError(tx.Error) {
+			return errors.New(constanta.ERROR_DATA_EXIST)
+		}
+		return tx.Error
+	}
+	return nil
+}
 
 // func (tc *trashCategoryRepository) Create(data entity.TrashCategoryCore) error {
 // 	input := entity.CoreTrashCategoryToModelTrashCategory(data)
@@ -73,7 +84,7 @@ package repository
 // 			return 0, tx.Error
 // 		}
 // 	}
-	
+
 // 	if trashType != "" {
 // 		tx := model.Where("trash_type LIKE ?", "%"+trashType+"%").Count(&totalCount)
 // 		if tx.Error != nil {

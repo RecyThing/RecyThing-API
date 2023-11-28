@@ -32,6 +32,9 @@ func BindFormData(c echo.Context, input interface{}) error {
 	if err := c.Bind(input); err != nil {
 		return errors.New("input salah, periksa kembali")
 	}
+	// if err := c.Bind(input); err != nil {
+	// 	return err
+	// }
 
 	decoder := schema.NewDecoder()
 	if err := decoder.Decode(input, c.Request().Form); err != nil {

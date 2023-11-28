@@ -1,42 +1,42 @@
 package service
 
-// import (
-// 	"recything/features/trash_category/entity"
-// 	"recything/utils/constanta"
-// 	"recything/utils/pagination"
-// 	"recything/utils/validation"
-// )
+import (
+	"mime/multipart"
+	"recything/features/mission/entity"
+	"recything/utils/storage"
+	"recything/utils/validation"
+)
 
-// type trashCategoryService struct {
-// 	trashCategoryRepo entity.TrashCategoryRepositoryInterface
-// }
+type missionService struct {
+	missionRepo entity.MissionRepositoryInterface
+}
 
-// func NewTrashCategoryService(trashCategoryRepo entity.TrashCategoryRepositoryInterface) entity.TrashCategoryServiceInterface {
-// 	return &trashCategoryService{
-// 		trashCategoryRepo: trashCategoryRepo,
-// 	}
-// }
+func NewMissionService(missionRepo entity.MissionRepositoryInterface) entity.MissionServiceInterface {
+	return &missionService{
+		missionRepo: missionRepo,
+	}
+}
 
-// // CreateData implements entity.trashCategoryServiceInterface.
-// func (tc *trashCategoryService) CreateCategory(data entity.TrashCategoryCore) error {
+// CreateData implements entity.trashCategoryServiceInterface.
+func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
 
-// 	errEmpty := validation.CheckDataEmpty(data.Unit, data.TrashType, data.Point)
-// 	if errEmpty != nil {
-// 		return errEmpty
-// 	}
+	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point)
+	if errEmpty != nil {
+		return errEmpty
+	}
 
-// 	validUnit, errCheck := validation.CheckEqualData(data.Unit, constanta.Unit)
-// 	if errCheck != nil {
-// 		return errCheck
-// 	}
+	imageURL, errUpload := storage.UploadThumbnail(image)
+	if errUpload != nil {
+		return errUpload
+	}
+	data.MissionImage = imageURL
 
-// 	data.Unit = validUnit
-// 	err := tc.trashCategoryRepo.Create(data)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
+	err := ms.missionRepo.Create(data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // func (tc *trashCategoryService) GetAllCategory(page, limit, trashType string) ([]entity.TrashCategoryCore, pagination.PageInfo, int, error) {
 // 	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)

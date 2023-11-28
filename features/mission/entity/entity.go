@@ -8,7 +8,7 @@ import (
 
 type Mission struct {
 	ID            string
-	Name          string
+	Title          string
 	Creator       string
 	Status        string
 	AdminID       string
@@ -17,12 +17,12 @@ type Mission struct {
 	Description   string
 	StartDate     string
 	EndDate       string
-	MissionStages []MissionStages
+	MissionStages []MissionStage
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
 
-type MissionStages struct {
+type MissionStage struct {
 	ID          string
 	Title       string
 	Description string

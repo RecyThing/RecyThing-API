@@ -62,5 +62,6 @@ const (
 var (
 	Unit          = []string{"barang", "kilogram"}
 	Category      = []string{"sampah anorganik", "sampah organik", "informasi", "batasan"}
-	ERROR_MESSAGE = []string{"sudah", "tidak", "harus", "gagal","harap"}
+	Days          = []string{"senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"}
+	ERROR_MESSAGE = []string{"sudah", "tidak", "harus", "gagal", "harap"}
 )

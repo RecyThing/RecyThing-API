@@ -123,13 +123,7 @@ func (vh *voucherHandler) UpdateVoucher(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	image, err := e.FormFile("image")
-	if err != nil {
-		if err == http.ErrMissingFile {
-			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_EMPTY_FILE))
-		}
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-	}
+	image, _ := e.FormFile("image")
 
 	request := request.RequestVoucherToCoreVoucher(input)
 	err = vh.VoucherService.UpdateData(id, image, request)

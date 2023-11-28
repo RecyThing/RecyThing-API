@@ -1,9 +1,9 @@
 package route
 
 import (
-	"recything/features/droppoint/handler"
-	"recything/features/droppoint/repository"
-	"recything/features/droppoint/service"
+	"recything/features/drop-point/handler"
+	"recything/features/drop-point/repository"
+	"recything/features/drop-point/service"
 	"recything/utils/jwt"
 
 	"github.com/labstack/echo/v4"

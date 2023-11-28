@@ -58,7 +58,7 @@ func (vr *voucherRepository) GetAll(page, limit int, search string) ([]entity.Vo
 	}
 
 	if search != "" {
-		tx := vr.db.Where("reward_name LIKE ? or point LIKE ? ", "%"+search+"%","%"+search+"%").Limit(limit).Offset(offsetInt).Find(&dataVouchers)
+		tx := vr.db.Where("reward_name LIKE ? or point LIKE ? ", "%"+search+"%", "%"+search+"%").Limit(limit).Offset(offsetInt).Find(&dataVouchers)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
@@ -81,7 +81,7 @@ func (vr *voucherRepository) GetCount(search string) (int, error) {
 	}
 
 	if search != "" {
-		tx := vr.db.Model(&model.Voucher{}).Where("reward_name LIKE ? or point LIKE ? ", "%"+search+"%","%"+search+"%").Count(&totalCount)
+		tx := vr.db.Model(&model.Voucher{}).Where("reward_name LIKE ? or point LIKE ? ", "%"+search+"%", "%"+search+"%").Count(&totalCount)
 		if tx.Error != nil {
 			return 0, tx.Error
 		}
@@ -108,15 +108,24 @@ func (vr *voucherRepository) GetById(idVoucher string) (entity.VoucherCore, erro
 
 func (vr *voucherRepository) Update(idVoucher string, image *multipart.FileHeader, data entity.VoucherCore) error {
 	input := entity.CoreVoucherToModelVoucher(data)
+	dataVoucher := model.Voucher{}
 
-	imageURL, errUpload := storage.UploadThumbnail(image)
-	if errUpload != nil {
-		return errUpload
+	tx := vr.db.Where("id = ?", idVoucher).First(&dataVoucher)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	
+	if image != nil {
+		imageURL, errUpload := storage.UploadThumbnail(image)
+		if errUpload != nil {
+			return errUpload
+		}
+		input.Image = imageURL
+	} else {
+		input.Image = dataVoucher.Image
 	}
 
-	input.Image = imageURL
-
-	tx := vr.db.Where("id = ?", idVoucher).Updates(&input)
+	tx = vr.db.Where("id = ?", idVoucher).Updates(&input)
 	if tx.Error != nil {
 		return tx.Error
 	}

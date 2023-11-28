@@ -171,20 +171,6 @@ func (article *articleRepository) CreateArticle(articleInput entity.ArticleCore,
 	articleCreated := entity.ArticleModelToArticleCore(articleData)
 
 	for _, categoryId := range articleInput.Category_id {
-
-		 // Check if the category exists
-		 var categoryCount int64
-		 if err := txOuter.Model(&model.ArticleTrashCategory{}).Where("article_id = ?", categoryId).Count(&categoryCount).Error; err != nil {
-			 txOuter.Rollback()
-			 return entity.ArticleCore{}, err
-		 }
-	 
-		 // If the category doesn't exist, return an error
-		 if categoryCount == 0 {
-			 txOuter.Rollback()
-			 return entity.ArticleCore{}, errors.New("kategori tidak ditemukan")
-		 }
-
 		categories := new(model.ArticleTrashCategory)
 		categories.ArticleID = articleCreated.ID
 		categories.TrashCategoryID = categoryId

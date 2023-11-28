@@ -52,7 +52,7 @@ func (article *articleHandler) CreateArticle(e echo.Context) error {
 	articleInput := request.ArticleRequestToArticleCore(newArticle)
 	_, errCreate := article.articleService.CreateArticle(articleInput, image)
 	if errCreate != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errCreate.Error()))
 	}
 
 	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil menambahkan artikel"))
@@ -116,9 +116,9 @@ func (article *articleHandler) UpdateArticle(e echo.Context) error {
 	}
 
 	articleInput := request.ArticleRequestToArticleCore(updatedData)
-	updateArticle, errCreate := article.articleService.UpdateArticle(idParams, articleInput, image)
-	if errCreate != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errCreate.Error()))
+	updateArticle, errUpdate := article.articleService.UpdateArticle(idParams, articleInput, image)
+	if errUpdate != nil {
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errUpdate.Error()))
 	}
 
 	articleResponse := response.ArticleCoreToArticleResponse(updateArticle)

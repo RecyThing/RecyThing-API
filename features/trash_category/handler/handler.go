@@ -75,6 +75,33 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("Berhasil mendapatkan seluruh kategori sampah", response, pagnation, count))
 }
 
+func (tc *trashCategoryHandler) GetAllCategoryForArticle(e echo.Context) error {
+
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	result, _, _, err := tc.trashCategory.GetAllCategory("", "", "")
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
+
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	if len(result) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada kategori sampah"))
+	}
+
+	response := response.ListCoreTrashCategoryToReponseTrashCategoryArticle(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh kategori sampah", response))
+}
+
 func (tc *trashCategoryHandler) GetById(e echo.Context) error {
 
 	_, role, err := jwt.ExtractToken(e)

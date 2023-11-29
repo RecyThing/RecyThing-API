@@ -1,16 +1,19 @@
 package request
 
 type Mission struct {
-	Title         string         `form:"title" json:"title"`
-	MissionImage  string         `form:"mission_image" json:"mission_image"`
-	Point         int            `form:"point" json:"point"`
-	Description   string         `form:"description" json:"description"`
-	StartDate     string         `form:"start_date" json:"start_date"`
-	EndDate       string         `form:"end_date" json:"end_date"`
-	MissionStages []MissionStage `form:"mission_stages" json:"mission_stages"`
+	Title       string `form:"title"`
+	Point       int    `form:"point"`
+	Description string `form:"description"`
+	Start_Date   string `form:"start_date"`
+	End_Date     string `form:"end_date"`
 }
 
-type MissionStage struct {
+type MissionStages struct {
+	MissionID string  `json:"mission_id"`
+	Stages    []Stage `json:"stages"`
+}
+
+type Stage struct {
 	Title       string `form:"title" json:"title"`
 	Description string `form:"description" json:"description"`
 }

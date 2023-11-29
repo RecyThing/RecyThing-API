@@ -4,78 +4,79 @@ import (
 	"recything/features/mission/model"
 )
 
-func MissionCoreToMissionModel(missi Mission) model.Mission {
+func MissionCoreToMissionModel(data Mission) model.Mission {
 	missionModel := model.Mission{
-		Title:        missi.Title,
-		Status:       missi.Status,
-		AdminID:      missi.AdminID,
-		MissionImage: missi.MissionImage,
-		Point:        missi.Point,
-		Description:  missi.Description,
-		StartDate:    missi.StartDate,
-		EndDate:      missi.EndDate,
+		Title:        data.Title,
+		Status:       data.Status,
+		AdminID:      data.AdminID,
+		MissionImage: data.MissionImage,
+		Point:        data.Point,
+		Description:  data.Description,
+		StartDate:    data.StartDate,
+		EndDate:      data.EndDate,
 	}
-	missionStagesModel := ListMissionStagesCoreToMissionStagesModel(missi.MissionStages)
+	missionStagesModel := ListMissionStagesCoreToMissionStagesModel(data.MissionStages)
 	missionModel.MissionStages = missionStagesModel
 	return missionModel
 }
 
-func MissionStagesCoreToMissionStagesModel(missionStages MissionStage) model.MissionStage {
+func MissionStagesCoreToMissionStagesModel(data MissionStage) model.MissionStage {
 	missionStagesModel := model.MissionStage{
-		Title:       missionStages.Title,
-		Description: missionStages.Description,
+		MissionID:   data.MissionID,
+		Title:       data.Title,
+		Description: data.Description,
 	}
 	return missionStagesModel
 }
 
-func ListMissionStagesCoreToMissionStagesModel(missionStages []MissionStage) []model.MissionStage {
+func ListMissionStagesCoreToMissionStagesModel(data []MissionStage) []model.MissionStage {
 	missionStagesModel := []model.MissionStage{}
-	for _, misiStages := range missionStages {
-		missi := MissionStagesCoreToMissionStagesModel(misiStages)
-		missionStagesModel = append(missionStagesModel, missi)
+	for _, misiStages := range data {
+		result := MissionStagesCoreToMissionStagesModel(misiStages)
+		missionStagesModel = append(missionStagesModel, result)
 	}
 	return missionStagesModel
 }
 
-func MissionModelToMissionCore(missi model.Mission) Mission {
+func MissionModelToMissionCore(data model.Mission) Mission {
 	missionCore := Mission{
-		ID:           missi.ID,
-		Title:        missi.Title,
-		Status:       missi.Status,
-		AdminID:      missi.AdminID,
-		MissionImage: missi.MissionImage,
-		Point:        missi.Point,
-		Description:  missi.Description,
-		StartDate:    missi.StartDate,
-		EndDate:      missi.EndDate,
+		ID:           data.ID,
+		Title:        data.Title,
+		Status:       data.Status,
+		AdminID:      data.AdminID,
+		MissionImage: data.MissionImage,
+		Point:        data.Point,
+		Description:  data.Description,
+		StartDate:    data.StartDate,
+		EndDate:      data.EndDate,
 	}
-	missionStagesCore := listMissionStagesModelToMissionStagesCore(missi.MissionStages)
+	missionStagesCore := listMissionStagesModelToMissionStagesCore(data.MissionStages)
 	missionCore.MissionStages = missionStagesCore
 	return missionCore
 }
 
-func MissionStagesModelToMissionStagesCore(missionStages model.MissionStage) MissionStage {
+func MissionStagesModelToMissionStagesCore(data model.MissionStage) MissionStage {
 	missionStagesCore := MissionStage{
-		Title:       missionStages.Title,
-		Description: missionStages.Description,
+		Title:       data.Title,
+		Description: data.Description,
 	}
 	return missionStagesCore
 }
 
-func listMissionStagesModelToMissionStagesCore(mission []model.MissionStage) []MissionStage {
+func listMissionStagesModelToMissionStagesCore(data []model.MissionStage) []MissionStage {
 	missionStagesCore := []MissionStage{}
-	for _, misiStages := range mission {
-		missi := MissionStagesModelToMissionStagesCore(misiStages)
-		missionStagesCore = append(missionStagesCore, missi)
+	for _, misiStages := range data {
+		result := MissionStagesModelToMissionStagesCore(misiStages)
+		missionStagesCore = append(missionStagesCore, result)
 	}
 	return missionStagesCore
 }
 
-func ListMissionModelToMissionCore(mission []model.Mission) []Mission {
+func ListMissionModelToMissionCore(data []model.Mission) []Mission {
 	missions := []Mission{}
-	for _, mission := range mission {
-		missionCore := MissionModelToMissionCore(mission)
-		missions = append(missions, missionCore)
+	for _, mission := range data {
+		result := MissionModelToMissionCore(mission)
+		missions = append(missions, result)
 	}
 	return missions
 }

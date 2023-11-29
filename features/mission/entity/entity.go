@@ -8,7 +8,7 @@ import (
 
 type Mission struct {
 	ID            string
-	Title          string
+	Title         string
 	Creator       string
 	Status        string
 	AdminID       string
@@ -23,6 +23,7 @@ type Mission struct {
 }
 
 type MissionStage struct {
+	MissionID   string
 	ID          string
 	Title       string
 	Description string

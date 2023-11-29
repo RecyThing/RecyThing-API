@@ -16,6 +16,7 @@ func RouteMissions(e *echo.Group, db *gorm.DB) {
 	missionHandler := handler.NewMissionHandler(missionService)
 
 	mission := e.Group("/manage/missions", jwt.JWTMiddleware())
-	mission.POST("", missionHandler.CreateMission)
 	mission.GET("", missionHandler.GetAllMission)
+	mission.POST("", missionHandler.CreateMission)
+	mission.POST("/stages", missionHandler.CreateMissionStage)
 }

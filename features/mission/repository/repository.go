@@ -22,8 +22,20 @@ func NewMissionRepository(db *gorm.DB) entity.MissionRepositoryInterface {
 }
 
 // Create implements entity.MissionRepositoryInterface.
-func (mr *MissionRepository) Create(input entity.Mission) error {
+func (mr *MissionRepository) CreateMission(input entity.Mission) error {
 	data := entity.MissionCoreToMissionModel(input)
+
+	tx := mr.db.Create(&data)
+	if tx.Error != nil {
+		if validation.IsDuplicateError(tx.Error) {
+			return errors.New(constanta.ERROR_DATA_EXIST)
+		}
+		return tx.Error
+	}
+	return nil
+}
+func (mr *MissionRepository) CreateMissionStages(input []entity.MissionStage) error {
+	data := entity.ListMissionStagesCoreToMissionStagesModel(input)
 
 	tx := mr.db.Create(&data)
 	if tx.Error != nil {
@@ -44,7 +56,6 @@ func (mr *MissionRepository) FindAll(page, limit int, filter string) ([]entity.M
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
-
 	if filter == "" {
 		tx := mr.db.Limit(limit).Offset(offsetInt).Preload("MissionStages").Find(&data)
 		if tx.Error != nil {
@@ -62,6 +73,15 @@ func (mr *MissionRepository) FindAll(page, limit int, filter string) ([]entity.M
 	result := entity.ListMissionModelToMissionCore(data)
 	paginationInfo := pagination.CalculateData(totalCount, limit, page)
 	return result, paginationInfo, totalCount, nil
+}
+
+func (mr *MissionRepository) GetAdminIDbyMissionID(missionID string) (string, error) {
+	mission := model.Mission{}
+	err := mr.db.Take(&mission, "admin_id = ?", missionID).Error
+	if err != nil {
+		return mission.AdminID, err
+	}
+	return mission.AdminID, nil
 }
 
 func (mr *MissionRepository) GetCount(filter string) (int, error) {

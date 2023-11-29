@@ -21,7 +21,7 @@ func NewMissionService(missionRepo entity.MissionRepositoryInterface) entity.Mis
 // CreateData implements entity.trashCategoryServiceInterface.
 func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
 
-	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point)
+	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point, image)
 	if errEmpty != nil {
 		return errEmpty
 	}
@@ -32,7 +32,31 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 	}
 	data.MissionImage = imageURL
 
-	err := ms.missionRepo.Create(data)
+	err := ms.missionRepo.CreateMission(data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ms *missionService) CreateMissionStages(adminID, missionID string, data []entity.MissionStage) error {
+	for _, stage := range data {
+		errEmpty := validation.CheckDataEmpty(stage.Title, stage.Description, stage.MissionID)
+		if errEmpty != nil {
+			return errEmpty
+		}
+	}
+
+	// result, err := ms.missionRepo.GetAdminIDbyMissionID(missionID)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// if result != adminID {
+	// 	return errors.New("akses ditolak")
+	// }
+
+	err := ms.missionRepo.CreateMissionStages(data)
 	if err != nil {
 		return err
 	}

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 	"recything/features/mission/dto/request"
 	"recything/features/mission/dto/response"
@@ -34,28 +33,12 @@ func (mh *missionHandler) CreateMission(e echo.Context) error {
 	}
 
 	requestMission := request.Mission{}
-	d := &echo.DefaultBinder{}
-
-	d.Bind(&requestMission, e)
-	err = e.Bind(&requestMission)
+	err = helper.BindFormData(e, &requestMission)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
-	log.Println("mission stages : ", requestMission.MissionStages)
 
-	// for i := 0; i < len(requestMission.MissionStages); i++ {
-	// 	stageTitle := e.FormValue(fmt.Sprintf("mission_stages[%d][title]", i))
-	// 	stageDescription := e.FormValue(fmt.Sprintf("mission_stages[%d][description]", i))
-	// 	missionStage := request.MissionStage{
-	// 		Title:       stageTitle,
-	// 		Description: stageDescription,
-	// 	}
-
-	// 	requestMission.MissionStages = append(requestMission.MissionStages, missionStage)
-	// }
-	// log.Println("mission stages 2 : ", requestMission.MissionStages)
-
-	image, err := e.FormFile("mission_image")
+	image, err := e.FormFile("image")
 	if err != nil {
 		if err == http.ErrMissingFile {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_EMPTY_FILE))
@@ -71,6 +54,30 @@ func (mh *missionHandler) CreateMission(e echo.Context) error {
 	}
 
 	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan missi"))
+}
+
+func (mh *missionHandler) CreateMissionStage(e echo.Context) error {
+	id, role, err := jwt.ExtractToken(e)
+	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	requestMission := request.MissionStages{}
+	err = helper.DecodeJSON(e, &requestMission)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	input := request.ListMissiStagesRequestToMissiStagesCore(requestMission)
+	err = mh.missionService.CreateMissionStages(id, requestMission.MissionID, input)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan tahapan misi"))
 }
 
 func (mh *missionHandler) GetAllMission(e echo.Context) error {

@@ -30,12 +30,15 @@ func DecodeJSON(e echo.Context, input interface{}) error {
 func BindFormData(c echo.Context, input interface{}) error {
 
 	if err := c.Bind(input); err != nil {
-		return errors.New("input salah, periksa kembali")
+		return err
 	}
+	// if err := c.Bind(input); err != nil {
+	// 	return err
+	// }
 
 	decoder := schema.NewDecoder()
 	if err := decoder.Decode(input, c.Request().Form); err != nil {
-		return errors.New("input salah, periksa kembali")
+		return err
 	}
 
 	if _, err := govalidator.ValidateStruct(input); err != nil {
@@ -46,21 +49,21 @@ func BindFormData(c echo.Context, input interface{}) error {
 }
 
 func HttpResponseCondition(err error, Messages ...string) bool {
-    for _, Message := range Messages {
-        if strings.Contains(err.Error(), Message) {
-            return true
-        }
-    }
-    return false
+	for _, Message := range Messages {
+		if strings.Contains(err.Error(), Message) {
+			return true
+		}
+	}
+	return false
 }
 
 func FieldsEqual(a, b interface{}, fields ...string) bool {
-	valueA := reflect.ValueOf(a)
-	valueB := reflect.ValueOf(b)
+	structA := reflect.ValueOf(a)
+	structB := reflect.ValueOf(b)
 
 	for _, fieldName := range fields {
-		fieldA := valueA.FieldByName(fieldName)
-		fieldB := valueB.FieldByName(fieldName)
+		fieldA := structA.FieldByName(fieldName)
+		fieldB := structB.FieldByName(fieldName)
 
 		if !reflect.DeepEqual(fieldA.Interface(), fieldB.Interface()) {
 			return false

@@ -56,17 +56,17 @@ func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) 
 	return dataAdmins, nil
 }
 
-func (as *AdminService) GetAll(page, limit, fullName string) ([]entity.AdminCore, pagination.PageInfo, error) {
+func (as *AdminService) GetAll(page, limit, fullName string) ([]entity.AdminCore, pagination.PageInfo, int, error) {
 	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
-		return nil, pagination.PageInfo{}, err
+		return nil, pagination.PageInfo{}, 0, err
 	}
 
-	dataAdmins, pagnationInfo, err := as.AdminRepository.SelectAll(pageInt, limitInt, fullName)
+	dataAdmins, pagnationInfo, count, err := as.AdminRepository.SelectAll(pageInt, limitInt, fullName)
 	if err != nil {
-		return nil, pagination.PageInfo{}, errors.New("gagal mengambil semua data admin")
+		return nil, pagination.PageInfo{}, 0, errors.New("gagal mengambil semua data admin")
 	}
-	return dataAdmins, pagnationInfo, nil
+	return dataAdmins, pagnationInfo, count, nil
 }
 
 func (as *AdminService) GetById(adminId string) (entity.AdminCore, error) {

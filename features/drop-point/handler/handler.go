@@ -37,20 +37,74 @@ func (dph *dropPointHandler) CreateDropPoint(e echo.Context) error {
 
 	input := request.DropPointRequest{}
 
-	errBind := helper.DecodeJSON(e, &input)
+	errBind := e.Bind(&input)
 	if errBind != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
 
-	request := request.DropPointRequestToReportCore(input)
+	request := request.DropPointRequestToCoreDropPoint(input)
 
-	_, errCreate := dph.dropPointService.CreateDropPoint(request)
+	errCreate := dph.dropPointService.CreateDropPoint(request)
 	if errCreate != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errCreate.Error()))
 	}
 
 	return e.JSON(http.StatusCreated, helper.SuccessResponse(constanta.SUCCESS_CREATE_DATA))
 }
+
+func (dph *dropPointHandler) GetAllDropPoint(e echo.Context) error {
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	search := e.QueryParam("search")
+	page, _ := strconv.Atoi(e.QueryParam("page"))
+	limit, _ := strconv.Atoi(e.QueryParam("limit"))
+
+	dropPoints, paginationInfo, err := dph.dropPointService.GetAllDropPoint(page, limit, search)
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	if len(dropPoints) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
+	}
+
+	response := response.ListCoreDropPointToDropPointResponse(dropPoints)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mendapatkan data", response, paginationInfo))
+
+}
+
+func (dph *dropPointHandler) GetDropPointById(e echo.Context) error {
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	idParams := e.Param("id")
+	result, err := dph.dropPointService.GetDropPointById(idParams)
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	var reportResponse = response.CoreDropPointToDropPointDetailResponse(result)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, reportResponse))
+}
+
 
 func (dph *dropPointHandler) UpdateDropPoint(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
@@ -70,10 +124,10 @@ func (dph *dropPointHandler) UpdateDropPoint(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
 
-	request := request.DropPointRequestToReportCore(input)
+	request := request.DropPointRequestToCoreDropPoint(input)
 
 	dropPointId := e.Param("id")
-	_, errUpdate := dph.dropPointService.UpdateDropPointById(dropPointId, request)
+	errUpdate := dph.dropPointService.UpdateDropPointById(dropPointId, request)
 	if errUpdate != nil {
         if strings.Contains(errUpdate.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
             return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
@@ -105,61 +159,4 @@ func (dph *dropPointHandler) DeleteDropPoint(e echo.Context) error {
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_DELETE_DATA))
-}
-
-func (dph *dropPointHandler) GetAllDropPoint(e echo.Context) error {
-	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-	}
-
-	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
-	}
-
-	name := e.QueryParam("name")
-	address := e.QueryParam("address")
-	page, _ := strconv.Atoi(e.QueryParam("page"))
-	limit, _ := strconv.Atoi(e.QueryParam("limit"))
-
-	dropPoints, paginationInfo, err := dph.dropPointService.GetAllDropPoint(page, limit, name, address)
-	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
-
-	if len(dropPoints) == 0 {
-		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
-	}
-
-	responseDropPoint := make([]response.DropPointResponse, len(dropPoints))
-	for i, dp := range dropPoints {
-		responseDropPoint[i] = response.DropPointCoreToDropPointResponse(dp)
-	}
-
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mendapatkan data", responseDropPoint, paginationInfo))
-
-}
-
-func (dph *dropPointHandler) GetDropPointById(e echo.Context) error {
-	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-	}
-
-	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
-	}
-
-	idParams := e.Param("id")
-	result, err := dph.dropPointService.GetDropPointById(idParams)
-	if err != nil {
-		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
-			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
-		}
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
-
-	var reportResponse = response.DropPointCoreToDropPointResponse(result)
-
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, reportResponse))
 }

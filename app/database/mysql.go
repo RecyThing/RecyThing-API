@@ -8,10 +8,11 @@ import (
 	admin "recything/features/admin/model"
 	article "recything/features/article/model"
 	faq "recything/features/faq/model"
+	mission "recything/features/mission/model"
 	recybot "recything/features/recybot/model"
 	report "recything/features/report/model"
-	user "recything/features/user/model"
 	trashCategory "recything/features/trash_category/model"
+	user "recything/features/user/model"
 	voucher "recything/features/voucher/model"
 
 	"gorm.io/driver/mysql"
@@ -42,4 +43,5 @@ func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&trashCategory.TrashCategory{})
 	db.AutoMigrate(&voucher.Voucher{})
 	db.AutoMigrate(&article.Article{})
+	db.AutoMigrate(&mission.Mission{}, &mission.MissionStage{})
 }

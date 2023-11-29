@@ -40,34 +40,34 @@ func (ar *AdminRepository) Create(data entity.AdminCore) (entity.AdminCore, erro
 	return dataResponse, nil
 }
 
-func (ar *AdminRepository) SelectAll(page, limit int, fullName string) ([]entity.AdminCore, pagination.PageInfo, error) {
+func (ar *AdminRepository) SelectAll(page, limit int, fullName string) ([]entity.AdminCore, pagination.PageInfo, int, error) {
 	dataAdmins := []model.Admin{}
 	offsetInt := (page - 1) * limit
 
 	totalCount, err := ar.GetCount(fullName, constanta.ADMIN)
 	if err != nil {
-		return nil, pagination.PageInfo{}, err
+		return nil, pagination.PageInfo{}, 0, err
 	}
 
 	paginationQuery := ar.db.Limit(limit).Offset(offsetInt)
 	if fullName == "" {
 		tx := paginationQuery.Where("role = ? ", constanta.ADMIN).Find(&dataAdmins)
 		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, tx.Error
+			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
 	}
 
 	if fullName != "" {
 		tx := paginationQuery.Where("role = ? AND fullname LIKE ?", constanta.ADMIN, "%"+fullName+"%").Find(&dataAdmins)
 		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, tx.Error
+			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
 	}
 
 	dataResponse := entity.ListAdminModelToAdminCore(dataAdmins)
 	paginationInfo := pagination.CalculateData(totalCount, limit, page)
 
-	return dataResponse, paginationInfo, nil
+	return dataResponse, paginationInfo, totalCount, nil
 }
 
 func (ar *AdminRepository) GetCount(fullName, role string) (int, error) {
@@ -239,7 +239,7 @@ func (ar *AdminRepository) GetAllReport(status, name, id string, page, limit int
 
 	if id != "" {
 		query = query.Where("reports.id = ?", id)
-	}	
+	}
 
 	var totalCount int64
 	if err := query.Count(&totalCount).Error; err != nil {
@@ -257,7 +257,6 @@ func (ar *AdminRepository) GetAllReport(status, name, id string, page, limit int
 
 	return dataAllReport, paginationInfo, nil
 }
-
 
 // UpdateStatusReport implements entity.AdminRepositoryInterface.
 func (ar *AdminRepository) UpdateStatusReport(id, status, reason string) (report.ReportCore, error) {

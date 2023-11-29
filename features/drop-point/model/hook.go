@@ -5,16 +5,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func (dropPoint *DropPoint) BeforeCreate(tx *gorm.DB) (err error) {
+func (dropPoint *DropPoints) BeforeCreate(tx *gorm.DB) (err error) {
 	newUuid := uuid.New()
 	dropPoint.Id = newUuid.String()
 
 	return nil
 }
 
-func (operational *OperationalSchedules) BeforeCreate(tx *gorm.DB) (err error) {
+func (schedule *Schedules) BeforeCreate(tx *gorm.DB) (err error) {
 	newUuid := uuid.New()
-	operational.Id = newUuid.String()
+	schedule.Id = newUuid.String()
 
 	return nil
 }

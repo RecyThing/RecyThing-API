@@ -58,12 +58,12 @@ func HttpResponseCondition(err error, Messages ...string) bool {
 }
 
 func FieldsEqual(a, b interface{}, fields ...string) bool {
-	valueA := reflect.ValueOf(a)
-	valueB := reflect.ValueOf(b)
+	structA := reflect.ValueOf(a)
+	structB := reflect.ValueOf(b)
 
 	for _, fieldName := range fields {
-		fieldA := valueA.FieldByName(fieldName)
-		fieldB := valueB.FieldByName(fieldName)
+		fieldA := structA.FieldByName(fieldName)
+		fieldB := structB.FieldByName(fieldName)
 
 		if !reflect.DeepEqual(fieldA.Interface(), fieldB.Interface()) {
 			return false

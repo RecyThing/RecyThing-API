@@ -5,6 +5,7 @@ import (
 	"recything/features/drop-point/entity"
 	"recything/features/drop-point/model"
 	"recything/utils/constanta"
+	"recything/utils/helper"
 	"recything/utils/pagination"
 
 	"gorm.io/gorm"
@@ -20,50 +21,26 @@ func NewDropPointRepository(db *gorm.DB) entity.DropPointRepositoryInterface {
 	}
 }
 
-// Create implements entity.DropPointRepositoryInterface.
-func (dpr *dropPointRepository) CreateDropPoint(data entity.DropPointCore) (entity.DropPointCore, error) {
-	request := entity.DropPointCoreToDropPointModel(data)
+func (dpr *dropPointRepository) CreateDropPoint(data entity.DropPointsCore) error {
+	request := entity.CoreDropPointsToModelDropPoints(data)
 
 	tx := dpr.db.Create(&request)
 	if tx.Error != nil {
-		return entity.DropPointCore{}, tx.Error
-	}
-
-	dataResponse := entity.DropPointModelToDropPointCore(request)
-	return dataResponse, nil
-}
-
-// DeleteDropPoint implements entity.DropPointRepositoryInterface.
-func (dpr *dropPointRepository) DeleteDropPointById(id string) error {
-	dropPointData := model.DropPoint{}
-
-	tx := dpr.db.Unscoped().Where("id = ?", id).Delete(&dropPointData)
-	if tx.Error != nil {
 		return tx.Error
-	}
-
-	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
 }
 
-// GetAllDropPoint implements entity.DropPointRepositoryInterface.
-func (dpr *dropPointRepository) GetAllDropPoint(page, limit int, name, address string) ([]entity.DropPointCore, pagination.PageInfo, error) {
-	dropPoint := []model.DropPoint{}
+func (dpr *dropPointRepository) GetAllDropPoint(page, limit int, search string) ([]entity.DropPointsCore, pagination.PageInfo, error) {
+	dropPoint := []model.DropPoints{}
 
 	offset := (page - 1) * limit
-	query := dpr.db.Model(&model.DropPoint{}).Preload("OperationalSchedules")
+	query := dpr.db.Model(&model.DropPoints{}).Preload("Schedule")
 
-	if name != "" {
-		query = query.Where("name LIKE ?", "%"+name+"%")
+	if search != "" {
+		query = query.Where("name LIKE ? or address LIKE ? ", "%"+search+"%", "%"+search+"%")
 	}
-
-	if address != "" {
-		query = query.Where("address LIKE ?", "%"+address+"%")
-	}
-
 
 	var totalCount int64
 	tx := query.Count(&totalCount).Find(&dropPoint)
@@ -78,78 +55,86 @@ func (dpr *dropPointRepository) GetAllDropPoint(page, limit int, name, address s
 		return nil, pagination.PageInfo{}, tx.Error
 	}
 
-	dropPointCores := []entity.DropPointCore{}
-	for _, dropPointModel := range dropPoint {
-		dropPointCore := entity.DropPointModelToDropPointCore(dropPointModel)
-		dropPointCores = append(dropPointCores, dropPointCore)
-	}
-
-	// Menghitung informasi paginasi
+	dataResponse := entity.ListModelDropPointsToCoreDropPoints(dropPoint)
 	pageInfo := pagination.CalculateData(int(totalCount), limit, page)
 
-	return dropPointCores, pageInfo, nil
+	return dataResponse, pageInfo, nil
 
 }
 
-// GetById implements entity.DropPointRepositoryInterface.
-func (dpr *dropPointRepository) GetDropPointById(id string) (entity.DropPointCore, error) {
-	dropPoint := model.DropPoint{}
+func (dpr *dropPointRepository) GetDropPointById(id string) (entity.DropPointsCore, error) {
+	dataDropPoint := model.DropPoints{}
 
-	tx := dpr.db.Preload("OperationalSchedules").Where("id = ?", id).First(&dropPoint)
+	tx := dpr.db.Preload("Schedule").Where("id = ?", id).First(&dataDropPoint)
 	if tx.Error != nil {
-		return entity.DropPointCore{}, tx.Error
+		return entity.DropPointsCore{}, tx.Error
 	}
 
 	if tx.RowsAffected == 0 {
-		return entity.DropPointCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
+		return entity.DropPointsCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
-	dropPointId := entity.DropPointModelToDropPointCore(dropPoint)
-	return dropPointId, nil
+	dataResponse := entity.ModelDropPointsToCoreDropPoints(dataDropPoint)
+	return dataResponse, nil
 }
 
-// UpdateById implements entity.DropPointRepositoryInterface.
-func (dpr *dropPointRepository) UpdateDropPointById(id string, data entity.DropPointCore) (entity.DropPointCore, error) {
-	dropPointData := model.DropPoint{}
-	operationalData := model.OperationalSchedules{}
+func (dpr *dropPointRepository) UpdateDropPointById(id string, data entity.DropPointsCore) error {
+	dropPointData := model.DropPoints{}
 
-	// Perbarui data DropPoint
 	tx := dpr.db.Where("id = ?", id).First(&dropPointData)
 	if tx.Error != nil {
-		return entity.DropPointCore{}, tx.Error
+		return tx.Error
 	}
 
 	if tx.RowsAffected == 0 {
-		return entity.DropPointCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
-	errUpdate := dpr.db.Model(&dropPointData).Updates(entity.DropPointCoreToDropPointModel(data))
-	if errUpdate.Error != nil {
-		return entity.DropPointCore{}, errUpdate.Error
-	}
-
-	// Hapus data OperationalSchedules yang ada
-	tx = dpr.db.Unscoped().Where("drop_point_id = ?", id).Delete(&operationalData)
-	if tx.Error != nil {
-		return entity.DropPointCore{}, tx.Error
-	}
-
-	if tx.RowsAffected == 0 {
-		return entity.DropPointCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
-	}
-
-	// Tambahkan data OperationalSchedules yang baru
-	for _, schedule := range data.OperationalSchedules {
-		newOperationalData := entity.OperationalSchedulesCoreToOperationalSchedulesModel(schedule)
-		newOperationalData.DropPointId = id
-
-		err := dpr.db.Create(&newOperationalData)
-		if err.Error != nil {
-			return entity.DropPointCore{}, err.Error
+	if helper.FieldsEqual(data, dropPointData, "Name", "Address", "Latitude", "Longitude") {
+	} else {
+		errUpdate := dpr.db.Model(&dropPointData).Updates(entity.CoreDropPointsToModelDropPoints(data))
+		if errUpdate.Error != nil {
+			return errUpdate.Error
 		}
 	}
 
-	dataResponse := entity.DropPointModelToDropPointCore(dropPointData)
+	for _, schedule := range data.Schedule {
+		dataSchedule := model.Schedules{}
 
-	return dataResponse, nil
+		tx := dpr.db.Where("drop_points_id = ? AND day = ?", id, schedule.Day).Take(&dataSchedule)
+		if tx.Error != nil {
+			return tx.Error
+		}
+
+		if helper.FieldsEqual(schedule, dataSchedule, "Day", "OpenTime", "CloseTime", "Closed") {
+			continue
+		}
+
+		dataSchedule.Day = schedule.Day
+		dataSchedule.OpenTime = schedule.OpenTime
+		dataSchedule.CloseTime = schedule.CloseTime
+		dataSchedule.Closed = schedule.Closed
+
+		tx = dpr.db.Save(&dataSchedule)
+		if tx.Error != nil {
+			return tx.Error
+		}
+	}
+
+	return nil
+}
+
+func (dpr *dropPointRepository) DeleteDropPointById(id string) error {
+	dropPointData := model.DropPoints{}
+
+	tx := dpr.db.Unscoped().Where("id = ?", id).Delete(&dropPointData)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	}
+
+	return nil
 }

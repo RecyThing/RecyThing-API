@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"log"
 	"recything/features/drop-point/entity"
 	"recything/utils/constanta"
 	"recything/utils/pagination"
@@ -19,47 +18,146 @@ func NewDropPointService(dropPoint entity.DropPointRepositoryInterface) entity.D
 	}
 }
 
-// Create implements entity.DropPointServiceInterface.
-func (dps *dropPointService) CreateDropPoint(data entity.DropPointCore) (entity.DropPointCore, error) {
-	if len(data.OperationalSchedules) > 7 {
-		return entity.DropPointCore{}, errors.New("jumlah hari tidak boleh lebih dari 7")
+func (dps *dropPointService) CreateDropPoint(data entity.DropPointsCore) error {
+	errEmpty := validation.CheckDataEmpty(data.Name, data.Address, data.Latitude, data.Longitude)
+	if errEmpty != nil {
+		return errEmpty
 	}
 
-	uniqueDays := make(map[string]bool)
-	for _, schedule := range data.OperationalSchedules {
-		switch schedule.Days {
-		case "senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu":
-			// Validasi apakah hari sudah pernah digunakan
-			if uniqueDays[schedule.Days] {
-				return entity.DropPointCore{}, errors.New("hari tidak boleh sama")
-			}
-			uniqueDays[schedule.Days] = true
+	errLatLong := validation.CheckLatLong(data.Latitude, data.Longitude)
+	if errLatLong != nil {
+		return errLatLong
+	}
 
-			// Validasi waktu buka dan tutup
-			if err := validation.ValidateTime(schedule.Open, schedule.Close); err != nil {
-				return entity.DropPointCore{}, err
-			}
-		default:
-			return entity.DropPointCore{}, errors.New("hari tidak valid")
+	existingDays := make(map[string]bool)
+
+	for i, schedule := range data.Schedule {
+		errEmpty := validation.CheckDataEmpty(schedule.Day, schedule.OpenTime, schedule.CloseTime)
+		if errEmpty != nil {
+			return errEmpty
 		}
-	}
 
-	for _, day := range []string{"senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"} {
-		if !uniqueDays[day] {
-			data.OperationalSchedules = append(data.OperationalSchedules, entity.OperationalSchedulesCore{
-				Days:  day,
-				Open:  "tutup",
-				Close: "tutup",
+		_, errDay := validation.CheckEqualData(schedule.Day, constanta.Days)
+		if errDay != nil {
+			return errDay
+		}
+
+		errTime := validation.ValidateTime(schedule.OpenTime, schedule.CloseTime)
+		if errTime != nil {
+			return errTime
+		}
+
+		for j := i + 1; j < len(data.Schedule); j++ {
+			if schedule.Day == data.Schedule[j].Day {
+				return errors.New("hari tidak boleh sama")
+			}
+		}
+
+		existingDays[schedule.Day] = true
+
+		dayExists := false
+		for j := range data.Schedule {
+			if schedule.Day == data.Schedule[j].Day {
+				dayExists = true
+				//data.Schedule[j].Closed = false
+				break
+			}
+		}
+
+		if !dayExists {
+			data.Schedule = append(data.Schedule, entity.ScheduleCore{
+				Day:    schedule.Day,
+				Closed: false,
 			})
 		}
 	}
 
-	dataDropPoint, err := dps.dropPointRepository.CreateDropPoint(data)
-	if err != nil {
-		return entity.DropPointCore{}, err
+	for _, day := range constanta.Days {
+		if !existingDays[day] {
+			data.Schedule = append(data.Schedule, entity.ScheduleCore{
+				Day:    day,
+				Closed: true,
+			})
+		}
 	}
 
-	return dataDropPoint, nil
+	err := dps.dropPointRepository.CreateDropPoint(data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (dps *dropPointService) GetAllDropPoint(page, limit int, search string) ([]entity.DropPointsCore, pagination.PageInfo, error) {
+	if limit > 10 {
+		return nil, pagination.PageInfo{}, errors.New("limit tidak boleh lebih dari 10")
+	}
+
+	page, limit = validation.ValidateCountLimitAndPage(page, limit)
+
+	dropPointCores, pageInfo, err := dps.dropPointRepository.GetAllDropPoint(page, limit, search)
+	if err != nil {
+		return nil, pagination.PageInfo{}, err
+	}
+
+	return dropPointCores, pageInfo, nil
+}
+
+func (dps *dropPointService) GetDropPointById(id string) (entity.DropPointsCore, error) {
+	if id == "" {
+		return entity.DropPointsCore{}, errors.New(constanta.ERROR_ID_INVALID)
+	}
+
+	idDropPoint, err := dps.dropPointRepository.GetDropPointById(id)
+	if err != nil {
+		return entity.DropPointsCore{}, err
+	}
+
+	return idDropPoint, err
+}
+
+func (dps *dropPointService) UpdateDropPointById(id string, data entity.DropPointsCore) error {
+	errEmpty := validation.CheckDataEmpty(data.Name, data.Address, data.Latitude, data.Longitude)
+	if errEmpty != nil {
+		return errEmpty
+	}
+
+	errLatLong := validation.CheckLatLong(data.Latitude, data.Longitude)
+	if errLatLong != nil {
+		return errLatLong
+	}
+
+	for i, schedule := range data.Schedule {
+		errEmpty := validation.CheckDataEmpty(schedule.Day, schedule.OpenTime, schedule.CloseTime)
+		if errEmpty != nil {
+			return errEmpty
+		}
+
+		day, errDay := validation.CheckEqualData(schedule.Day, constanta.Days)
+		if errDay != nil {
+			return errDay
+		}
+		schedule.Day = day
+
+		errTime := validation.ValidateTime(schedule.OpenTime, schedule.CloseTime)
+		if errTime != nil {
+			return errTime
+		}
+
+		for j := i + 1; j < len(data.Schedule); j++ {
+			if schedule.Day == data.Schedule[j].Day {
+				return errors.New("hari tidak boleh sama")
+			}
+		}
+	}
+
+	err := dps.dropPointRepository.UpdateDropPointById(id, data)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // DeleteDropPoint implements entity.DropPointServiceInterface.
@@ -74,73 +172,4 @@ func (dps *dropPointService) DeleteDropPointById(id string) error {
 	}
 
 	return nil
-}
-
-// GetAllDropPoint implements entity.DropPointServiceInterface.
-func (dps *dropPointService) GetAllDropPoint(page, limit int, name, address string) ([]entity.DropPointCore, pagination.PageInfo, error) {
-	if limit > 10 {
-        return nil, pagination.PageInfo{}, errors.New("limit tidak boleh lebih dari 10")
-    }
-
-	page, limit = validation.ValidateCountLimitAndPage(page, limit)
-	
-	dropPointCores, pageInfo, err := dps.dropPointRepository.GetAllDropPoint(page, limit, name, address)
-	if err != nil {
-		return nil, pagination.PageInfo{}, err
-	}
-
-	return dropPointCores, pageInfo, nil
-}
-
-// GetById implements entity.DropPointServiceInterface.
-func (dps *dropPointService) GetDropPointById(id string) (entity.DropPointCore, error) {
-	if id == "" {
-		return entity.DropPointCore{}, errors.New(constanta.ERROR_ID_INVALID)
-	}
-
-	idDropPoint, err := dps.dropPointRepository.GetDropPointById(id)
-	if err != nil {
-		return entity.DropPointCore{}, err
-	}
-	
-	return idDropPoint, err
-}
-
-// UpdateById implements entity.DropPointServiceInterface.
-func (dps *dropPointService) UpdateDropPointById(id string, data entity.DropPointCore) (entity.DropPointCore, error) {
-	if id == "" {
-		return entity.DropPointCore{}, errors.New(constanta.ERROR_ID_INVALID)
-	}
-
-	if len(data.OperationalSchedules) > 7 {
-		return entity.DropPointCore{}, errors.New("jumlah hari tidak boleh lebih dari 7")
-	}
-
-	uniqueDays := make(map[string]bool)
-	for _, schedule := range data.OperationalSchedules {
-		switch schedule.Days {
-		case "senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu":
-			// Validasi apakah hari sudah pernah digunakan
-			if uniqueDays[schedule.Days] {
-				log.Println("Hari sudah digunakan:", schedule.Days)
-				return entity.DropPointCore{}, errors.New("hari tidak boleh sama")
-			}
-			uniqueDays[schedule.Days] = true
-
-			// Validasi waktu buka dan tutup
-			if err := validation.ValidateTime(schedule.Open, schedule.Close); err != nil {
-				log.Println("Validasi waktu buka dan tutup gagal:", err)
-				return entity.DropPointCore{}, err
-			}
-		default:
-			return entity.DropPointCore{}, errors.New("hari tidak valid")
-		}
-	}
-
-	updatedData, err := dps.dropPointRepository.UpdateDropPointById(id, data)
-	if err != nil {
-		return entity.DropPointCore{}, err
-	}
-
-	return updatedData, nil
 }

@@ -99,7 +99,7 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 		txLink := tx.Create(&categories)
 		if txLink.Error != nil {
 			tx.Rollback()
-			return entity.ArticleCore{}, txLink.Error
+			return entity.ArticleCore{}, errors.New("kategori tidak ditemukan")
 		}
 	}
 
@@ -163,7 +163,7 @@ func (article *articleRepository) CreateArticle(articleInput entity.ArticleCore,
 
 	txOuter := article.db.Begin()
 
-	if err := txOuter.Create(&articleData).Error; err != nil {
+	if err := txOuter.Save(&articleData).Error; err != nil {
 		txOuter.Rollback()
 		return entity.ArticleCore{}, err
 	}
@@ -171,16 +171,28 @@ func (article *articleRepository) CreateArticle(articleInput entity.ArticleCore,
 	articleCreated := entity.ArticleModelToArticleCore(articleData)
 
 	for _, categoryId := range articleInput.Category_id {
+
+		 // Check if the category exists
+		 var categoryCount int64
+		 if err := txOuter.Model(&model.ArticleTrashCategory{}).Where("article_id = ?", categoryId).Count(&categoryCount).Error; err != nil {
+			 txOuter.Rollback()
+			 return entity.ArticleCore{}, err
+		 }
+	 
+		//  // If the category doesn't exist, return an error
+		//  if categoryCount == 0 {
+		// 	 txOuter.Rollback()
+		// 	 return entity.ArticleCore{}, errors.New("kategori tidak ditemukan")
+		//  }
+
 		categories := new(model.ArticleTrashCategory)
 		categories.ArticleID = articleCreated.ID
 		categories.TrashCategoryID = categoryId
 
 		txInner := txOuter.Create(&categories)
-
 		if txInner.Error != nil {
 			txOuter.Rollback()
-			article.DeleteArticle(articleCreated.ID)
-			return entity.ArticleCore{}, txInner.Error
+			return entity.ArticleCore{}, errors.New("kategori tidak ditemukan")
 		}
 
 	}

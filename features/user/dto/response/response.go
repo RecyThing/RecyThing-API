@@ -1,5 +1,7 @@
 package response
 
+import "time"
+
 type UserCreateResponse struct {
 	Id       string `json:"id"`
 	Fullname string `json:"fullname"`
@@ -32,11 +34,12 @@ type UserResponseManageUsers struct {
 }
 
 type UserResponseDetailManageUsers struct {
-	Id          string `json:"id"`
-	Fullname    string `json:"fullname"`
-	Email       string `json:"email"`
-	DateOfBirth string `json:"date_of_birth"`
-	Point       int    `json:"point"`
-	Purpose     string `json:"purpose"`
-	Address     string `json:"address"`
+	Id          string    `json:"id"`
+	Fullname    string    `json:"fullname"`
+	Email       string    `json:"email"`
+	DateOfBirth string    `json:"date_of_birth"`
+	Point       int       `json:"point"`
+	Purpose     string    `json:"purpose"`
+	Address     string    `json:"address"`
+	CreatedAt   time.Time `json:"created_at"`
 }

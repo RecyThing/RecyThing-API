@@ -4,32 +4,32 @@ import (
 	"recything/features/drop-point/entity"
 )
 
-func OperationalSchedulesRequestToOperationalSchedulesCore(data OperationalSchedulesRequest) entity.OperationalSchedulesCore {
-	return entity.OperationalSchedulesCore{
-		Days:  data.Days,
-		Open:  data.Open,
-		Close: data.Close,
-	}
-}
-
-func ListOperationalSchedulesRequestToOperationalSchedulesCore(data []OperationalSchedulesRequest) []entity.OperationalSchedulesCore {
-	listDropPoint := []entity.OperationalSchedulesCore{}
-	for _, v := range data {
-		dropPoint := OperationalSchedulesRequestToOperationalSchedulesCore(v)
-		listDropPoint = append(listDropPoint, dropPoint)
-	}
-
-	return listDropPoint
-}
-
-func DropPointRequestToReportCore(data DropPointRequest) entity.DropPointCore {
-	reportCore := entity.DropPointCore{
+func DropPointRequestToCoreDropPoint(data DropPointRequest) entity.DropPointsCore {
+	return entity.DropPointsCore{
 		Name:      data.Name,
 		Address:   data.Address,
 		Latitude:  data.Latitude,
 		Longitude: data.Longitude,
+		Schedule:  ListScheduleRequestToCoreSchedule(data.Schedule),
 	}
-	dropPoint := ListOperationalSchedulesRequestToOperationalSchedulesCore(data.OperationalSchedules)
-	reportCore.OperationalSchedules = dropPoint
-	return reportCore
 }
+
+func ScheduleRequestToCoreSchedule(data ScheduleRequest) entity.ScheduleCore {
+	return entity.ScheduleCore{
+		Day:       data.Day,
+		OpenTime:  data.Open_Time,
+		CloseTime: data.Close_Time,
+		Closed:    data.Closed,
+	}
+}
+
+func ListScheduleRequestToCoreSchedule(data []ScheduleRequest) []entity.ScheduleCore {
+	list := []entity.ScheduleCore{}
+	for _, value := range data {
+		result := ScheduleRequestToCoreSchedule(value)
+		list = append(list, result)
+	}
+	return list
+}
+
+

@@ -1,15 +1,31 @@
 package response
 
 type DropPointResponse struct {
-	Name                 string                         `json:"name"`
-	Address              string                         `json:"address"`
-	Latitude             string                         `json:"latitude"`
-	Longitude            string                         `json:"longitude"`
-	OperationalSchedules []OperationalSchedulesResponse `json:"operational_schedules"`
+	Id        string             `json:"id"`
+	Name      string             `json:"name"`
+	Address   string             `json:"address"`
+	Schedule  []ScheduleResponse `json:"schedule"`
 }
 
-type OperationalSchedulesResponse struct {
-	Days  string `json:"days"`
-	Open  string `json:"open"`
-	Close string `json:"close"`
+type ScheduleResponse struct {
+	Day        string `json:"day"`
+	Open_Time  string `json:"open_time"`
+	Close_Time string `json:"close_time"`
+	Closed     bool   `json:"closed"`
+}
+
+type DropPointDetailResponse struct {
+	Id        string                   `json:"id"`
+	Name      string                   `json:"name"`
+	Address   string                   `json:"address"`
+	Latitude  float64                  `json:"latitude"`
+	Longitude float64                  `json:"longitude"`
+	Schedule  []ScheduleDetailResponse `json:"schedule"`
+}
+
+type ScheduleDetailResponse struct {
+	Day        string `json:"day"`
+	Open_Time  string `json:"open_time"`
+	Close_Time string `json:"close_time"`
+	Closed     bool   `json:"closed"`
 }

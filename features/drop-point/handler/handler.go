@@ -37,7 +37,7 @@ func (dph *dropPointHandler) CreateDropPoint(e echo.Context) error {
 
 	input := request.DropPointRequest{}
 
-	errBind := helper.DecodeJSON(e, &input)
+	errBind := e.Bind(&input)
 	if errBind != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}

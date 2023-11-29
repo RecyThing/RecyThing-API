@@ -97,7 +97,7 @@ func (ah *AdminHandler) GetAll(e echo.Context) error {
 	limit := e.QueryParam("limit")
 	fullName := e.QueryParam("fullname")
 
-	result, pagnationInfo, err := ah.AdminService.GetAll(page, limit, fullName)
+	result, pagnationInfo, count, err := ah.AdminService.GetAll(page, limit, fullName)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
@@ -110,7 +110,7 @@ func (ah *AdminHandler) GetAll(e echo.Context) error {
 	}
 
 	response := response.ListAdminCoreToAdminResponse(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mengambil semua data admin", response, pagnationInfo))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mengambil semua data admin", response, pagnationInfo, count))
 
 }
 

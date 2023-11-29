@@ -23,3 +23,19 @@ func ListCoreTrashCategoryToReponseTrashCategory(trash []entity.TrashCategoryCor
 	}
 	return list
 }
+
+func CoreTrashCategoryToReponseTrashCategoryArticle(trash entity.TrashCategoryCore) TrashCategoryArticle {
+	return TrashCategoryArticle{
+		ID:        trash.ID,
+		TrashType: trash.TrashType,
+	}
+}
+
+func ListCoreTrashCategoryToReponseTrashCategoryArticle(trash []entity.TrashCategoryCore) []TrashCategoryArticle {
+	list := []TrashCategoryArticle{}
+	for _, v := range trash {
+		result := CoreTrashCategoryToReponseTrashCategoryArticle(v)
+		list = append(list, result)
+	}
+	return list
+}

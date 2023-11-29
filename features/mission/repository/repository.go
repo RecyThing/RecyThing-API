@@ -3,7 +3,9 @@ package repository
 import (
 	"errors"
 	"recything/features/mission/entity"
+	"recything/features/mission/model"
 	"recything/utils/constanta"
+	"recything/utils/pagination"
 	"recything/utils/validation"
 
 	"gorm.io/gorm"
@@ -33,67 +35,54 @@ func (mr *MissionRepository) Create(input entity.Mission) error {
 	return nil
 }
 
-// func (tc *trashCategoryRepository) Create(data entity.TrashCategoryCore) error {
-// 	input := entity.CoreTrashCategoryToModelTrashCategory(data)
+func (mr *MissionRepository) FindAll(page, limit int, filter string) ([]entity.Mission, pagination.PageInfo, int, error) {
+	data := []model.Mission{}
+	offsetInt := (page - 1) * limit
 
-// 	tx := tc.db.Create(&input)
-// 	if tx.Error != nil {
-// 		if validation.IsDuplicateError(tx.Error) {
-// 			return errors.New(constanta.ERROR_DATA_EXIST)
-// 		}
-// 		return tx.Error
-// 	}
-// 	return nil
-// }
+	totalCount, err := mr.GetCount(filter)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
 
-// func (tc *trashCategoryRepository) FindAll(page, limit int, trashType string) ([]entity.TrashCategoryCore, pagination.PageInfo, int, error) {
-// 	dataTrashCategories := []model.TrashCategory{}
-// 	offsetInt := (page - 1) * limit
 
-// 	totalCount, err := tc.GetCount(trashType)
-// 	if err != nil {
-// 		return nil, pagination.PageInfo{}, 0, err
-// 	}
+	if filter == "" {
+		tx := mr.db.Limit(limit).Offset(offsetInt).Preload("MissionStages").Find(&data)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, 0, tx.Error
+		}
+	}
 
-// 	paginationQuery:= tc.db.Limit(limit).Offset(offsetInt)
-// 	if trashType == "" {
-// 		tx := paginationQuery.Find(&dataTrashCategories)
-// 		if tx.Error != nil {
-// 			return nil, pagination.PageInfo{}, 0, tx.Error
-// 		}
-// 	}
+	if filter != "" {
+		tx := mr.db.Limit(limit).Offset(offsetInt).Where("status LIKE ?", "%"+filter+"%").Preload("MissionStages").Find(&data)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, 0, tx.Error
+		}
+	}
 
-// 	if trashType != "" {
-// 		tx := paginationQuery.Where("trash_type LIKE ?", "%"+trashType+"%").Find(&dataTrashCategories)
-// 		if tx.Error != nil {
-// 			return nil, pagination.PageInfo{}, 0, tx.Error
-// 		}
-// 	}
+	result := entity.ListMissionModelToMissionCore(data)
+	paginationInfo := pagination.CalculateData(totalCount, limit, page)
+	return result, paginationInfo, totalCount, nil
+}
 
-// 	result := entity.ListModelTrashCategoryToCoreTrashCategory(dataTrashCategories)
-// 	paginationInfo := pagination.CalculateData(totalCount, limit, page)
-// 	return result, paginationInfo, totalCount, nil
-// }
+func (mr *MissionRepository) GetCount(filter string) (int, error) {
+	var totalCount int64
+	model := mr.db.Model(&model.Mission{})
+	if filter == "" {
+		tx := model.Count(&totalCount)
+		if tx.Error != nil {
+			return 0, tx.Error
+		}
+	}
 
-// func (tc *trashCategoryRepository) GetCount(trashType string) (int, error) {
-// 	var totalCount int64
-// 	model:=tc.db.Model(&model.TrashCategory{})
-// 	if trashType == "" {
-// 		tx :=model.Count(&totalCount)
-// 		if tx.Error != nil {
-// 			return 0, tx.Error
-// 		}
-// 	}
+	if filter != "" {
+		tx := model.Where("status LIKE ?", "%"+filter+"%").Count(&totalCount)
+		if tx.Error != nil {
+			return 0, tx.Error
+		}
 
-// 	if trashType != "" {
-// 		tx := model.Where("trash_type LIKE ?", "%"+trashType+"%").Count(&totalCount)
-// 		if tx.Error != nil {
-// 			return 0, tx.Error
-// 		}
-
-// 	}
-// 	return int(totalCount), nil
-// }
+	}
+	return int(totalCount), nil
+}
 
 // func (tc *trashCategoryRepository) GetById(idTrash string) (entity.TrashCategoryCore, error) {
 

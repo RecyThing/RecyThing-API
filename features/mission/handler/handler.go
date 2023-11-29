@@ -1,9 +1,13 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"recything/features/mission/dto/request"
+	"recything/features/mission/dto/response"
 	"recything/features/mission/entity"
+
+	"strings"
 
 	"recything/utils/constanta"
 	"recything/utils/helper"
@@ -30,10 +34,26 @@ func (mh *missionHandler) CreateMission(e echo.Context) error {
 	}
 
 	requestMission := request.Mission{}
+	d := &echo.DefaultBinder{}
+
+	d.Bind(&requestMission, e)
 	err = e.Bind(&requestMission)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
+	log.Println("mission stages : ", requestMission.MissionStages)
+
+	// for i := 0; i < len(requestMission.MissionStages); i++ {
+	// 	stageTitle := e.FormValue(fmt.Sprintf("mission_stages[%d][title]", i))
+	// 	stageDescription := e.FormValue(fmt.Sprintf("mission_stages[%d][description]", i))
+	// 	missionStage := request.MissionStage{
+	// 		Title:       stageTitle,
+	// 		Description: stageDescription,
+	// 	}
+
+	// 	requestMission.MissionStages = append(requestMission.MissionStages, missionStage)
+	// }
+	// log.Println("mission stages 2 : ", requestMission.MissionStages)
 
 	image, err := e.FormFile("mission_image")
 	if err != nil {
@@ -42,45 +62,47 @@ func (mh *missionHandler) CreateMission(e echo.Context) error {
 		}
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal upload file"))
 	}
+
 	input := request.MissionRequestToMissionCore(requestMission)
 	input.AdminID = id
 	err = mh.missionService.CreateMission(image, input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
+
 	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan missi"))
 }
 
-// func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
+func (mh *missionHandler) GetAllMission(e echo.Context) error {
 
-// 	_, role, err := jwt.ExtractToken(e)
-// 	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
-// 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-// 	}
-// 	if err != nil {
-// 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
-// 	}
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
 
-// 	page := e.QueryParam("page")
-// 	limit := e.QueryParam("limit")
-// 	trashType := e.QueryParam("trash_type")
+	page := e.QueryParam("page")
+	limit := e.QueryParam("limit")
+	filter := e.QueryParam("filter")
 
-// 	result, pagnation, count, err := tc.trashCategory.GetAllCategory(page, limit, trashType)
-// 	if err != nil {
-// 		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
-// 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-// 		}
+	result, pagnation, count, err := mh.missionService.FindAll(page, limit, filter)
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
 
-// 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-// 	}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
 
-// 	if len(result) == 0 {
-// 		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada kategori sampah"))
-// 	}
+	if len(result) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada missi"))
+	}
 
-// 	response := response.ListCoreTrashCategoryToReponseTrashCategory(result)
-// 	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("Berhasil mendapatkan seluruh kategori sampah", response, pagnation, count))
-// }
+	response := response.ListMissionCoreToMissionResponse(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("Berhasil mendapatkan seluruh missi", response, pagnation, count))
+}
 
 // func (tc *trashCategoryHandler) GetById(e echo.Context) error {
 

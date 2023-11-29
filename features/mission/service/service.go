@@ -3,6 +3,7 @@ package service
 import (
 	"mime/multipart"
 	"recything/features/mission/entity"
+	"recything/utils/pagination"
 	"recything/utils/storage"
 	"recything/utils/validation"
 )
@@ -38,18 +39,18 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 	return nil
 }
 
-// func (tc *trashCategoryService) GetAllCategory(page, limit, trashType string) ([]entity.TrashCategoryCore, pagination.PageInfo, int, error) {
-// 	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
-// 	if err != nil {
-// 		return nil, pagination.PageInfo{}, 0, err
-// 	}
+func (ms *missionService) FindAll(page, limit, filter string) ([]entity.Mission, pagination.PageInfo, int, error) {
+	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
 
-// 	data, pagnationInfo, count, err := tc.trashCategoryRepo.FindAll(pageInt, limitInt, trashType)
-// 	if err != nil {
-// 		return nil, pagination.PageInfo{}, 0, err
-// 	}
-// 	return data, pagnationInfo, count, nil
-// }
+	data, pagnationInfo, count, err := ms.missionRepo.FindAll(pageInt, limitInt, filter)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
+	return data, pagnationInfo, count, nil
+}
 
 // func (tc *trashCategoryService) GetById(idTrash string) (entity.TrashCategoryCore, error) {
 

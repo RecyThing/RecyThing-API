@@ -58,5 +58,6 @@ func UsersCoreToResponseDetailManageUsers(data entity.UsersCore) UserResponseDet
 		Address:     data.Address,
 		DateOfBirth: data.DateOfBirth,
 		Purpose:     data.Purpose,
+		CreatedAt:   data.CreatedAt,
 	}
 }

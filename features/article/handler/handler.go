@@ -5,6 +5,7 @@ import (
 	"recything/features/article/dto/request"
 	"recything/features/article/dto/response"
 	"recything/features/article/entity"
+	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
 	"strconv"
@@ -31,7 +32,7 @@ func (article *articleHandler) CreateArticle(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan role"))
 	}
 
-	if role != "admin" && role != "super_admin"{
+	if role != "admin" && role != "super_admin" {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("akses ditolak"))
 	}
 
@@ -59,22 +60,43 @@ func (article *articleHandler) CreateArticle(e echo.Context) error {
 }
 
 func (article *articleHandler) GetAllArticle(e echo.Context) error {
-	tittle := e.QueryParam("tittle")
+	search := e.QueryParam("search")
 	page, _ := strconv.Atoi(e.QueryParam("page"))
 	limit, _ := strconv.Atoi(e.QueryParam("limit"))
 
-	articleData, paginationInfo, err := article.articleService.GetAllArticle(page, limit, tittle)
+	Id, role, err := jwt.ExtractToken(e)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
+	}
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
+	}
+
+	articleData, paginationInfo, err := article.articleService.GetAllArticle(page, limit, search)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan artikel"))
 	}
 
 	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
 
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mendapatkan semua article", articleResponse, paginationInfo))
+	if role == constanta.ADMIN || role == constanta.SUPERADMIN {
+		return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mendapatkan semua article", articleResponse, paginationInfo))
+	} else {
+		return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan semua article", articleResponse))
+	}
+
 }
 
 func (article *articleHandler) GetSpecificArticle(e echo.Context) error {
 	idParams := e.Param("id")
+
+	Id, _, err := jwt.ExtractToken(e)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
+	}
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
+	}
 
 	articleData, err := article.articleService.GetSpecificArticle(idParams)
 	if err != nil {
@@ -95,7 +117,7 @@ func (article *articleHandler) UpdateArticle(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan role"))
 	}
 
-	if role != "admin" && role != "super_admin"{
+	if role != "admin" && role != "super_admin" {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("akses ditolak"))
 	}
 
@@ -134,7 +156,7 @@ func (article *articleHandler) DeleteArticle(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan role"))
 	}
 
-	if role != "admin" && role != "super_admin"{
+	if role != "admin" && role != "super_admin" {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("akses ditolak"))
 	}
 

@@ -111,14 +111,14 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 }
 
 // GetAllArticle implements entity.ArticleRepositoryInterface.
-func (article *articleRepository) GetAllArticle(page, limit int, tittle string) ([]entity.ArticleCore, pagination.PageInfo, error) {
+func (article *articleRepository) GetAllArticle(page, limit int, search string) ([]entity.ArticleCore, pagination.PageInfo, error) {
 	var articleData []model.Article
 
 	offset := (page - 1) * limit
 	query := article.db.Model(&model.Article{}).Preload("Categories")
 
-	if tittle != "" {
-		query = query.Where("title LIKE ?", "%"+tittle+"%")
+	if search != "" {
+		query = query.Where("title LIKE ?", "%"+search+"%")
 	}
 
 	var totalCount int64

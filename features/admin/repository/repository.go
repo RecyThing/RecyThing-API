@@ -40,25 +40,25 @@ func (ar *AdminRepository) Create(data entity.AdminCore) (entity.AdminCore, erro
 	return dataResponse, nil
 }
 
-func (ar *AdminRepository) SelectAll(page, limit int, fullName string) ([]entity.AdminCore, pagination.PageInfo, int, error) {
+func (ar *AdminRepository) SelectAll(page, limit int, search string) ([]entity.AdminCore, pagination.PageInfo, int, error) {
 	dataAdmins := []model.Admin{}
 	offsetInt := (page - 1) * limit
 
-	totalCount, err := ar.GetCount(fullName, constanta.ADMIN)
+	totalCount, err := ar.GetCount(search, constanta.ADMIN)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
 	paginationQuery := ar.db.Limit(limit).Offset(offsetInt)
-	if fullName == "" {
+	if search == "" {
 		tx := paginationQuery.Where("role = ? ", constanta.ADMIN).Find(&dataAdmins)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
 	}
 
-	if fullName != "" {
-		tx := paginationQuery.Where("role = ? AND fullname LIKE ?", constanta.ADMIN, "%"+fullName+"%").Find(&dataAdmins)
+	if search != "" {
+		tx := paginationQuery.Where("role = ? AND fullname LIKE ?", constanta.ADMIN, "%"+search+"%").Find(&dataAdmins)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
@@ -70,10 +70,10 @@ func (ar *AdminRepository) SelectAll(page, limit int, fullName string) ([]entity
 	return dataResponse, paginationInfo, totalCount, nil
 }
 
-func (ar *AdminRepository) GetCount(fullName, role string) (int, error) {
+func (ar *AdminRepository) GetCount(search, role string) (int, error) {
 	var totalCount int64
 	model := ar.db.Model(&model.Admin{})
-	if fullName == "" {
+	if search == "" {
 		tx := model.Where("role = ? ", constanta.ADMIN).Count(&totalCount)
 		if tx.Error != nil {
 			return 0, tx.Error
@@ -81,8 +81,8 @@ func (ar *AdminRepository) GetCount(fullName, role string) (int, error) {
 
 	}
 
-	if fullName != "" {
-		tx := model.Where("role = ? AND fullname LIKE ?", constanta.ADMIN, "%"+fullName+"%").Count(&totalCount)
+	if search != "" {
+		tx := model.Where("role = ? AND fullname LIKE ?", constanta.ADMIN, "%"+search+"%").Count(&totalCount)
 		if tx.Error != nil {
 			return 0, tx.Error
 		}

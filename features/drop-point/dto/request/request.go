@@ -1,15 +1,16 @@
 package request
 
 type DropPointRequest struct {
-	Name                 string                        `json:"name"`
-	Address              string                        `json:"address"`
-	Latitude             string                        `json:"latitude"`
-	Longitude            string                        `json:"longitude"`
-	OperationalSchedules []OperationalSchedulesRequest `json:"operational_schedules"`
+	Name      string            `json:"name"`
+	Address   string            `json:"address"`
+	Latitude  float64           `json:"latitude"`
+	Longitude float64           `json:"longitude"`
+	Schedule  []ScheduleRequest `json:"schedule"`
 }
 
-type OperationalSchedulesRequest struct {
-	Days  string `json:"days"`
-	Open  string `json:"open"`
-	Close string `json:"close"`
+type ScheduleRequest struct {
+	Day        string `json:"day"`
+	Open_Time  string `json:"open_time"`
+	Close_Time string `json:"close_time"`
+	Closed     bool   `json:"closed"`
 }

@@ -2,8 +2,6 @@ package entity
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Mission struct {
@@ -29,5 +27,10 @@ type MissionStage struct {
 	Description string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-	DeletedAt   gorm.DeletedAt
+}
+
+type Stage struct {
+	ID          string
+	Title       string
+	Description string
 }

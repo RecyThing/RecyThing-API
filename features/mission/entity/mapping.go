@@ -19,25 +19,6 @@ func MissionCoreToMissionModel(data Mission) model.Mission {
 	missionModel.MissionStages = missionStagesModel
 	return missionModel
 }
-
-func MissionStagesCoreToMissionStagesModel(data MissionStage) model.MissionStage {
-	missionStagesModel := model.MissionStage{
-		MissionID:   data.MissionID,
-		Title:       data.Title,
-		Description: data.Description,
-	}
-	return missionStagesModel
-}
-
-func ListMissionStagesCoreToMissionStagesModel(data []MissionStage) []model.MissionStage {
-	missionStagesModel := []model.MissionStage{}
-	for _, misiStages := range data {
-		result := MissionStagesCoreToMissionStagesModel(misiStages)
-		missionStagesModel = append(missionStagesModel, result)
-	}
-	return missionStagesModel
-}
-
 func MissionModelToMissionCore(data model.Mission) Mission {
 	missionCore := Mission{
 		ID:           data.ID,
@@ -48,11 +29,22 @@ func MissionModelToMissionCore(data model.Mission) Mission {
 		Point:        data.Point,
 		Description:  data.Description,
 		StartDate:    data.StartDate,
+		CreatedAt:    data.CreatedAt,
+		UpdatedAt:    data.UpdatedAt,
 		EndDate:      data.EndDate,
 	}
 	missionStagesCore := listMissionStagesModelToMissionStagesCore(data.MissionStages)
 	missionCore.MissionStages = missionStagesCore
 	return missionCore
+}
+
+func MissionStagesCoreToMissionStagesModel(data MissionStage) model.MissionStage {
+	missionStagesModel := model.MissionStage{
+		MissionID:   data.MissionID,
+		Title:       data.Title,
+		Description: data.Description,
+	}
+	return missionStagesModel
 }
 
 func MissionStagesModelToMissionStagesCore(data model.MissionStage) MissionStage {
@@ -61,6 +53,14 @@ func MissionStagesModelToMissionStagesCore(data model.MissionStage) MissionStage
 		Description: data.Description,
 	}
 	return missionStagesCore
+}
+
+func StageCoreToMissionStageModel(data Stage) model.MissionStage {
+	missionStagesModel := model.MissionStage{
+		Title:       data.Title,
+		Description: data.Description,
+	}
+	return missionStagesModel
 }
 
 func listMissionStagesModelToMissionStagesCore(data []model.MissionStage) []MissionStage {
@@ -79,4 +79,12 @@ func ListMissionModelToMissionCore(data []model.Mission) []Mission {
 		missions = append(missions, result)
 	}
 	return missions
+}
+func ListMissionStagesCoreToMissionStagesModel(data []MissionStage) []model.MissionStage {
+	missionStagesModel := []model.MissionStage{}
+	for _, misiStages := range data {
+		result := MissionStagesCoreToMissionStagesModel(misiStages)
+		missionStagesModel = append(missionStagesModel, result)
+	}
+	return missionStagesModel
 }

@@ -24,11 +24,15 @@ func RouteArticle(e *echo.Group, db *gorm.DB) {
 	trashCategoryService:=trashCategoryService.NewTrashCategoryService(trashCategoryRepository)
 	trashCategoryHandler:=trashCategoryHandler.NewTrashCategoryHandler(trashCategoryService)
 
-	article := e.Group("/manage/articles", jwt.JWTMiddleware())
-	article.POST("", articleHand.CreateArticle)
-	article.GET("", articleHand.GetAllArticle)
-	article.GET("/:id", articleHand.GetSpecificArticle)
-	article.GET("/category",trashCategoryHandler.GetAllCategoryForArticle)
-	article.PUT("/:id", articleHand.UpdateArticle)
-	article.DELETE("/:id", articleHand.DeleteArticle)
+	admin := e.Group("/admins/manage/articles", jwt.JWTMiddleware())
+	admin.POST("", articleHand.CreateArticle)
+	admin.GET("", articleHand.GetAllArticle)
+	admin.GET("/:id", articleHand.GetSpecificArticle)
+	admin.GET("/category",trashCategoryHandler.GetAllCategoryForArticle)
+	admin.PUT("/:id", articleHand.UpdateArticle)
+	admin.DELETE("/:id", articleHand.DeleteArticle)
+
+	user := e.Group("/articles", jwt.JWTMiddleware())
+	user.GET("", articleHand.GetAllArticle)
+	user.GET("/:id", articleHand.GetSpecificArticle)
 }

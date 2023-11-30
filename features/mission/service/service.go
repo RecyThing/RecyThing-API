@@ -34,7 +34,6 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 	if err != nil {
 		return err
 	}
-	
 	uploadError := make(chan error)
 	var imageURL string
 	go func() {

@@ -211,13 +211,20 @@ func (ah *AdminHandler) GetAllUser(e echo.Context) error {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
-	result, err := ah.AdminService.GetAllUsers()
+	search := e.QueryParam("search")
+	page := e.QueryParam("page")
+	limit := e.QueryParam("limit")
+
+	result, pagination, count, err := ah.AdminService.GetAllUsers(search,page,limit)
 	if err != nil {
 		e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
+	if len(result) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
+	}
 	response := userDto.UsersCoreToResponseManageUsersList(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan data user", response))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan data user", response,pagination,count))
 
 }
 
@@ -285,7 +292,7 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
 
-	result, paginationInfo,count, err := ah.AdminService.GetAllReport(status, search, page, limit)
+	result, paginationInfo, count, err := ah.AdminService.GetAllReport(status, search, page, limit)
 	if err != nil {
 		if helper.HttpResponseCondition(err, constanta.ERROR_INVALID_TYPE, constanta.ERROR_INVALID_STATUS, constanta.ERROR_LIMIT) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
@@ -298,7 +305,7 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 	}
 
 	response := reportDto.ListReportCoresToReportResponseForDataReporting(result, ah.UserService)
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan data reporting", response, paginationInfo,count))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan data reporting", response, paginationInfo, count))
 }
 
 func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {

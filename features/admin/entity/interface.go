@@ -16,7 +16,7 @@ type AdminRepositoryInterface interface {
 	FindByEmailANDPassword(data AdminCore) (AdminCore, error)
 	GetCount(fullName, role string) (int, error)
 	//Manage Users
-	GetAllUsers() ([]user.UsersCore, error)
+	GetAllUsers( search string, page, limit int) ([]user.UsersCore,  pagination.PageInfo, int, error)
 	GetByIdUser(userId string) (user.UsersCore, error)
 	DeleteUsers(adminId string) error
 	// Manage Reporting
@@ -33,7 +33,7 @@ type AdminServiceInterface interface {
 	DeleteById(adminId string) error
 	FindByEmailANDPassword(data AdminCore) (AdminCore, string, error)
 	//Manage Users
-	GetAllUsers() ([]user.UsersCore, error)
+	GetAllUsers(search, page, limit string) ([]user.UsersCore, pagination.PageInfo, int, error)
 	GetByIdUsers(adminId string) (user.UsersCore, error)
 	DeleteUsers(adminId string) error
 	// Manage Reporting

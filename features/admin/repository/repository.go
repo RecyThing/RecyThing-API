@@ -178,16 +178,31 @@ func (ar *AdminRepository) FindByEmailANDPassword(data entity.AdminCore) (entity
 }
 
 // Manage Users
-func (ar *AdminRepository) GetAllUsers() ([]user.UsersCore, error) {
+func (ar *AdminRepository) GetAllUsers( search string, page, limit int) ([]user.UsersCore,  pagination.PageInfo, int, error) {
 	dataUsers := []userModel.Users{}
 
-	tx := ar.db.Find(&dataUsers)
-	if tx.Error != nil {
-		return nil, tx.Error
+	offset := (page - 1) * limit
+	query := ar.db.Model(&userModel.Users{})
+
+	if search != "" {
+		query = query.Where("fullname LIKE ? or point LIKE ?", "%"+search+"%","%"+search+"%")
 	}
 
-	dataResponse := user.ListUserModelToUserCore(dataUsers)
-	return dataResponse, nil
+	var totalCount int64
+	if err := query.Count(&totalCount).Error; err != nil {
+		return nil, pagination.PageInfo{}, 0,err
+	}
+
+	query = query.Offset(offset).Limit(limit)
+
+	if err := query.Find(&dataUsers).Error; err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
+
+	dataAllUser := user.ListUserModelToUserCore(dataUsers)
+	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
+
+	return dataAllUser, paginationInfo, int(totalCount), nil
 }
 
 func (ar *AdminRepository) GetByIdUser(userId string) (user.UsersCore, error) {

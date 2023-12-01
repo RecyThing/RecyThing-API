@@ -51,8 +51,8 @@
 ### Drop Point
 | Method                                                           | Url                     | Query Param    | Description                    |
 | ---------------------------------------------------------------- | ----------------------- | -------------- | ------------------------------ |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/drop-point`           | `search`       | View All Drop Point and Search |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/drop-point/:id`       |                | View Detail Articles           |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/drop-points`           | `search`       | View All Drop Point and Search |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/drop-points/:id`       |                | View Detail Articles           |
 
 ## Users Report
 | Method                                                           | Url                         | Description                            |

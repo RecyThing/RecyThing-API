@@ -1279,6 +1279,246 @@
                     }
                 }
             }
+        },
+        "/drop-points": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Article & Drop Point"
+                ],
+                "summary": "view all drop points",
+                "description": "view all drop points with pagination",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": [
+                                                {
+                                                    "id": "38b56197-9774-4fc6-9685-26e1119baf33",
+                                                    "name": "Rodi Update Recycle",
+                                                    "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                                    "schedule": [
+                                                        {
+                                                            "day": "rabu",
+                                                            "open_time": "11:00",
+                                                            "close_time": "23:00",
+                                                            "closed": false
+                                                        },
+                                                        {
+                                                            "day": "kamis",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "jumat",
+                                                            "open_time": "19:00",
+                                                            "close_time": "23:00",
+                                                            "closed": false
+                                                        },
+                                                        {
+                                                            "day": "sabtu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "minggu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "selasa",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "senin",
+                                                            "open_time": "19:00",
+                                                            "close_time": "19:30",
+                                                            "closed": false
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "id": "5ecb63de-d3ee-4d6d-a1b8-d0d67d59f6d3",
+                                                    "name": "Bagas Recycle",
+                                                    "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                                    "schedule": [
+                                                        {
+                                                            "day": "selasa",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "kamis",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "senin",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "Selasa",
+                                                            "open_time": "11:00",
+                                                            "close_time": "23:00",
+                                                            "closed": false
+                                                        },
+                                                        {
+                                                            "day": "minggu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "sabtu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "jumat",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "rabu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/drop-points/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Article & Drop Point"
+                ],
+                "summary": "view detail drop point",
+                "description": "view details drop point by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": {
+                                                "id": "38b56197-9774-4fc6-9685-26e1119baf33",
+                                                "name": "Rodi Update Recycle",
+                                                "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                                "latitude": -6.2914552,
+                                                "longitude": 106.9285376,
+                                                "schedule": [
+                                                    {
+                                                        "day": "rabu",
+                                                        "open_time": "11:00",
+                                                        "close_time": "23:00",
+                                                        "closed": false
+                                                    },
+                                                    {
+                                                        "day": "kamis",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "jumat",
+                                                        "open_time": "19:00",
+                                                        "close_time": "23:00",
+                                                        "closed": false
+                                                    },
+                                                    {
+                                                        "day": "sabtu",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "minggu",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "selasa",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "senin",
+                                                        "open_time": "19:00",
+                                                        "close_time": "19:30",
+                                                        "closed": false
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
        
 

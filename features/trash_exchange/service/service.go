@@ -60,7 +60,7 @@ func (tes *trashExchangeService) CreateTrashExchange(data trashExchange.TrashExc
 		detail.Unit = titleCase.String(detail.Unit)
 		unit, err := helper.ConvertUnitToDecimal(detail.Unit)
 		if err != nil {
-			return trashExchange.TrashExchangeCore{}, errors.New("gagal mengonversi unit")
+			return trashExchange.TrashExchangeCore{}, err
 		}
 
 		detail.TotalPoints = int(unit * float64(trashCategory.Point))

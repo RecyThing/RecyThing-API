@@ -1,0 +1,35 @@
+package response
+
+import "recything/features/trash_exchange/entity"
+
+func TrashExchangeDetailCoreToTrashExchangeDetailResponse(data entity.TrashExchangeDetailCore) TrashExchangeDetailRespose {
+	return TrashExchangeDetailRespose{
+		TrashType:   data.TrashType,
+		Unit:        data.Unit,
+		TotalPoints: data.TotalPoints,
+	}
+}
+
+func ListTrashExchangeDetailCoreToTrashExchangeDetailResponse(data []entity.TrashExchangeDetailCore) []TrashExchangeDetailRespose {
+	responseTrashExchangeDetail := []TrashExchangeDetailRespose{}
+	for _, v := range data {
+		trashExchangeDetail := TrashExchangeDetailCoreToTrashExchangeDetailResponse(v)
+		responseTrashExchangeDetail = append(responseTrashExchangeDetail, trashExchangeDetail)
+	}
+	return responseTrashExchangeDetail
+}
+
+func TrashExchangeCoreToTrashExchangeResponse(data entity.TrashExchangeCore) TrashExchangeResponse {
+	trashExchangeResponse := TrashExchangeResponse{
+		Name:       data.Name,
+		EmailUser:  data.EmailUser,
+		Address:    data.Address,
+		TotalPoint: data.TotalPoint,
+		TotalUnit:  data.TotalUnit,
+		CreatedAt:  data.CreatedAt,
+	}
+
+	trashExchange := ListTrashExchangeDetailCoreToTrashExchangeDetailResponse(data.TrashExchangeDetails)
+	trashExchangeResponse.TrashExchangeDetails = trashExchange
+	return trashExchangeResponse
+}

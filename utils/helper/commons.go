@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
+	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gorilla/schema"
@@ -46,12 +48,12 @@ func BindFormData(c echo.Context, input interface{}) error {
 }
 
 func HttpResponseCondition(err error, Messages ...string) bool {
-    for _, Message := range Messages {
-        if strings.Contains(err.Error(), Message) {
-            return true
-        }
-    }
-    return false
+	for _, Message := range Messages {
+		if strings.Contains(err.Error(), Message) {
+			return true
+		}
+	}
+	return false
 }
 
 func FieldsEqual(a, b interface{}, fields ...string) bool {
@@ -68,4 +70,27 @@ func FieldsEqual(a, b interface{}, fields ...string) bool {
 	}
 
 	return true
+}
+
+func ConvertUnitToDecimal(unit string) (float64, error) {
+	var numericChars []rune
+	var decimalSeparatorFound bool
+
+	for _, char := range unit {
+		if unicode.IsDigit(char) {
+			numericChars = append(numericChars, char)
+		} else if char == '.' || char == ',' {
+			if !decimalSeparatorFound {
+				numericChars = append(numericChars, '.')
+				decimalSeparatorFound = true
+			}
+		}
+	}
+
+	result, err := strconv.ParseFloat(string(numericChars), 64)
+	if err != nil {
+		return 0, err
+	}
+
+	return result, nil
 }

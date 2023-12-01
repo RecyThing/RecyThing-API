@@ -139,7 +139,7 @@
                 "description": "get all active and non active admins",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/fullname"
+                        "$ref": "#/components/parameters/search"
                     },
                     {
                         "$ref": "#/components/parameters/limit"
@@ -742,7 +742,7 @@
                 "description": "get  all prompt",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/category"
+                        "$ref": "#/components/parameters/search"
                     },
                     {
                         "$ref": "#/components/parameters/limit"
@@ -1000,7 +1000,7 @@
                 "summary": "get all category trash",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/trashType"
+                        "$ref": "#/components/parameters/search"
                     },
                     {
                         "$ref": "#/components/parameters/limit"
@@ -1904,7 +1904,7 @@
                 "description": "view all article",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/title"
+                        "$ref": "#/components/parameters/search"
                     },
                     {
                         "$ref": "#/components/parameters/limit"
@@ -2599,14 +2599,6 @@
                     "type": "string"
                 }
             },
-            "trashType": {
-                "name": "trash_type",
-                "in": "query",
-                "description": "name of trash type",
-                "schema": {
-                    "type": "string"
-                }
-            },
             "limit": {
                 "name": "limit",
                 "in": "query",
@@ -2628,30 +2620,6 @@
                 "name": "name",
                 "in": "query",
                 "description": "name of data",
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "title": {
-                "name": "title",
-                "in": "query",
-                "description": "title of query",
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "fullname": {
-                "name": "fullname",
-                "in": "query",
-                "description": "name of data",
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "category": {
-                "name": "category",
-                "in": "query",
-                "description": "category of data",
                 "schema": {
                     "type": "string"
                 }

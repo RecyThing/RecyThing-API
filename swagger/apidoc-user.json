@@ -818,10 +818,10 @@
                     "200": {
                         "description": "OK",
                         "content": {
-                            "application/json":{
+                            "application/json": {
                                 "examples": {
-                                    "success":{
-                                        "value":{
+                                    "success": {
+                                        "value": {
                                             "status": true,
                                             "message": "berhasil mendapatkan data laporan",
                                             "data": {
@@ -852,6 +852,235 @@
                                                 "insident_time": "15:00",
                                                 "created_at": "2023-11-21T04:44:00Z",
                                                 "updated_at": "2023-11-21T04:44:00Z"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/articles": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Article & Drop Point"
+                ],
+                "summary": "view all article",
+                "description": "view all articles with pagination",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan semua article",
+                                            "data": [
+                                                {
+                                                    "id": "0c18a054-f86b-46df-b684-9dc99f6656dc",
+                                                    "title": "ini judul article",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/2ea2304a-a132-46cb-a56b-b51381f88320.jpg",
+                                                    "content": "ini content",
+                                                    "categories": [
+                                                        {
+                                                            "category": "limbah minyak"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T02:18:27Z",
+                                                    "updated_at": "2023-11-28T05:13:40Z"
+                                                },
+                                                {
+                                                    "id": "51568415-75ac-4009-9f3e-646dc18b94b7",
+                                                    "title": "qqqqqupdate",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/a8108758-3ff7-4930-852a-5a3770a806db.png",
+                                                    "content": "qqqq",
+                                                    "categories": [
+                                                        {
+                                                            "category": "limbah 3"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T09:34:10Z",
+                                                    "updated_at": "2023-11-28T09:36:15Z"
+                                                },
+                                                {
+                                                    "id": "59fa732a-4235-4a38-9ca3-97483c07f209",
+                                                    "title": "3 Sampah Berbahaya",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/8976a1e5-8036-4b3e-b4b8-d5a11e921971.png",
+                                                    "content": "sampah itu berbahaya",
+                                                    "categories": [
+                                                        {
+                                                            "category": "kaleng"
+                                                        },
+                                                        {
+                                                            "category": "rumput"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T04:49:39Z",
+                                                    "updated_at": "2023-11-28T04:49:39Z"
+                                                },
+                                                {
+                                                    "id": "5e59bacd-9057-48f0-b442-a1c1eb23237d",
+                                                    "title": "dwadwa",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/26501cbe-2bd3-4280-ad08-1f71c49aadc3.png",
+                                                    "content": "dwadwa",
+                                                    "categories": [
+                                                        {
+                                                            "category": "test 1"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-30T15:49:17Z",
+                                                    "updated_at": "2023-11-30T15:49:17Z"
+                                                },
+                                                {
+                                                    "id": "754ad26a-95a9-4d82-9909-7dc59c82fbe3",
+                                                    "title": "sampah",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/9163f869-1d30-43bb-8713-25b465c32a1a.jpg",
+                                                    "content": "sampah sampah",
+                                                    "categories": [
+                                                        {
+                                                            "category": "plastik"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T02:43:28Z",
+                                                    "updated_at": "2023-11-28T02:43:28Z"
+                                                },
+                                                {
+                                                    "id": "84f101e1-986a-4b24-add4-587386825e98",
+                                                    "title": "hello!",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/a911c208-277f-40a9-8268-a370899fbe04.jpg",
+                                                    "content": "hello ges",
+                                                    "categories": [
+                                                        {
+                                                            "category": "test 1"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-30T15:54:42Z",
+                                                    "updated_at": "2023-11-30T15:54:42Z"
+                                                },
+                                                {
+                                                    "id": "8f88a712-59c9-4a76-8f13-3f5335d6f5cb",
+                                                    "title": "ekhem",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/558059ba-0a1c-4b59-8803-4887a0a78cab.jpg",
+                                                    "content": "hello ges",
+                                                    "categories": [
+                                                        {
+                                                            "category": "bahhh 21"
+                                                        },
+                                                        {
+                                                            "category": "test 1"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-30T15:56:42Z",
+                                                    "updated_at": "2023-11-30T15:56:42Z"
+                                                },
+                                                {
+                                                    "id": "903339af-81cd-47ed-9b31-fadb5e94ce23",
+                                                    "title": "3 Sampah Berbahaya",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/eb93b403-4c4e-4f86-a9ba-83dcf5b1e7be.jpg",
+                                                    "content": "sampah itu berbahaya",
+                                                    "categories": [
+                                                        {
+                                                            "category": "kayu"
+                                                        },
+                                                        {
+                                                            "category": "laptop"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T02:27:11Z",
+                                                    "updated_at": "2023-11-28T02:27:11Z"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 2
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/articles/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Article & Drop Point"
+                ],
+                "summary": "view detail article",
+                "description": "view details article by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan semua article",
+                                            "data": {
+                                                "id": "0c18a054-f86b-46df-b684-9dc99f6656dc",
+                                                "title": "ini judul article",
+                                                "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/2ea2304a-a132-46cb-a56b-b51381f88320.jpg",
+                                                "content": "ini content",
+                                                "categories": [
+                                                    {
+                                                        "category": "limbah minyak"
+                                                    }
+                                                ],
+                                                "like": 0,
+                                                "share": 0,
+                                                "created_at": "2023-11-28T02:18:27Z",
+                                                "updated_at": "2023-11-28T05:13:40Z"
                                             }
                                         }
                                     }
@@ -932,6 +1161,41 @@
                         "diterima",
                         "ditolak"
                     ]
+                }
+            },
+            "id": {
+                "name": "id",
+                "in": "path",
+                "description": "id of data",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            }
+            ,
+            "search": {
+                "name": "search",
+                "in": "query",
+                "description": "search of data",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "limit": {
+                "name": "limit",
+                "in": "query",
+                "description": "limit of data",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 10
+                }
+            },
+            "page": {
+                "name": "page",
+                "in": "query",
+                "description": "page of data",
+                "schema": {
+                    "type": "integer"
                 }
             }
         },

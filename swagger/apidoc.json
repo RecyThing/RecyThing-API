@@ -339,7 +339,18 @@
                     "Manage User"
                 ],
                 "summary": "get all users",
-                "description": "get all active and non active users",
+                "description": "get all active and non active users with pagination",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "berhasil mengambil data users",
@@ -477,10 +488,7 @@
                         "$ref": "#/components/parameters/FilterReport"
                     },
                     {
-                        "$ref": "#/components/parameters/searchID"
-                    },
-                    {
-                        "$ref": "#/components/parameters/name"
+                        "$ref": "#/components/parameters/search"
                     },
                     {
                         "$ref": "#/components/parameters/limit"

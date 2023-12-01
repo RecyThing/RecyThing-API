@@ -95,7 +95,7 @@ func (ah *AdminHandler) GetAll(e echo.Context) error {
 
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
-	fullName := e.QueryParam("fullname")
+	fullName := e.QueryParam("search")
 
 	result, pagnationInfo, count, err := ah.AdminService.GetAll(page, limit, fullName)
 	if err != nil {

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log"
 	"mime/multipart"
 	admin "recything/features/admin/entity"
 	"recything/features/mission/entity"
@@ -11,18 +12,17 @@ import (
 )
 
 type missionService struct {
-	missionRepo entity.MissionRepositoryInterface
+	MissionRepo entity.MissionRepositoryInterface
 	AdminRepo   admin.AdminRepositoryInterface
 }
 
 func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo admin.AdminRepositoryInterface) entity.MissionServiceInterface {
 	return &missionService{
-		missionRepo: missionRepo,
+		MissionRepo: missionRepo,
 		AdminRepo:   adminRepo,
 	}
 }
 
-// CreateData implements entity.trashCategoryServiceInterface.
 func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
 
 	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point, image)
@@ -52,7 +52,7 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 		return err
 	}
 
-	err = ms.missionRepo.CreateMission(data)
+	err = ms.MissionRepo.CreateMission(data)
 	if err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func (ms *missionService) CreateMissionStages(adminID, missionID string, data []
 		}
 	}
 
-	err := ms.missionRepo.CreateMissionStages(data)
+	err := ms.MissionRepo.CreateMissionStages(data)
 	if err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
-	data, pagnationInfo, count, err := ms.missionRepo.FindAllMission(pageInt, limitInt, search, filter)
+	data, pagnationInfo, count, err := ms.MissionRepo.FindAllMission(pageInt, limitInt, search, filter)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
@@ -97,7 +97,6 @@ func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]
 		}
 
 		data[i].Creator = admin.Fullname
-
 	}
 
 	return data, pagnationInfo, count, nil
@@ -116,16 +115,9 @@ func (ms *missionService) ChangesStatusMission(data entity.Mission) error {
 	return nil
 }
 
-func (ms *missionService) UpdateMission(image *multipart.FileHeader, idMission string, data entity.Mission) error {
-	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate)
-	if errEmpty != nil {
-		return errEmpty
-	}
+func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID string, data entity.Mission) error {
 
-	errDate := validation.ValidateDate(data.StartDate, data.EndDate)
-	if errDate != nil {
-		return errEmpty
-	}
+	
 	uploadError := make(chan error)
 	var imageURL string
 
@@ -140,57 +132,24 @@ func (ms *missionService) UpdateMission(image *multipart.FileHeader, idMission s
 	}()
 
 	data.MissionImage = imageURL
-	err := ms.missionRepo.UpdateMission(idMission, data)
+	log.Println("data service after validation", data)
+	err := ms.MissionRepo.UpdateMission(missionID, data)
 	if err != nil {
 		return err
 	}
 
 	return nil
 }
+
 func (ms *missionService) UpdateMissionStage(missionStageID string, data entity.Stage) error {
 	errEmpty := validation.CheckDataEmpty(data.Title, data.Description)
 	if errEmpty != nil {
 		return errEmpty
 	}
 
-	err := ms.missionRepo.UpdateMissionStage(missionStageID, data)
+	err := ms.MissionRepo.UpdateMissionStage(missionStageID, data)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-
-// func (tc *trashCategoryService) GetById(idTrash string) (entity.TrashCategoryCore, error) {
-
-// 	result, err := tc.trashCategoryRepo.GetById(idTrash)
-// 	if err != nil {
-// 		return result, err
-// 	}
-// 	return result, nil
-// }
-
-// // Delete implements entity.trashCategoryServiceInterface.
-// func (tc *trashCategoryService) DeleteCategory(idTrash string) error {
-
-// 	err := tc.trashCategoryRepo.Delete(idTrash)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-
-// // UpdateData implements entity.trashCategoryServiceInterface.
-// func (tc *trashCategoryService) UpdateCategory(idTrash string, data entity.TrashCategoryCore) (entity.TrashCategoryCore, error) {
-
-// 	errEmpty := validation.CheckDataEmpty(data.TrashType, data.Unit)
-// 	if errEmpty != nil {
-// 		return entity.TrashCategoryCore{}, errEmpty
-// 	}
-
-// 	result, err := tc.trashCategoryRepo.Update(idTrash, data)
-// 	if err != nil {
-// 		return result, err
-// 	}
-// 	result.ID = idTrash
-// 	return result, nil
-// }

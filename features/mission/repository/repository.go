@@ -129,8 +129,14 @@ func (mr *MissionRepository) SaveChangesStatusMission(data entity.Mission) error
 
 func (mr *MissionRepository) UpdateMission(missionID string, data entity.Mission) error {
 	dataMission := entity.MissionCoreToMissionModel(data)
+	tx := mr.db.Where("id = ?", missionID).First(&dataMission)
+	if tx.Error != nil {
+		return tx.Error
+	}
 
-	tx := mr.db.Where("id = ?", missionID).Updates(&dataMission)
+	dataMission.Title = data.Title
+
+	tx = mr.db.Where("id = ?", missionID).Save(&dataMission)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -140,76 +146,29 @@ func (mr *MissionRepository) UpdateMission(missionID string, data entity.Mission
 	}
 	return nil
 }
+
 func (mr *MissionRepository) UpdateMissionStage(MissionStageID string, data entity.Stage) error {
 	missionStage := entity.StageCoreToMissionStageModel(data)
 	tx := mr.db.Where("id = ?", MissionStageID).Updates(&missionStage)
 	if tx.Error != nil {
-		return tx.Error
-	}
-
-	if tx.RowsAffected == 0 {
 		return errors.New(constanta.ERROR_DATA_ID)
 	}
+
 	return nil
 }
 
-// func (tc *trashCategoryRepository) Delete(idTrash string) error {
-// 	data := model.TrashCategory{}
+func (mr *MissionRepository) GetById(missionID string) (entity.Mission, error) {
+	mission := model.Mission{}
+	tx := mr.db.Take(&mission, "id = ?", missionID)
+	if tx.Error != nil {
+		return entity.Mission{}, tx.Error
+	}
 
-// 	tx := tc.db.Where("id = ?", idTrash).Delete(&data)
-// 	if tx.Error != nil {
-// 		return tx.Error
-// 	}
-// 	if tx.RowsAffected == 0 {
-// 		return errors.New(constanta.ERROR_DATA_ID)
-// 	}
+	if tx.RowsAffected == 0 {
+		return entity.Mission{}, errors.New(constanta.ERROR_DATA_ID)
+	}
 
-// 	return nil
-// }
+	result := entity.MissionModelToMissionCore(mission)
+	return result, nil
 
-// func (tc *trashCategoryRepository) GetById(idTrash string) (entity.TrashCategoryCore, error) {
-
-// 	dataTrashCategories := model.TrashCategory{}
-// 	tx := tc.db.Where("id = ?", idTrash).First(&dataTrashCategories)
-// 	if tx.Error != nil {
-
-// 		if tx.RowsAffected == 0 {
-// 			return entity.TrashCategoryCore{}, errors.New(constanta.ERROR_DATA_ID)
-// 		}
-
-// 		return entity.TrashCategoryCore{}, tx.Error
-// 	}
-
-// 	result := entity.ModelTrashCategoryToCoreTrashCategory(dataTrashCategories)
-// 	return result, nil
-// }
-
-// func (tc *trashCategoryRepository) Update(idTrash string, data entity.TrashCategoryCore) (entity.TrashCategoryCore, error) {
-// 	dataTrashCategories := entity.CoreTrashCategoryToModelTrashCategory(data)
-
-// 	tx := tc.db.Where("id = ?", idTrash).Updates(&dataTrashCategories)
-// 	if tx.Error != nil {
-// 		return entity.TrashCategoryCore{}, tx.Error
-// 	}
-
-// 	if tx.RowsAffected == 0 {
-// 		return entity.TrashCategoryCore{}, errors.New(constanta.ERROR_DATA_ID)
-// 	}
-
-// 	result := entity.ModelTrashCategoryToCoreTrashCategory(dataTrashCategories)
-// 	return result, nil
-// }
-
-// func (tc *trashCategoryRepository) Delete(idTrash string) error {
-// 	data := model.TrashCategory{}
-
-// 	tx := tc.db.Where("id = ?", idTrash).Delete(&data)
-// 	if tx.Error != nil {
-// 		return tx.Error
-// 	}
-// 	if tx.RowsAffected == 0 {
-// 		return errors.New(constanta.ERROR_DATA_ID)
-// 	}
-
-// 	return nil
-// }
+}

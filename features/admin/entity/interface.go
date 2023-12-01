@@ -8,7 +8,7 @@ import (
 
 type AdminRepositoryInterface interface {
 	Create(data AdminCore) (AdminCore, error)
-	SelectAll(page, limit int, fullName string) ([]AdminCore, pagination.PageInfo, int, error)
+	SelectAll(page, limit int, search string) ([]AdminCore, pagination.PageInfo, int, error)
 	SelectById(adminId string) (AdminCore, error)
 	Update(adminId string, data AdminCore) error
 	Delete(adminId string) error
@@ -27,7 +27,7 @@ type AdminRepositoryInterface interface {
 
 type AdminServiceInterface interface {
 	Create(data AdminCore) (AdminCore, error)
-	GetAll(page, limit, fullName string) ([]AdminCore, pagination.PageInfo, int, error)
+	GetAll(page, limit, search string) ([]AdminCore, pagination.PageInfo, int, error)
 	GetById(adminId string) (AdminCore, error)
 	UpdateById(adminId string, data AdminCore) error
 	DeleteById(adminId string) error

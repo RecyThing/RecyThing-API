@@ -222,7 +222,7 @@ func (ar *AdminRepository) DeleteUsers(userId string) error {
 }
 
 // GetByStatusReport implements entity.AdminRepositoryInterface.
-func (ar *AdminRepository) GetAllReport(status, name, id string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error) {
+func (ar *AdminRepository) GetAllReport(status, search string, page, limit int) ([]report.ReportCore, pagination.PageInfo, int, error) {
 	dataReports := []reportModel.Report{}
 
 	offset := (page - 1) * limit
@@ -232,30 +232,26 @@ func (ar *AdminRepository) GetAllReport(status, name, id string, page, limit int
 		query = query.Where("status = ?", status)
 	}
 
-	if name != "" {
+	if search != "" {
 		query = query.Joins("JOIN users AS u ON reports.users_id = u.id").
-			Where("u.fullname LIKE ?", "%"+name+"%")
-	}
-
-	if id != "" {
-		query = query.Where("reports.id = ?", id)
+			Where("u.fullname LIKE ? or reports.id LIKE ? ", "%"+search+"%","%"+search+"%")
 	}
 
 	var totalCount int64
 	if err := query.Count(&totalCount).Error; err != nil {
-		return nil, pagination.PageInfo{}, err
+		return nil, pagination.PageInfo{}, 0,err
 	}
 
 	query = query.Offset(offset).Limit(limit)
 
 	if err := query.Find(&dataReports).Error; err != nil {
-		return nil, pagination.PageInfo{}, err
+		return nil, pagination.PageInfo{}, 0, err
 	}
 
 	dataAllReport := report.ListReportModelToReportCore(dataReports)
 	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
 
-	return dataAllReport, paginationInfo, nil
+	return dataAllReport, paginationInfo, int(totalCount), nil
 }
 
 // UpdateStatusReport implements entity.AdminRepositoryInterface.

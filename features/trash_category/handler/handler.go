@@ -75,7 +75,7 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("Berhasil mendapatkan seluruh kategori sampah", response, pagnation, count))
 }
 
-func (tc *trashCategoryHandler) GetAllCategoryForArticle(e echo.Context) error {
+func (tc *trashCategoryHandler) GetAllCategoriesFetch(e echo.Context) error {
 
 	_, role, err := jwt.ExtractToken(e)
 	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
@@ -98,7 +98,7 @@ func (tc *trashCategoryHandler) GetAllCategoryForArticle(e echo.Context) error {
 		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada kategori sampah"))
 	}
 
-	response := response.ListCoreTrashCategoryToReponseTrashCategoryArticle(result)
+	response := response.ListCoreTrashCategoryToReponseTrashCategoryCategoriesList(result)
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh kategori sampah", response))
 }
 

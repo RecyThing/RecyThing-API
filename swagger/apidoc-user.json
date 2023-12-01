@@ -862,6 +862,195 @@
                 }
             }
         },
+        "/vouchers": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Users Point & Voucher"
+                ],
+                "summary": "Get all voucher with pagination",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseVoucher"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan seluruh data",
+                                            "data": [
+                                                {
+                                                    "id": "043f36d9-1f3a-4a6e-b218-6ce676b1e5b7",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/e48154d7-5baf-4370-a2d3-156cd9681d13.png",
+                                                    "reward_name": "OVO 50000K",
+                                                    "point": 5000,
+                                                    "description": "OVO Voucher hanya berlaku untuk 1 pengguna/transaksi selama masa berlaku.",
+                                                    "start_date": "2023-11-28",
+                                                    "end_date": "2023-12-11"
+                                                },
+                                                {
+                                                    "id": "0ad1f2e4-9676-47f8-8bb9-520fa7021464",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/2b177a81-b703-4f9f-b474-24d226cadf03.png",
+                                                    "reward_name": "DANA 100K",
+                                                    "point": 100000,
+                                                    "description": "Dana Kaget 100",
+                                                    "start_date": "2023-11-11",
+                                                    "end_date": "2023-12-11"
+                                                },
+                                                {
+                                                    "id": "0b7bff7a-7b12-44f6-9976-239389424509",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/e147ed1d-6234-4f38-99d8-cbff0132d70b.png",
+                                                    "reward_name": "SHOPEE PAY 25000",
+                                                    "point": 25000,
+                                                    "description": "ShopeePay",
+                                                    "start_date": "2023-11-11",
+                                                    "end_date": "2023-12-11"
+                                                },
+                                                {
+                                                    "id": "24f7f2e5-a3b0-4f54-94b2-a0cc32b63a55",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/e458469e-74ba-4d37-8cd3-06cb25b7032f.png",
+                                                    "reward_name": "SEPULSA 50",
+                                                    "point": 150000,
+                                                    "description": "SEPULSA",
+                                                    "start_date": "2023-11-11",
+                                                    "end_date": "2023-12-11"
+                                                },
+                                                {
+                                                    "id": "79f65530-e9e2-407b-8c44-e1ef9196ba69",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/1d591620-e8f6-4ad0-b7d6-cee1eef7d245.png",
+                                                    "reward_name": "SHOPEE PAY 100000",
+                                                    "point": 100000,
+                                                    "description": "SHOPEE PAY 100000",
+                                                    "start_date": "2023-11-11",
+                                                    "end_date": "2023-11-12"
+                                                },
+                                                {
+                                                    "id": "8fd39e01-6b06-42a2-876c-bcdcb985d31b",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/2cf24897-18ab-485c-adf4-5da325fe7e68.png",
+                                                    "reward_name": "SEPULSA 50",
+                                                    "point": 150000,
+                                                    "description": "SEPULSA",
+                                                    "start_date": "2023-11-03",
+                                                    "end_date": "2023-12-04"
+                                                },
+                                                {
+                                                    "id": "96eeae23-8a03-45e4-93d4-3099d78c9866",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/317a7d43-5d85-4229-8f44-44b8576a4d25.png",
+                                                    "reward_name": "SEPULSA 150000",
+                                                    "point": 150000,
+                                                    "description": "SEPULSA",
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                },
+                                                {
+                                                    "id": "9ac70514-bebe-4483-b8ad-6ceafcc4dc96",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/5f133696-5a48-4ee7-841c-0d1cc22d2d68.png",
+                                                    "reward_name": "DANA 50K",
+                                                    "point": 5000,
+                                                    "description": "Voucher berlaku untuk 1 kali transaksi/pengguna selama periode berlangsung",
+                                                    "start_date": "2023-11-27",
+                                                    "end_date": "2023-12-03"
+                                                },
+                                                {
+                                                    "id": "b2491035-162b-4050-baaa-d4736c87fdc1",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/cbd30708-0b23-4ae3-a2c1-8cf18b98ed67.png",
+                                                    "reward_name": "Shopee Pay 100000",
+                                                    "point": 2000,
+                                                    "description": "voucher shopee pay 100000",
+                                                    "start_date": "2023-11-27",
+                                                    "end_date": "2023-12-01"
+                                                },
+                                                {
+                                                    "id": "c10f0198-15d8-404a-8c37-952d582f8555",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/cc67856a-cc99-485a-8018-b8985e8c8c88.png",
+                                                    "reward_name": "SHOPEE PAY 25000",
+                                                    "point": 25000,
+                                                    "description": "Shopee Pay",
+                                                    "start_date": "2023-11-11",
+                                                    "end_date": "2023-12-11"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 2
+                                            },
+                                            "count_data": 12
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vouchers/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Users Point & Voucher"
+                ],
+                "summary": "Get detail voucher",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseVoucher"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan data",
+                                            "data": {
+                                                "id": "b2491035-162b-4050-baaa-d4736c87fdc1",
+                                                "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/cbd30708-0b23-4ae3-a2c1-8cf18b98ed67.png",
+                                                "reward_name": "Shopee Pay 100000",
+                                                "point": 2000,
+                                                "description": "voucher shopee pay 100000",
+                                                "start_date": "2023-11-27",
+                                                "end_date": "2023-12-01"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/articles": {
             "get": {
                 "security": [
@@ -1091,6 +1280,8 @@
                 }
             }
         }
+       
+
     },
     "components": {
         "parameters": {
@@ -1495,6 +1686,49 @@
                     "location",
                     "report_type"
                 ]
+            },
+            "ResponseVoucher": {
+                "type": "object",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "reward_name": {
+                        "type": "string"
+                    },
+                    "point": {
+                        "type": "integer"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "Date"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "Date"
+                    },
+                    "pagination": {
+                        "type": "object",
+                        "properties": {
+                            "last_page": {
+                                "type": "string"
+                            },
+                            "current_page": {
+                                "type": "string"
+                            },
+                            "limit": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "count_data": {
+                        "type": "string"
+                    }
+                }
             }
         },
         "securitySchemes": {

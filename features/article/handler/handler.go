@@ -72,14 +72,14 @@ func (article *articleHandler) GetAllArticle(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
 	}
 
-	articleData, paginationInfo, err := article.articleService.GetAllArticle(page, limit, search)
+	articleData, paginationInfo, count,err := article.articleService.GetAllArticle(page, limit, search)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan artikel"))
 	}
 
 	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
 
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mendapatkan semua article", articleResponse, paginationInfo))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan semua article", articleResponse, paginationInfo,count))
 
 }
 
@@ -125,14 +125,8 @@ func (article *articleHandler) UpdateArticle(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
 
-	image, err := e.FormFile("image")
-	if err != nil {
-		if err == http.ErrMissingFile {
-			return e.JSON(http.StatusBadRequest, helper.ErrorResponse("tidak ada file yang di upload"))
-		}
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal upload file"))
-	}
-
+	image, _ := e.FormFile("image")
+	
 	articleInput := request.ArticleRequestToArticleCore(updatedData)
 	updateArticle, errUpdate := article.articleService.UpdateArticle(idParams, articleInput, image)
 	if errUpdate != nil {

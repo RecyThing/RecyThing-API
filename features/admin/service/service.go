@@ -147,14 +147,17 @@ func (as *AdminService) FindByEmailANDPassword(data entity.AdminCore) (entity.Ad
 
 //Manage Users
 
-func (as *AdminService) GetAllUsers() ([]user.UsersCore, error) {
-
-	data, err := as.AdminRepository.GetAllUsers()
+func (as *AdminService) GetAllUsers(search, page, limit string) ([]user.UsersCore, pagination.PageInfo, int, error) {
+	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
-		return nil, errors.New("")
+		return nil, pagination.PageInfo{}, 0, err
+	}
+	data, pagnationInfo, count, err := as.AdminRepository.GetAllUsers(search, pageInt, limitInt)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
 	}
 
-	return data, nil
+	return data, pagnationInfo, count, nil
 }
 
 func (as *AdminService) GetByIdUsers(userId string) (user.UsersCore, error) {
@@ -183,11 +186,10 @@ func (as *AdminService) DeleteUsers(userId string) error {
 }
 
 // Manage Reporting
-// GetByStatusReport implements entity.AdminServiceInterface.
-func (as *AdminService) GetAllReport(status, name, id, page, limit string) (data []report.ReportCore, paginationInfo pagination.PageInfo, err error) {
+func (as *AdminService) GetAllReport(status, search, page, limit string) ([]report.ReportCore, pagination.PageInfo, int, error) {
 	pageInt, limitInt, validationErr := validation.ValidateTypePaginationParameter(limit, page)
 	if validationErr != nil {
-		return nil, pagination.PageInfo{}, validationErr
+		return nil, pagination.PageInfo{}, 0, validationErr
 	}
 
 	pageValid, limitValid := validation.ValidateCountLimitAndPage(pageInt, limitInt)
@@ -199,20 +201,14 @@ func (as *AdminService) GetAllReport(status, name, id, page, limit string) (data
 	}
 
 	if _, ok := validStatus[status]; status != "" && !ok {
-		return nil, pagination.PageInfo{}, errors.New("status tidak valid")
+		return nil, pagination.PageInfo{}, 0, errors.New("status tidak valid")
 	}
-
-	if status != "" || name != "" || id != "" {
-		data, paginationInfo, err = as.AdminRepository.GetAllReport(status, name, id, pageValid, limitValid)
-	} else {
-		data, paginationInfo, err = as.AdminRepository.GetAllReport("", "", "", pageValid, limitValid)
-	}
-
+	data, paginationInfo, count, err := as.AdminRepository.GetAllReport(status, search, pageValid, limitValid)
 	if err != nil {
-		return nil, pagination.PageInfo{}, err
+		return nil, pagination.PageInfo{}, 0, err
 	}
 
-	return data, paginationInfo, nil
+	return data, paginationInfo, count, nil
 }
 
 // UpdateStatusReport implements entity.AdminServiceInterface.

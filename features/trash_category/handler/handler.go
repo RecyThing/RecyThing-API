@@ -56,9 +56,9 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
-	trashType := e.QueryParam("trash_type")
+	search := e.QueryParam("search")
 
-	result, pagnation, count, err := tc.trashCategory.GetAllCategory(page, limit, trashType)
+	result, pagnation, count, err := tc.trashCategory.GetAllCategory(page, limit, search)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))

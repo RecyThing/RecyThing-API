@@ -32,7 +32,7 @@ func (dpr *dropPointRepository) CreateDropPoint(data entity.DropPointsCore) erro
 	return nil
 }
 
-func (dpr *dropPointRepository) GetAllDropPoint(page, limit int, search string) ([]entity.DropPointsCore, pagination.PageInfo, error) {
+func (dpr *dropPointRepository) GetAllDropPoint(page, limit int, search string) ([]entity.DropPointsCore, pagination.PageInfo, int,error) {
 	dropPoint := []model.DropPoints{}
 
 	offset := (page - 1) * limit
@@ -45,20 +45,20 @@ func (dpr *dropPointRepository) GetAllDropPoint(page, limit int, search string) 
 	var totalCount int64
 	tx := query.Count(&totalCount).Find(&dropPoint)
 	if tx.Error != nil {
-		return nil, pagination.PageInfo{}, tx.Error
+		return nil, pagination.PageInfo{},0, tx.Error
 	}
 
 	query = query.Offset(offset).Limit(limit)
 
 	tx = query.Find(&dropPoint)
 	if tx.Error != nil {
-		return nil, pagination.PageInfo{}, tx.Error
+		return nil, pagination.PageInfo{}, 0,tx.Error
 	}
 
 	dataResponse := entity.ListModelDropPointsToCoreDropPoints(dropPoint)
 	pageInfo := pagination.CalculateData(int(totalCount), limit, page)
 
-	return dataResponse, pageInfo, nil
+	return dataResponse, pageInfo, int(totalCount),nil
 
 }
 

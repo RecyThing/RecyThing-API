@@ -89,19 +89,19 @@ func (dps *dropPointService) CreateDropPoint(data entity.DropPointsCore) error {
 	return nil
 }
 
-func (dps *dropPointService) GetAllDropPoint(page, limit int, search string) ([]entity.DropPointsCore, pagination.PageInfo, error) {
+func (dps *dropPointService) GetAllDropPoint(page, limit int, search string) ([]entity.DropPointsCore, pagination.PageInfo,int, error) {
 	if limit > 10 {
-		return nil, pagination.PageInfo{}, errors.New("limit tidak boleh lebih dari 10")
+		return nil, pagination.PageInfo{},0, errors.New("limit tidak boleh lebih dari 10")
 	}
 
 	page, limit = validation.ValidateCountLimitAndPage(page, limit)
 
-	dropPointCores, pageInfo, err := dps.dropPointRepository.GetAllDropPoint(page, limit, search)
+	dropPointCores, pageInfo, count,err := dps.dropPointRepository.GetAllDropPoint(page, limit, search)
 	if err != nil {
-		return nil, pagination.PageInfo{}, err
+		return nil, pagination.PageInfo{},0, err
 	}
 
-	return dropPointCores, pageInfo, nil
+	return dropPointCores, pageInfo, count,nil
 }
 
 func (dps *dropPointService) GetDropPointById(id string) (entity.DropPointsCore, error) {

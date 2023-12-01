@@ -64,7 +64,7 @@ func (article *articleHandler) GetAllArticle(e echo.Context) error {
 	page, _ := strconv.Atoi(e.QueryParam("page"))
 	limit, _ := strconv.Atoi(e.QueryParam("limit"))
 
-	Id, role, err := jwt.ExtractToken(e)
+	Id, _, err := jwt.ExtractToken(e)
 	if err != nil {
 		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
 	}
@@ -79,11 +79,7 @@ func (article *articleHandler) GetAllArticle(e echo.Context) error {
 
 	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
 
-	if role == constanta.ADMIN || role == constanta.SUPERADMIN {
-		return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mendapatkan semua article", articleResponse, paginationInfo))
-	} else {
-		return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan semua article", articleResponse))
-	}
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mendapatkan semua article", articleResponse, paginationInfo))
 
 }
 

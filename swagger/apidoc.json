@@ -1749,6 +1749,79 @@
                 }
             }
         },
+        "/admins/manage/categories": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Article",
+                    "Manage Recycles"
+                ],
+                "summary": "view all categories of trash type",
+                "description": "view all categories of trash type",
+                "parameters": [
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseArticle"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan semua article",
+                                            "data": [
+                                                {
+                                                    "id": "0c18a054-f86b-46df-b684-9dc99f6656dc",
+                                                    "title": "3 Sampah Berbahaya",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/8dd1a3f2-fdac-42ef-90b1-1581c3e15da1.jpg",
+                                                    "content": "sampah itu berbahaya",
+                                                    "categories": [
+                                                        {
+                                                            "category": "nuklir"
+                                                        },
+                                                        {
+                                                            "category": "laptop"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T02:18:27Z",
+                                                    "updated_at": "2023-11-28T02:18:27Z"
+                                                },
+                                                {
+                                                    "id": "38fbbfec-480c-43f4-92a2-9a7e5b65b3e0",
+                                                    "title": "Kontent",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/d93675cd-1e8a-4cb6-8124-a9e15bdd4918.png",
+                                                    "content": "ini artikel",
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T02:36:19Z",
+                                                    "updated_at": "2023-11-28T02:36:19Z"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 2,
+                                                "current_page": 1,
+                                                "last_page": 4
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
         "/admins/manage/articles": {
             "post": {
                 "security": [
@@ -1757,7 +1830,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage article"
+                    "Manage Article"
                 ],
                 "summary": "add article",
                 "description": "create new article",
@@ -1800,7 +1873,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage article"
+                    "Manage Article"
                 ],
                 "summary": "view all article ",
                 "description": "view all article",
@@ -1880,7 +1953,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage article"
+                    "Manage Article"
                 ],
                 "summary": "view detail article ",
                 "description": "view detail article by id",
@@ -1932,7 +2005,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage article"
+                    "Manage Article"
                 ],
                 "summary": "delete  article ",
                 "description": "delete article by id",
@@ -1969,7 +2042,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage article"
+                    "Manage Article"
                 ],
                 "summary": "update article",
                 "description": "update article by id",
@@ -2012,6 +2085,360 @@
                                                 "created_at": "2023-11-28T01:25:19Z",
                                                 "updated_at": "2023-11-28T04:57:20.889Z"
                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/drop-points": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Drop Point"
+                ],
+                "summary": "create drop point",
+                "description": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestResponseDropPoint"
+                            },
+                            "examples": {
+                                "Input 1 Day": {
+                                    "description": "jika hanya melakukan request satu hari saja di awal pembuatan, maka secara otomatis akan membuat 6 hari sisanya dengan value closed = true, bisa melakukan input hari selanjutnya secara bersamaan dengan syarat nama hari tidak boleh sama",
+                                    "value": {
+                                        "name": "Asgas Recycle",
+                                        "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                        "latitude": -6.2914552,
+                                        "longitude": 106.9285376,
+                                        "schedule": [
+                                            {
+                                                "day": "Senin",
+                                                "open_time": "11:00",
+                                                "close_time": "23:00"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RequestResponseDropPoint"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil membuat data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Drop Point"
+                ],
+                "summary": "get all drop point with pagination",
+                "description": "",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "schema":{
+                                    "$ref": "#/components/schemas/RequestResponseDropPoint"
+                                },
+                                "examples": {
+                                    "success":{
+                                        "description": "mengambil semua data, jika inputan awal hanya satu hari saja maka akan secara otomatis dibuatkan hari-hari lainnya",
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": [
+                                                {
+                                                    "id": "e10be855-34ee-4c06-a5b2-4665271a2157",
+                                                    "name": "Asgas Recycle",
+                                                    "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                                    "schedule": [
+                                                        {
+                                                            "day": "jumat",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "sabtu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "selasa",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "minggu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "Senin",
+                                                            "open_time": "11:00",
+                                                            "close_time": "23:00",
+                                                            "closed": false
+                                                        },
+                                                        {
+                                                            "day": "kamis",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "rabu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "senin",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/drop-points/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Drop Point"
+                ],
+                "summary": "get detail drop-point",
+                "description": "",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/searchID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "schema":{
+                                    "$ref": "#/components/schemas/RequestResponseDropPoint"
+                                },
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": {
+                                                "id": "38b56197-9774-4fc6-9685-26e1119baf33",
+                                                "name": "Rodi Recycle",
+                                                "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                                "latitude": -6.2914552,
+                                                "longitude": 106.9285376,
+                                                "schedule": [
+                                                    {
+                                                        "day": "rabu",
+                                                        "open_time": "11:00",
+                                                        "close_time": "23:00",
+                                                        "closed": false
+                                                    },
+                                                    {
+                                                        "day": "kamis",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "jumat",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "sabtu",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "minggu",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "selasa",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "senin",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": ["Manage Drop Point"],
+                "summary": "update schedule drop point",
+                "description": "",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/searchID"
+                    }
+                ],
+                "requestBody":{
+                    "content": {
+                        "application/json":{
+                            "schema":{
+                                "$ref": "#/components/schemas/RequestResponseDropPoint"
+                            },
+                            "examples":{
+                                "example":{
+                                    "value":{
+                                        "description":"Jika closed key tidak diisi maka secara langsung bernilai closed = false",
+                                        "name": "Update Recycle",
+                                        "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                        "latitude": -6.2914552,
+                                        "longitude": 106.9285376,
+                                        "schedule": [
+                                            {
+                                                "day": "senin",
+                                                "open_time": "19:00",
+                                                "close_time": "23:00",
+                                                "closed":true
+                                            },
+                                            {
+                                                "day": "jumat",
+                                                "open_time": "19:00",
+                                                "close_time": "23:00"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil melakukan update data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": ["Manage Drop Point"],
+                "summary": "delete drop point",
+                "description": "",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/searchID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil menghapus data"
                                         }
                                     }
                                 }
@@ -2138,7 +2565,7 @@
             "search": {
                 "name": "search",
                 "in": "query",
-                "description": "search of data name and point",
+                "description": "search of data",
                 "schema": {
                     "type": "string"
                 }
@@ -2717,6 +3144,39 @@
                             },
                             "limit": {
                                 "type": "integer"
+                            }
+                        }
+                    }
+                }
+            },
+            "RequestResponseDropPoint": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "type": "number"
+                    },
+                    "longitude": {
+                        "type": "number"
+                    },
+                    "schedule": {
+                        "type": "object",
+                        "properties": {
+                            "day": {
+                                "type": "string"
+                            },
+                            "open_time": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "close_time": {
+                                "type": "string",
+                                "format": "date"
                             }
                         }
                     }

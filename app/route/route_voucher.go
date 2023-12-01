@@ -15,10 +15,14 @@ func RouteVoucher(e *echo.Group, db *gorm.DB) {
 	voucherService := service.NewVoucherService(voucherRepository)
 	voucherHandler := handler.NewVoucherHandler(voucherService)
 
-	voucher := e.Group("/manage/vouchers", jwt.JWTMiddleware())
-	voucher.POST("", voucherHandler.CreateVoucher)
-	voucher.GET("", voucherHandler.GetAllVoucher)
-	voucher.GET("/:id", voucherHandler.GetVoucherById)
-	voucher.PUT("/:id", voucherHandler.UpdateVoucher)
-	voucher.DELETE("/:id", voucherHandler.DeleteVoucherById)
+	admin := e.Group("/admins/manage/vouchers", jwt.JWTMiddleware())
+	admin.POST("", voucherHandler.CreateVoucher)
+	admin.GET("", voucherHandler.GetAllVoucher)
+	admin.GET("/:id", voucherHandler.GetVoucherById)
+	admin.PUT("/:id", voucherHandler.UpdateVoucher)
+	admin.DELETE("/:id", voucherHandler.DeleteVoucherById)
+
+	user := e.Group("/vouchers", jwt.JWTMiddleware())
+	user.GET("", voucherHandler.GetAllVoucher)
+	user.GET("/:id", voucherHandler.GetVoucherById)
 }

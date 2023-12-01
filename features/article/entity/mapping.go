@@ -21,22 +21,6 @@ func ListCategoryModelToCategoryCore(category []tcm.TrashCategory) []ArticleTras
 	return coreCategory
 }
 
-func ArticleModelToArticleCore(article model.Article) ArticleCore {
-	articleCore := ArticleCore{
-		ID:        article.Id,
-		Title:     article.Title,
-		Image:     article.Image,
-		Content:   article.Content,
-		Like:      article.Like,
-		Share:     article.Share,
-		CreatedAt: article.CreatedAt,
-		UpdatedAt: article.UpdatedAt,
-	}
-	category := ListCategoryModelToCategoryCore(article.Categories)
-	articleCore.Categories = category
-	return articleCore
-}
-
 func CategoryCoreToCategoryModel(category ArticleTrashCategoryCore) tcm.TrashCategory {
 	return tcm.TrashCategory{
 		// ID:        category.TrashCategoryID,
@@ -67,4 +51,30 @@ func ArticleCoreToArticleModel(article ArticleCore) model.Article {
 	category := ListCategoryCoreToCategoryModel(article.Categories)
 	articleModel.Categories = category
 	return articleModel
+}
+
+
+func ArticleModelToArticleCore(article model.Article) ArticleCore {
+	articleCore := ArticleCore{
+		ID:        article.Id,
+		Title:     article.Title,
+		Image:     article.Image,
+		Content:   article.Content,
+		Like:      article.Like,
+		Share:     article.Share,
+		CreatedAt: article.CreatedAt,
+		UpdatedAt: article.UpdatedAt,
+	}
+	category := ListCategoryModelToCategoryCore(article.Categories)
+	articleCore.Categories = category
+	return articleCore
+}
+
+func ListArticleModelToArticleCore(category []model.Article) []ArticleCore{
+	coreCategorys := []ArticleCore{}
+	for _, v := range category {
+		categorys := ArticleModelToArticleCore(v)
+		coreCategorys = append(coreCategorys, categorys)
+	}
+	return coreCategorys
 }

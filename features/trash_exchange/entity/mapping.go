@@ -38,7 +38,7 @@ func TrashExchangeModelToTrashExchangeCore(data model.TrashExchange) TrashExchan
 	return coreTrashExchange
 }
 
-func TrashExchangeModelToTrashExchangeCoreForGetById(data model.TrashExchange) TrashExchangeCore {
+func TrashExchangeModelToTrashExchangeCoreForGetData(data model.TrashExchange) TrashExchangeCore {
 	coreTrashExchange := TrashExchangeCore{
 		Id:          data.Id,
 		Name:        data.Name,
@@ -53,6 +53,15 @@ func TrashExchangeModelToTrashExchangeCoreForGetById(data model.TrashExchange) T
 	trashExchange := ListTrashExchangeDetailModelToTrashExchangeDetailCore(data.TrashExchangeDetails)
 	coreTrashExchange.TrashExchangeDetails = trashExchange
 	return coreTrashExchange
+}
+
+func ListTrashExchangeModelToTrashExchangeCoreForGetData(data []model.TrashExchange) []TrashExchangeCore {
+	trashExchangeCores := []TrashExchangeCore{}
+	for _, v := range data {
+		trashExchangeCore := TrashExchangeModelToTrashExchangeCoreForGetData(v)
+		trashExchangeCores = append(trashExchangeCores, trashExchangeCore)
+	}
+	return trashExchangeCores
 }
 
 func TrashExchangeDetailCoreToTrashExchangeDetailModel(data TrashExchangeDetailCore) model.TrashExchangeDetail {

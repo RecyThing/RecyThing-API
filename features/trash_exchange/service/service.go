@@ -9,6 +9,7 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/pagination"
+	"recything/utils/validation"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -61,7 +62,7 @@ func (tes *trashExchangeService) CreateTrashExchange(data trashExchange.TrashExc
 		if err != nil {
 			return trashExchange.TrashExchangeCore{}, errors.New("gagal mengonversi unit")
 		}
-		
+
 		detail.TotalPoints = int(unit * float64(trashCategory.Point))
 		totalPoints += detail.TotalPoints
 
@@ -110,8 +111,20 @@ func (tes *trashExchangeService) DeleteTrashExchangeById(id string) error {
 }
 
 // GetAllTrashExchange implements entity.TrashExchangeServiceInterface.
-func (*trashExchangeService) GetAllTrashExchange(page int, limit int, name string, address string) ([]trashExchange.TrashExchangeCore, pagination.PageInfo, error) {
-	panic("unimplemented")
+func (tes *trashExchangeService) GetAllTrashExchange(page, limit, search string) ([]trashExchange.TrashExchangeCore, pagination.PageInfo, int, error) {
+	pageInt, limitInt, err := validation.ValidateTypePaginationParameter(limit, page)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
+
+	pageValid, limitValid := validation.ValidateCountLimitAndPage(pageInt, limitInt)
+
+	dropPointCores, pageInfo, count, err := tes.trashExchangeRepository.GetAllTrashExchange(pageValid, limitValid, search)
+	if err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
+
+	return dropPointCores, pageInfo, count, nil
 }
 
 // GetTrashExchangeById implements entity.TrashExchangeServiceInterface.

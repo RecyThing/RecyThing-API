@@ -63,8 +63,32 @@ func (ter *trashExchangeRepository) DeleteTrashExchangeById(id string) error {
 }
 
 // GetAllTrashExchange implements entity.TrashExchangeRepositoryInterface.
-func (*trashExchangeRepository) GetAllTrashExchange(page int, limit int, search string) ([]entity.TrashExchangeCore, pagination.PageInfo, error) {
-	panic("unimplemented")
+func (ter *trashExchangeRepository) GetAllTrashExchange(page int, limit int, search string) ([]entity.TrashExchangeCore, pagination.PageInfo, int, error) {
+	trashExchange := []model.TrashExchange{}
+
+	offset := (page - 1) * limit
+	query := ter.db.Model(&model.TrashExchange{}).Preload("TrashExchangeDetails")
+
+	if search != "" {
+		query = query.Where("email_user LIKE ? or id LIKE ? ", "%"+search+"%", "%"+search+"%")
+	}
+
+	var totalCount int64
+	tx := query.Count(&totalCount)
+	if tx.Error != nil {
+		return nil, pagination.PageInfo{}, 0, tx.Error
+	}
+	
+	query = query.Offset(offset).Limit(limit)
+
+	tx = query.Find(&trashExchange)
+	if tx.Error != nil {
+		return nil, pagination.PageInfo{}, 0,tx.Error
+	}
+
+	response := entity.ListTrashExchangeModelToTrashExchangeCoreForGetData(trashExchange)
+	pageInfo := pagination.CalculateData(int(totalCount), limit, page)
+	return response, pageInfo, int(totalCount), nil
 }
 
 // GetTrashExchangeById implements entity.TrashExchangeRepositoryInterface.
@@ -80,6 +104,6 @@ func (ter *trashExchangeRepository) GetTrashExchangeById(id string) (entity.Tras
 		return entity.TrashExchangeCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
-	dropPointId := entity.TrashExchangeModelToTrashExchangeCoreForGetById(trashExchange)
+	dropPointId := entity.TrashExchangeModelToTrashExchangeCoreForGetData(trashExchange)
 	return dropPointId, nil
 }

@@ -26,6 +26,7 @@ func RouteTrashExchange(e *echo.Group, db *gorm.DB) {
 
 	trashExchange := e.Group("/manage/recycles", jwt.JWTMiddleware())
 	trashExchange.POST("", trashExchangeHandler.CreateTrashExchange)
+	trashExchange.GET("", trashExchangeHandler.GetAllTrashExchange)
 	trashExchange.GET("/:id", trashExchangeHandler.GetTrashExchangeById)
 	trashExchange.DELETE("/:id", trashExchangeHandler.DeleteTrashExchange)
 }

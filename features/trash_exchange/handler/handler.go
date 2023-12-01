@@ -50,6 +50,35 @@ func (teh *trashExchangeHandler) CreateTrashExchange(e echo.Context) error {
 	return e.JSON(http.StatusCreated, helper.SuccessResponse(constanta.SUCCESS_CREATE_DATA))
 }
 
+func (dph *trashExchangeHandler) GetAllTrashExchange(e echo.Context) error {
+	_, role, err := jwt.ExtractToken(e)
+
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	search := e.QueryParam("search")
+	page := e.QueryParam("page")
+	limit := e.QueryParam("limit")
+
+	trashExchange, paginationInfo, count, err := dph.trashExchangeService.GetAllTrashExchange(page, limit, search)
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	if len(trashExchange) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
+	}
+
+	response := response.ListTrashExchangeCoreToTrashExchangeResponse(trashExchange)
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan data", response, paginationInfo, count))
+
+}
+
 func (dph *trashExchangeHandler) GetTrashExchangeById(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
 	if role != constanta.SUPERADMIN && role != constanta.ADMIN {

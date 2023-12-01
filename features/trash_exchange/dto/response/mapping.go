@@ -33,3 +33,12 @@ func TrashExchangeCoreToTrashExchangeResponse(data entity.TrashExchangeCore) Tra
 	trashExchangeResponse.TrashExchangeDetails = trashExchange
 	return trashExchangeResponse
 }
+
+func ListTrashExchangeCoreToTrashExchangeResponse(data []entity.TrashExchangeCore) []TrashExchangeResponse {
+	list := []TrashExchangeResponse{}
+	for _, v := range data {
+		result := TrashExchangeCoreToTrashExchangeResponse(v)
+		list = append(list, result)
+	}
+	return list
+}

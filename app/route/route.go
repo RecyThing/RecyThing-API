@@ -13,7 +13,6 @@ func New(e *echo.Echo, db *gorm.DB) {
 	report := e.Group("/reports")
 	faq := e.Group("/faq")
 	recybot := e.Group("/recybot")
-	
 
 
 	RouteLoginPage(loginPage, db)
@@ -25,7 +24,10 @@ func New(e *echo.Echo, db *gorm.DB) {
 	RouteFaqs(faq, db)
 	RouteRecybot(recybot, db)
 	RouteAchievement(admin, db)
+
+
 	RouteVoucher(base, db)
-	RouteMissions(admin, db)
+	RouteMissions(base, db)
 	RouteTrash(admin,db)
+
 }

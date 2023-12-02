@@ -93,9 +93,15 @@ func ValidateTime(openTime, closeTime string) error {
 
 func ValidateDate(startDate, endDate string) error {
 	layout := "2006-01-02"
+	currentTime := time.Now().Truncate(24 * time.Hour)
+
 	start, err := time.Parse(layout, startDate)
 	if err != nil {
 		return errors.New("tanggal harus dalam format 'yyyy-mm-dd'")
+	}
+
+	if start.Before(currentTime) {
+		return errors.New("tanggal mulai harus hari ini atau setelahnya")
 	}
 
 	end, err := time.Parse(layout, endDate)
@@ -103,8 +109,12 @@ func ValidateDate(startDate, endDate string) error {
 		return errors.New("tanggal harus dalam format 'yyyy-mm-dd'")
 	}
 
-	if end.Before(start) || end.Equal(start) {
-		return errors.New("tanggal selesai harus berbeda dari tanggal mulai")
+	if end.Before(start) {
+		return errors.New("tanggal selesai harus setelah tanggal mulai")
+	}
+
+	if end.Equal(start) {
+		return errors.New("tanggal mulai harus berbeda dari tanggal selesai")
 	}
 
 	return nil
@@ -215,7 +225,7 @@ func ValidateTypePaginationParameter(limit, page string) (int, int, error) {
 func CheckLatLong(latitude, longitude float64) error {
 	dataLatitude := govalidator.ToString(latitude)
 	dataLongitude := govalidator.ToString(longitude)
-	
+
 	errLatLong := govalidator.IsLatitude(dataLatitude)
 	if !errLatLong {
 		return errors.New("bukan latitude")

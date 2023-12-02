@@ -1,24 +1,30 @@
 package service
 
 import (
+	"errors"
+	"log"
 	"mime/multipart"
+	admin "recything/features/admin/entity"
 	"recything/features/mission/entity"
+	"recything/utils/constanta"
 	"recything/utils/pagination"
 	"recything/utils/storage"
 	"recything/utils/validation"
+	"time"
 )
 
 type missionService struct {
-	missionRepo entity.MissionRepositoryInterface
+	MissionRepo entity.MissionRepositoryInterface
+	AdminRepo   admin.AdminRepositoryInterface
 }
 
-func NewMissionService(missionRepo entity.MissionRepositoryInterface) entity.MissionServiceInterface {
+func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo admin.AdminRepositoryInterface) entity.MissionServiceInterface {
 	return &missionService{
-		missionRepo: missionRepo,
+		MissionRepo: missionRepo,
+		AdminRepo:   adminRepo,
 	}
 }
 
-// CreateData implements entity.trashCategoryServiceInterface.
 func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
 
 	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point, image)
@@ -26,13 +32,29 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 		return errEmpty
 	}
 
-	imageURL, errUpload := storage.UploadThumbnail(image)
-	if errUpload != nil {
-		return errUpload
+	err := validation.ValidateDate(data.StartDate, data.EndDate)
+	if err != nil {
+		return err
 	}
-	data.MissionImage = imageURL
+	uploadError := make(chan error)
+	var imageURL string
+	go func() {
+		imageURL, errUpload := storage.UploadThumbnail(image)
+		if errUpload != nil {
+			uploadError <- errUpload
+			return
+		}
+		data.MissionImage = imageURL
+		uploadError <- nil
+	}()
 
-	err := ms.missionRepo.CreateMission(data)
+	data.MissionImage = imageURL
+	err = ms.ChangesStatusMission(data)
+	if err != nil {
+		return err
+	}
+
+	err = ms.MissionRepo.CreateMission(data)
 	if err != nil {
 		return err
 	}
@@ -47,66 +69,101 @@ func (ms *missionService) CreateMissionStages(adminID, missionID string, data []
 		}
 	}
 
-	// result, err := ms.missionRepo.GetAdminIDbyMissionID(missionID)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// if result != adminID {
-	// 	return errors.New("akses ditolak")
-	// }
-
-	err := ms.missionRepo.CreateMissionStages(data)
+	err := ms.MissionRepo.CreateMissionStages(data)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (ms *missionService) FindAll(page, limit, filter string) ([]entity.Mission, pagination.PageInfo, int, error) {
+func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]entity.Mission, pagination.PageInfo, int, error) {
 	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
-	data, pagnationInfo, count, err := ms.missionRepo.FindAll(pageInt, limitInt, filter)
+	data, pagnationInfo, count, err := ms.MissionRepo.FindAllMission(pageInt, limitInt, search, filter)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
+
+	for i := range data {
+		err := ms.ChangesStatusMission(data[i])
+		if err != nil {
+			return nil, pagination.PageInfo{}, 0, err
+		}
+
+		admin, err := ms.AdminRepo.SelectById(data[i].AdminID)
+		if err != nil {
+			return nil, pagination.PageInfo{}, 0, err
+		}
+
+		data[i].Creator = admin.Fullname
+	}
+
 	return data, pagnationInfo, count, nil
 }
 
-// func (tc *trashCategoryService) GetById(idTrash string) (entity.TrashCategoryCore, error) {
+func (ms *missionService) ChangesStatusMission(data entity.Mission) error {
+	endDate, err := time.Parse("2006-01-02", data.EndDate)
+	if err != nil {
+		return err
+	}
 
-// 	result, err := tc.trashCategoryRepo.GetById(idTrash)
-// 	if err != nil {
-// 		return result, err
-// 	}
-// 	return result, nil
-// }
+	currentTime := time.Now().Truncate(24 * time.Hour)
+	if endDate.Before(currentTime) {
+		data.Status = "Melewati Tenggat"
+	}
+	return nil
+}
 
-// // Delete implements entity.trashCategoryServiceInterface.
-// func (tc *trashCategoryService) DeleteCategory(idTrash string) error {
+func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID string, data entity.Mission) error {
 
-// 	err := tc.trashCategoryRepo.Delete(idTrash)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
+	uploadError := make(chan error)
+	var imageURL string
 
-// // UpdateData implements entity.trashCategoryServiceInterface.
-// func (tc *trashCategoryService) UpdateCategory(idTrash string, data entity.TrashCategoryCore) (entity.TrashCategoryCore, error) {
+	go func() {
+		imageURL, errUpload := storage.UploadThumbnail(image)
+		if errUpload != nil {
+			uploadError <- errUpload
+			return
+		}
+		data.MissionImage = imageURL
+		uploadError <- nil
+	}()
 
-// 	errEmpty := validation.CheckDataEmpty(data.TrashType, data.Unit)
-// 	if errEmpty != nil {
-// 		return entity.TrashCategoryCore{}, errEmpty
-// 	}
+	data.MissionImage = imageURL
+	log.Println("data service after validation", data)
+	err := ms.MissionRepo.UpdateMission(missionID, data)
+	if err != nil {
+		return err
+	}
 
-// 	result, err := tc.trashCategoryRepo.Update(idTrash, data)
-// 	if err != nil {
-// 		return result, err
-// 	}
-// 	result.ID = idTrash
-// 	return result, nil
-// }
+	return nil
+}
+
+func (ms *missionService) UpdateMissionStage(missionStageID string, data entity.Stage) error {
+	errEmpty := validation.CheckDataEmpty(data.Title, data.Description)
+	if errEmpty != nil {
+		return errEmpty
+	}
+
+	err := ms.MissionRepo.UpdateMissionStage(missionStageID, data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Claimed Mission
+func (ms *missionService) ClaimMission(userID string, data entity.ClaimedMission) error {
+	if data.MissionID == "" {
+		return errors.New(constanta.ERROR_EMPTY)
+	}
+	err := ms.MissionRepo.ClaimMission(userID, data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -7,6 +7,7 @@ func MissionCoreToMissionResponse(missi entity.Mission) Mission {
 		ID:            missi.ID,
 		Title:         missi.Title,
 		Status:        missi.Status,
+		Creator:       missi.Creator,
 		MissionImage:  missi.MissionImage,
 		Point:         missi.Point,
 		Description:   missi.Description,
@@ -41,7 +42,7 @@ func ListMissionStagesCoreToMissionStagesResponse(missionStages []entity.Mission
 	return missionStagesResp
 }
 
-func ListMissionCoreToMissionResponse(mission []entity.Mission) []Mission{
+func ListMissionCoreToMissionResponse(mission []entity.Mission) []Mission {
 	missions := []Mission{}
 	for _, mission := range mission {
 		missionResp := MissionCoreToMissionResponse(mission)

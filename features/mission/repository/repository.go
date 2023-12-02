@@ -175,18 +175,21 @@ func (mr *MissionRepository) GetImageURL(missionID string) (string, error) {
 // Claimed Mission
 func (mr *MissionRepository) ClaimMission(userID string, data entity.ClaimedMission) error {
 	input := entity.ClaimedCoreToClaimedMissionModel(data)
-
-	_, err := mr.GetById(data.MissionID)
-	if err != nil {
-		return err
+	dataMission := model.Mission{}
+	tx := mr.db.Take(&dataMission, "id = ?", data.MissionID)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
+	if tx.RowsAffected == 0 {
+		return errors.New(constanta.ERROR_DATA_ID)
+	}
 	errFind := mr.FindClaimed(userID, data.MissionID)
 	if errFind != nil {
 		return errors.New(errFind.Error())
 	}
 
-	tx := mr.db.Create(&input)
+	tx = mr.db.Create(&input)
 	if tx.Error != nil {
 		return tx.Error
 	}

@@ -15,6 +15,7 @@ import (
 	user "recything/features/user/model"
 	voucher "recything/features/voucher/model"
 	droppoint "recything/features/drop-point/model"
+	daily "recything/features/daily_point/model"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -46,4 +47,5 @@ func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&article.Article{})
 	db.AutoMigrate(&droppoint.DropPoints{}, &droppoint.Schedules{})
 	db.AutoMigrate(&mission.Mission{}, &mission.MissionStage{})
+	db.AutoMigrate(&daily.DailyPoint{})
 }

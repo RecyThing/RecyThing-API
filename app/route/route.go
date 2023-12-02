@@ -24,4 +24,5 @@ func New(e *echo.Echo, db *gorm.DB) {
 	RouteAchievement(admin, db)
 	RouteVoucher(admin, db)
 	RouteMissions(admin, db)
+	RouteDailyPoint(user,db)
 }

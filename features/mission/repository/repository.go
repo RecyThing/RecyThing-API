@@ -161,3 +161,13 @@ func (mr *MissionRepository) UpdateMissionStage(missionStageID string, data enti
 
 	return nil
 }
+
+func (mr *MissionRepository) GetImageURL(missionID string) (string, error) {
+	mission := model.Mission{}
+	err := mr.db.Take(&mission, missionID).Error
+	if err != nil {
+		return "", err
+	}
+
+	return mission.MissionImage, nil
+}

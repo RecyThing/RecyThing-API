@@ -120,6 +120,30 @@ func ValidateDate(startDate, endDate string) error {
 	return nil
 }
 
+func ValidateDateForUpdate(startDate, endDate string) error {
+	layout := "2006-01-02"
+
+	start, err := time.Parse(layout, startDate)
+	if err != nil {
+		return errors.New("tanggal harus dalam format 'yyyy-mm-dd'")
+	}
+
+	end, err := time.Parse(layout, endDate)
+	if err != nil {
+		return errors.New("tanggal harus dalam format 'yyyy-mm-dd'")
+	}
+
+	if end.Before(start) {
+		return errors.New("tanggal selesai harus setelah tanggal mulai")
+	}
+
+	if end.Equal(start) {
+		return errors.New("tanggal mulai harus berbeda dari tanggal selesai")
+	}
+
+	return nil
+}
+
 // for repository
 func IsDuplicateError(err error) bool {
 	if mysqlErr, ok := err.(*mysql.MySQLError); ok {

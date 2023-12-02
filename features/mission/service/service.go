@@ -78,17 +78,28 @@ func (ms *missionService) FindAllMission(page, limit, search, status string) ([]
 
 func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID string, data entity.Mission) error {
 
-	err := validation.ValidateDate(data.StartDate, data.EndDate)
+	err := validation.ValidateDateForUpdate(data.StartDate, data.EndDate)
 	if err != nil {
 		return err
 	}
 
-	imageURL, errUpload := storage.UploadThumbnail(image)
-	if errUpload != nil {
+	imageURL, err := ms.MissionRepo.GetImageURL(missionID)
+	if err != nil {
 		return err
 	}
 
-	data.MissionImage = imageURL
+	if image != nil {
+		newImageURL, errUpload := storage.UploadThumbnail(image)
+		if errUpload != nil {
+			return err
+		}
+		data.MissionImage = newImageURL
+	}
+	
+	if image == nil {
+		data.MissionImage = imageURL
+	}
+
 	err = ms.MissionRepo.UpdateMission(missionID, data)
 	if err != nil {
 		return err

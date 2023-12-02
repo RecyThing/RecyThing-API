@@ -12,6 +12,7 @@ type MissionRepositoryInterface interface {
 	SaveChangesStatusMission(data Mission) error
 	UpdateMission(missionID string, data Mission) error
 	UpdateMissionStage(missionStageID string, data MissionStage) error
+	GetImageURL(missionID string)(string, error)
 }
 
 type MissionServiceInterface interface {

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log"
 	"mime/multipart"
 	admin "recything/features/admin/entity"
 	"recything/features/mission/entity"
@@ -30,30 +31,51 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 	// 	return errEmpty
 	// }
 
+	log.Println("data service : ", data)
+
 	err := validation.ValidateDate(data.StartDate, data.EndDate)
 	if err != nil {
 		return err
 	}
-	uploadError := make(chan error)
-	var imageURL string
-	go func() {
-		imageURL, errUpload := storage.UploadThumbnail(image)
-		if errUpload != nil {
-			uploadError <- errUpload
-			return
-		}
-		data.MissionImage = imageURL
-		uploadError <- nil
-	}()
-
+	// uploadError := make(chan error)
+	// var imageURL string
+	// go func() {
+	imageURL, errUpload := storage.UploadThumbnail(image)
+	if errUpload != nil {
+		// uploadError <- errUpload
+		return err
+	}
 	data.MissionImage = imageURL
+	// 	uploadError <- nil
+	// }()
+
+	// data.MissionImage = imageURL
+	log.Println(" image :", data.MissionImage)
 	err, status := ms.ChangesStatusMission(data.EndDate)
 	if err != nil {
 		return err
 	}
 	data.Status = status
 
+	// endDateValid, err := time.Parse("2006-01-02", data.EndDate)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// currentTime := time.Now().Truncate(24 * time.Hour)
+	// if endDateValid.Before(currentTime) {
+	// 	data.Status = constanta.OVERDUE
+	// } else {
+	// 	data.Status = constanta.ACTIVE
+	// }
+
+	err = ms.MissionRepo.CreateMission(data)
+	if err != nil {
+		return err
+	}
+
 	return nil
+
 }
 
 func (ms *missionService) FindAllMission(page, limit, search, status string) ([]entity.Mission, pagination.PageInfo, int, error) {

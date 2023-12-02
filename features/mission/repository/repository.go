@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"log"
 	"recything/features/mission/entity"
 	"recything/features/mission/model"
 	"recything/utils/constanta"
@@ -25,8 +26,9 @@ func NewMissionRepository(db *gorm.DB) entity.MissionRepositoryInterface {
 
 // Create implements entity.MissionRepositoryInterface.
 func (mr *MissionRepository) CreateMission(input entity.Mission) error {
+	log.Println(" input repo : ", input)
 	data := entity.MissionCoreToMissionModel(input)
-
+	log.Println("data repo ")
 	tx := mr.db.Create(&data)
 	if tx.Error != nil {
 		if validation.IsDuplicateError(tx.Error) {

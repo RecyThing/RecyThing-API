@@ -32,25 +32,33 @@ func (rb *recybotRepository) Create(recybot entity.RecybotCore) (entity.RecybotC
 	return result, nil
 }
 
-func (rb *recybotRepository) FindAll(page, limit int, category string) ([]entity.RecybotCore, pagination.PageInfo, int, error) {
+func (rb *recybotRepository) FindAll(page, limit int, filter, search string) ([]entity.RecybotCore, pagination.PageInfo, int, error) {
 	dataRecybots := []model.Recybot{}
 
 	offsetInt := (page - 1) * limit
-	totalCount, err := rb.GetCount(category)
+	totalCount, err := rb.GetCount(filter, search)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
 	paginationQuery := rb.db.Limit(limit).Offset(offsetInt)
-	if category == "" {
+
+	if filter == "" || search == "" {
 		tx := paginationQuery.Find(&dataRecybots)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
 	}
 
-	if category != "" {
-		tx := paginationQuery.Where("category LIKE ?", "%"+category+"%").Find(&dataRecybots)
+	if filter != "" {
+		tx := paginationQuery.Where("category LIKE ?", "%"+filter+"%").Find(&dataRecybots)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, 0, tx.Error
+		}
+	}
+
+	if search != "" {
+		tx := paginationQuery.Where("category LIKE ? or question LIKE ? ", "%"+search+"%", "%"+search+"%").Find(&dataRecybots)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
@@ -62,18 +70,25 @@ func (rb *recybotRepository) FindAll(page, limit int, category string) ([]entity
 
 }
 
-func (rb *recybotRepository) GetCount(category string) (int, error) {
+func (rb *recybotRepository) GetCount(filter, search string) (int, error) {
 	var totalCount int64
 	model := rb.db.Model(&model.Recybot{})
-	if category == "" {
+	if filter == "" || search == "" {
 		err := model.Count(&totalCount).Error
 		if err != nil {
 			return 0, err
 		}
 
 	}
-	if category != "" {
-		tx := model.Where("category LIKE ?", "%"+category+"%").Count(&totalCount)
+	if filter != "" {
+		tx := model.Where("category LIKE ?", "%"+filter+"%").Count(&totalCount)
+		if tx.Error != nil {
+			return 0, tx.Error
+		}
+	}
+
+	if search != "" {
+		tx := model.Where("category LIKE ? or question LIKE ? ", "%"+search+"%", "%"+search+"%").Count(&totalCount)
 		if tx.Error != nil {
 			return 0, tx.Error
 		}

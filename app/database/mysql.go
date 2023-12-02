@@ -47,5 +47,5 @@ func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&article.Article{})
 	db.AutoMigrate(&dropPoint.DropPoints{}, &dropPoint.Schedules{})
 	db.AutoMigrate(&trashExchange.TrashExchange{}, trashExchange.TrashExchangeDetail{})
-	db.AutoMigrate(&mission.Mission{}, &mission.MissionStage{})
+	db.AutoMigrate(&mission.Mission{}, &mission.MissionStage{}, &mission.ClaimedMission{})
 }

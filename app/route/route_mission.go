@@ -1,6 +1,7 @@
 package route
 
 import (
+	admin "recything/features/admin/repository"
 	"recything/features/mission/handler"
 	"recything/features/mission/repository"
 	"recything/features/mission/service"
@@ -11,12 +12,20 @@ import (
 )
 
 func RouteMissions(e *echo.Group, db *gorm.DB) {
+	adminRepository := admin.NewAdminRepository(db)
 	missionRepository := repository.NewMissionRepository(db)
-	missionService := service.NewMissionService(missionRepository)
+	missionService := service.NewMissionService(missionRepository, adminRepository)
 	missionHandler := handler.NewMissionHandler(missionService)
 
-	mission := e.Group("/manage/missions", jwt.JWTMiddleware())
-	mission.GET("", missionHandler.GetAllMission)
-	mission.POST("", missionHandler.CreateMission)
-	mission.POST("/stages", missionHandler.CreateMissionStage)
+	admin := e.Group("admins/manage/missions", jwt.JWTMiddleware())
+
+	admin.POST("", missionHandler.CreateMission)
+	admin.POST("/stages", missionHandler.CreateMissionStage)
+	admin.PUT("/:id", missionHandler.UpdateMission)
+	admin.PUT("/stages/:id", missionHandler.UpdateMissionStages)
+
+	userAndAdmin := e.Group("/missions", jwt.JWTMiddleware())
+	userAndAdmin.GET("", missionHandler.GetAllMission)
+	userAndAdmin.POST("",missionHandler.ClaimMission)
+
 }

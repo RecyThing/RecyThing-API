@@ -17,3 +17,7 @@ type Stage struct {
 	Title       string `form:"title" json:"title"`
 	Description string `form:"description" json:"description"`
 }
+
+type Claim struct{
+	MissionID string  `json:"mission_id"` 
+}

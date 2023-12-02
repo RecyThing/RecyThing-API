@@ -25,7 +25,7 @@ func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo 
 
 func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
 
-	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point, image)
+	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point)
 	if errEmpty != nil {
 		return errEmpty
 	}
@@ -75,28 +75,45 @@ func (ms *missionService) FindAllMission(page, limit, search, status string) ([]
 
 		data[i].Creator = admin.Fullname
 
-		err, status := ms.ChangesStatusMission(data[i].EndDate)
-		if err != nil {
-			return nil, pagination.PageInfo{}, 0, err
-		}
+		// err, status := ms.ChangesStatusMission(data[i].EndDate)
+		// if err != nil {
+		// 	return nil, pagination.PageInfo{}, 0, err
+		// }
 
-		data[i].Status = status
+		// data[i].Status = status
+		// err = ms.MissionRepo.SaveChangesStatusMission(data[i])
+		// if err != nil {
+		// 	return nil, pagination.PageInfo{}, 0, err
+		// }
 	}
 
 	return data, pagnationInfo, count, nil
 }
 
 func (ms *missionService) ChangesStatusMission(endDate string) (error, string) {
+	// endDateValid, err := time.Parse("2006-01-02", endDate)
+	// if err != nil {
+	// 	return err, ""
+	// }
+	// status := constanta.OVERDUE
+	// currentTime := time.Now().Truncate(24 * time.Hour)
+	// if endDateValid.Before(currentTime) {
+	// 	return err, status
+	// }
+	// return nil, constanta.ACTIVE
+
 	endDateValid, err := time.Parse("2006-01-02", endDate)
 	if err != nil {
 		return err, ""
 	}
-	status := constanta.OVERDUE
+	var status string
 	currentTime := time.Now().Truncate(24 * time.Hour)
 	if endDateValid.Before(currentTime) {
-		return err, status
+		status = constanta.OVERDUE
+	} else {
+		status = constanta.ACTIVE
 	}
-	return nil, constanta.ACTIVE
+	return nil, status
 }
 
 func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID string, data entity.Mission) error {

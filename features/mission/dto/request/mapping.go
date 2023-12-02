@@ -8,6 +8,8 @@ func MissionRequestToMissionCore(missi Mission) entity.Mission {
 		MissionImage: missi.MissionImage,
 		Point:        missi.Point,
 		Description:  missi.Description,
+		StartDate:    missi.Start_Date,
+		EndDate:      missi.End_Date,
 	}
 
 	missionStagesCore := ListMissionStagesRequestToMissionStagesCore(missi.MissionStages)
@@ -20,7 +22,7 @@ func MissionStagesRequestToMissionStagesCore(missionStages MissionStage) entity.
 		Title:       missionStages.Title,
 		Description: missionStages.Description,
 	}
-	
+
 	return missionStagesCore
 }
 

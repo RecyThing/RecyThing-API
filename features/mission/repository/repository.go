@@ -78,8 +78,11 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, status stri
 		currentTime := time.Now().Truncate(24 * time.Hour)
 		if endDateValid.Before(currentTime) {
 			v.Status = constanta.OVERDUE
+		} else {
+			v.Status = constanta.ACTIVE
 		}
-		err = mr.db.Update(" status", &v.Status).Error
+
+		err = mr.db.Model(&v).Where("id = ?", v.ID).Update("status", &v.Status).Error
 		if err != nil {
 			return nil, pagination.PageInfo{}, 0, err
 		}
@@ -129,9 +132,11 @@ func (mr *MissionRepository) GetCount(filter, search string) (int, error) {
 
 func (mr *MissionRepository) SaveChangesStatusMission(data entity.Mission) error {
 	mission := entity.MissionCoreToMissionModel(data)
-	if err := mr.db.Save(&mission).Error; err != nil {
+	err := mr.db.Model(&mission).Where("id = ?", data.ID).Update("status", &data.Status).Error
+	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

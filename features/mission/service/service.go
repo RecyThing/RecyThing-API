@@ -25,10 +25,10 @@ func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo 
 
 func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
 
-	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point)
-	if errEmpty != nil {
-		return errEmpty
-	}
+	// errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point)
+	// if errEmpty != nil {
+	// 	return errEmpty
+	// }
 
 	err := validation.ValidateDate(data.StartDate, data.EndDate)
 	if err != nil {

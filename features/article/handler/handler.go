@@ -96,7 +96,7 @@ func (article *articleHandler) GetSpecificArticle(e echo.Context) error {
 
 	articleData, err := article.articleService.GetSpecificArticle(idParams)
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse("gagal membaca data"))
+		return e.JSON(http.StatusNotFound, helper.ErrorResponse("gagal membaca data"))
 	}
 
 	var articleResponse = response.ArticleCoreToArticleResponse(articleData)

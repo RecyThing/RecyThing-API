@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 	"recything/features/mission/dto/request"
 	"recything/features/mission/dto/response"
@@ -34,7 +33,7 @@ func (mh *missionHandler) CreateMission(e echo.Context) error {
 	}
 
 	requestMission := request.Mission{}
-	err = helper.BindFormData(e, &requestMission)
+	err = e.Bind(&requestMission)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
@@ -57,38 +56,14 @@ func (mh *missionHandler) CreateMission(e echo.Context) error {
 	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan missi"))
 }
 
-func (mh *missionHandler) CreateMissionStage(e echo.Context) error {
-	id, role, err := jwt.ExtractToken(e)
-	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-	}
-	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
-	}
-
-	requestMission := request.MissionStages{}
-	err = helper.DecodeJSON(e, &requestMission)
-	if err != nil {
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-	}
-
-	input := request.ListMissiStagesRequestToMissiStagesCore(requestMission)
-	err = mh.missionService.CreateMissionStages(id, requestMission.MissionID, input)
-	if err != nil {
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-	}
-
-	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan tahapan misi"))
-}
-
 func (mh *missionHandler) GetAllMission(e echo.Context) error {
 
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
 	search := e.QueryParam("search")
-	filter := e.QueryParam("filter")
+	status := e.QueryParam("status")
 
-	result, pagnation, count, err := mh.missionService.FindAllMission(page, limit, search, filter)
+	result, pagnation, count, err := mh.missionService.FindAllMission(page, limit, search, status)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
@@ -116,19 +91,17 @@ func (mh *missionHandler) UpdateMission(e echo.Context) error {
 	id := e.Param("id")
 	requestMission := request.Mission{}
 	err = helper.BindFormData(e, &requestMission)
-	log.Println("request", requestMission)
+
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	input := request.MissionRequestToMissionCore(requestMission)
-
 	image, err := e.FormFile("image")
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	log.Println("input", input)
 	err = mh.missionService.UpdateMission(image, id, input)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_DATA_ID) {
@@ -137,8 +110,7 @@ func (mh *missionHandler) UpdateMission(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil mengupdate mission"))
-
+	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil mengupdate missi"))
 }
 
 func (mh *missionHandler) UpdateMissionStages(e echo.Context) error {
@@ -152,13 +124,13 @@ func (mh *missionHandler) UpdateMissionStages(e echo.Context) error {
 	}
 
 	id := e.Param("id")
-	requestStage := request.Stage{}
+	requestStage := request.MissionStage{}
 	err = helper.BindFormData(e, &requestStage)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	input := request.StagesRequestToStagesCore(requestStage)
+	input := request.MissionStagesRequestToMissionStagesCore(requestStage)
 	err = mh.missionService.UpdateMissionStage(id, input)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_DATA_ID) {

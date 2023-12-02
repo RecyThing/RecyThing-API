@@ -7,22 +7,18 @@ import (
 
 type MissionRepositoryInterface interface {
 	CreateMission(input Mission) error
-	FindAllMission(page, limit int, search, filter string) ([]Mission, pagination.PageInfo, int, error)
-	GetCount(filter, search string) (int, error)
-	CreateMissionStages(input []MissionStage) error
+	FindAllMission(page, limit int, search, status string) ([]Mission, pagination.PageInfo, int, error)
+	GetCount(status, search string) (int, error)
 	GetAdminIDbyMissionID(missionID string) (string, error)
 	SaveChangesStatusMission(data Mission) error
-	UpdateMission(missionID string, data Mission) error 
-	UpdateMissionStage(missionStageID string, data Stage) error
-	GetById(missionID string) (Mission, error)
+	UpdateMission(missionID string, data Mission) error
+	UpdateMissionStage(missionStageID string, data MissionStage) error
 }
 
 type MissionServiceInterface interface {
 	CreateMission(image *multipart.FileHeader, data Mission) error
-	FindAllMission(page, limit, search, filter string) ([]Mission, pagination.PageInfo, int, error)
-	ChangesStatusMission(data Mission) error
+	FindAllMission(page, limit, search, status string) ([]Mission, pagination.PageInfo, int, error)
+	ChangesStatusMission(endDate string) (error, string)
 	UpdateMission(image *multipart.FileHeader, missionID string, data Mission) error
-	CreateMissionStages(adminID, missionID string, data []MissionStage) error
-	UpdateMissionStage(missionStageID string, data Stage) error
-
+	UpdateMissionStage(MissionStageID string, data MissionStage) error
 }

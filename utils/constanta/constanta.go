@@ -59,9 +59,16 @@ const (
 	FAILED  = "gagal"
 )
 
+//const for fix data
 var (
 	Unit          = []string{"barang", "kilogram"}
 	Category      = []string{"sampah anorganik", "sampah organik", "informasi", "batasan"}
 	Days          = []string{"senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"}
 	ERROR_MESSAGE = []string{"sudah", "tidak", "harus", "gagal", "harap"}
+)
+
+//const for mission
+const (
+	OVERDUE = "Melewati Tenggat"
+	ACTIVE  = "Aktif"
 )

@@ -2,11 +2,13 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"recything/features/mission/entity"
 	"recything/features/mission/model"
 	"recything/utils/constanta"
 	"recything/utils/pagination"
 	"recything/utils/validation"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -34,31 +36,21 @@ func (mr *MissionRepository) CreateMission(input entity.Mission) error {
 	}
 	return nil
 }
-func (mr *MissionRepository) CreateMissionStages(input []entity.MissionStage) error {
-	data := entity.ListMissionStagesCoreToMissionStagesModel(input)
 
-	tx := mr.db.Create(&data)
-	if tx.Error != nil {
-		if validation.IsDuplicateError(tx.Error) {
-			return errors.New(constanta.ERROR_DATA_EXIST)
-		}
-		return tx.Error
-	}
-	return nil
-}
-
-func (mr *MissionRepository) FindAllMission(page, limit int, search, filter string) ([]entity.Mission, pagination.PageInfo, int, error) {
+func (mr *MissionRepository) FindAllMission(page, limit int, search, status string) ([]entity.Mission, pagination.PageInfo, int, error) {
 	data := []model.Mission{}
 	offsetInt := (page - 1) * limit
 	paginationQuery := mr.db.Limit(limit).Offset(offsetInt)
 
-	totalCount, err := mr.GetCount(filter, search)
+	totalCount, err := mr.GetCount(status, search)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
-	if search == "" {
-		tx := paginationQuery.Preload("MissionStages").Find(&data)
+	fmt.Println("status : ", status)
+
+	if status != "" {
+		tx := paginationQuery.Where("status LIKE ?", "%"+status+"%").Preload("MissionStages").Find(&data)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
@@ -71,11 +63,27 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 		}
 	}
 
-	if filter != "" {
-		tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Preload("MissionStages").Find(&data)
+	if search == "" || status == "" {
+		tx := paginationQuery.Preload("MissionStages").Find(&data)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
+	}
+
+	for _, v := range data {
+		endDateValid, err := time.Parse("2006-01-02", v.EndDate)
+		if err != nil {
+			return nil, pagination.PageInfo{}, 0, err
+		}
+		currentTime := time.Now().Truncate(24 * time.Hour)
+		if endDateValid.Before(currentTime) {
+			v.Status = constanta.OVERDUE
+		}
+		err = mr.db.Update(" status", &v.Status).Error
+		if err != nil {
+			return nil, pagination.PageInfo{}, 0, err
+		}
+
 	}
 
 	result := entity.ListMissionModelToMissionCore(data)
@@ -95,7 +103,7 @@ func (mr *MissionRepository) GetAdminIDbyMissionID(missionID string) (string, er
 func (mr *MissionRepository) GetCount(filter, search string) (int, error) {
 	var totalCount int64
 	model := mr.db.Model(&model.Mission{})
-	if filter == "" {
+	if filter == "" || search == "" {
 		tx := model.Count(&totalCount)
 		if tx.Error != nil {
 			return 0, tx.Error
@@ -147,8 +155,8 @@ func (mr *MissionRepository) UpdateMission(missionID string, data entity.Mission
 	return nil
 }
 
-func (mr *MissionRepository) UpdateMissionStage(MissionStageID string, data entity.Stage) error {
-	missionStage := entity.StageCoreToMissionStageModel(data)
+func (mr *MissionRepository) UpdateMissionStage(MissionStageID string, data entity.MissionStage) error {
+	missionStage := entity.MissionStagesCoreToMissionStagesModel(data)
 	tx := mr.db.Where("id = ?", MissionStageID).Updates(&missionStage)
 	if tx.Error != nil {
 		return errors.New(constanta.ERROR_DATA_ID)

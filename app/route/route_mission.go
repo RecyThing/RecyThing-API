@@ -20,7 +20,6 @@ func RouteMissions(e *echo.Group, db *gorm.DB) {
 	admin := e.Group("admins/manage/missions", jwt.JWTMiddleware())
 
 	admin.POST("", missionHandler.CreateMission)
-	admin.POST("/stages", missionHandler.CreateMissionStage)
 	admin.PUT("/:id", missionHandler.UpdateMission)
 	admin.PUT("/stages/:id", missionHandler.UpdateMissionStages)
 

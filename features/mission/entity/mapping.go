@@ -55,13 +55,13 @@ func MissionStagesModelToMissionStagesCore(data model.MissionStage) MissionStage
 	return missionStagesCore
 }
 
-func StageCoreToMissionStageModel(data Stage) model.MissionStage {
-	missionStagesModel := model.MissionStage{
-		Title:       data.Title,
-		Description: data.Description,
-	}
-	return missionStagesModel
-}
+// func StageCoreToMissionStageModel(data Stage) model.MissionStage {
+// 	missionStagesModel := model.MissionStage{
+// 		Title:       data.Title,
+// 		Description: data.Description,
+// 	}
+// 	return missionStagesModel
+// }
 
 func listMissionStagesModelToMissionStagesCore(data []model.MissionStage) []MissionStage {
 	missionStagesCore := []MissionStage{}

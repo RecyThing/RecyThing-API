@@ -753,6 +753,9 @@
                         "$ref": "#/components/parameters/search"
                     },
                     {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
                         "$ref": "#/components/parameters/limit"
                     },
                     {
@@ -2665,6 +2668,15 @@
                 "description": "search of data",
                 "schema": {
                     "type": "string"
+                }
+            },
+            "filter": {
+                "name": "filter",
+                "in": "query",
+                "description": "filter category data",
+                "schema": {
+                    "type": "string",
+                    "enum": ["sampah organik","sampah anorganik","informasi","batasan"]
                 }
             },
             "limit": {

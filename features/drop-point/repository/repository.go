@@ -32,7 +32,7 @@ func (dpr *dropPointRepository) CreateDropPoint(data entity.DropPointsCore) erro
 	return nil
 }
 
-func (dpr *dropPointRepository) GetAllDropPoint(page, limit int, search string) ([]entity.DropPointsCore, pagination.PageInfo, int,error) {
+func (dpr *dropPointRepository) GetAllDropPoint(page, limit int, search string) ([]entity.DropPointsCore, pagination.PageInfo, int, error) {
 	dropPoint := []model.DropPoints{}
 
 	offset := (page - 1) * limit
@@ -45,20 +45,20 @@ func (dpr *dropPointRepository) GetAllDropPoint(page, limit int, search string) 
 	var totalCount int64
 	tx := query.Count(&totalCount).Find(&dropPoint)
 	if tx.Error != nil {
-		return nil, pagination.PageInfo{},0, tx.Error
+		return nil, pagination.PageInfo{}, 0, tx.Error
 	}
 
 	query = query.Offset(offset).Limit(limit)
 
 	tx = query.Find(&dropPoint)
 	if tx.Error != nil {
-		return nil, pagination.PageInfo{}, 0,tx.Error
+		return nil, pagination.PageInfo{}, 0, tx.Error
 	}
 
 	dataResponse := entity.ListModelDropPointsToCoreDropPoints(dropPoint)
 	pageInfo := pagination.CalculateData(int(totalCount), limit, page)
 
-	return dataResponse, pageInfo, int(totalCount),nil
+	return dataResponse, pageInfo, int(totalCount), nil
 
 }
 
@@ -137,4 +137,21 @@ func (dpr *dropPointRepository) DeleteDropPointById(id string) error {
 	}
 
 	return nil
+}
+
+// GetDropPointByAddress implements entity.DropPointRepositoryInterface.
+func (dpr *dropPointRepository) GetDropPointByAddress(address string) (entity.DropPointsCore, error) {
+	dropPoint := model.DropPoints{}
+	tx := dpr.db.Where("address = ?", address).First(&dropPoint)
+
+	if tx.RowsAffected == 0 {
+		return entity.DropPointsCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	}
+
+	if tx.Error != nil {
+		return entity.DropPointsCore{}, tx.Error
+	}
+
+	result := entity.ModelDropPointsToCoreDropPoints(dropPoint)
+	return result, nil
 }

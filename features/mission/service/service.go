@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"log"
 	"mime/multipart"
 	admin "recything/features/admin/entity"
 	"recything/features/mission/entity"
@@ -10,7 +9,6 @@ import (
 	"recything/utils/pagination"
 	"recything/utils/storage"
 	"recything/utils/validation"
-	"time"
 )
 
 type missionService struct {
@@ -26,73 +24,49 @@ func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo 
 }
 
 func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
-
-	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point, image)
+	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point)
 	if errEmpty != nil {
 		return errEmpty
+	}
+
+	for _, stage := range data.MissionStages {
+		err := validation.CheckDataEmpty(stage.Description, data.Title)
+		if err != nil {
+			return err
+		}
 	}
 
 	err := validation.ValidateDate(data.StartDate, data.EndDate)
 	if err != nil {
 		return err
 	}
-	uploadError := make(chan error)
-	var imageURL string
-	go func() {
-		imageURL, errUpload := storage.UploadThumbnail(image)
-		if errUpload != nil {
-			uploadError <- errUpload
-			return
-		}
-		data.MissionImage = imageURL
-		uploadError <- nil
-	}()
 
-	data.MissionImage = imageURL
-	err = ms.ChangesStatusMission(data)
-	if err != nil {
+	imageURL, errUpload := storage.UploadThumbnail(image)
+	if errUpload != nil {
 		return err
 	}
-
+	data.MissionImage = imageURL
 	err = ms.MissionRepo.CreateMission(data)
 	if err != nil {
 		return err
 	}
+
 	return nil
+
 }
 
-func (ms *missionService) CreateMissionStages(adminID, missionID string, data []entity.MissionStage) error {
-	for _, stage := range data {
-		errEmpty := validation.CheckDataEmpty(stage.Title, stage.Description, stage.MissionID)
-		if errEmpty != nil {
-			return errEmpty
-		}
-	}
-
-	err := ms.MissionRepo.CreateMissionStages(data)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]entity.Mission, pagination.PageInfo, int, error) {
+func (ms *missionService) FindAllMission(page, limit, search, status string) ([]entity.Mission, pagination.PageInfo, int, error) {
 	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
-	data, pagnationInfo, count, err := ms.MissionRepo.FindAllMission(pageInt, limitInt, search, filter)
+	data, pagnationInfo, count, err := ms.MissionRepo.FindAllMission(pageInt, limitInt, search, status)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
 	for i := range data {
-		err := ms.ChangesStatusMission(data[i])
-		if err != nil {
-			return nil, pagination.PageInfo{}, 0, err
-		}
-
 		admin, err := ms.AdminRepo.SelectById(data[i].AdminID)
 		if err != nil {
 			return nil, pagination.PageInfo{}, 0, err
@@ -104,37 +78,31 @@ func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]
 	return data, pagnationInfo, count, nil
 }
 
-func (ms *missionService) ChangesStatusMission(data entity.Mission) error {
-	endDate, err := time.Parse("2006-01-02", data.EndDate)
-	if err != nil {
-		return err
-	}
-
-	currentTime := time.Now().Truncate(24 * time.Hour)
-	if endDate.Before(currentTime) {
-		data.Status = "Melewati Tenggat"
-	}
-	return nil
-}
-
 func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID string, data entity.Mission) error {
 
-	uploadError := make(chan error)
-	var imageURL string
+	err := validation.ValidateDateForUpdate(data.StartDate, data.EndDate)
+	if err != nil {
+		return err
+	}
 
-	go func() {
-		imageURL, errUpload := storage.UploadThumbnail(image)
+	imageURL, err := ms.MissionRepo.GetImageURL(missionID)
+	if err != nil {
+		return err
+	}
+
+	if image != nil {
+		newImageURL, errUpload := storage.UploadThumbnail(image)
 		if errUpload != nil {
-			uploadError <- errUpload
-			return
+			return err
 		}
-		data.MissionImage = imageURL
-		uploadError <- nil
-	}()
+		data.MissionImage = newImageURL
+	}
 
-	data.MissionImage = imageURL
-	log.Println("data service after validation", data)
-	err := ms.MissionRepo.UpdateMission(missionID, data)
+	if image == nil {
+		data.MissionImage = imageURL
+	}
+
+	err = ms.MissionRepo.UpdateMission(missionID, data)
 	if err != nil {
 		return err
 	}
@@ -142,7 +110,7 @@ func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID s
 	return nil
 }
 
-func (ms *missionService) UpdateMissionStage(missionStageID string, data entity.Stage) error {
+func (ms *missionService) UpdateMissionStage(missionStageID string, data entity.MissionStage) error {
 	errEmpty := validation.CheckDataEmpty(data.Title, data.Description)
 	if errEmpty != nil {
 		return errEmpty

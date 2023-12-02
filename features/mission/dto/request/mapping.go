@@ -2,39 +2,35 @@ package request
 
 import "recything/features/mission/entity"
 
-func MissionRequestToMissionCore(data Mission) entity.Mission {
+func MissionRequestToMissionCore(missi Mission) entity.Mission {
 	missionCore := entity.Mission{
-		Title:       data.Title,
-		Point:       data.Point,
-		Description: data.Description,
-		StartDate:   data.Start_Date,
-		EndDate:     data.End_Date,
+		Title:        missi.Title,
+		MissionImage: missi.MissionImage,
+		Point:        missi.Point,
+		Description:  missi.Description,
+		StartDate:    missi.Start_Date,
+		EndDate:      missi.End_Date,
 	}
 
+	missionStagesCore := ListMissionStagesRequestToMissionStagesCore(missi.MissionStages)
+	missionCore.MissionStages = missionStagesCore
 	return missionCore
 }
 
-func MissiStageRequestToMissiStageCore(missionID string, stage Stage) entity.MissionStage {
+func MissionStagesRequestToMissionStagesCore(missionStages MissionStage) entity.MissionStage {
 	missionStagesCore := entity.MissionStage{
-		MissionID:   missionID,
-		Title:       stage.Title,
-		Description: stage.Description,
+		Title:       missionStages.Title,
+		Description: missionStages.Description,
 	}
-	return missionStagesCore
-}
-func StagesRequestToStagesCore( stage Stage) entity.Stage {
-	missionStagesCore := entity.Stage{
-		Title:       stage.Title,
-		Description: stage.Description,
-	}
+
 	return missionStagesCore
 }
 
-func ListMissiStagesRequestToMissiStagesCore(data MissionStages) []entity.MissionStage {
+func ListMissionStagesRequestToMissionStagesCore(missionStages []MissionStage) []entity.MissionStage {
 	missionStagesCore := []entity.MissionStage{}
-	for _, stage := range data.Stages {
-		result := MissiStageRequestToMissiStageCore(data.MissionID, stage)
-		missionStagesCore = append(missionStagesCore, result)
+	for _, misiStages := range missionStages {
+		missi := MissionStagesRequestToMissionStagesCore(misiStages)
+		missionStagesCore = append(missionStagesCore, missi)
 	}
 	return missionStagesCore
 }

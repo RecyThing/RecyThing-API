@@ -9,7 +9,7 @@ func CoreTrashCategoryToReponseTrashCategory(trash entity.TrashCategoryCore) Tra
 		ID:        trash.ID,
 		TrashType: trash.TrashType,
 		Point:     trash.Point,
-		Unit:    trash.Unit,
+		Unit:      trash.Unit,
 		CreatedAt: trash.CreatedAt,
 		UpdatedAt: trash.UpdatedAt,
 	}
@@ -19,6 +19,24 @@ func ListCoreTrashCategoryToReponseTrashCategory(trash []entity.TrashCategoryCor
 	list := []TrashCategory{}
 	for _, v := range trash {
 		result := CoreTrashCategoryToReponseTrashCategory(v)
+		list = append(list, result)
+	}
+	return list
+}
+
+func CoreTrashCategoryToReponseTrashCategoriesList(trash entity.TrashCategoryCore) TrashCategoriesList {
+	return TrashCategoriesList{
+		ID:        trash.ID,
+		TrashType: trash.TrashType,
+		Point:     trash.Point,
+		Unit:      trash.Unit,
+	}
+}
+
+func ListCoreTrashCategoryToReponseTrashCategoryCategoriesList(trash []entity.TrashCategoryCore) []TrashCategoriesList {
+	list := []TrashCategoriesList{}
+	for _, v := range trash {
+		result := CoreTrashCategoryToReponseTrashCategoriesList(v)
 		list = append(list, result)
 	}
 	return list

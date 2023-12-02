@@ -95,9 +95,9 @@ func (ah *AdminHandler) GetAll(e echo.Context) error {
 
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
-	fullName := e.QueryParam("fullname")
+	fullName := e.QueryParam("search")
 
-	result, pagnationInfo, err := ah.AdminService.GetAll(page, limit, fullName)
+	result, pagnationInfo, count, err := ah.AdminService.GetAll(page, limit, fullName)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
@@ -110,7 +110,7 @@ func (ah *AdminHandler) GetAll(e echo.Context) error {
 	}
 
 	response := response.ListAdminCoreToAdminResponse(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mengambil semua data admin", response, pagnationInfo))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mengambil semua data admin", response, pagnationInfo, count))
 
 }
 
@@ -211,13 +211,20 @@ func (ah *AdminHandler) GetAllUser(e echo.Context) error {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
-	result, err := ah.AdminService.GetAllUsers()
+	search := e.QueryParam("search")
+	page := e.QueryParam("page")
+	limit := e.QueryParam("limit")
+
+	result, pagination, count, err := ah.AdminService.GetAllUsers(search,page,limit)
 	if err != nil {
 		e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
+	if len(result) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
+	}
 	response := userDto.UsersCoreToResponseManageUsersList(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan data user", response))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan data user", response,pagination,count))
 
 }
 
@@ -281,12 +288,11 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 	}
 
 	status := e.QueryParam("status")
-	name := e.QueryParam("name")
-	id := e.QueryParam("id")
+	search := e.QueryParam("search")
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
 
-	result, paginationInfo, err := ah.AdminService.GetAllReport(status, name, id, page, limit)
+	result, paginationInfo, count, err := ah.AdminService.GetAllReport(status, search, page, limit)
 	if err != nil {
 		if helper.HttpResponseCondition(err, constanta.ERROR_INVALID_TYPE, constanta.ERROR_INVALID_STATUS, constanta.ERROR_LIMIT) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
@@ -299,7 +305,7 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 	}
 
 	response := reportDto.ListReportCoresToReportResponseForDataReporting(result, ah.UserService)
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mendapatkan data reporting", response, paginationInfo))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan data reporting", response, paginationInfo, count))
 }
 
 func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {

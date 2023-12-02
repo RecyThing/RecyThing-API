@@ -40,40 +40,40 @@ func (ar *AdminRepository) Create(data entity.AdminCore) (entity.AdminCore, erro
 	return dataResponse, nil
 }
 
-func (ar *AdminRepository) SelectAll(page, limit int, fullName string) ([]entity.AdminCore, pagination.PageInfo, error) {
+func (ar *AdminRepository) SelectAll(page, limit int, search string) ([]entity.AdminCore, pagination.PageInfo, int, error) {
 	dataAdmins := []model.Admin{}
 	offsetInt := (page - 1) * limit
 
-	totalCount, err := ar.GetCount(fullName, constanta.ADMIN)
+	totalCount, err := ar.GetCount(search, constanta.ADMIN)
 	if err != nil {
-		return nil, pagination.PageInfo{}, err
+		return nil, pagination.PageInfo{}, 0, err
 	}
 
 	paginationQuery := ar.db.Limit(limit).Offset(offsetInt)
-	if fullName == "" {
+	if search == "" {
 		tx := paginationQuery.Where("role = ? ", constanta.ADMIN).Find(&dataAdmins)
 		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, tx.Error
+			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
 	}
 
-	if fullName != "" {
-		tx := paginationQuery.Where("role = ? AND fullname LIKE ?", constanta.ADMIN, "%"+fullName+"%").Find(&dataAdmins)
+	if search != "" {
+		tx := paginationQuery.Where("role = ? AND fullname LIKE ?", constanta.ADMIN, "%"+search+"%").Find(&dataAdmins)
 		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, tx.Error
+			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
 	}
 
 	dataResponse := entity.ListAdminModelToAdminCore(dataAdmins)
 	paginationInfo := pagination.CalculateData(totalCount, limit, page)
 
-	return dataResponse, paginationInfo, nil
+	return dataResponse, paginationInfo, totalCount, nil
 }
 
-func (ar *AdminRepository) GetCount(fullName, role string) (int, error) {
+func (ar *AdminRepository) GetCount(search, role string) (int, error) {
 	var totalCount int64
 	model := ar.db.Model(&model.Admin{})
-	if fullName == "" {
+	if search == "" {
 		tx := model.Where("role = ? ", constanta.ADMIN).Count(&totalCount)
 		if tx.Error != nil {
 			return 0, tx.Error
@@ -81,8 +81,8 @@ func (ar *AdminRepository) GetCount(fullName, role string) (int, error) {
 
 	}
 
-	if fullName != "" {
-		tx := model.Where("role = ? AND fullname LIKE ?", constanta.ADMIN, "%"+fullName+"%").Count(&totalCount)
+	if search != "" {
+		tx := model.Where("role = ? AND fullname LIKE ?", constanta.ADMIN, "%"+search+"%").Count(&totalCount)
 		if tx.Error != nil {
 			return 0, tx.Error
 		}
@@ -178,16 +178,31 @@ func (ar *AdminRepository) FindByEmailANDPassword(data entity.AdminCore) (entity
 }
 
 // Manage Users
-func (ar *AdminRepository) GetAllUsers() ([]user.UsersCore, error) {
+func (ar *AdminRepository) GetAllUsers( search string, page, limit int) ([]user.UsersCore,  pagination.PageInfo, int, error) {
 	dataUsers := []userModel.Users{}
 
-	tx := ar.db.Find(&dataUsers)
-	if tx.Error != nil {
-		return nil, tx.Error
+	offset := (page - 1) * limit
+	query := ar.db.Model(&userModel.Users{})
+
+	if search != "" {
+		query = query.Where("fullname LIKE ? or point LIKE ?", "%"+search+"%","%"+search+"%")
 	}
 
-	dataResponse := user.ListUserModelToUserCore(dataUsers)
-	return dataResponse, nil
+	var totalCount int64
+	if err := query.Count(&totalCount).Error; err != nil {
+		return nil, pagination.PageInfo{}, 0,err
+	}
+
+	query = query.Offset(offset).Limit(limit)
+
+	if err := query.Find(&dataUsers).Error; err != nil {
+		return nil, pagination.PageInfo{}, 0, err
+	}
+
+	dataAllUser := user.ListUserModelToUserCore(dataUsers)
+	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
+
+	return dataAllUser, paginationInfo, int(totalCount), nil
 }
 
 func (ar *AdminRepository) GetByIdUser(userId string) (user.UsersCore, error) {
@@ -222,7 +237,7 @@ func (ar *AdminRepository) DeleteUsers(userId string) error {
 }
 
 // GetByStatusReport implements entity.AdminRepositoryInterface.
-func (ar *AdminRepository) GetAllReport(status, name, id string, page, limit int) ([]report.ReportCore, pagination.PageInfo, error) {
+func (ar *AdminRepository) GetAllReport(status, search string, page, limit int) ([]report.ReportCore, pagination.PageInfo, int, error) {
 	dataReports := []reportModel.Report{}
 
 	offset := (page - 1) * limit
@@ -232,32 +247,27 @@ func (ar *AdminRepository) GetAllReport(status, name, id string, page, limit int
 		query = query.Where("status = ?", status)
 	}
 
-	if name != "" {
+	if search != "" {
 		query = query.Joins("JOIN users AS u ON reports.users_id = u.id").
-			Where("u.fullname LIKE ?", "%"+name+"%")
+			Where("u.fullname LIKE ? or reports.id LIKE ? ", "%"+search+"%","%"+search+"%")
 	}
-
-	if id != "" {
-		query = query.Where("reports.id = ?", id)
-	}	
 
 	var totalCount int64
 	if err := query.Count(&totalCount).Error; err != nil {
-		return nil, pagination.PageInfo{}, err
+		return nil, pagination.PageInfo{}, 0,err
 	}
 
 	query = query.Offset(offset).Limit(limit)
 
 	if err := query.Find(&dataReports).Error; err != nil {
-		return nil, pagination.PageInfo{}, err
+		return nil, pagination.PageInfo{}, 0, err
 	}
 
 	dataAllReport := report.ListReportModelToReportCore(dataReports)
 	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
 
-	return dataAllReport, paginationInfo, nil
+	return dataAllReport, paginationInfo, int(totalCount), nil
 }
-
 
 // UpdateStatusReport implements entity.AdminRepositoryInterface.
 func (ar *AdminRepository) UpdateStatusReport(id, status, reason string) (report.ReportCore, error) {

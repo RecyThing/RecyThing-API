@@ -49,7 +49,7 @@ func (report *reportHandler) CreateReport(e echo.Context) error {
 	fmt.Println("handler : ", reportInput.InsidentDate)
 	_, errCreate := report.reportService.Create(reportInput, userId, images)
 	if errCreate != nil {
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errCreate.Error()))
 	}
 	// reportResponse := response.ReportCoreToReportResponse(createdReport)
 	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil melaporkan"))

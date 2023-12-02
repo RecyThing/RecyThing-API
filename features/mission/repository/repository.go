@@ -172,3 +172,41 @@ func (mr *MissionRepository) GetById(missionID string) (entity.Mission, error) {
 	return result, nil
 
 }
+
+// Claimed Mission
+func (mr *MissionRepository) ClaimMission(userID string, data entity.ClaimedMission) error {
+	input := entity.ClaimedCoreToClaimedMissionModel(data)
+
+	_, err := mr.GetById(data.MissionID)
+	if err != nil {
+		return err
+	}
+
+	errFind := mr.FindClaimed(userID, data.MissionID)
+	if errFind != nil {
+		return errors.New(errFind.Error())
+	}
+
+	tx := mr.db.Create(&input)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	return nil
+}
+
+func (mr *MissionRepository) FindClaimed(userID, missionID string) error {
+	dataClaimed := model.ClaimedMission{}
+
+	tx := mr.db.Where("user_id = ? AND mission_id = ? AND claimed = 1", userID, missionID).Find(&dataClaimed)
+
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if tx.RowsAffected != 0 {
+		return errors.New("error : mission sudah di klaim")
+	}
+
+	return nil
+}

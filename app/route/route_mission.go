@@ -26,5 +26,6 @@ func RouteMissions(e *echo.Group, db *gorm.DB) {
 
 	userAndAdmin := e.Group("/missions", jwt.JWTMiddleware())
 	userAndAdmin.GET("", missionHandler.GetAllMission)
+	userAndAdmin.POST("",missionHandler.ClaimMission)
 
 }

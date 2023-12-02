@@ -12,9 +12,12 @@ type MissionRepositoryInterface interface {
 	CreateMissionStages(input []MissionStage) error
 	GetAdminIDbyMissionID(missionID string) (string, error)
 	SaveChangesStatusMission(data Mission) error
-	UpdateMission(missionID string, data Mission) error 
+	UpdateMission(missionID string, data Mission) error
 	UpdateMissionStage(missionStageID string, data Stage) error
 	GetById(missionID string) (Mission, error)
+
+	ClaimMission(userID string, data ClaimedMission) error
+	FindClaimed(userID, missionID string) error
 }
 
 type MissionServiceInterface interface {
@@ -25,4 +28,5 @@ type MissionServiceInterface interface {
 	CreateMissionStages(adminID, missionID string, data []MissionStage) error
 	UpdateMissionStage(missionStageID string, data Stage) error
 
+	ClaimMission(userID string, data ClaimedMission) error
 }

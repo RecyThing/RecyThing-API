@@ -88,3 +88,14 @@ func ListMissionStagesCoreToMissionStagesModel(data []MissionStage) []model.Miss
 	}
 	return missionStagesModel
 }
+
+// claimed mission
+
+func ClaimedCoreToClaimedMissionModel(data ClaimedMission) model.ClaimedMission {
+	return model.ClaimedMission{
+		UserID:    data.UserID,
+		MissionID: data.MissionID,
+		Claimed:   data.Claimed,
+	}
+
+}

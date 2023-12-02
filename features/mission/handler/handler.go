@@ -170,3 +170,39 @@ func (mh *missionHandler) UpdateMissionStages(e echo.Context) error {
 	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil mengupdate mission stages"))
 
 }
+
+// membuat admin, hanya untuk super admin
+func (mh *missionHandler) ClaimMission(e echo.Context) error {
+	userID, role, err := jwt.ExtractToken(e)
+
+	if role != "" {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	input := request.Claim{}
+	err = helper.DecodeJSON(e, &input)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	request := request.ClaimRequestToClaimCore(input)
+	
+	err = mh.missionService.ClaimMission(userID,request)
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+		if strings.Contains(err.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
+
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil melakukan klaim"))
+
+}

@@ -90,7 +90,7 @@ func (mh *missionHandler) UpdateMission(e echo.Context) error {
 	}
 	id := e.Param("id")
 	requestMission := request.Mission{}
-	err = helper.BindFormData(e, &requestMission)
+	err = e.Bind(&requestMission)
 
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
@@ -104,7 +104,7 @@ func (mh *missionHandler) UpdateMission(e echo.Context) error {
 
 	err = mh.missionService.UpdateMission(image, id, input)
 	if err != nil {
-		if strings.Contains(err.Error(), constanta.ERROR_DATA_ID) {
+		if strings.Contains(err.Error(), constanta.NO) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(err.Error()))
 		}
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
@@ -133,7 +133,7 @@ func (mh *missionHandler) UpdateMissionStages(e echo.Context) error {
 	input := request.MissionStagesRequestToMissionStagesCore(requestStage)
 	err = mh.missionService.UpdateMissionStage(id, input)
 	if err != nil {
-		if strings.Contains(err.Error(), constanta.ERROR_DATA_ID) {
+		if strings.Contains(err.Error(), constanta.NO) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(err.Error()))
 		}
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))

@@ -16,3 +16,7 @@ type MissionStage struct {
 }
 
 
+
+type Claim struct{
+	MissionID string  `json:"mission_id"` 
+}

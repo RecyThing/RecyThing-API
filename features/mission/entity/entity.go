@@ -34,3 +34,11 @@ type Stage struct {
 	Title       string
 	Description string
 }
+
+type ClaimedMission struct {
+	ID         string         
+	UserID     string       
+	MissionID  string       
+	Claimed    bool           
+	CreatedAt  time.Time
+}

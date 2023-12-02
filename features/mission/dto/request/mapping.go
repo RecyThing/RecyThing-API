@@ -34,3 +34,11 @@ func ListMissionStagesRequestToMissionStagesCore(missionStages []MissionStage) [
 	}
 	return missionStagesCore
 }
+
+
+func ClaimRequestToClaimCore( claim Claim) entity.ClaimedMission {
+	return entity.ClaimedMission {
+		MissionID: claim.MissionID,
+	}
+	
+}

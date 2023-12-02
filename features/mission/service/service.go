@@ -1,9 +1,15 @@
 package service
 
 import (
+<<<<<<< HEAD
+=======
+	"errors"
+	"log"
+>>>>>>> 563664302db615d6509e533b09ef3baa73e2d8ca
 	"mime/multipart"
 	admin "recything/features/admin/entity"
 	"recything/features/mission/entity"
+	"recything/utils/constanta"
 	"recything/utils/pagination"
 	"recything/utils/storage"
 	"recything/utils/validation"
@@ -78,10 +84,14 @@ func (ms *missionService) FindAllMission(page, limit, search, status string) ([]
 
 func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID string, data entity.Mission) error {
 
+
 	err := validation.ValidateDateForUpdate(data.StartDate, data.EndDate)
 	if err != nil {
 		return err
 	}
+
+	uploadError := make(chan error)
+	var imageURL string
 
 	imageURL, err := ms.MissionRepo.GetImageURL(missionID)
 	if err != nil {
@@ -118,5 +128,18 @@ func (ms *missionService) UpdateMissionStage(missionStageID string, data entity.
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+// Claimed Mission
+func (ms *missionService) ClaimMission(userID string, data entity.ClaimedMission) error {
+	if data.MissionID == "" {
+		return errors.New(constanta.ERROR_EMPTY)
+	}
+	err := ms.MissionRepo.ClaimMission(userID, data)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -20,7 +20,7 @@ type TrashExchange struct {
 	DeletedAt  gorm.DeletedAt `gorm:"index"`
 
 	DropPointId          string              `gorm:"index"`
-	DropPoint            dropPoint.DropPoint `gorm:"foreignKey:DropPointId"`
+	DropPoint            dropPoint.DropPoints `gorm:"foreignKey:DropPointId"`
 	TrashExchangeDetails []TrashExchangeDetail `gorm:"foreignKey:TrashExchangeId;constraint:OnDelete:CASCADE;"`
 }
 

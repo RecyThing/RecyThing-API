@@ -17,6 +17,21 @@ func MissionRequestToMissionCore(missi Mission) entity.Mission {
 	return missionCore
 }
 
+func AddMissionStageToMissionStageCore(addMissionStage AddMissionStage) []entity.MissionStage {
+    var missionStages []entity.MissionStage
+    for _, stage := range addMissionStage.Stages {
+        newStage := entity.MissionStage{
+            MissionID:   addMissionStage.MissionID,
+            Title:       stage.Title,
+            Description: stage.Description,
+           
+        }
+        missionStages = append(missionStages, newStage)
+    }
+    return missionStages
+}
+
+
 func MissionStagesRequestToMissionStagesCore(missionStages MissionStage) entity.MissionStage {
 	missionStagesCore := entity.MissionStage{
 		Title:       missionStages.Title,

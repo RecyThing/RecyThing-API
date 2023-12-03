@@ -24,6 +24,10 @@ func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo 
 }
 
 func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
+	if len(data.MissionStages) > 3 {
+		return errors.New(constanta.ERROR_MISSION_LIMIT)
+	}
+
 	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point)
 	if errEmpty != nil {
 		return errEmpty
@@ -45,6 +49,7 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 	if errUpload != nil {
 		return err
 	}
+
 	data.MissionImage = imageURL
 	err = ms.MissionRepo.CreateMission(data)
 	if err != nil {
@@ -52,7 +57,6 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 	}
 
 	return nil
-
 }
 
 func (ms *missionService) FindAllMission(page, limit, search, status string) ([]entity.Mission, pagination.PageInfo, int, error) {
@@ -84,6 +88,10 @@ func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID s
 	if err != nil {
 		return err
 	}
+	err = validation.CheckDataEmpty(data.Title, data.Description, data.Point, data.EndDate, data.StartDate)
+	if err != nil {
+		return err
+	}
 
 	imageURL, err := ms.MissionRepo.GetImageURL(missionID)
 	if err != nil {
@@ -96,9 +104,7 @@ func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID s
 			return err
 		}
 		data.MissionImage = newImageURL
-	}
-
-	if image == nil {
+	} else {
 		data.MissionImage = imageURL
 	}
 
@@ -117,6 +123,38 @@ func (ms *missionService) UpdateMissionStage(missionStageID string, data entity.
 	}
 
 	err := ms.MissionRepo.UpdateMissionStage(missionStageID, data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ms *missionService) AddNewMissionStage(missionID string, data []entity.MissionStage) error {
+
+	for i, stage := range data {
+		err := validation.CheckDataEmpty(stage.Description, stage.Title)
+		if err != nil {
+			return err
+		}
+
+		for j := i + 1; j < len(data); j++ {
+			if stage.Title == data[j].Title {
+				return errors.New(constanta.ERROR_INVALID_TITLE)
+			}
+		}
+
+	}
+
+	err := ms.MissionRepo.AddNewMissionStage(missionID, data)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (ms *missionService) DeleteMissionStage(stageID string) error {
+	err := ms.MissionRepo.DeleteMissionStage(stageID)
 	if err != nil {
 		return err
 	}

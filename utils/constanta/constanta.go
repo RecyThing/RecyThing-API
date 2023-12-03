@@ -37,7 +37,7 @@ const (
 	ERROR_EXTRA_TOKEN      = "gagal ekstrak token"
 	ERROR_ID_ROLE          = "id atau role tidak ditemukan"
 	ERROR_GET_DATA         = "data tidak ditemukan"
-	ERROR_EMPTY            = "harap lengkapi data dengan benar"
+	ERROR_EMPTY            = "error : harap lengkapi data dengan benar"
 	ERROR_EMPTY_FILE       = "tidak ada file yang di upload"
 	ERROR_HASH_PASSWORD    = "error hash password"
 	ERROR_DATA_NOT_FOUND   = "data tidak ditemukan"
@@ -57,6 +57,7 @@ const (
 	NO      = "tidak"
 	MUST    = "harus"
 	FAILED  = "gagal"
+	ERROR   = "error"
 )
 
 var (

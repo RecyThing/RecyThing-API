@@ -16,10 +16,14 @@ func RouteDropPoint(e *echo.Group, db *gorm.DB) {
 	dropPointService := service.NewDropPointService(dropPointRepository)
 	dropPointHandler := handler.NewDropPointHandler(dropPointService)
 
-	user := e.Group("/manage/drop-points", jwt.JWTMiddleware())
-	user.POST("", dropPointHandler.CreateDropPoint)
+	admin := e.Group("/admins/manage/drop-points", jwt.JWTMiddleware())
+	admin.POST("", dropPointHandler.CreateDropPoint)
+	admin.GET("", dropPointHandler.GetAllDropPoint)
+	admin.GET("/:id", dropPointHandler.GetDropPointById)
+	admin.PUT("/:id", dropPointHandler.UpdateDropPoint)
+	admin.DELETE("/:id", dropPointHandler.DeleteDropPoint)
+
+	user := e.Group("/drop-points", jwt.JWTMiddleware())
 	user.GET("", dropPointHandler.GetAllDropPoint)
 	user.GET("/:id", dropPointHandler.GetDropPointById)
-	user.PUT("/:id", dropPointHandler.UpdateDropPoint)
-	user.DELETE("/:id", dropPointHandler.DeleteDropPoint)
 }

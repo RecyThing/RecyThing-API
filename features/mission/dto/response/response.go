@@ -9,7 +9,6 @@ type Mission struct {
 	Title          string          `json:"name"`
 	Creator       string          `json:"creator"`
 	Status        string          `json:"status"`
-	AdminID       string          `json:"admin_id"`
 	MissionImage  string          `json:"mission_image"`
 	Point         int             `json:"point"`
 	Description   string          `json:"description"`

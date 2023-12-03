@@ -58,6 +58,7 @@ func (article *articleRepository) GetSpecificArticle(idArticle string) (entity.A
 
 // UpdateArticle implements entity.ArticleRepositoryInterface.
 func (article *articleRepository) UpdateArticle(idArticle string, articleInput entity.ArticleCore, image *multipart.FileHeader) (entity.ArticleCore, error) {
+	input := entity.ArticleCoreToArticleModel(articleInput)
 	var articleData model.Article
 
 	check := article.db.Where("id = ?", idArticle).First(&articleData)
@@ -66,11 +67,14 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 	}
 
 	if image != nil {
-		imageURL, uploadErr := storage.UploadThumbnail(image)
-		if uploadErr != nil {
-			return entity.ArticleCore{}, uploadErr
+		imageURL, errUpload := storage.UploadThumbnail(image)
+		if errUpload != nil {
+			return  entity.ArticleCore{},errUpload
 		}
 		articleData.Image = imageURL
+
+	}else {
+		input.Image = articleData.Image
 	}
 
 	articleData.Title = articleInput.Title
@@ -111,20 +115,20 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 }
 
 // GetAllArticle implements entity.ArticleRepositoryInterface.
-func (article *articleRepository) GetAllArticle(page, limit int, tittle string) ([]entity.ArticleCore, pagination.PageInfo, error) {
+func (article *articleRepository) GetAllArticle(page, limit int, search string) ([]entity.ArticleCore, pagination.PageInfo,int, error) {
 	var articleData []model.Article
 
 	offset := (page - 1) * limit
 	query := article.db.Model(&model.Article{}).Preload("Categories")
 
-	if tittle != "" {
-		query = query.Where("title LIKE ?", "%"+tittle+"%")
+	if search != "" {
+		query = query.Where("title LIKE ?", "%"+search+"%")
 	}
 
 	var totalCount int64
 	tx := query.Count(&totalCount).Find(&articleData)
 	if tx.Error != nil {
-		return nil, pagination.PageInfo{}, tx.Error
+		return nil, pagination.PageInfo{}, 0,tx.Error
 	}
 
 	query = query.Offset(offset).Limit(limit)
@@ -136,17 +140,13 @@ func (article *articleRepository) GetAllArticle(page, limit int, tittle string) 
 
 	tx = query.Find(&articleData)
 	if tx.Error != nil {
-		return nil, pagination.PageInfo{}, tx.Error
+		return nil, pagination.PageInfo{}, 0, tx.Error
 	}
 
-	mapData := make([]entity.ArticleCore, len(articleData))
-	for i, value := range articleData {
-		mapData[i] = entity.ArticleModelToArticleCore(value)
-	}
-
+	dataResponse := entity.ListArticleModelToArticleCore(articleData)
 	pageInfo := pagination.CalculateData(int(totalCount), limit, page)
 
-	return mapData, pageInfo, nil
+	return dataResponse, pageInfo, int(totalCount), nil
 
 }
 

@@ -35,25 +35,25 @@ func (tc *trashCategoryRepository) Create(data entity.TrashCategoryCore) error {
 	return nil
 }
 
-func (tc *trashCategoryRepository) FindAll(page, limit int, trashType string) ([]entity.TrashCategoryCore, pagination.PageInfo, int, error) {
+func (tc *trashCategoryRepository) FindAll(page, limit int, search string) ([]entity.TrashCategoryCore, pagination.PageInfo, int, error) {
 	dataTrashCategories := []model.TrashCategory{}
 	offsetInt := (page - 1) * limit
 
-	totalCount, err := tc.GetCount(trashType)
+	totalCount, err := tc.GetCount(search)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
-	paginationQuery:= tc.db.Limit(limit).Offset(offsetInt)
-	if trashType == "" {
+	paginationQuery := tc.db.Limit(limit).Offset(offsetInt)
+	if search == "" {
 		tx := paginationQuery.Find(&dataTrashCategories)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
 	}
 
-	if trashType != "" {
-		tx := paginationQuery.Where("trash_type LIKE ?", "%"+trashType+"%").Find(&dataTrashCategories)
+	if search != "" {
+		tx := paginationQuery.Where("trash_type LIKE ?", "%"+search+"%").Find(&dataTrashCategories)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
@@ -64,18 +64,18 @@ func (tc *trashCategoryRepository) FindAll(page, limit int, trashType string) ([
 	return result, paginationInfo, totalCount, nil
 }
 
-func (tc *trashCategoryRepository) GetCount(trashType string) (int, error) {
+func (tc *trashCategoryRepository) GetCount(search string) (int, error) {
 	var totalCount int64
-	model:=tc.db.Model(&model.TrashCategory{})
-	if trashType == "" {
-		tx :=model.Count(&totalCount)
+	model := tc.db.Model(&model.TrashCategory{})
+	if search == "" {
+		tx := model.Count(&totalCount)
 		if tx.Error != nil {
 			return 0, tx.Error
 		}
 	}
-	
-	if trashType != "" {
-		tx := model.Where("trash_type LIKE ?", "%"+trashType+"%").Count(&totalCount)
+
+	if search != "" {
+		tx := model.Where("trash_type LIKE ?", "%"+search+"%").Count(&totalCount)
 		if tx.Error != nil {
 			return 0, tx.Error
 		}
@@ -129,4 +129,21 @@ func (tc *trashCategoryRepository) Delete(idTrash string) error {
 	}
 
 	return nil
+}
+
+// GetByType implements entity.TrashCategoryRepositoryInterface.
+func (tc *trashCategoryRepository) GetByType(trashType string) (entity.TrashCategoryCore, error) {
+	dataTrashCategories := model.TrashCategory{}
+	tx := tc.db.Where("trash_type = ?", trashType).First(&dataTrashCategories)
+
+	if tx.RowsAffected == 0 {
+		return entity.TrashCategoryCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	}
+
+	if tx.Error != nil {
+		return entity.TrashCategoryCore{}, tx.Error
+	}
+
+	result := entity.ModelTrashCategoryToCoreTrashCategory(dataTrashCategories)
+	return result, nil
 }

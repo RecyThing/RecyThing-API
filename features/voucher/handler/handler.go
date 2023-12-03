@@ -57,10 +57,13 @@ func (vh *voucherHandler) CreateVoucher(e echo.Context) error {
 }
 
 func (vh *voucherHandler) GetAllVoucher(e echo.Context) error {
-	_, _, errExtract := jwt.ExtractToken(e)
+	idUser, _, errExtract := jwt.ExtractToken(e)
 
 	if errExtract != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+	if idUser == "" {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
 
 	page := e.QueryParam("page")
@@ -84,10 +87,12 @@ func (vh *voucherHandler) GetAllVoucher(e echo.Context) error {
 }
 
 func (vh *voucherHandler) GetVoucherById(e echo.Context) error {
-	_, _, errExtract := jwt.ExtractToken(e)
-
+	idUser, _, errExtract := jwt.ExtractToken(e)
 	if errExtract != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+	if idUser == "" {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
 
 	id := e.Param("id")
@@ -118,7 +123,7 @@ func (vh *voucherHandler) UpdateVoucher(e echo.Context) error {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
-	err := helper.BindFormData(e,&input)
+	err := helper.BindFormData(e, &input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}

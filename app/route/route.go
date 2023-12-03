@@ -6,6 +6,7 @@ import (
 )
 
 func New(e *echo.Echo, db *gorm.DB) {
+	base := e.Group("")
 	loginPage := e.Group("/")
 	user := e.Group("/users")
 	admin := e.Group("/admins")
@@ -13,16 +14,19 @@ func New(e *echo.Echo, db *gorm.DB) {
 	faq := e.Group("/faq")
 	recybot := e.Group("/recybot")
 
+
 	RouteLoginPage(loginPage, db)
 	RouteUser(user, db)
 	RouteReport(report, db)
 	RouteAdmin(admin, db)
-	RouteArticle(admin, db)
-	RouteDropPoint(admin, db)
+	RouteArticle(base, db)
+	RouteDropPoint(base, db)
 	RouteFaqs(faq, db)
 	RouteRecybot(recybot, db)
 	RouteAchievement(admin, db)
 	RouteVoucher(admin, db)
 	RouteMissions(admin, db)
 	RouteDailyPoint(user,db)
+	RouteTrash(admin,db)
+
 }

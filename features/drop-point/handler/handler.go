@@ -53,20 +53,20 @@ func (dph *dropPointHandler) CreateDropPoint(e echo.Context) error {
 }
 
 func (dph *dropPointHandler) GetAllDropPoint(e echo.Context) error {
-	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-	}
-
+	idUser, _, err := jwt.ExtractToken(e)
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	if idUser == "" {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
 
 	search := e.QueryParam("search")
 	page, _ := strconv.Atoi(e.QueryParam("page"))
 	limit, _ := strconv.Atoi(e.QueryParam("limit"))
 
-	dropPoints, paginationInfo, err := dph.dropPointService.GetAllDropPoint(page, limit, search)
+	dropPoints, paginationInfo,count, err := dph.dropPointService.GetAllDropPoint(page, limit, search)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
@@ -77,18 +77,18 @@ func (dph *dropPointHandler) GetAllDropPoint(e echo.Context) error {
 
 	response := response.ListCoreDropPointToDropPointResponse(dropPoints)
 
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnation("berhasil mendapatkan data", response, paginationInfo))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan data", response, paginationInfo,count))
 
 }
 
 func (dph *dropPointHandler) GetDropPointById(e echo.Context) error {
-	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-	}
-
+	idUser, _, err := jwt.ExtractToken(e)
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	if idUser == "" {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
 
 	idParams := e.Param("id")
@@ -104,7 +104,6 @@ func (dph *dropPointHandler) GetDropPointById(e echo.Context) error {
 
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, reportResponse))
 }
-
 
 func (dph *dropPointHandler) UpdateDropPoint(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
@@ -129,11 +128,11 @@ func (dph *dropPointHandler) UpdateDropPoint(e echo.Context) error {
 	dropPointId := e.Param("id")
 	errUpdate := dph.dropPointService.UpdateDropPointById(dropPointId, request)
 	if errUpdate != nil {
-        if strings.Contains(errUpdate.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
-            return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
-        }
-        return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errUpdate.Error()))
-    }
+		if strings.Contains(errUpdate.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errUpdate.Error()))
+	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil melakukan update data"))
 

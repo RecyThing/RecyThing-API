@@ -5,7 +5,9 @@ import (
 	"errors"
 	"recything/utils/constanta"
 	"reflect"
+	"strconv"
 	"strings"
+	"unicode"
 	"time"
 
 	"github.com/asaskevich/govalidator"
@@ -74,6 +76,50 @@ func FieldsEqual(a, b interface{}, fields ...string) bool {
 
 	return true
 }
+
+func ConvertUnitToDecimal(unit string) (float64, error) {
+	var numericChars []rune
+	var decimalSeparatorFound bool
+
+	unitLower := strings.ToLower(unit)
+
+	// Jenis unit yang valid
+	validUnits := []string{"kg", "ltr", "pcs"}
+	var validUnitFound bool
+
+	for _, validUnit := range validUnits {
+		if strings.Contains(unitLower, validUnit) {
+			validUnitFound = true
+			break
+		}
+	}
+
+	if !validUnitFound {
+		return 0, errors.New("unit harus mengandung kata 'kg', 'ltr', atau 'pcs'")
+	}
+
+	for _, char := range unit {
+		if unicode.IsDigit(char) {
+			numericChars = append(numericChars, char)
+		} else if char == '.' || char == ',' {
+			if !decimalSeparatorFound {
+				numericChars = append(numericChars, '.')
+				decimalSeparatorFound = true
+			}
+		}
+	}
+
+	result, err := strconv.ParseFloat(string(numericChars), 64)
+	if err != nil {
+		return 0, errors.New("gagal mengonversi unit")
+	}
+
+	return result, nil
+}
+
+
+
+
 
 func ChangeStatusMission(endDate string) (string, error) {
 	var status string

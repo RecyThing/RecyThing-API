@@ -279,7 +279,7 @@ func (mr *MissionRepository) FindClaimed(userID, missionID string) error {
 func (mr *MissionRepository) FindById(missionID string) (entity.Mission, error) {
 	dataMission := model.Mission{}
 
-	tx := mr.db.Where("id = ? AND role = ?", missionID, constanta.ADMIN).First(&dataMission)
+	tx := mr.db.Where("id = ?", missionID).First(&dataMission)
 	if tx.Error != nil {
 		return entity.Mission{}, tx.Error
 	}
@@ -295,7 +295,7 @@ func (mr *MissionRepository) FindById(missionID string) (entity.Mission, error) 
 func (mr *MissionRepository) DeleteMission(missionID string) error {
 	dataMission := model.Mission{}
 
-	tx := mr.db.Where("id = ? AND role = ?", missionID, constanta.ADMIN).Delete(&dataMission)
+	tx := mr.db.Where("id = ? ", missionID).Delete(&dataMission)
 	if tx.Error != nil {
 		return tx.Error
 	}

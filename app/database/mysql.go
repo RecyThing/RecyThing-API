@@ -7,6 +7,8 @@ import (
 	achievement "recything/features/achievement/model"
 	admin "recything/features/admin/model"
 	article "recything/features/article/model"
+	daily "recything/features/daily_point/model"
+	droppoint "recything/features/drop-point/model"
 	faq "recything/features/faq/model"
 	mission "recything/features/mission/model"
 	recybot "recything/features/recybot/model"
@@ -37,7 +39,7 @@ func InitDBMysql(cfg *config.AppConfig) *gorm.DB {
 
 func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&achievement.Achievement{})
-	db.AutoMigrate(&user.Users{})
+	db.AutoMigrate(&user.Users{}, &user.UserDailyPoints{})
 	db.AutoMigrate(&admin.Admin{})
 	db.AutoMigrate(&report.Report{}, &report.Image{})
 	db.AutoMigrate(&recybot.Recybot{})
@@ -45,6 +47,8 @@ func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&trashCategory.TrashCategory{})
 	db.AutoMigrate(&voucher.Voucher{})
 	db.AutoMigrate(&article.Article{})
+	db.AutoMigrate(&droppoint.DropPoints{}, &droppoint.Schedules{})
+	db.AutoMigrate(&daily.DailyPoint{})
 	db.AutoMigrate(&dropPoint.DropPoints{}, &dropPoint.Schedules{})
 	db.AutoMigrate(&trashExchange.TrashExchange{}, trashExchange.TrashExchangeDetail{})
 	db.AutoMigrate(&mission.Mission{}, &mission.MissionStage{}, &mission.ClaimedMission{})

@@ -818,10 +818,10 @@
                     "200": {
                         "description": "OK",
                         "content": {
-                            "application/json":{
+                            "application/json": {
                                 "examples": {
-                                    "success":{
-                                        "value":{
+                                    "success": {
+                                        "value": {
                                             "status": true,
                                             "message": "berhasil mendapatkan data laporan",
                                             "data": {
@@ -861,7 +861,667 @@
                     }
                 }
             }
+        },
+        "/vouchers": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Users Point & Voucher"
+                ],
+                "summary": "Get all voucher with pagination",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseVoucher"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan seluruh data",
+                                            "data": [
+                                                {
+                                                    "id": "043f36d9-1f3a-4a6e-b218-6ce676b1e5b7",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/e48154d7-5baf-4370-a2d3-156cd9681d13.png",
+                                                    "reward_name": "OVO 50000K",
+                                                    "point": 5000,
+                                                    "description": "OVO Voucher hanya berlaku untuk 1 pengguna/transaksi selama masa berlaku.",
+                                                    "start_date": "2023-11-28",
+                                                    "end_date": "2023-12-11"
+                                                },
+                                                {
+                                                    "id": "0ad1f2e4-9676-47f8-8bb9-520fa7021464",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/2b177a81-b703-4f9f-b474-24d226cadf03.png",
+                                                    "reward_name": "DANA 100K",
+                                                    "point": 100000,
+                                                    "description": "Dana Kaget 100",
+                                                    "start_date": "2023-11-11",
+                                                    "end_date": "2023-12-11"
+                                                },
+                                                {
+                                                    "id": "0b7bff7a-7b12-44f6-9976-239389424509",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/e147ed1d-6234-4f38-99d8-cbff0132d70b.png",
+                                                    "reward_name": "SHOPEE PAY 25000",
+                                                    "point": 25000,
+                                                    "description": "ShopeePay",
+                                                    "start_date": "2023-11-11",
+                                                    "end_date": "2023-12-11"
+                                                },
+                                                {
+                                                    "id": "24f7f2e5-a3b0-4f54-94b2-a0cc32b63a55",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/e458469e-74ba-4d37-8cd3-06cb25b7032f.png",
+                                                    "reward_name": "SEPULSA 50",
+                                                    "point": 150000,
+                                                    "description": "SEPULSA",
+                                                    "start_date": "2023-11-11",
+                                                    "end_date": "2023-12-11"
+                                                },
+                                                {
+                                                    "id": "79f65530-e9e2-407b-8c44-e1ef9196ba69",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/1d591620-e8f6-4ad0-b7d6-cee1eef7d245.png",
+                                                    "reward_name": "SHOPEE PAY 100000",
+                                                    "point": 100000,
+                                                    "description": "SHOPEE PAY 100000",
+                                                    "start_date": "2023-11-11",
+                                                    "end_date": "2023-11-12"
+                                                },
+                                                {
+                                                    "id": "8fd39e01-6b06-42a2-876c-bcdcb985d31b",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/2cf24897-18ab-485c-adf4-5da325fe7e68.png",
+                                                    "reward_name": "SEPULSA 50",
+                                                    "point": 150000,
+                                                    "description": "SEPULSA",
+                                                    "start_date": "2023-11-03",
+                                                    "end_date": "2023-12-04"
+                                                },
+                                                {
+                                                    "id": "96eeae23-8a03-45e4-93d4-3099d78c9866",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/317a7d43-5d85-4229-8f44-44b8576a4d25.png",
+                                                    "reward_name": "SEPULSA 150000",
+                                                    "point": 150000,
+                                                    "description": "SEPULSA",
+                                                    "start_date": "2002-03-03",
+                                                    "end_date": "2002-03-04"
+                                                },
+                                                {
+                                                    "id": "9ac70514-bebe-4483-b8ad-6ceafcc4dc96",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/5f133696-5a48-4ee7-841c-0d1cc22d2d68.png",
+                                                    "reward_name": "DANA 50K",
+                                                    "point": 5000,
+                                                    "description": "Voucher berlaku untuk 1 kali transaksi/pengguna selama periode berlangsung",
+                                                    "start_date": "2023-11-27",
+                                                    "end_date": "2023-12-03"
+                                                },
+                                                {
+                                                    "id": "b2491035-162b-4050-baaa-d4736c87fdc1",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/cbd30708-0b23-4ae3-a2c1-8cf18b98ed67.png",
+                                                    "reward_name": "Shopee Pay 100000",
+                                                    "point": 2000,
+                                                    "description": "voucher shopee pay 100000",
+                                                    "start_date": "2023-11-27",
+                                                    "end_date": "2023-12-01"
+                                                },
+                                                {
+                                                    "id": "c10f0198-15d8-404a-8c37-952d582f8555",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/cc67856a-cc99-485a-8018-b8985e8c8c88.png",
+                                                    "reward_name": "SHOPEE PAY 25000",
+                                                    "point": 25000,
+                                                    "description": "Shopee Pay",
+                                                    "start_date": "2023-11-11",
+                                                    "end_date": "2023-12-11"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 2
+                                            },
+                                            "count_data": 12
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vouchers/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Users Point & Voucher"
+                ],
+                "summary": "Get detail voucher",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseVoucher"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan data",
+                                            "data": {
+                                                "id": "b2491035-162b-4050-baaa-d4736c87fdc1",
+                                                "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/cbd30708-0b23-4ae3-a2c1-8cf18b98ed67.png",
+                                                "reward_name": "Shopee Pay 100000",
+                                                "point": 2000,
+                                                "description": "voucher shopee pay 100000",
+                                                "start_date": "2023-11-27",
+                                                "end_date": "2023-12-01"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/articles": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Article & Drop Point"
+                ],
+                "summary": "view all article",
+                "description": "view all articles with pagination",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan semua article",
+                                            "data": [
+                                                {
+                                                    "id": "0c18a054-f86b-46df-b684-9dc99f6656dc",
+                                                    "title": "ini judul article",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/2ea2304a-a132-46cb-a56b-b51381f88320.jpg",
+                                                    "content": "ini content",
+                                                    "categories": [
+                                                        {
+                                                            "category": "limbah minyak"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T02:18:27Z",
+                                                    "updated_at": "2023-11-28T05:13:40Z"
+                                                },
+                                                {
+                                                    "id": "51568415-75ac-4009-9f3e-646dc18b94b7",
+                                                    "title": "qqqqqupdate",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/a8108758-3ff7-4930-852a-5a3770a806db.png",
+                                                    "content": "qqqq",
+                                                    "categories": [
+                                                        {
+                                                            "category": "limbah 3"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T09:34:10Z",
+                                                    "updated_at": "2023-11-28T09:36:15Z"
+                                                },
+                                                {
+                                                    "id": "59fa732a-4235-4a38-9ca3-97483c07f209",
+                                                    "title": "3 Sampah Berbahaya",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/8976a1e5-8036-4b3e-b4b8-d5a11e921971.png",
+                                                    "content": "sampah itu berbahaya",
+                                                    "categories": [
+                                                        {
+                                                            "category": "kaleng"
+                                                        },
+                                                        {
+                                                            "category": "rumput"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T04:49:39Z",
+                                                    "updated_at": "2023-11-28T04:49:39Z"
+                                                },
+                                                {
+                                                    "id": "5e59bacd-9057-48f0-b442-a1c1eb23237d",
+                                                    "title": "dwadwa",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/26501cbe-2bd3-4280-ad08-1f71c49aadc3.png",
+                                                    "content": "dwadwa",
+                                                    "categories": [
+                                                        {
+                                                            "category": "test 1"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-30T15:49:17Z",
+                                                    "updated_at": "2023-11-30T15:49:17Z"
+                                                },
+                                                {
+                                                    "id": "754ad26a-95a9-4d82-9909-7dc59c82fbe3",
+                                                    "title": "sampah",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/9163f869-1d30-43bb-8713-25b465c32a1a.jpg",
+                                                    "content": "sampah sampah",
+                                                    "categories": [
+                                                        {
+                                                            "category": "plastik"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T02:43:28Z",
+                                                    "updated_at": "2023-11-28T02:43:28Z"
+                                                },
+                                                {
+                                                    "id": "84f101e1-986a-4b24-add4-587386825e98",
+                                                    "title": "hello!",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/a911c208-277f-40a9-8268-a370899fbe04.jpg",
+                                                    "content": "hello ges",
+                                                    "categories": [
+                                                        {
+                                                            "category": "test 1"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-30T15:54:42Z",
+                                                    "updated_at": "2023-11-30T15:54:42Z"
+                                                },
+                                                {
+                                                    "id": "8f88a712-59c9-4a76-8f13-3f5335d6f5cb",
+                                                    "title": "ekhem",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/558059ba-0a1c-4b59-8803-4887a0a78cab.jpg",
+                                                    "content": "hello ges",
+                                                    "categories": [
+                                                        {
+                                                            "category": "bahhh 21"
+                                                        },
+                                                        {
+                                                            "category": "test 1"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-30T15:56:42Z",
+                                                    "updated_at": "2023-11-30T15:56:42Z"
+                                                },
+                                                {
+                                                    "id": "903339af-81cd-47ed-9b31-fadb5e94ce23",
+                                                    "title": "3 Sampah Berbahaya",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/eb93b403-4c4e-4f86-a9ba-83dcf5b1e7be.jpg",
+                                                    "content": "sampah itu berbahaya",
+                                                    "categories": [
+                                                        {
+                                                            "category": "kayu"
+                                                        },
+                                                        {
+                                                            "category": "laptop"
+                                                        }
+                                                    ],
+                                                    "like": 0,
+                                                    "share": 0,
+                                                    "created_at": "2023-11-28T02:27:11Z",
+                                                    "updated_at": "2023-11-28T02:27:11Z"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 2
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/articles/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Article & Drop Point"
+                ],
+                "summary": "view detail article",
+                "description": "view details article by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan semua article",
+                                            "data": {
+                                                "id": "0c18a054-f86b-46df-b684-9dc99f6656dc",
+                                                "title": "ini judul article",
+                                                "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/2ea2304a-a132-46cb-a56b-b51381f88320.jpg",
+                                                "content": "ini content",
+                                                "categories": [
+                                                    {
+                                                        "category": "limbah minyak"
+                                                    }
+                                                ],
+                                                "like": 0,
+                                                "share": 0,
+                                                "created_at": "2023-11-28T02:18:27Z",
+                                                "updated_at": "2023-11-28T05:13:40Z"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/drop-points": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Article & Drop Point"
+                ],
+                "summary": "view all drop points",
+                "description": "view all drop points with pagination",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": [
+                                                {
+                                                    "id": "38b56197-9774-4fc6-9685-26e1119baf33",
+                                                    "name": "Rodi Update Recycle",
+                                                    "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                                    "schedule": [
+                                                        {
+                                                            "day": "rabu",
+                                                            "open_time": "11:00",
+                                                            "close_time": "23:00",
+                                                            "closed": false
+                                                        },
+                                                        {
+                                                            "day": "kamis",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "jumat",
+                                                            "open_time": "19:00",
+                                                            "close_time": "23:00",
+                                                            "closed": false
+                                                        },
+                                                        {
+                                                            "day": "sabtu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "minggu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "selasa",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "senin",
+                                                            "open_time": "19:00",
+                                                            "close_time": "19:30",
+                                                            "closed": false
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "id": "5ecb63de-d3ee-4d6d-a1b8-d0d67d59f6d3",
+                                                    "name": "Bagas Recycle",
+                                                    "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                                    "schedule": [
+                                                        {
+                                                            "day": "selasa",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "kamis",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "senin",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "Selasa",
+                                                            "open_time": "11:00",
+                                                            "close_time": "23:00",
+                                                            "closed": false
+                                                        },
+                                                        {
+                                                            "day": "minggu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "sabtu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "jumat",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "rabu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/drop-points/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Article & Drop Point"
+                ],
+                "summary": "view detail drop point",
+                "description": "view details drop point by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": {
+                                                "id": "38b56197-9774-4fc6-9685-26e1119baf33",
+                                                "name": "Rodi Update Recycle",
+                                                "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                                "latitude": -6.2914552,
+                                                "longitude": 106.9285376,
+                                                "schedule": [
+                                                    {
+                                                        "day": "rabu",
+                                                        "open_time": "11:00",
+                                                        "close_time": "23:00",
+                                                        "closed": false
+                                                    },
+                                                    {
+                                                        "day": "kamis",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "jumat",
+                                                        "open_time": "19:00",
+                                                        "close_time": "23:00",
+                                                        "closed": false
+                                                    },
+                                                    {
+                                                        "day": "sabtu",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "minggu",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "selasa",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "senin",
+                                                        "open_time": "19:00",
+                                                        "close_time": "19:30",
+                                                        "closed": false
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+       
+
     },
     "components": {
         "parameters": {
@@ -932,6 +1592,41 @@
                         "diterima",
                         "ditolak"
                     ]
+                }
+            },
+            "id": {
+                "name": "id",
+                "in": "path",
+                "description": "id of data",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            }
+            ,
+            "search": {
+                "name": "search",
+                "in": "query",
+                "description": "search of data",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "limit": {
+                "name": "limit",
+                "in": "query",
+                "description": "limit of data",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 10
+                }
+            },
+            "page": {
+                "name": "page",
+                "in": "query",
+                "description": "page of data",
+                "schema": {
+                    "type": "integer"
                 }
             }
         },
@@ -1231,6 +1926,49 @@
                     "location",
                     "report_type"
                 ]
+            },
+            "ResponseVoucher": {
+                "type": "object",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "reward_name": {
+                        "type": "string"
+                    },
+                    "point": {
+                        "type": "integer"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "Date"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "Date"
+                    },
+                    "pagination": {
+                        "type": "object",
+                        "properties": {
+                            "last_page": {
+                                "type": "string"
+                            },
+                            "current_page": {
+                                "type": "string"
+                            },
+                            "limit": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "count_data": {
+                        "type": "string"
+                    }
+                }
             }
         },
         "securitySchemes": {

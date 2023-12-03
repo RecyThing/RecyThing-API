@@ -2372,13 +2372,16 @@
                             "schema": {
                                 "$ref": "#/components/schemas/RequestMissionStageUpdate"
                             },
-                            "example": {
-                                "contoh": {
-                                    "value": {
-                                        "title": "stage 1",
-                                        "description": "ini description stage 1"
+                            "example":{
+                               
+                                    "contoh": {
+                                        "value": {
+                                            "title": "stage 1",
+                                            "": "ini description stage 1"
+                                            
+                                        }
                                     }
-                                }
+                                
                             }
                         }
                     }
@@ -2393,7 +2396,7 @@
                                         "description": "OK",
                                         "value": {
                                             "status": true,
-                                            "message": "Berhasil mengupdate tahapan misi"
+                                            "message": "Berhasil mengupdate missi"
                                         }
                                     }
                                 }
@@ -2582,30 +2585,6 @@
                 "name": "name",
                 "in": "query",
                 "description": "name of data",
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "title": {
-                "name": "title",
-                "in": "query",
-                "description": "title of query",
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "fullname": {
-                "name": "fullname",
-                "in": "query",
-                "description": "name of data",
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "category": {
-                "name": "category",
-                "in": "query",
-                "description": "category of data",
                 "schema": {
                     "type": "string"
                 }
@@ -3143,6 +3122,39 @@
                             },
                             "limit": {
                                 "type": "integer"
+                            }
+                        }
+                    }
+                }
+            },
+            "RequestResponseDropPoint": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "type": "number"
+                    },
+                    "longitude": {
+                        "type": "number"
+                    },
+                    "schedule": {
+                        "type": "object",
+                        "properties": {
+                            "day": {
+                                "type": "string"
+                            },
+                            "open_time": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "close_time": {
+                                "type": "string",
+                                "format": "date"
                             }
                         }
                     }

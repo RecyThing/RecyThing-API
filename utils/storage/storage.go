@@ -39,7 +39,7 @@ func UploadProof(image *multipart.FileHeader) (string, error) {
 	allowedExtensions := map[string]bool{".jpg": true, ".png": true, ".mp4": true}
 
 	if !allowedExtensions[strings.ToLower(extension)] {
-		return "", errors.New("format file tidak diizinkan")
+		return "", errors.New("error : format file tidak diizinkan")
 	}
 
 	imagePath := "proof-file/" + uuid.New().String() + extension

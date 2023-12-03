@@ -17,6 +17,7 @@ import (
 	voucher "recything/features/voucher/model"
 	trashExchange "recything/features/trash_exchange/model"
 	dropPoint "recything/features/drop-point/model"
+	community "recything/features/community/model"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -50,4 +51,5 @@ func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&dropPoint.DropPoints{}, &dropPoint.Schedules{})
 	db.AutoMigrate(&trashExchange.TrashExchange{}, trashExchange.TrashExchangeDetail{})
 	db.AutoMigrate(&mission.Mission{}, &mission.MissionStage{}, &mission.ClaimedMission{})
+	db.AutoMigrate(&community.Community{})
 }

@@ -81,7 +81,7 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, status stri
 			return nil, pagination.PageInfo{}, 0, err
 		}
 
-		if err := mr.db.Where("id = ?", v.ID).Take(&v).Error; err != nil {
+		if err := mr.db.Where("id = ?", v.ID).Preload("MissionStages").Take(&v).Error; err != nil {
 			return nil, pagination.PageInfo{}, 0, err
 		}
 		result = append(result, v)

@@ -2020,6 +2020,78 @@
                     }
                 }
             }
+        },
+        "/missions":{
+            "get":{
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Missions"
+                ],
+                "summary": "view all missions ",
+                "description": "view all missions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseMissison"
+                                },
+                                "examples": {
+                                    "200": {
+                                       "value":{
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan seluruh missi",
+                                            "data": [
+                                                {
+                                                    "id": "02f9fa77-a866-449e-81f8-df99702151e3",
+                                                    "name": "selamatkan kaka ades xx",
+                                                    "creator": "admin2",
+                                                    "status": "Aktif",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/65e62484-4263-4b24-9c2f-d911d5aac3c4.png",
+                                                    "point": 100,
+                                                    "description": "njnasd",
+                                                    "start_date": "2023-12-05",
+                                                    "end_date": "2023-12-06",
+                                                    "mission_stages": [],
+                                                    "created_at": "2023-12-02T16:19:15.656+08:00",
+                                                    "updated_at": "2023-12-03T15:16:18.37+08:00"
+                                                },
+                                                {
+                                                    "id": "07102bcf-70c3-4bcd-a72f-e27937a5849a",
+                                                    "name": "misi selesaikan makanmu",
+                                                    "creator": "admin2",
+                                                    "status": "Aktif",
+                                                    "mission_image": "",
+                                                    "point": 150000,
+                                                    "description": "SEPULSA",
+                                                    "start_date": "2023-12-03",
+                                                    "end_date": "2023-12-06",
+                                                    "mission_stages": [],
+                                                    "created_at": "2023-12-02T12:16:49.596+08:00",
+                                                    "updated_at": "2023-12-03T15:16:18.387+08:00"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 2,
+                                                "current_page": 1,
+                                                "last_page": 7
+                                            },
+                                            "count_data": 14
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
         }
     },
     "components": {
@@ -2719,6 +2791,77 @@
                                 "type": "integer"
                             }
                         }
+                    }
+                }
+            },
+            "ResponseMissison": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "start_date": {
+                                "type": "string"
+                            },
+                            "end_date": {
+                                "type": "string"
+                            },
+                            "creator": {
+                                "type": "string"
+                            },
+                            "point": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "string",
+                                "enum": [
+                                    "Melewati Tenggat",
+                                    "Aktif"
+
+                                ]
+                            },
+                            "mission_stages": {
+                                "type": "array",
+                                "properties": {
+                                    "id":{
+                                        "type":"string"
+                                    },
+                                    "title":{
+                                        "type":"string"
+                                    },
+                                    "description":{
+                                        "type":"string"
+                                    }
+
+                                }
+                            }
+                        }
+                    },
+                    "pagination": {
+                        "type": "object",
+                        "properties": {
+                            "last_page": {
+                                "type": "string"
+                            },
+                            "current_page": {
+                                "type": "string"
+                            },
+                            "limit": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "count_data": {
+                        "type": "string"
                     }
                 }
             }

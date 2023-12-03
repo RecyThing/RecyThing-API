@@ -37,7 +37,7 @@ func InitDBMysql(cfg *config.AppConfig) *gorm.DB {
 
 func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&achievement.Achievement{})
-	db.AutoMigrate(&user.Users{})
+	db.AutoMigrate(&user.Users{}, &user.UserDailyPoints{})
 	db.AutoMigrate(&admin.Admin{})
 	db.AutoMigrate(&report.Report{}, &report.Image{})
 	db.AutoMigrate(&recybot.Recybot{})

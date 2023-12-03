@@ -2021,8 +2021,8 @@
                 }
             }
         },
-        "/missions":{
-            "get":{
+        "/missions": {
+            "get": {
                 "security": [
                     {
                         "token": []
@@ -2033,6 +2033,20 @@
                 ],
                 "summary": "view all missions ",
                 "description": "view all missions",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/statusMissions"
+                    },
+                    {
+                        "$ref": "#/components/parameters/searchMissions"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2043,7 +2057,7 @@
                                 },
                                 "examples": {
                                     "200": {
-                                       "value":{
+                                        "value": {
                                             "status": true,
                                             "message": "Berhasil mendapatkan seluruh missi",
                                             "data": [
@@ -2057,9 +2071,17 @@
                                                     "description": "njnasd",
                                                     "start_date": "2023-12-05",
                                                     "end_date": "2023-12-06",
-                                                    "mission_stages": [],
+                                                    "mission_stages": [
+                                                        {
+                                                            "id": "",
+                                                            "title": "stage 1",
+                                                            "description": "ini stage 1",
+                                                            "created_at": "0001-01-01T00:00:00Z",
+                                                            "updated_at": "0001-01-01T00:00:00Z"
+                                                        }
+                                                    ],
                                                     "created_at": "2023-12-02T16:19:15.656+08:00",
-                                                    "updated_at": "2023-12-03T15:16:18.37+08:00"
+                                                    "updated_at": "2023-12-03T19:31:31.664+08:00"
                                                 },
                                                 {
                                                     "id": "07102bcf-70c3-4bcd-a72f-e27937a5849a",
@@ -2073,7 +2095,7 @@
                                                     "end_date": "2023-12-06",
                                                     "mission_stages": [],
                                                     "created_at": "2023-12-02T12:16:49.596+08:00",
-                                                    "updated_at": "2023-12-03T15:16:18.387+08:00"
+                                                    "updated_at": "2023-12-03T19:31:31.687+08:00"
                                                 }
                                             ],
                                             "pagination": {
@@ -2083,14 +2105,102 @@
                                             },
                                             "count_data": 14
                                         }
-
                                     }
                                 }
                             }
                         }
                     }
                 }
-
+            }
+        },
+        "/admins/manage/missions/stages/:id": {
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Missions"
+                ],
+                "summary": "delete  mission stage ",
+                "description": "Delete mission stages by ID when you update missions by ID",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idMissionStage"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "200": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil menghapus tahapan misi"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/mission/stages": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Missions"
+                ],
+                "summary": "add  mission stage ",
+                "description": "add mission stages when you update mission by ID",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestAddMIssionStage"
+                            },
+                            "examples": {
+                                "contoh": {
+                                    "value": {
+                                        "mission_id": "ace200a1-d889-49f4-90c2-77536bd92fd6",
+                                        "stages": [
+                                            {
+                                                "title": "Stage 1 Title",
+                                                "description": "Description stage 1"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "succes add mission stages",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil menambahkan tahapan misi"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     },
@@ -2207,6 +2317,20 @@
                     }
                 }
             },
+            "idMissionStage": {
+                "name": "id",
+                "in": "path",
+                "description": "id missios stage",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "id": {
+                        "value": "d2744da0-57eb-4f49-a0c4-5ceac43f6629"
+                    }
+                }
+            },
             "search": {
                 "name": "search",
                 "in": "query",
@@ -2276,6 +2400,22 @@
                 "name": "id",
                 "in": "query",
                 "description": "id of data",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "statusMissions": {
+                "name": "status",
+                "in": "query",
+                "description": "status of missions",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "searchMissions": {
+                "name": "search",
+                "in": "query",
+                "description": "search by title of missions",
                 "schema": {
                     "type": "string"
                 }
@@ -2826,22 +2966,20 @@
                                 "enum": [
                                     "Melewati Tenggat",
                                     "Aktif"
-
                                 ]
                             },
                             "mission_stages": {
                                 "type": "array",
                                 "properties": {
-                                    "id":{
-                                        "type":"string"
+                                    "id": {
+                                        "type": "string"
                                     },
-                                    "title":{
-                                        "type":"string"
+                                    "title": {
+                                        "type": "string"
                                     },
-                                    "description":{
-                                        "type":"string"
+                                    "description": {
+                                        "type": "string"
                                     }
-
                                 }
                             }
                         }
@@ -2864,6 +3002,30 @@
                         "type": "string"
                     }
                 }
+            },
+            "RequestAddMIssionStage": {
+                "type": "object",
+                "properties": {
+                    "mission_id": {
+                        "type": "string"
+                    },
+                    "stages": {
+                        "type": "array",
+                        "properties": {
+                            "title": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "mission_id",
+                    "title",
+                    "description"
+                ]
             }
         },
         "securitySchemes": {

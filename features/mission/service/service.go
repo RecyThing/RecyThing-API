@@ -186,7 +186,7 @@ func (ms *missionService) FindById(missionID string) (entity.Mission, error) {
 
 func (ms *missionService) DeleteMission(missionID string) error {
 
-	err := ms.DeleteMission(missionID)
+	err := ms.MissionRepo.DeleteMission(missionID)
 	if err != nil {
 		return err
 	}

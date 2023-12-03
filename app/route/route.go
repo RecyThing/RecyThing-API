@@ -28,5 +28,6 @@ func New(e *echo.Echo, db *gorm.DB) {
 	RouteMissions(admin, db)
 	RouteDailyPoint(user,db)
 	RouteTrash(admin,db)
+	RouteTrashExchange(admin, db)
 
 }

@@ -59,9 +59,10 @@ func (rh *recybotHandler) GetAllData(e echo.Context) error {
 	}
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
-	category := e.QueryParam("category")
+	filter := e.QueryParam("filter")
+	search := e.QueryParam("search")
 
-	result, pagnation, count, err := rh.RecybotService.FindAllData(page, category, limit)
+	result, pagnation, count, err := rh.RecybotService.FindAllData(filter,search,page,limit)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))

@@ -20,7 +20,7 @@ func MissionCoreToMissionModel(data Mission) model.Mission {
 	return missionModel
 }
 func MissionModelToMissionCore(data model.Mission) Mission {
-	missionCore := Mission{
+	missionCore := Mission{ 
 		ID:           data.ID,
 		Title:        data.Title,
 		Status:       data.Status,
@@ -55,13 +55,13 @@ func MissionStagesModelToMissionStagesCore(data model.MissionStage) MissionStage
 	return missionStagesCore
 }
 
-func StageCoreToMissionStageModel(data Stage) model.MissionStage {
-	missionStagesModel := model.MissionStage{
-		Title:       data.Title,
-		Description: data.Description,
-	}
-	return missionStagesModel
-}
+// func StageCoreToMissionStageModel(data Stage) model.MissionStage {
+// 	missionStagesModel := model.MissionStage{
+// 		Title:       data.Title,
+// 		Description: data.Description,
+// 	}
+// 	return missionStagesModel
+// }
 
 func listMissionStagesModelToMissionStagesCore(data []model.MissionStage) []MissionStage {
 	missionStagesCore := []MissionStage{}

@@ -45,14 +45,14 @@ func (rb *recybotService) CreateData(data entity.RecybotCore) (entity.RecybotCor
 	return result, nil
 }
 
-func (rb *recybotService) FindAllData(page, category, limit string) ([]entity.RecybotCore, pagination.PageInfo, int, error) {
+func (rb *recybotService) FindAllData(filter, search, page, limit string) ([]entity.RecybotCore, pagination.PageInfo, int, error) {
 
 	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
-	result, pagnationInfo, count, err := rb.recybotRepository.FindAll(pageInt, limitInt, category)
+	result, pagnationInfo, count, err := rb.recybotRepository.FindAll(pageInt, limitInt, filter, search)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}

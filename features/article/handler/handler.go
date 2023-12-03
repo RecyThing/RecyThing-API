@@ -9,6 +9,7 @@ import (
 	"recything/utils/helper"
 	"recything/utils/jwt"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -53,6 +54,14 @@ func (article *articleHandler) CreateArticle(e echo.Context) error {
 	articleInput := request.ArticleRequestToArticleCore(newArticle)
 	_, errCreate := article.articleService.CreateArticle(articleInput, image)
 	if errCreate != nil {
+		if strings.Contains(errCreate.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse("kategori tidak ditemukan"))
+
+		}
+		if strings.Contains(errCreate.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errCreate.Error()))
+
+		}
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errCreate.Error()))
 	}
 
@@ -72,14 +81,14 @@ func (article *articleHandler) GetAllArticle(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
 	}
 
-	articleData, paginationInfo, count,err := article.articleService.GetAllArticle(page, limit, search)
+	articleData, paginationInfo, count, err := article.articleService.GetAllArticle(page, limit, search)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan artikel"))
 	}
 
 	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
 
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan semua article", articleResponse, paginationInfo,count))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan semua article", articleResponse, paginationInfo, count))
 
 }
 
@@ -126,7 +135,7 @@ func (article *articleHandler) UpdateArticle(e echo.Context) error {
 	}
 
 	image, _ := e.FormFile("image")
-	
+
 	articleInput := request.ArticleRequestToArticleCore(updatedData)
 	updateArticle, errUpdate := article.articleService.UpdateArticle(idParams, articleInput, image)
 	if errUpdate != nil {

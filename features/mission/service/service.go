@@ -135,3 +135,23 @@ func (ms *missionService) ClaimMission(userID string, data entity.ClaimedMission
 
 	return nil
 }
+
+func (ms *missionService) FindById(missionID string) (entity.Mission, error) {
+
+	dataMission, err := ms.MissionRepo.FindById(missionID)
+	if err != nil {
+		return entity.Mission{}, err
+	}
+
+	return dataMission, nil
+}
+
+func (ms *missionService) DeleteMission(missionID string) error {
+
+	err := ms.DeleteMission(missionID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -212,3 +212,34 @@ func (mr *MissionRepository) FindClaimed(userID, missionID string) error {
 
 	return nil
 }
+
+func (mr *MissionRepository) FindById(missionID string) (entity.Mission, error) {
+	dataMission := model.Mission{}
+
+	tx := mr.db.Where("id = ? AND role = ?", missionID, constanta.ADMIN).First(&dataMission)
+	if tx.Error != nil {
+		return entity.Mission{}, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return entity.Mission{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	}
+
+	dataResponse := entity.MissionModelToMissionCore(dataMission)
+	return dataResponse, nil
+}
+
+func (mr *MissionRepository) DeleteMission(missionID string) error {
+	dataMission := model.Mission{}
+
+	tx := mr.db.Where("id = ? AND role = ?", missionID, constanta.ADMIN).Delete(&dataMission)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	}
+
+	return nil
+}

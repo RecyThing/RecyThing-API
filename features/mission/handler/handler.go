@@ -178,3 +178,56 @@ func (mh *missionHandler) ClaimMission(e echo.Context) error {
 	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil melakukan klaim"))
 
 }
+
+func (mh *missionHandler) FindByIdB(e echo.Context) error {
+
+	missionID := e.Param("id")
+
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	result, err := mh.missionService.FindById(missionID)
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	// if len(result.Id) == 0 {
+	// 	return e.JSON(http.StatusOK, helper.SuccessResponse("data admin belum ada"))
+	// }
+
+	response := response.MissionCoreToMissionResponse(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mengambil data mission", response))
+}
+
+func (mh *missionHandler) Delete(e echo.Context) error {
+	missionID := e.Param("id")
+
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	err = mh.missionService.DeleteMission(missionID)
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil menghapus data mission"))
+
+}

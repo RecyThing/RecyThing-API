@@ -2208,6 +2208,56 @@
                         }
                     }
                 }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Missions"
+                ],
+                "summary": "update by id",
+                "description": "update mission by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idMission"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestMissionUpdate"
+                            },
+                            "encoding": {
+                                "image": {
+                                    "style": "form"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mengupdate missi"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/admins/manage/missions/stages": {
@@ -2291,6 +2341,59 @@
                                         "value": {
                                             "status": true,
                                             "message": "berhasil menghapus data mission"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Missions"
+                ],
+                "summary": "update mission stage by id",
+                "description": "update mission stage by id, ",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idMissionStage"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestMissionStageUpdate"
+                            },
+                            "example": {
+                                "contoh": {
+                                    "value": {
+                                        "title": "stage 1",
+                                        "description": "ini description stage 1"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mengupdate tahapan misi"
                                         }
                                     }
                                 }
@@ -3134,6 +3237,55 @@
                 },
                 "required": [
                     "mission_id",
+                    "title",
+                    "description"
+                ]
+            },
+            "RequestMissionUpdate": {
+                "type": "object",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "point": {
+                        "type": "integer"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "Date"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "Date"
+                    }
+                },
+                "required": [
+                    "image",
+                    "title",
+                    "point",
+                    "description",
+                    "start_date",
+                    "end_date"
+                ]
+            },
+            "RequestMissionStageUpdate": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
                     "title",
                     "description"
                 ]

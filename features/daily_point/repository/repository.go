@@ -96,7 +96,7 @@ func (dailyPoint *dailyPointRepository) DailyClaim(userId string) error {
 
 	//update user point
 	savePoint := tx.Save(&userProf).Error
-	if savePoint != nil{
+	if savePoint != nil {
 		tx.Rollback()
 		return savePoint
 	}

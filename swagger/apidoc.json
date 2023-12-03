@@ -2573,6 +2573,34 @@
                     "maximum": 10
                 }
             },
+            "category": {
+                "name": "category",
+                "in": "query",
+                "description": "category of data",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 10
+                }
+            },
+            
+            "fullname": {
+                "name": "fullname",
+                "in": "query",
+                "description": "fullname ",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 10
+                }
+            },
+            "title": {
+                "name": "title",
+                "in": "query",
+                "description": "title ",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 10
+                }
+            },
             "page": {
                 "name": "page",
                 "in": "query",
@@ -3122,39 +3150,6 @@
                             },
                             "limit": {
                                 "type": "integer"
-                            }
-                        }
-                    }
-                }
-            },
-            "RequestResponseDropPoint": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "address": {
-                        "type": "string"
-                    },
-                    "latitude": {
-                        "type": "number"
-                    },
-                    "longitude": {
-                        "type": "number"
-                    },
-                    "schedule": {
-                        "type": "object",
-                        "properties": {
-                            "day": {
-                                "type": "string"
-                            },
-                            "open_time": {
-                                "type": "string",
-                                "format": "date"
-                            },
-                            "close_time": {
-                                "type": "string",
-                                "format": "date"
                             }
                         }
                     }

@@ -36,7 +36,7 @@ func (dailyPoint *dailyPointRepository) DailyClaim(userId string) error {
 	if check.Error != nil {
 		return check.Error
 	}
-	
+
 	//melakukan pengecekan untuk menghitung hari claim
 	var countData int64
 	err := tx.Model(&muser.UserDailyPoints{}).Where("users_id = ?", userId).Count(&countData).Error
@@ -82,7 +82,7 @@ func (dailyPoint *dailyPointRepository) DailyClaim(userId string) error {
 	}
 
 	userDaily.DailyPointID = int(dpId)
-	// userDaily.CreatedAt = time.Now().Truncate(24 * time.Hour)
+	userDaily.CreatedAt = time.Now().Truncate(24 * time.Hour)
 	userProf.Point += pointData.Point
 	fmt.Println("daily point Id : ", userDaily.DailyPointID)
 	fmt.Println("user point : ", userProf.Point)

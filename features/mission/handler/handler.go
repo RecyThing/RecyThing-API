@@ -179,7 +179,7 @@ func (mh *missionHandler) ClaimMission(e echo.Context) error {
 
 }
 
-func (mh *missionHandler) FindByIdB(e echo.Context) error {
+func (mh *missionHandler) FindById(e echo.Context) error {
 
 	missionID := e.Param("id")
 
@@ -208,7 +208,7 @@ func (mh *missionHandler) FindByIdB(e echo.Context) error {
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mengambil data mission", response))
 }
 
-func (mh *missionHandler) Delete(e echo.Context) error {
+func (mh *missionHandler) DeleteMission(e echo.Context) error {
 	missionID := e.Param("id")
 
 	_, role, err := jwt.ExtractToken(e)

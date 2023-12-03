@@ -46,6 +46,19 @@ func (ms *MissionStage) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
+func (m *Mission) BeforeSave(tx *gorm.DB) (err error) {
+    var mission Mission
+    if tx.Model(&Mission{}).First(&mission, "id = ?", m.ID).Error != nil {
+        return nil // Jika mission tidak ditemukan, lanjutkan penyimpanan
+    }
+
+    // Saat ini mission stage diambil dari mission yang sudah ada di database
+    m.MissionStages = mission.MissionStages
+
+    return nil
+}
+
+
 type ClaimedMission struct {
 	ID         string         `gorm:"type:varchar(255);primaryKey"`
 	UserID     string         `gorm:"type:varchar(255);index"`

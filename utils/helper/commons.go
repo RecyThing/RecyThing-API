@@ -3,10 +3,12 @@ package helper
 import (
 	"encoding/json"
 	"errors"
+	"recything/utils/constanta"
 	"reflect"
 	"strconv"
 	"strings"
 	"unicode"
+	"time"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gorilla/schema"
@@ -118,3 +120,18 @@ func ConvertUnitToDecimal(unit string) (float64, error) {
 
 
 
+
+func ChangeStatusMission(endDate string) (string, error) {
+	var status string
+	endDateValid, err := time.Parse("2006-01-02", endDate)
+	if err != nil {
+		return status, err
+	}
+	currentTime := time.Now().Truncate(24 * time.Hour)
+	if endDateValid.Before(currentTime) {
+		status = constanta.OVERDUE
+	} else {
+		status = constanta.ACTIVE
+	}
+	return status, nil
+}

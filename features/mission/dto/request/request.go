@@ -11,12 +11,15 @@ type Mission struct {
 }
 
 type MissionStage struct {
-	Title       string `form:"title"`
-	Description string `form:"description"`
+	Title       string `form:"title" json:"title"`
+	Description string `form:"description" json:"description"`
 }
 
+type AddMissionStage struct {
+	MissionID string         `json:"mission_id"`
+	Stages    []MissionStage `json:"stages"` 
+}
 
-
-type Claim struct{
-	MissionID string  `json:"mission_id"` 
+type Claim struct {
+	MissionID string `json:"mission_id"`
 }

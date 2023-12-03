@@ -4,6 +4,8 @@ import (
 	"recything/features/article/handler"
 	"recything/features/article/repository"
 	"recything/features/article/service"
+
+	trashRepository "recything/features/trash_category/repository"
 	"recything/utils/jwt"
 
 	"github.com/labstack/echo/v4"
@@ -12,7 +14,8 @@ import (
 
 func RouteArticle(e *echo.Group, db *gorm.DB) {
 	//manage article
-	articleRepo := repository.NewArticleRepository(db)
+	trashRepo := trashRepository.NewTrashCategoryRepository(db)
+	articleRepo := repository.NewArticleRepository(db,trashRepo)
 	articleServ := service.NewArticleService(articleRepo)
 	articleHand := handler.NewArticleHandler(articleServ)
 

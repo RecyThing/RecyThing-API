@@ -5,6 +5,8 @@ import (
 	"mime/multipart"
 	"recything/features/article/entity"
 	"recything/features/article/model"
+	trashcategory "recything/features/trash_category/entity"
+	"recything/utils/constanta"
 	"recything/utils/pagination"
 	"recything/utils/storage"
 
@@ -12,12 +14,14 @@ import (
 )
 
 type articleRepository struct {
-	db *gorm.DB
+	db            *gorm.DB
+	trashcategory trashcategory.TrashCategoryRepositoryInterface
 }
 
-func NewArticleRepository(db *gorm.DB) entity.ArticleRepositoryInterface {
+func NewArticleRepository(db *gorm.DB, trashcategory trashcategory.TrashCategoryRepositoryInterface) entity.ArticleRepositoryInterface {
 	return &articleRepository{
-		db: db,
+		db:            db,
+		trashcategory: trashcategory,
 	}
 }
 
@@ -69,11 +73,11 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 	if image != nil {
 		imageURL, errUpload := storage.UploadThumbnail(image)
 		if errUpload != nil {
-			return  entity.ArticleCore{},errUpload
+			return entity.ArticleCore{}, errUpload
 		}
 		articleData.Image = imageURL
 
-	}else {
+	} else {
 		input.Image = articleData.Image
 	}
 
@@ -115,7 +119,7 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 }
 
 // GetAllArticle implements entity.ArticleRepositoryInterface.
-func (article *articleRepository) GetAllArticle(page, limit int, search string) ([]entity.ArticleCore, pagination.PageInfo,int, error) {
+func (article *articleRepository) GetAllArticle(page, limit int, search string) ([]entity.ArticleCore, pagination.PageInfo, int, error) {
 	var articleData []model.Article
 
 	offset := (page - 1) * limit
@@ -128,7 +132,7 @@ func (article *articleRepository) GetAllArticle(page, limit int, search string) 
 	var totalCount int64
 	tx := query.Count(&totalCount).Find(&articleData)
 	if tx.Error != nil {
-		return nil, pagination.PageInfo{}, 0,tx.Error
+		return nil, pagination.PageInfo{}, 0, tx.Error
 	}
 
 	query = query.Offset(offset).Limit(limit)
@@ -170,15 +174,20 @@ func (article *articleRepository) CreateArticle(articleInput entity.ArticleCore,
 
 	articleCreated := entity.ArticleModelToArticleCore(articleData)
 
-	for _, categoryId := range articleInput.Category_id {
+	for i, categoryId := range articleInput.Category_id {
+		_, tx := article.trashcategory.GetById(categoryId)
+		if tx != nil {
+			txOuter.Rollback()
+			return entity.ArticleCore{}, errors.New(constanta.ERROR_RECORD_NOT_FOUND)
+		}
 
-		 // Check if the category exists
-		 var categoryCount int64
-		 if err := txOuter.Model(&model.ArticleTrashCategory{}).Where("article_id = ?", categoryId).Count(&categoryCount).Error; err != nil {
-			 txOuter.Rollback()
-			 return entity.ArticleCore{}, err
-		 }
-	 
+		// Check if the category exists
+		// var categoryCount int64
+		// if err := txOuter.Model(&model.ArticleTrashCategory{}).Where("article_id = ?", categoryId).Count(&categoryCount).Error; err != nil {
+		// 	txOuter.Rollback()
+		// 	return entity.ArticleCore{}, err
+		// }
+
 		//  // If the category doesn't exist, return an error
 		//  if categoryCount == 0 {
 		// 	 txOuter.Rollback()
@@ -189,10 +198,15 @@ func (article *articleRepository) CreateArticle(articleInput entity.ArticleCore,
 		categories.ArticleID = articleCreated.ID
 		categories.TrashCategoryID = categoryId
 
+		for j := i + 1; j < len(articleInput.Category_id); j++ {
+			if categoryId == articleInput.Category_id[j] {
+				return entity.ArticleCore{}, errors.New("error : kategori tidak boleh sama")
+			}
+		}
 		txInner := txOuter.Create(&categories)
 		if txInner.Error != nil {
 			txOuter.Rollback()
-			return entity.ArticleCore{}, errors.New("kategori tidak ditemukan")
+			return entity.ArticleCore{}, txInner.Error
 		}
 
 	}

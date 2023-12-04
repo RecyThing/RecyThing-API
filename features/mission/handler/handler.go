@@ -243,7 +243,7 @@ func (mh *missionHandler) FindById(e echo.Context) error {
 	missionID := e.Param("id")
 
 	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.SUPERADMIN {
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
 
@@ -259,10 +259,6 @@ func (mh *missionHandler) FindById(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	// if len(result.Id) == 0 {
-	// 	return e.JSON(http.StatusOK, helper.SuccessResponse("data admin belum ada"))
-	// }
-
 	response := response.MissionCoreToMissionResponse(result)
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mengambil data mission", response))
 }
@@ -271,7 +267,7 @@ func (mh *missionHandler) DeleteMission(e echo.Context) error {
 	missionID := e.Param("id")
 
 	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.SUPERADMIN {
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
 

@@ -18,3 +18,15 @@ type Voucher struct {
 	UpdatedAt   time.Time      `gorm:"type:DATETIME(0)"`
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }
+
+type ExchangeVoucher struct {
+	Id        string `gorm:"primary key"`
+	IdUser    string
+	IdVoucher string `gorm:"index"`
+	Vouchers Voucher `gorm:"foreignKey:IdVoucher"`
+	Phone     string
+	Status    string `gorm:"type:enum('terbaru', 'diproses', 'selesai');default:terbaru"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+}

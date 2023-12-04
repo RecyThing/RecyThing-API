@@ -41,6 +41,19 @@ func (vr *voucherRepository) Create(image *multipart.FileHeader, data entity.Vou
 	return nil
 }
 
+// CreateExchangeVoucher implements entity.VoucherRepositoryInterface.
+func (vr *voucherRepository) CreateExchangeVoucher(idUser string, data entity.ExchangeVoucherCore) error {
+	input := entity.CoreExchangeVoucherToModelExchangeVoucher(data)
+
+	input.IdUser = idUser
+	tx := vr.db.Create(&input)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	return nil
+}
+
 func (vr *voucherRepository) GetAll(page, limit int, search string) ([]entity.VoucherCore, pagination.PageInfo, int, error) {
 	dataVouchers := []model.Voucher{}
 	offsetInt := (page - 1) * limit
@@ -114,7 +127,7 @@ func (vr *voucherRepository) Update(idVoucher string, image *multipart.FileHeade
 	if tx.Error != nil {
 		return tx.Error
 	}
-	
+
 	if image != nil {
 		imageURL, errUpload := storage.UploadThumbnail(image)
 		if errUpload != nil {

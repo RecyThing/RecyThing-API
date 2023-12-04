@@ -21,10 +21,12 @@ func RouteMissions(e *echo.Group, db *gorm.DB) {
 
 	admin.POST("", missionHandler.CreateMission)
 	admin.PUT("/:id", missionHandler.UpdateMission)
-	admin.PUT("/stages/:id", missionHandler.UpdateMissionStages)
 	admin.DELETE("/:id",missionHandler.DeleteMission)
+	admin.PUT("/stages/:id", missionHandler.UpdateMissionStages)
 	admin.POST("/stages", missionHandler.AddNewMissionStage)
 	admin.DELETE("/stages/:id", missionHandler.DeleteMissionStage)
+	admin.GET("admins/manage/missions/:id", missionHandler.FindById)
+	admin.GET("", missionHandler.GetAllMission)
 
 	userAndAdmin := e.Group("/missions", jwt.JWTMiddleware())
 	userAndAdmin.GET("", missionHandler.GetAllMission)

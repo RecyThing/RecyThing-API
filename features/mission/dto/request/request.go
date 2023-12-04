@@ -11,8 +11,8 @@ type Mission struct {
 }
 
 type MissionStage struct {
-	Title       string `form:"title" json:"title"`
-	Description string `form:"description" json:"description"`
+	Name       string `form:"name" json:"name"`
+	DescriptionStage string `form:"description_stage" json:"description_stage"`
 }
 
 type AddMissionStage struct {

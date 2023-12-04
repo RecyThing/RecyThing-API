@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"recything/features/mission/dto/request"
 	"recything/features/mission/dto/response"
@@ -37,6 +38,10 @@ func (mh *missionHandler) CreateMission(e echo.Context) error {
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
+	// result, _ := json.Marshal(requestMission.MissionStages)
+
+	log.Println("mission : ", requestMission)
+	log.Println("mission stages", requestMission.MissionStages)
 
 	image, err := e.FormFile("image")
 	if err != nil {
@@ -48,7 +53,9 @@ func (mh *missionHandler) CreateMission(e echo.Context) error {
 
 	input := request.MissionRequestToMissionCore(requestMission)
 	input.AdminID = id
+	// err = mh.missionService.CreateMission(input)
 	err = mh.missionService.CreateMission(image, input)
+
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}

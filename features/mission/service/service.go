@@ -23,7 +23,43 @@ func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo 
 	}
 }
 
-func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
+// func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
+// 	if len(data.MissionStages) > 3 {
+// 		return errors.New(constanta.ERROR_MISSION_LIMIT)
+// 	}
+
+// 	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point)
+// 	if errEmpty != nil {
+// 		return errEmpty
+// 	}
+
+// 	for _, stage := range data.MissionStages {
+// 		err := validation.CheckDataEmpty(stage.Description, data.Title)
+// 		if err != nil {
+// 			return err
+// 		}
+// 	}
+
+// 	err := validation.ValidateDate(data.StartDate, data.EndDate)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	imageURL, errUpload := storage.UploadThumbnail(image)
+// 	if errUpload != nil {
+// 		return err
+// 	}
+
+// 	data.MissionImage = imageURL
+// 	err = ms.MissionRepo.CreateMission(data)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+// }
+
+func (ms *missionService) CreateMission(image *multipart.FileHeader,data entity.Mission) error {
 	if len(data.MissionStages) > 3 {
 		return errors.New(constanta.ERROR_MISSION_LIMIT)
 	}

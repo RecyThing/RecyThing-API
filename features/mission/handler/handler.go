@@ -38,7 +38,6 @@ func (mh *missionHandler) CreateMission(e echo.Context) error {
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
-	// result, _ := json.Marshal(requestMission.MissionStages)
 
 	log.Println("mission : ", requestMission)
 	log.Println("mission stages", requestMission.MissionStages)

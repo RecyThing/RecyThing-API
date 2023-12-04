@@ -21,6 +21,7 @@ func ListTrashExchangeDetailCoreToTrashExchangeDetailResponse(data []entity.Tras
 
 func TrashExchangeCoreToTrashExchangeResponse(data entity.TrashExchangeCore) TrashExchangeResponse {
 	trashExchangeResponse := TrashExchangeResponse{
+		Id:         data.Id,
 		Name:       data.Name,
 		EmailUser:  data.EmailUser,
 		Address:    data.Address,

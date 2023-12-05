@@ -31,10 +31,10 @@ func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo 
 
 func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
 
-	if len(data.MissionStages) < constanta.MIN_STAGE {
-		return errors.New("tahapan misi tidak boleh kosong")
+	// if len(data.MissionStages) < constanta.MIN_STAGE {
+	// 	return errors.New("tahapan misi tidak boleh kosong")
 
-	}
+	// }
 	if len(data.MissionStages) > constanta.MAX_STAGE {
 		return errors.New(constanta.ERROR_MISSION_LIMIT)
 	}
@@ -70,13 +70,13 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 	return nil
 }
 
-func (ms *missionService) FindAllMission(page, limit, search, status string) ([]entity.Mission, pagination.PageInfo, int, error) {
+func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]entity.Mission, pagination.PageInfo, int, error) {
 	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
-	data, pagnationInfo, count, err := ms.MissionRepo.FindAllMission(pageInt, limitInt, search, status)
+	data, pagnationInfo, count, err := ms.MissionRepo.FindAllMission(pageInt, limitInt, search, filter)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}

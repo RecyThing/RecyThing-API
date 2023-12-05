@@ -67,9 +67,9 @@ func (mh *missionHandler) GetAllMission(e echo.Context) error {
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
 	search := e.QueryParam("search")
-	status := e.QueryParam("status")
+	filter := e.QueryParam("filter")
 
-	result, pagnation, count, err := mh.missionService.FindAllMission(page, limit, search, status)
+	result, pagnation, count, err := mh.missionService.FindAllMission(page, limit, search, filter)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))

@@ -29,7 +29,7 @@ type MissionRepositoryInterface interface {
 type MissionServiceInterface interface {
 	CreateMission(image *multipart.FileHeader, data Mission) error
 	// CreateMission(data Mission) error
-	FindAllMission(page, limit, search, status string) ([]Mission, pagination.PageInfo, int, error)
+	FindAllMission(page, limit, search, filter string) ([]Mission, pagination.PageInfo, int, error)
 	FindById(missionID string) (Mission, error)
 	UpdateMission(image *multipart.FileHeader, missionID string, data Mission) error
 

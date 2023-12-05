@@ -46,25 +46,12 @@ func (ms *MissionStage) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
-func (m *Mission) BeforeSave(tx *gorm.DB) (err error) {
-    var mission Mission
-    if tx.Model(&Mission{}).First(&mission, "id = ?", m.ID).Error != nil {
-        return nil // Jika mission tidak ditemukan, lanjutkan penyimpanan
-    }
-
-    // Saat ini mission stage diambil dari mission yang sudah ada di database
-    m.MissionStages = mission.MissionStages
-
-    return nil
-}
-
-
 type ClaimedMission struct {
-	ID         string         `gorm:"type:varchar(255);primaryKey"`
-	UserID     string         `gorm:"type:varchar(255);index"`
-	MissionID  string         `gorm:"type:varchar(255);index"`
-	Claimed    bool           `gorm:"default:true"`
-	CreatedAt  time.Time
+	ID        string `gorm:"type:varchar(255);primaryKey"`
+	UserID    string `gorm:"type:varchar(255);index"`
+	MissionID string `gorm:"type:varchar(255);index"`
+	Claimed   bool   `gorm:"default:true"`
+	CreatedAt time.Time
 }
 
 func (cm *ClaimedMission) BeforeCreate(tx *gorm.DB) (err error) {
@@ -73,3 +60,32 @@ func (cm *ClaimedMission) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
+type UploadMissionTask struct {
+	ID          string `gorm:"type:varchar(255);primaryKey" `
+	UserID      string `gorm:"type:varchar(255);index" `
+	MissionID   string `gorm:"type:varchar(255)" `
+	Description string
+	Images      []ImageUploadMission
+	Status      string    `gorm:"type:enum('disetujui','ditolak','perlu tinjauan');default:'perlu tinjauan'"`
+	CreatedAt   time.Time `gorm:"type:DATETIME(0)" `
+	UpdatedAt   time.Time `gorm:"type:DATETIME(0)" `
+}
+
+type ImageUploadMission struct {
+	ID                  string `gorm:"primaryKey" `
+	UploadMissionTaskID string `gorm:"type:varchar(255);index" `
+	Image               string
+	CreatedAt           time.Time `gorm:"type:DATETIME(0)" `
+}
+
+func (cm *ImageUploadMission) BeforeCreate(tx *gorm.DB) (err error) {
+	newUuid := uuid.New()
+	cm.ID = newUuid.String()
+	return nil
+}
+
+func (cm *UploadMissionTask) BeforeCreate(tx *gorm.DB) (err error) {
+	newUuid := uuid.New()
+	cm.ID = newUuid.String()
+	return nil
+}

@@ -20,7 +20,7 @@ func MissionCoreToMissionModel(data Mission) model.Mission {
 	return missionModel
 }
 func MissionModelToMissionCore(data model.Mission) Mission {
-	missionCore := Mission{ 
+	missionCore := Mission{
 		ID:           data.ID,
 		Title:        data.Title,
 		Status:       data.Status,
@@ -98,4 +98,33 @@ func ClaimedCoreToClaimedMissionModel(data ClaimedMission) model.ClaimedMission 
 		Claimed:   data.Claimed,
 	}
 
+}
+
+// Upload Mission User
+
+func UploadMissionTaskCoreToUploadMissionTaskModel(data UploadMissionTaskCore) model.UploadMissionTask {
+	return model.UploadMissionTask{
+		UserID:      data.UserID,
+		MissionID:   data.MissionID,
+		Description: data.Description,
+		Images:   ListImageUploadMissionCoreToImageUploadMissionModel(data.Images),
+		// Stage_two:   ListImageUploadMissionCoreToImageUploadMissionModel(data.Stage_two),
+		// Stage_three: ListImageUploadMissionCoreToImageUploadMissionModel(data.Stage_three),
+	}
+}
+
+func ImageUploadMissionCoreToImageUploadMissionModel(data ImageUploadMissionCore) model.ImageUploadMission {
+	return model.ImageUploadMission{
+		UploadMissionTaskID: data.UploadMissionTaskID,
+		Image: data.Image,
+	}
+}
+
+func ListImageUploadMissionCoreToImageUploadMissionModel(data []ImageUploadMissionCore) []model.ImageUploadMission {
+	dataImage := []model.ImageUploadMission{}
+	for _, v := range data {
+		result := ImageUploadMissionCoreToImageUploadMissionModel(v)
+		dataImage = append(dataImage, result)
+	}
+	return dataImage
 }

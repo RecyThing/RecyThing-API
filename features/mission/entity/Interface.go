@@ -14,12 +14,16 @@ type MissionRepositoryInterface interface {
 	UpdateMission(missionID string, data Mission) error
 	DeleteMission(missionID string) error
 
-
 	UpdateMissionStage(missionStageID string, data MissionStage) error
 	AddNewMissionStage(missionID string, data []MissionStage) error
-	DeleteMissionStage(stageID string)error
+	DeleteMissionStage(stageID string) error
+
 	ClaimMission(userID string, data ClaimedMission) error
 	FindClaimed(userID, missionID string) error
+
+	CreateUploadMission(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) error
+	FindUploadMission(userID, missionID,status string) error
+	
 }
 
 type MissionServiceInterface interface {
@@ -29,7 +33,9 @@ type MissionServiceInterface interface {
 	UpdateMission(image *multipart.FileHeader, missionID string, data Mission) error
 	UpdateMissionStage(MissionStageID string, data MissionStage) error
 	AddNewMissionStage(missionID string, data []MissionStage) error
-	DeleteMissionStage(stageID string)error
+	DeleteMissionStage(stageID string) error
 	ClaimMission(userID string, data ClaimedMission) error
 	DeleteMission(missionID string) error
+
+	CreateUploadMission(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) error
 }

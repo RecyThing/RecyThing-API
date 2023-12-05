@@ -1309,8 +1309,8 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "success":{
-                                        "value":{
+                                    "success": {
+                                        "value": {
                                             "status": true,
                                             "message": "berhasil mendapatkan data",
                                             "data": [
@@ -1456,8 +1456,8 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "success":{
-                                        "value":{
+                                    "success": {
+                                        "value": {
                                             "status": true,
                                             "message": "berhasil mendapatkan data",
                                             "data": {
@@ -1519,9 +1519,143 @@
                     }
                 }
             }
+        },
+        "/missions": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Mission"
+                ],
+                "summary": "claim mission user",
+                "description": "claim mission by id",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "mission_id": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "example": {
+                                    "value": {
+                                        "mission_id": "MS-2310NJSID"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil melakukan klaim"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/missions/proof": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Mission"
+                ],
+                "summary": "Upload proof missions",
+                "description": "this endpoint for upload mission proof with multiple images",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                               "$ref": "#/components/schemas/RequestMissionUser"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "examples":{
+                                    "success":{
+                                        "value":{
+                                            "status":true,
+                                            "message":"berhasil mengupload bukti"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/missions/proof/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Mission"
+                ],
+                "summary": "Update Mission",
+                "description": "this enpoint for update mission when approval rejected",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/id"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                               "$ref": "#/components/schemas/RequestMissionUser"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil memperbarui bukti"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-       
-
     },
     "components": {
         "parameters": {
@@ -1602,8 +1736,7 @@
                 "schema": {
                     "type": "string"
                 }
-            }
-            ,
+            },
             "search": {
                 "name": "search",
                 "in": "query",
@@ -1969,6 +2102,30 @@
                         "type": "string"
                     }
                 }
+            },
+            "RequestMissionUser": {
+                "type": "object",
+                "properties": {
+                    "mission_id": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "binary"
+                        },
+                        "nullable": false
+                    }
+                },
+                "required": [
+                    "mission_id",
+                    "description",
+                    "images"
+                ]
             }
         },
         "securitySchemes": {

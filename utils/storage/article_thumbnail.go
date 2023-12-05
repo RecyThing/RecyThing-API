@@ -39,7 +39,7 @@ func UploadThumbnail(image *multipart.FileHeader) (string, error) {
 	allowedExtensions := map[string]bool{".jpg": true, ".png": true}
 	
 	if !allowedExtensions[strings.ToLower(extension)] {
-		return "", errors.New("format file tidak diizinkan")
+		return "", errors.New("error : format file tidak diizinkan")
 	}
 
 	imagePath := "thumbnail/" + uuid.New().String() + extension

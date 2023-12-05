@@ -33,6 +33,12 @@ func NewTrashExchangeService(trashExchange trashExchange.TrashExchangeRepository
 
 // CreateTrashExchange implements entity.TrashExchangeServiceInterface.
 func (tes *trashExchangeService) CreateTrashExchange(data trashExchange.TrashExchangeCore) (trashExchange.TrashExchangeCore, error) {
+	
+	data.Id = helper.GenerateRandomID(4)
+	errEmpty := validation.CheckDataEmpty(data.Name, data.EmailUser, data.Address)
+	if errEmpty != nil {
+		return trashExchange.TrashExchangeCore{}, errEmpty
+	}
 
 	user, err := tes.userRepository.FindByEmail(data.EmailUser)
 	if err != nil {
@@ -49,6 +55,11 @@ func (tes *trashExchangeService) CreateTrashExchange(data trashExchange.TrashExc
 	totalUnits := 0.0
 	var details []trashExchange.TrashExchangeDetailCore
 	for _, detail := range data.TrashExchangeDetails {
+
+		errEmptyDetail := validation.CheckDataEmpty(detail.TrashType, detail.Unit)
+		if errEmptyDetail != nil {
+			return trashExchange.TrashExchangeCore{}, errEmptyDetail
+		}
 
 		titleCase := cases.Title(language.Indonesian)
 		detail.TrashType = titleCase.String(detail.TrashType)

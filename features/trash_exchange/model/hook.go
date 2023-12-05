@@ -5,12 +5,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func (user *TrashExchange) BeforeCreate(tx *gorm.DB) (err error) {
-	newUuid := uuid.New()
-	user.Id = newUuid.String()
+// func (user *TrashExchange) BeforeCreate(tx *gorm.DB) (err error) {
+// 	newUuid := uuid.New()
+// 	user.Id = newUuid.String()
 
-	return nil
-}
+// 	return nil
+// }
 
 func (user *TrashExchangeDetail) BeforeCreate(tx *gorm.DB) (err error) {
 	newUuid := uuid.New()

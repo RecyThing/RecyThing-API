@@ -3,6 +3,7 @@ package response
 import "time"
 
 type TrashExchangeResponse struct {
+	Id                   string                       `json:"id"`
 	Name                 string                       `json:"name"`
 	EmailUser            string                       `json:"email"`
 	Address              string                       `json:"address"`

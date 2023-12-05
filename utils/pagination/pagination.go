@@ -12,6 +12,22 @@ type PageInfo struct {
 	LastPage    int `json:"last_page"`
 }
 
+type CountDataInfo struct {
+	TotalCount         int `json:"total_count"`
+	CountPerluDitinjau int `json:"count_perlu_ditinjau"`
+	CountDiterima      int `json:"count_diterima"`
+	CountDitolak       int `json:"count_ditolak"`
+}
+
+func MapCountData(totalCount, countPerluDitinjau, countDiterima, countDitolak int64) CountDataInfo {
+	return CountDataInfo{
+		TotalCount:         int(totalCount),
+		CountPerluDitinjau: int(countPerluDitinjau),
+		CountDiterima:      int(countDiterima),
+		CountDitolak:       int(countDitolak),
+	}
+}
+
 func CalculateData(totalCount, limitInt, pageInt int) PageInfo {
 	lastPage := int(math.Ceil(float64(totalCount) / float64(limitInt)))
 

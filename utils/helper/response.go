@@ -1,7 +1,5 @@
 package helper
 
-import "recything/utils/pagination"
-
 type ErrorResponseJson struct {
 	Status  bool   `json:"status"`
 	Message string `json:"message"`
@@ -27,12 +25,13 @@ type SuccessResponseJsonWithPagenationAndCount struct {
 	Count      int         `json:"count_data,omitempty"`
 }
 
-type SuccessResponseJsonWithPagination struct {
+type SuccessResponseJsonWithPaginationAndCount struct {
 	Status      bool        `json:"status"`
 	Message     string      `json:"message"`
 	DataMessage string      `json:"data_message,omitempty"`
 	Data        interface{} `json:"data,omitempty"`
 	Pagination  interface{} `json:"pagination,omitempty"`
+	Count       interface{} `json:"count,omitempty"`
 }
 
 func ErrorResponse(message string) ErrorResponseJson {
@@ -57,16 +56,9 @@ func SuccessWithDataResponse(message string, data interface{}) SuccessResponseJs
 	}
 }
 
-func SuccessWithPagnation(message string, data interface{}, pagnation interface{}) SuccessResponseJsonWithPagenation {
-	return SuccessResponseJsonWithPagenation{
-		Status:     true,
-		Message:    message,
-		Data:       data,
-		Pagination: pagnation,
-	}
-}
-func SuccessWithPagnationAndCount(message string, data interface{}, pagnation interface{}, count int) SuccessResponseJsonWithPagenationAndCount {
-	return SuccessResponseJsonWithPagenationAndCount{
+
+func SuccessWithPaginationAndCount(message string, data interface{}, pagnation interface{}, count interface{}) SuccessResponseJsonWithPaginationAndCount {
+	return SuccessResponseJsonWithPaginationAndCount{
 		Status:     true,
 		Message:    message,
 		Data:       data,
@@ -75,13 +67,12 @@ func SuccessWithPagnationAndCount(message string, data interface{}, pagnation in
 	}
 }
 
-func SuccessWithPaginationAndDataResponse(message string, DataMessage string, data interface{}, paginationInfo pagination.PageInfo, totalData int) SuccessResponseJsonWithPagination {
-	paginationMessage := pagination.PaginationMessage(paginationInfo, totalData)
-	return SuccessResponseJsonWithPagination{
-		Status:      true,
-		Message:     message,
-		DataMessage: paginationMessage,
-		Data:        data,
-		Pagination:  paginationInfo,
+func SuccessWithPagnationAndCount(message string, data interface{}, pagnation interface{}, count int) SuccessResponseJsonWithPagenationAndCount {
+	return SuccessResponseJsonWithPagenationAndCount{
+		Status:     true,
+		Message:    message,
+		Data:       data,
+		Pagination: pagnation,
+		Count:      count,
 	}
 }

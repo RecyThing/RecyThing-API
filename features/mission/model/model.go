@@ -71,3 +71,32 @@ func (cm *ClaimedMission) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
+type UploadMissionTask struct {
+	ID          string `gorm:"type:varchar(255);primaryKey" `
+	UserID      string `gorm:"type:varchar(255);index" `
+	MissionID   string `gorm:"type:varchar(255)" `
+	Description string
+	Images      []ImageUploadMission
+	Status      string    `gorm:"type:enum('disetujui','ditolak','perlu tinjauan');default:'perlu tinjauan'"`
+	CreatedAt   time.Time `gorm:"type:DATETIME(0)" `
+	UpdatedAt   time.Time `gorm:"type:DATETIME(0)" `
+}
+
+type ImageUploadMission struct {
+	ID                  string `gorm:"primaryKey" `
+	UploadMissionTaskID string `gorm:"type:varchar(255);index" `
+	Image               string
+	CreatedAt           time.Time `gorm:"type:DATETIME(0)" `
+}
+
+func (cm *ImageUploadMission) BeforeCreate(tx *gorm.DB) (err error) {
+	newUuid := uuid.New()
+	cm.ID = newUuid.String()
+	return nil
+}
+
+func (cm *UploadMissionTask) BeforeCreate(tx *gorm.DB) (err error) {
+	newUuid := uuid.New()
+	cm.ID = newUuid.String()
+	return nil
+}

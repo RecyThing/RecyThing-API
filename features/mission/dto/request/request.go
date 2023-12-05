@@ -36,4 +36,12 @@ type NewMissionStage struct {
 }
 type Claim struct {
 	MissionID string `json:"mission_id"`
+
 }
+
+type UploadMissionTask struct {
+	UserID      string
+	MissionID   string               `form:"mission_id"`
+	Description string               `form:"description"`
+}
+

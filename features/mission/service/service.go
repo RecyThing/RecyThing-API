@@ -141,7 +141,13 @@ func (ms *missionService) ClaimMission(userID string, data entity.ClaimedMission
 	if data.MissionID == "" {
 		return errors.New(constanta.ERROR_EMPTY)
 	}
-	err := ms.MissionRepo.ClaimMission(userID, data)
+
+	_, err := ms.MissionRepo.FindById(data.MissionID)
+	if err != nil {
+		return err
+	}
+
+	err = ms.MissionRepo.ClaimMission(userID, data)
 	if err != nil {
 		return err
 	}
@@ -162,6 +168,32 @@ func (ms *missionService) FindById(missionID string) (entity.Mission, error) {
 func (ms *missionService) DeleteMission(missionID string) error {
 
 	err := ms.MissionRepo.DeleteMission(missionID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Upload Mission User
+
+func (ms *missionService) CreateUploadMission(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) error {
+	err := ms.MissionRepo.FindUploadMission(userID,data.MissionID, constanta.PERLU_TINJAUAN)
+	if err == nil {
+		return errors.New("error : sudah mengupload data, tunggu proses verifikasi")
+	}
+	
+	_, errn := ms.MissionRepo.FindById(data.MissionID)
+	if errn != nil {
+		return errn
+	}
+
+	err = ms.MissionRepo.FindClaimed(userID, data.MissionID)
+	if err != nil {
+		return errors.New("error : belum melakukan klaim mission")
+	}
+
+	err = ms.MissionRepo.CreateUploadMission(userID, data, images)
 	if err != nil {
 		return err
 	}

@@ -64,10 +64,37 @@ func ListMissionStagesRequestToMissionStagesCore(missionStages []MissionStage) [
 	return missionStagesCore
 }
 
-
-func ClaimRequestToClaimCore( claim Claim) entity.ClaimedMission {
-	return entity.ClaimedMission {
+func ClaimRequestToClaimCore(claim Claim) entity.ClaimedMission {
+	return entity.ClaimedMission{
 		MissionID: claim.MissionID,
 	}
-	
+
 }
+
+func UploadMissionTaskRequestToUploadMissionTaskCore(data UploadMissionTask) entity.UploadMissionTaskCore {
+	return entity.UploadMissionTaskCore{
+		UserID:      data.UserID,
+		MissionID:   data.MissionID,
+		Description: data.Description,
+		//Images:   ListImageUploadMissionRequestToImageUploadMissionCore(data.Images),
+		// Stage_two:   ListImageUploadMissionRequestToImageUploadMissionCore(data.Stage_two),
+		// Stage_three: ListImageUploadMissionRequestToImageUploadMissionCore(data.Stage_three),
+	}
+}
+
+// func ImageUploadMissionRequestToImageUploadMissionCore(data ImageUploadMission) entity.ImageUploadMissionCore {
+// 	return entity.ImageUploadMissionCore{
+// 		Stage_one:   data.Stage_one,
+// 		Stage_two:   data.Stage_two,
+// 		Stage_three: data.Stage_three,
+// 	}
+// }
+
+// func ListImageUploadMissionRequestToImageUploadMissionCore(data []ImageUploadMission) []entity.ImageUploadMissionCore {
+// 	dataStage := []entity.ImageUploadMissionCore{}
+// 	for _, v := range data {
+// 		result := ImageUploadMissionRequestToImageUploadMissionCore(v)
+// 		dataStage = append(dataStage, result)
+// 	}
+// 	return dataStage
+// }

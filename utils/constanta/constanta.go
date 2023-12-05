@@ -64,7 +64,7 @@ const (
 	ERROR   = "error"
 )
 
-//const for fix data
+// const for fix data
 var (
 	Unit          = []string{"barang", "kilogram"}
 	Category      = []string{"sampah anorganik", "sampah organik", "informasi", "batasan"}
@@ -72,10 +72,17 @@ var (
 	ERROR_MESSAGE = []string{"sudah", "tidak", "harus", "gagal", "harap"}
 )
 
-//const for mission
+// const for mission
 const (
 	OVERDUE   = "Melewati Tenggat"
 	ACTIVE    = "Aktif"
 	MAX_STAGE = 5
 	MIN_STAGE = 1
+)
+
+// const status
+const (
+	PERLU_TINJAUAN = "perlu tinjauan"
+	DISETUJUI      = "disetujui"
+	DITOLAK        = "ditolak"
 )

@@ -39,6 +39,7 @@ type ReportDetails struct {
 	Location     string `json:"location,omitempty"`
 	InsidentDate string `json:"insident_date,omitempty"`
 	Status       string `json:"status,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type ReportDetailsById struct {

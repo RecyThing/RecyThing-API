@@ -7,6 +7,8 @@ func CoreDropPointToDropPointResponse(data entity.DropPointsCore) DropPointRespo
 		Id:        data.Id,
 		Name:      data.Name,
 		Address:   data.Address,
+		Latitude:  data.Latitude,
+		Longitude: data.Longitude,
 		Schedule:  ListCoreScheduleToScheduleRequest(data.Schedule),
 	}
 }
@@ -38,43 +40,42 @@ func ListCoreDropPointToDropPointResponse(data []entity.DropPointsCore) []DropPo
 	return list
 }
 
-// Detail 
+// Detail
 
+// func CoreDropPointToDropPointDetailResponse(data entity.DropPointsCore) DropPointDetailResponse {
+// 	return DropPointDetailResponse{
+// 		Id:        data.Id,
+// 		Name:      data.Name,
+// 		Address:   data.Address,
+// 		Latitude:  data.Latitude,
+// 		Longitude: data.Longitude,
+// 		Schedule:  ListCoreScheduleToScheduleDetailRequest(data.Schedule),
+// 	}
+// }
 
-func CoreDropPointToDropPointDetailResponse(data entity.DropPointsCore) DropPointDetailResponse {
-	return DropPointDetailResponse{
-		Id:        data.Id,
-		Name:      data.Name,
-		Address:   data.Address,
-		Latitude: data.Latitude,
-		Longitude: data.Longitude,
-		Schedule:  ListCoreScheduleToScheduleDetailRequest(data.Schedule),
-	}
-}
+// func CoreScheduleToScheduleDetailResponse(data entity.ScheduleCore) ScheduleDetailResponse {
+// 	return ScheduleDetailResponse{
+// 		Day:        data.Day,
+// 		Open_Time:  data.OpenTime,
+// 		Close_Time: data.CloseTime,
+// 		Closed:     data.Closed,
+// 	}
+// }
 
-func CoreScheduleToScheduleDetailResponse(data entity.ScheduleCore) ScheduleDetailResponse {
-	return ScheduleDetailResponse{
-		Day:        data.Day,
-		Open_Time:  data.OpenTime,
-		Close_Time: data.CloseTime,
-		Closed:     data.Closed,
-	}
-}
+// func ListCoreScheduleToScheduleDetailRequest(data []entity.ScheduleCore) []ScheduleDetailResponse {
+// 	list := []ScheduleDetailResponse{}
+// 	for _, value := range data {
+// 		result := CoreScheduleToScheduleDetailResponse(value)
+// 		list = append(list, result)
+// 	}
+// 	return list
+// }
 
-func ListCoreScheduleToScheduleDetailRequest(data []entity.ScheduleCore) []ScheduleDetailResponse {
-	list := []ScheduleDetailResponse{}
-	for _, value := range data {
-		result := CoreScheduleToScheduleDetailResponse(value)
-		list = append(list, result)
-	}
-	return list
-}
-
-func ListCoreDropPointToDropPointDetailResponse(data []entity.DropPointsCore) []DropPointDetailResponse {
-	list := []DropPointDetailResponse{}
-	for _, value := range data {
-		result := CoreDropPointToDropPointDetailResponse(value)
-		list = append(list, result)
-	}
-	return list
-}
+// func ListCoreDropPointToDropPointDetailResponse(data []entity.DropPointsCore) []DropPointDetailResponse {
+// 	list := []DropPointDetailResponse{}
+// 	for _, value := range data {
+// 		result := CoreDropPointToDropPointDetailResponse(value)
+// 		list = append(list, result)
+// 	}
+// 	return list
+// }

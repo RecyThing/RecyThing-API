@@ -350,10 +350,10 @@ func (mr *MissionRepository) CreateUploadMission(userID string, data entity.Uplo
 	return nil
 }
 
-func (mr *MissionRepository) FindUploadMission(userID, missionID,status string) error {
+func (mr *MissionRepository) FindUploadMission(userID, missionID, status string) error {
 	dataUpload := model.UploadMissionTask{}
-	log.Println("user",userID,"dada",missionID)
-	tx := mr.db.Where("user_id = ? AND mission_id = ? AND status = ?", userID, missionID,status).First(&dataUpload)
+	log.Println("user", userID, "dada", missionID)
+	tx := mr.db.Where("user_id = ? AND mission_id = ? AND status = ?", userID, missionID, status).First(&dataUpload)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -362,7 +362,60 @@ func (mr *MissionRepository) FindUploadMission(userID, missionID,status string) 
 		return tx.Error
 	}
 
-	log.Println(tx.RowsAffected)
+	return nil
+}
+
+func (mr *MissionRepository) UpdateUploadMission(userID, id string, images []*multipart.FileHeader, data entity.UploadMissionTaskCore) error {
+	dataUploadMission := model.UploadMissionTask{}
+	request := entity.UploadMissionTaskCoreToUploadMissionTaskModel(data)
+	tx := mr.db.Where("id = ?", id).First(&dataUploadMission)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	}
+
+	errUpdate := mr.db.Model(&dataUploadMission).Updates(request)
+	if errUpdate.Error != nil {
+		return errUpdate.Error
+	}
+
+	for _, image := range images {
+		ImageList := []model.ImageUploadMission{}
+
+		tx := mr.db.Where("upload_mission_task_id = ? ", id).Find(&ImageList)
+		if tx.Error != nil {
+			return tx.Error
+		}
+
+		tx = mr.db.Unscoped().Delete(&ImageList)
+		if tx.Error != nil {
+			return tx.Error
+		}
+
+		imageURL, uploadErr := storage.UploadProof(image)
+		if uploadErr != nil {
+			return uploadErr
+		}
+
+
+
+		Imagedata := entity.ImageUploadMissionCore{}
+		Imagedata.UploadMissionTaskID = id
+		Imagedata.Image = imageURL
+
+		log.Println("foto baru nich : ", imageURL)
+		
+		ImageSave := entity.ImageUploadMissionCoreToImageUploadMissionModel(Imagedata)
+
+		if err := mr.db.Create(&ImageSave).Error; err != nil {
+			return err
+		}
+
+		data.Images = append(data.Images, Imagedata)
+	}
 
 	return nil
 }

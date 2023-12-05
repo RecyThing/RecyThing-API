@@ -178,11 +178,11 @@ func (ms *missionService) DeleteMission(missionID string) error {
 // Upload Mission User
 
 func (ms *missionService) CreateUploadMission(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) error {
-	err := ms.MissionRepo.FindUploadMission(userID,data.MissionID, constanta.PERLU_TINJAUAN)
+	err := ms.MissionRepo.FindUploadMission(userID, data.MissionID, constanta.PERLU_TINJAUAN)
 	if err == nil {
 		return errors.New("error : sudah mengupload data, tunggu proses verifikasi")
 	}
-	
+
 	_, errn := ms.MissionRepo.FindById(data.MissionID)
 	if errn != nil {
 		return errn
@@ -196,6 +196,20 @@ func (ms *missionService) CreateUploadMission(userID string, data entity.UploadM
 	err = ms.MissionRepo.CreateUploadMission(userID, data, images)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (ms *missionService) UpdateUploadMission(userID, id ,missionID string, images []*multipart.FileHeader, data entity.UploadMissionTaskCore) error {
+	err := ms.MissionRepo.FindUploadMission(userID, missionID, constanta.DITOLAK)
+	if err != nil {
+		return errors.New("error : tidak ada data mission yang ditolak")
+	}
+
+	errUpdate := ms.MissionRepo.UpdateUploadMission(userID, id, images, data)
+	if errUpdate != nil {
+		return errUpdate
 	}
 
 	return nil

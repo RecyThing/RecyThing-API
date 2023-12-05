@@ -240,7 +240,7 @@ func (mh *missionHandler) DeleteMission(e echo.Context) error {
 // Upload User
 
 func (mh *missionHandler) CreateUploadMission(e echo.Context) error {
-	userJahannam, role, err := jwt.ExtractToken(e)
+	userID, role, err := jwt.ExtractToken(e)
 	if role != "" {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
@@ -260,7 +260,43 @@ func (mh *missionHandler) CreateUploadMission(e echo.Context) error {
 
 	request := request.UploadMissionTaskRequestToUploadMissionTaskCore(input)
 
-	err = mh.missionService.CreateUploadMission(userJahannam, request, images)
+	err = mh.missionService.CreateUploadMission(userID, request, images)
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan mission"))
+}
+
+func (mh *missionHandler) UpdateUploadMission(e echo.Context) error {
+	UploadMissionID := e.Param("id")
+	MissionID := e.Param("idMission")
+	input := request.UpdateUploadMissionTask{}
+
+	userID, role, err := jwt.ExtractToken(e)
+	if role != "" {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	if err := e.Bind(&input); err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	form, err := e.MultipartForm()
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan form multipart"))
+	}
+
+	images := form.File["image"]
+
+	request := request.UpdateUploadMissionTaskRequestToUpdateUploadMissionTaskCore(input)
+
+	err = mh.missionService.UpdateUploadMission(userID, UploadMissionID,MissionID, images,request)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))

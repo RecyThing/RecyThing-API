@@ -34,4 +34,7 @@ func RouteMissions(e *echo.Group, db *gorm.DB) {
 	user.POST("/upload",missionHandler.CreateUploadMission)
 	user.GET("/:id", missionHandler.FindById)
 
+	user.POST("/upload",missionHandler.CreateUploadMission)
+	user.PUT("/:id/:idMission",missionHandler.UpdateUploadMission)
+
 }

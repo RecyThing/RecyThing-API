@@ -50,7 +50,7 @@ func (ms *MissionStage) BeforeCreate(tx *gorm.DB) (err error) {
 func (m *Mission) BeforeSave(tx *gorm.DB) (err error) {
 	var mission Mission
 	if tx.Model(&Mission{}).First(&mission, "id = ?", m.ID).Error != nil {
-		return nil 
+		return nil
 	}
 	m.MissionStages = mission.MissionStages
 
@@ -65,17 +65,12 @@ type ClaimedMission struct {
 	CreatedAt time.Time
 }
 
-func (cm *ClaimedMission) BeforeCreate(tx *gorm.DB) (err error) {
-	newUuid := uuid.New()
-	cm.ID = newUuid.String()
-	return nil
-}
-
 type UploadMissionTask struct {
 	ID          string `gorm:"type:varchar(255);primaryKey" `
 	UserID      string `gorm:"type:varchar(255);index" `
 	MissionID   string `gorm:"type:varchar(255)" `
 	Description string
+	Reason      string
 	Images      []ImageUploadMission
 	Status      string    `gorm:"type:enum('disetujui','ditolak','perlu tinjauan');default:'perlu tinjauan'"`
 	CreatedAt   time.Time `gorm:"type:DATETIME(0)" `
@@ -96,6 +91,11 @@ func (cm *ImageUploadMission) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 func (cm *UploadMissionTask) BeforeCreate(tx *gorm.DB) (err error) {
+	newUuid := uuid.New()
+	cm.ID = newUuid.String()
+	return nil
+}
+func (cm *ClaimedMission) BeforeCreate(tx *gorm.DB) (err error) {
 	newUuid := uuid.New()
 	cm.ID = newUuid.String()
 	return nil

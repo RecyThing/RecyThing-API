@@ -2,6 +2,8 @@ package route
 
 import (
 	admin "recything/features/admin/repository"
+	user "recything/features/user/repository"
+
 	"recything/features/mission/handler"
 	"recything/features/mission/repository"
 	"recything/features/mission/service"
@@ -13,8 +15,9 @@ import (
 
 func RouteMissions(e *echo.Group, db *gorm.DB) {
 	adminRepository := admin.NewAdminRepository(db)
+	userRepository := user.NewUserRepository(db)
 	missionRepository := repository.NewMissionRepository(db)
-	missionService := service.NewMissionService(missionRepository, adminRepository)
+	missionService := service.NewMissionService(missionRepository, adminRepository, userRepository)
 	missionHandler := handler.NewMissionHandler(missionService)
 
 	admin := e.Group("admins/manage/missions", jwt.JWTMiddleware())
@@ -25,13 +28,14 @@ func RouteMissions(e *echo.Group, db *gorm.DB) {
 	admin.GET("/:id", missionHandler.FindById)
 	admin.PUT("/:id", missionHandler.UpdateMission)
 	admin.PUT("/:id/stages", missionHandler.UpdateMissionStage)
+	admin.GET("/approvals", missionHandler.GetAllMissionApproval)
 
 	user := e.Group("/missions", jwt.JWTMiddleware())
 	user.GET("", missionHandler.GetAllMission)
 	user.POST("", missionHandler.ClaimMission)
 	user.GET("/:id", missionHandler.FindById)
 	user.POST("", missionHandler.ClaimMission)
-	user.POST("/upload",missionHandler.CreateUploadMission)
+	user.POST("/upload", missionHandler.CreateUploadMission)
 	user.GET("/:id", missionHandler.FindById)
 
 }

@@ -154,7 +154,6 @@ func (mh *missionHandler) UpdateMissionStage(e echo.Context) error {
 
 }
 
-
 func (mh *missionHandler) ClaimMission(e echo.Context) error {
 	userID, role, err := jwt.ExtractToken(e)
 
@@ -268,4 +267,25 @@ func (mh *missionHandler) CreateUploadMission(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan mission"))
+}
+
+// Mission Approval
+func (mh *missionHandler) GetAllMissionApproval(e echo.Context) error {
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	data, err := mh.missionService.FindAllMissionApproval()
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+
+	}
+	return e.JSON(http.StatusForbidden, helper.SuccessWithDataResponse("succes mendapatkan data",data))
+
+	
 }

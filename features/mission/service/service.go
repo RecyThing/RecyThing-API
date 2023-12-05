@@ -4,6 +4,8 @@ import (
 	"errors"
 	"mime/multipart"
 	admin "recything/features/admin/entity"
+	user "recything/features/user/entity"
+
 	"recything/features/mission/entity"
 	"recything/utils/constanta"
 	"recything/utils/pagination"
@@ -14,12 +16,14 @@ import (
 type missionService struct {
 	MissionRepo entity.MissionRepositoryInterface
 	AdminRepo   admin.AdminRepositoryInterface
+	UserRepo    user.UsersRepositoryInterface
 }
 
-func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo admin.AdminRepositoryInterface) entity.MissionServiceInterface {
+func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo admin.AdminRepositoryInterface, userRepo user.UsersRepositoryInterface) entity.MissionServiceInterface {
 	return &missionService{
 		MissionRepo: missionRepo,
 		AdminRepo:   adminRepo,
+		UserRepo:    userRepo,
 	}
 }
 
@@ -178,11 +182,11 @@ func (ms *missionService) DeleteMission(missionID string) error {
 // Upload Mission User
 
 func (ms *missionService) CreateUploadMission(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) error {
-	err := ms.MissionRepo.FindUploadMission(userID,data.MissionID, constanta.PERLU_TINJAUAN)
+	err := ms.MissionRepo.FindUploadMission(userID, data.MissionID, constanta.PERLU_TINJAUAN)
 	if err == nil {
 		return errors.New("error : sudah mengupload data, tunggu proses verifikasi")
 	}
-	
+
 	_, errn := ms.MissionRepo.FindById(data.MissionID)
 	if errn != nil {
 		return errn
@@ -199,4 +203,19 @@ func (ms *missionService) CreateUploadMission(userID string, data entity.UploadM
 	}
 
 	return nil
+}
+
+// Mission Approval
+func (ms *missionService) FindAllMissionApproval() ([]entity.UploadMissionTaskCore, error) {
+	data, err := ms.MissionRepo.FindAllMissionApproval()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, missionTask := range data {
+		userData, _ := ms.UserRepo.GetById(missionTask.UserID)
+		missionTask.User = userData.Fullname
+	}
+
+	return data, nil
 }

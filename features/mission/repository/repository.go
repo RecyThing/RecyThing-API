@@ -198,20 +198,19 @@ func (mr *MissionRepository) UpdateMissionStage(missionID string, data []entity.
 		return tx.Error
 	}
 
-    dataIDs := make(map[string]bool)
-    for _, stage := range data {
-        dataIDs[stage.ID] = true
-    }
+	dataIDs := make(map[string]bool)
+	for _, stage := range data {
+		dataIDs[stage.ID] = true
+	}
 
-    for _, stage := range allStages {
-        if _, exists := dataIDs[stage.ID]; !exists {
-            tx = mr.db.Unscoped().Delete(&stage)
-            if tx.Error != nil {
-                return tx.Error
-            }
-        }
-    }
-
+	for _, stage := range allStages {
+		if _, exists := dataIDs[stage.ID]; !exists {
+			tx = mr.db.Unscoped().Delete(&stage)
+			if tx.Error != nil {
+				return tx.Error
+			}
+		}
+	}
 
 	for _, stage := range data {
 		if stage.ID == "" {
@@ -259,8 +258,6 @@ func (mr *MissionRepository) UpdateMissionStage(missionID string, data []entity.
 
 	return nil
 }
-
-
 
 func (mr *MissionRepository) DeleteMission(missionID string) error {
 	dataMission := model.Mission{}
@@ -350,10 +347,10 @@ func (mr *MissionRepository) CreateUploadMission(userID string, data entity.Uplo
 	return nil
 }
 
-func (mr *MissionRepository) FindUploadMission(userID, missionID,status string) error {
+func (mr *MissionRepository) FindUploadMission(userID, missionID, status string) error {
 	dataUpload := model.UploadMissionTask{}
-	log.Println("user",userID,"dada",missionID)
-	tx := mr.db.Where("user_id = ? AND mission_id = ? AND status = ?", userID, missionID,status).First(&dataUpload)
+	log.Println("user", userID, "dada", missionID)
+	tx := mr.db.Where("user_id = ? AND mission_id = ? AND status = ?", userID, missionID, status).First(&dataUpload)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -365,4 +362,15 @@ func (mr *MissionRepository) FindUploadMission(userID, missionID,status string) 
 	log.Println(tx.RowsAffected)
 
 	return nil
+}
+
+func (mr *MissionRepository) FindAllMissionApproval() ([]entity.UploadMissionTaskCore, error) {
+	approvalMission := []model.UploadMissionTask{}
+	tx := mr.db.Find(&approvalMission)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	result := entity.ListUploadMissionTaskModelToUploadMissionTaskCore(approvalMission)
+	return result, tx.Error
+
 }

@@ -46,19 +46,20 @@ type ClaimedMission struct {
 // User Upload
 
 type UploadMissionTaskCore struct {
-	Id          string
+	ID          string
 	UserID      string
+	User        string
 	MissionID   string
 	Description string
+	Reason      string
 	Images      []ImageUploadMissionCore
-	// Stage_two   []ImageUploadMissionCore
-	// Stage_three []ImageUploadMissionCore
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Status      string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 type ImageUploadMissionCore struct {
-	Id                  string
+	ID                  string
 	UploadMissionTaskID string
 	Image               string
 	CreatedAt           time.Time

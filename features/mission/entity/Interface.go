@@ -7,7 +7,7 @@ import (
 
 type MissionRepositoryInterface interface {
 	CreateMission(input Mission) error
-	FindAllMission(page, limit int, search, status string) ([]Mission, pagination.PageInfo, int, error)
+	FindAllMission(page, limit int, search, filter string) ([]Mission, pagination.PageInfo, int, error)
 	FindById(missionID string) (Mission, error)
 	GetCount(status, search string) (int, error)
 	GetImageURL(missionID string) (string, error)
@@ -19,8 +19,9 @@ type MissionRepositoryInterface interface {
 	FindClaimed(userID, missionID string) error
 
 	CreateUploadMission(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) error
-	FindUploadMission(userID, missionID,status string) error
-	
+	FindUploadMission(userID, missionID, status string) error
+
+	FindAllMissionApproval() ([]UploadMissionTaskCore, error)
 }
 
 type MissionServiceInterface interface {
@@ -35,4 +36,6 @@ type MissionServiceInterface interface {
 	DeleteMission(missionID string) error
 
 	CreateUploadMission(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) error
+
+	FindAllMissionApproval() ([]UploadMissionTaskCore, error)
 }

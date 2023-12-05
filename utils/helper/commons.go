@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"recything/utils/constanta"
 	"reflect"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 	"unicode"
 
 	"github.com/asaskevich/govalidator"
@@ -129,6 +131,20 @@ func GenerateRandomID(length int) string {
 	idCounter++
 	formatString := fmt.Sprintf("PS%%0%dd", length)
 	result := fmt.Sprintf(formatString, idCounter)
-
 	return result
+}
+
+func ChangeStatusMission(endDate string) (string, error) {
+	var status string
+	endDateValid, err := time.Parse("2006-01-02", endDate)
+	if err != nil {
+		return status, err
+	}
+	currentTime := time.Now().Truncate(24 * time.Hour)
+	if endDateValid.Before(currentTime) {
+		status = constanta.OVERDUE
+	} else {
+		status = constanta.ACTIVE
+	}
+	return status, nil
 }

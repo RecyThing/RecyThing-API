@@ -7,16 +7,16 @@ import (
 	achievement "recything/features/achievement/model"
 	admin "recything/features/admin/model"
 	article "recything/features/article/model"
+	dropPoint "recything/features/drop-point/model"
 	daily "recything/features/daily_point/model"
 	faq "recything/features/faq/model"
 	mission "recything/features/mission/model"
 	recybot "recything/features/recybot/model"
 	report "recything/features/report/model"
 	trashCategory "recything/features/trash_category/model"
+	trashExchange "recything/features/trash_exchange/model"
 	user "recything/features/user/model"
 	voucher "recything/features/voucher/model"
-	trashExchange "recything/features/trash_exchange/model"
-	dropPoint "recything/features/drop-point/model"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -49,5 +49,5 @@ func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&daily.DailyPoint{})
 	db.AutoMigrate(&dropPoint.DropPoints{}, &dropPoint.Schedules{})
 	db.AutoMigrate(&trashExchange.TrashExchange{}, trashExchange.TrashExchangeDetail{})
-	db.AutoMigrate(&mission.Mission{}, &mission.MissionStage{}, &mission.ClaimedMission{})
+	db.AutoMigrate(&mission.Mission{}, &mission.MissionStage{}, &mission.ClaimedMission{}, &mission.UploadMissionTask{}, &mission.ImageUploadMission{})
 }

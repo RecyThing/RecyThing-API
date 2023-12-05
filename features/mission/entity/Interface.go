@@ -18,8 +18,10 @@ type MissionRepositoryInterface interface {
 	ClaimMission(userID string, data ClaimedMission) error
 	FindClaimed(userID, missionID string) error
 
-	CreateUploadMission(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) error
-	FindUploadMission(userID, missionID, status string) error
+	FindUploadMissionStatus(id, missionID, userID, status string) error
+	FindUploadById(id string) error
+	CreateUploadMissionTask(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) error
+	UpdateUploadMissionTask(id string, images []*multipart.FileHeader, data UploadMissionTaskCore) error
 
 	FindAllMissionApproval() ([]UploadMissionTaskCore, error)
 }
@@ -35,7 +37,8 @@ type MissionServiceInterface interface {
 	ClaimMission(userID string, data ClaimedMission) error
 	DeleteMission(missionID string) error
 
-	CreateUploadMission(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) error
+	CreateUploadMissionTask(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) error
+	UpdateUploadMissionTask(userID, id string, images []*multipart.FileHeader, data UploadMissionTaskCore) error
 
 	FindAllMissionApproval() ([]UploadMissionTaskCore, error)
 }

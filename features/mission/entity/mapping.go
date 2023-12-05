@@ -100,6 +100,7 @@ func UploadMissionTaskCoreToUploadMissionTaskModel(data UploadMissionTaskCore) m
 		MissionID:   data.MissionID,
 		Description: data.Description,
 		Images:      ListImageUploadMissionCoreToImageUploadMissionModel(data.Images),
+		Status:      data.Status,
 	}
 }
 

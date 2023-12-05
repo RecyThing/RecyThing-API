@@ -82,6 +82,12 @@ func UploadMissionTaskRequestToUploadMissionTaskCore(data UploadMissionTask) ent
 	}
 }
 
+func UpdateUploadMissionTaskRequestToUpdateUploadMissionTaskCore(data UpdateUploadMissionTask) entity.UploadMissionTaskCore {
+	return entity.UploadMissionTaskCore{
+		Description: data.Description,
+	}
+}
+
 // func ImageUploadMissionRequestToImageUploadMissionCore(data ImageUploadMission) entity.ImageUploadMissionCore {
 // 	return entity.ImageUploadMissionCore{
 // 		Stage_one:   data.Stage_one,

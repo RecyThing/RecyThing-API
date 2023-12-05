@@ -186,10 +186,10 @@ func (as *AdminService) DeleteUsers(userId string) error {
 }
 
 // Manage Reporting
-func (as *AdminService) GetAllReport(status, search, page, limit string) ([]report.ReportCore, pagination.PageInfo, int, error) {
+func (as *AdminService) GetAllReport(status, search, page, limit string) ([]report.ReportCore, pagination.PageInfo, pagination.CountDataInfo, error) {
 	pageInt, limitInt, validationErr := validation.ValidateTypePaginationParameter(limit, page)
 	if validationErr != nil {
-		return nil, pagination.PageInfo{}, 0, validationErr
+		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, validationErr
 	}
 
 	pageValid, limitValid := validation.ValidateCountLimitAndPage(pageInt, limitInt)
@@ -201,11 +201,12 @@ func (as *AdminService) GetAllReport(status, search, page, limit string) ([]repo
 	}
 
 	if _, ok := validStatus[status]; status != "" && !ok {
-		return nil, pagination.PageInfo{}, 0, errors.New("status tidak valid")
+		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, errors.New("status tidak valid")
 	}
+
 	data, paginationInfo, count, err := as.AdminRepository.GetAllReport(status, search, pageValid, limitValid)
 	if err != nil {
-		return nil, pagination.PageInfo{}, 0, err
+		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
 
 	return data, paginationInfo, count, nil

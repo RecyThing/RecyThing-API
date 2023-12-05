@@ -305,7 +305,7 @@ func (ah *AdminHandler) GetByStatusReport(e echo.Context) error {
 	}
 
 	response := reportDto.ListReportCoresToReportResponseForDataReporting(result, ah.UserService)
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan data reporting", response, paginationInfo, count))
+	return e.JSON(http.StatusOK, helper.SuccessWithPaginationAndCount("berhasil mendapatkan data reporting", response, paginationInfo, count))
 }
 
 func (ah *AdminHandler) UpdateStatusReport(e echo.Context) error {

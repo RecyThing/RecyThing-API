@@ -3,12 +3,14 @@ package helper
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"recything/utils/constanta"
 	"reflect"
 	"strconv"
 	"strings"
-	"unicode"
+	"sync"
 	"time"
+	"unicode"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gorilla/schema"
@@ -117,9 +119,20 @@ func ConvertUnitToDecimal(unit string) (float64, error) {
 	return result, nil
 }
 
+var (
+	idCounter int
+	idMutex   sync.Mutex
+)
 
+func GenerateRandomID(length int) string {
+	idMutex.Lock()
+	defer idMutex.Unlock()
 
-
+	idCounter++
+	formatString := fmt.Sprintf("PS%%0%dd", length)
+	result := fmt.Sprintf(formatString, idCounter)
+	return result
+}
 
 func ChangeStatusMission(endDate string) (string, error) {
 	var status string

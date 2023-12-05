@@ -2,6 +2,7 @@ package model
 
 import (
 	badge "recything/features/achievement/model"
+	dp "recything/features/daily_point/model"
 	mission "recything/features/mission/model"
 	"recything/features/report/model"
 	trashExchange "recything/features/trash_exchange/model"
@@ -32,4 +33,11 @@ type Users struct {
 	Badges            badge.Achievement             `gorm:"foreignKey:Badge;references:Name"`
 	TrashExchange     []trashExchange.TrashExchange `gorm:"foreignKey:EmailUser;references:Email"`
 	ClaimedMissions   []mission.ClaimedMission      `gorm:"foreignKey:UserID"`
+	DailyClaim        []dp.DailyPoint               `gorm:"many2many:UserDailyPoints"`
+}
+
+type UserDailyPoints struct {
+	UsersID      string
+	DailyPointID int
+	CreatedAt    time.Time
 }

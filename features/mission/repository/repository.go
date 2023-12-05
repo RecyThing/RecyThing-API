@@ -124,7 +124,7 @@ func (mr *MissionRepository) GetCount(filter, search string) (int, error) {
 func (mr *MissionRepository) FindById(missionID string) (entity.Mission, error) {
 	dataMission := model.Mission{}
 
-	tx := mr.db.Where("id = ? ", missionID).First(&dataMission)
+	tx := mr.db.Where("id = ? ", missionID).Preload("MissionStages").First(&dataMission)
 	if tx.Error != nil {
 		return entity.Mission{}, tx.Error
 	}

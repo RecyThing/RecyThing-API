@@ -38,18 +38,18 @@ func (mr *MissionRepository) CreateMission(input entity.Mission) error {
 	return nil
 }
 
-func (mr *MissionRepository) FindAllMission(page, limit int, search, status string) ([]entity.Mission, pagination.PageInfo, int, error) {
+func (mr *MissionRepository) FindAllMission(page, limit int, search, filter string) ([]entity.Mission, pagination.PageInfo, int, error) {
 	data := []model.Mission{}
 	offsetInt := (page - 1) * limit
 	paginationQuery := mr.db.Limit(limit).Offset(offsetInt)
 
-	totalCount, err := mr.GetCount(status, search)
+	totalCount, err := mr.GetCount(filter, search)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
-	if status != "" {
-		tx := paginationQuery.Where("status LIKE ?", "%"+status+"%").Preload("MissionStages").Find(&data)
+	if filter != "" {
+		tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Preload("MissionStages").Find(&data)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
@@ -62,7 +62,7 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, status stri
 		}
 	}
 
-	if search == "" || status == "" {
+	if search == "" || filter == "" {
 		tx := paginationQuery.Preload("MissionStages").Find(&data)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error

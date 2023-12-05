@@ -1655,6 +1655,30 @@
                     }
                 }
             }
+        },
+        "/users/point/daily": {
+            "post": {"tags": [
+                    "Users Point & Voucher"],
+                    "summary": "claim daily point",
+                "description": "claim your daily point",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "examples": {
+                                    "succes":{
+                                        "value":{
+                                            "status":true,
+                                            "message":"berhasil melakukan daily claim"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {

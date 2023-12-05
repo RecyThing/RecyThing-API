@@ -139,7 +139,7 @@
                 "description": "get all active and non active admins",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/fullname"
+                        "$ref": "#/components/parameters/search"
                     },
                     {
                         "$ref": "#/components/parameters/limit"
@@ -340,6 +340,17 @@
                 ],
                 "summary": "get all users",
                 "description": "get all active and non active users",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "berhasil mengambil data users",
@@ -477,10 +488,7 @@
                         "$ref": "#/components/parameters/FilterReport"
                     },
                     {
-                        "$ref": "#/components/parameters/searchID"
-                    },
-                    {
-                        "$ref": "#/components/parameters/name"
+                        "$ref": "#/components/parameters/search"
                     },
                     {
                         "$ref": "#/components/parameters/limit"
@@ -742,7 +750,10 @@
                 "description": "get  all prompt",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/category"
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterPrompt"
                     },
                     {
                         "$ref": "#/components/parameters/limit"
@@ -1000,7 +1011,7 @@
                 "summary": "get all category trash",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/trashType"
+                        "$ref": "#/components/parameters/search"
                     },
                     {
                         "$ref": "#/components/parameters/limit"
@@ -1256,6 +1267,104 @@
                                                 "created_at": "0001-01-01T00:00:00Z",
                                                 "updated_at": "2023-11-20T15:13:12.643+08:00"
                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/trashes/categories": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Article",
+                    "Manage Recycles"
+                ],
+                "summary": "view all categories of trash type",
+                "description": "view all categories of trash type, this endpoint for fetching all data",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseTrashCategories"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan seluruh kategori sampah",
+                                            "data": [
+                                                {
+                                                    "id": "1afa0ba9-5e67-4e2d-a21f-a904aa8c0a56",
+                                                    "trash_type": "limbah 3",
+                                                    "point": 100,
+                                                    "unit": "barang"
+                                                },
+                                                {
+                                                    "id": "28bac944-38f4-4f0a-9c03-41f5b64531df",
+                                                    "trash_type": "kaleng",
+                                                    "point": 100,
+                                                    "unit": "kilogram"
+                                                },
+                                                {
+                                                    "id": "28c64e17-40f5-42fb-9ba5-9d82b81d26c5",
+                                                    "trash_type": "bahhh",
+                                                    "point": 100,
+                                                    "unit": "kilogram"
+                                                },
+                                                {
+                                                    "id": "29a14bb0-f1ff-45e3-afd9-1a4c35e28b73",
+                                                    "trash_type": "test",
+                                                    "point": 100,
+                                                    "unit": "kilogram"
+                                                },
+                                                {
+                                                    "id": "2e619697-8471-4230-aab5-b51715deb73d",
+                                                    "trash_type": "limbah 2",
+                                                    "point": 100,
+                                                    "unit": "barang"
+                                                },
+                                                {
+                                                    "id": "2fb9235f-50f4-4f27-9a78-c3b1aa14d183",
+                                                    "trash_type": "seng",
+                                                    "point": 7000,
+                                                    "unit": "kilogram"
+                                                },
+                                                {
+                                                    "id": "3011c4aa-0d0f-436e-adb3-acafc9a9bf39",
+                                                    "trash_type": "bahhh 22",
+                                                    "point": 100,
+                                                    "unit": "kilogram"
+                                                },
+                                                {
+                                                    "id": "41388cdc-de07-4474-b005-3841399b0f0e",
+                                                    "trash_type": "Styrofoam",
+                                                    "point": 5,
+                                                    "unit": "kilogram"
+                                                },
+                                                {
+                                                    "id": "4de15e8a-c1d3-489f-b1d3-d16863c2e909",
+                                                    "trash_type": "bahhh 21",
+                                                    "point": 100,
+                                                    "unit": "kilogram"
+                                                },
+                                                {
+                                                    "id": "565d6795-852d-4470-88f2-6b6ac131f4f0",
+                                                    "trash_type": "test 1",
+                                                    "point": 100,
+                                                    "unit": "kilogram"
+                                                }
+                                            ]
                                         }
                                     }
                                 }
@@ -1757,7 +1866,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage article"
+                    "Manage Article"
                 ],
                 "summary": "add article",
                 "description": "create new article",
@@ -1800,13 +1909,13 @@
                     }
                 ],
                 "tags": [
-                    "Manage article"
+                    "Manage Article"
                 ],
                 "summary": "view all article ",
                 "description": "view all article",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/title"
+                        "$ref": "#/components/parameters/search"
                     },
                     {
                         "$ref": "#/components/parameters/limit"
@@ -1880,7 +1989,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage article"
+                    "Manage Article"
                 ],
                 "summary": "view detail article ",
                 "description": "view detail article by id",
@@ -1932,7 +2041,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage article"
+                    "Manage Article"
                 ],
                 "summary": "delete  article ",
                 "description": "delete article by id",
@@ -1969,7 +2078,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage article"
+                    "Manage Article"
                 ],
                 "summary": "update article",
                 "description": "update article by id",
@@ -2012,6 +2121,364 @@
                                                 "created_at": "2023-11-28T01:25:19Z",
                                                 "updated_at": "2023-11-28T04:57:20.889Z"
                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/drop-points": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Drop Point"
+                ],
+                "summary": "create drop point",
+                "description": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestResponseDropPoint"
+                            },
+                            "examples": {
+                                "Input 1 Day": {
+                                    "description": "jika hanya melakukan request satu hari saja di awal pembuatan, maka secara otomatis akan membuat 6 hari sisanya dengan value closed = true, bisa melakukan input hari selanjutnya secara bersamaan dengan syarat nama hari tidak boleh sama",
+                                    "value": {
+                                        "name": "Asgas Recycle",
+                                        "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                        "latitude": -6.2914552,
+                                        "longitude": 106.9285376,
+                                        "schedule": [
+                                            {
+                                                "day": "Senin",
+                                                "open_time": "11:00",
+                                                "close_time": "23:00"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RequestResponseDropPoint"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil membuat data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Drop Point"
+                ],
+                "summary": "get all drop point with pagination",
+                "description": "",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RequestResponseDropPoint"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "description": "mengambil semua data, jika inputan awal hanya satu hari saja maka akan secara otomatis dibuatkan hari-hari lainnya",
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": [
+                                                {
+                                                    "id": "e10be855-34ee-4c06-a5b2-4665271a2157",
+                                                    "name": "Asgas Recycle",
+                                                    "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                                    "schedule": [
+                                                        {
+                                                            "day": "jumat",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "sabtu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "selasa",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "minggu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "Senin",
+                                                            "open_time": "11:00",
+                                                            "close_time": "23:00",
+                                                            "closed": false
+                                                        },
+                                                        {
+                                                            "day": "kamis",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "rabu",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        },
+                                                        {
+                                                            "day": "senin",
+                                                            "open_time": "",
+                                                            "close_time": "",
+                                                            "closed": true
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/drop-points/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Drop Point"
+                ],
+                "summary": "get detail drop-point",
+                "description": "",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RequestResponseDropPoint"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": {
+                                                "id": "38b56197-9774-4fc6-9685-26e1119baf33",
+                                                "name": "Rodi Recycle",
+                                                "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                                "latitude": -6.2914552,
+                                                "longitude": 106.9285376,
+                                                "schedule": [
+                                                    {
+                                                        "day": "rabu",
+                                                        "open_time": "11:00",
+                                                        "close_time": "23:00",
+                                                        "closed": false
+                                                    },
+                                                    {
+                                                        "day": "kamis",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "jumat",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "sabtu",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "minggu",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "selasa",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    },
+                                                    {
+                                                        "day": "senin",
+                                                        "open_time": "",
+                                                        "close_time": "",
+                                                        "closed": true
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Drop Point"
+                ],
+                "summary": "update schedule drop point",
+                "description": "",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestResponseDropPoint"
+                            },
+                            "examples": {
+                                "example": {
+                                    "value": {
+                                        "description": "Jika closed key tidak diisi maka secara langsung bernilai closed = false",
+                                        "name": "Update Recycle",
+                                        "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
+                                        "latitude": -6.2914552,
+                                        "longitude": 106.9285376,
+                                        "schedule": [
+                                            {
+                                                "day": "senin",
+                                                "open_time": "19:00",
+                                                "close_time": "23:00",
+                                                "closed": true
+                                            },
+                                            {
+                                                "day": "jumat",
+                                                "open_time": "19:00",
+                                                "close_time": "23:00"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil melakukan update data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Drop Point"
+                ],
+                "summary": "delete drop point",
+                "description": "",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil menghapus data"
                                         }
                                     }
                                 }
@@ -2372,16 +2839,13 @@
                             "schema": {
                                 "$ref": "#/components/schemas/RequestMissionStageUpdate"
                             },
-                            "example":{
-                               
-                                    "contoh": {
-                                        "value": {
-                                            "title": "stage 1",
-                                            "": "ini description stage 1"
-                                            
-                                        }
+                            "example": {
+                                "contoh": {
+                                    "value": {
+                                        "title": "stage 1",
+                                        "": "ini description stage 1"
                                     }
-                                
+                                }
                             }
                         }
                     }
@@ -2551,15 +3015,7 @@
             "search": {
                 "name": "search",
                 "in": "query",
-                "description": "search of data name and point",
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "trashType": {
-                "name": "trash_type",
-                "in": "query",
-                "description": "name of trash type",
+                "description": "search of data",
                 "schema": {
                     "type": "string"
                 }
@@ -2572,21 +3028,26 @@
                     "type": "integer",
                     "maximum": 10
                 }
+            }
+            ,
+            "filterPrompt": {
+                "name": "filter",
+                "in": "query",
+                "description": "filter category data",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "sampah organik",
+                        "sampah anorganik",
+                        "informasi",
+                        "batasan"
+                    ]
+                }
             },
             "category": {
                 "name": "category",
                 "in": "query",
                 "description": "category of data",
-                "schema": {
-                    "type": "integer",
-                    "maximum": 10
-                }
-            },
-            
-            "fullname": {
-                "name": "fullname",
-                "in": "query",
-                "description": "fullname ",
                 "schema": {
                     "type": "integer",
                     "maximum": 10
@@ -2609,18 +3070,11 @@
                     "type": "integer"
                 }
             },
-            "name": {
-                "name": "name",
-                "in": "query",
-                "description": "name of data",
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "searchID": {
+            "Id": {
                 "name": "id",
-                "in": "query",
+                "in": "path",
                 "description": "id of data",
+                "required": true,
                 "schema": {
                     "type": "string"
                 }
@@ -2830,25 +3284,17 @@
             "ResponsePrompt": {
                 "type": "object",
                 "properties": {
-                    "data": {
-                        "type": "array",
-                        "properties": {
-                            "id": {
-                                "type": "string"
-                            },
-                            "question": {
-                                "type": "string"
-                            },
-                            "category": {
-                                "type": "string",
-                                "enum": [
-                                    "sampah organik",
-                                    "sampah anorganik",
-                                    "batasan",
-                                    "informasi"
-                                ]
-                            }
-                        }
+                    "question": {
+                        "type": "string"
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "sampah organik",
+                            "sampah anorganik",
+                            "batasan",
+                            "informasi"
+                        ]
                     },
                     "pagination": {
                         "type": "object",
@@ -2872,26 +3318,21 @@
             "ResponseAdmin": {
                 "type": "object",
                 "properties": {
-                    "data": {
-                        "type": "array",
-                        "properties": {
-                            "id": {
-                                "type": "string"
-                            },
-                            "fullname": {
-                                "type": "string"
-                            },
-                            "email": {
-                                "type": "string"
-                            },
-                            "status": {
-                                "type": "string",
-                                "enum": [
-                                    "active",
-                                    "nonactive"
-                                ]
-                            }
-                        }
+                    "id": {
+                        "type": "string"
+                    },
+                    "fullname": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "nonactive"
+                        ]
                     },
                     "pagination": {
                         "type": "object",
@@ -2964,23 +3405,15 @@
             "ResponseTrashCategories": {
                 "type": "object",
                 "properties": {
-                    "data": {
-                        "type": "array",
-                        "properties": {
-                            "id": {
-                                "type": "string"
-                            },
-                            "trash_type": {
-                                "type": "string"
-                            },
-                            "unit": {
-                                "type": "string",
-                                "enum": [
-                                    "barang",
-                                    "kilogram"
-                                ]
-                            }
-                        }
+                    "trash_type": {
+                        "type": "string"
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "barang",
+                            "kilogram"
+                        ]
                     },
                     "pagination": {
                         "type": "object",
@@ -3093,10 +3526,8 @@
                     },
                     "category_id": {
                         "type": "array",
-                        "properties": {
-                            "category_id": {
-                                "type": "string"
-                            }
+                        "items": {
+                            "type": "string"
                         }
                     }
                 },
@@ -3127,10 +3558,8 @@
                     },
                     "categories": {
                         "type": "array",
-                        "properties": {
-                            "category": {
-                                "type": "string"
-                            }
+                        "items": {
+                            "type": "string"
                         }
                     },
                     "like": {
@@ -3158,50 +3587,39 @@
             "ResponseMission": {
                 "type": "object",
                 "properties": {
-                    "data": {
-                        "type": "array",
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "start_date": {
+                        "type": "string"
+                    },
+                    "end_date": {
+                        "type": "string"
+                    },
+                    "creator": {
+                        "type": "string"
+                    },
+                    "point": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "Melewati Tenggat",
+                            "Aktif"
+                        ]
+                    },
+                    "mission_stages": {
+                        "type": "object",
                         "properties": {
-                            "id": {
-                                "type": "string"
-                            },
                             "title": {
                                 "type": "string"
                             },
                             "description": {
                                 "type": "string"
-                            },
-                            "start_date": {
-                                "type": "string"
-                            },
-                            "end_date": {
-                                "type": "string"
-                            },
-                            "creator": {
-                                "type": "string"
-                            },
-                            "point": {
-                                "type": "string"
-                            },
-                            "status": {
-                                "type": "string",
-                                "enum": [
-                                    "Melewati Tenggat",
-                                    "Aktif"
-                                ]
-                            },
-                            "mission_stages": {
-                                "type": "array",
-                                "properties": {
-                                    "id": {
-                                        "type": "string"
-                                    },
-                                    "title": {
-                                        "type": "string"
-                                    },
-                                    "description": {
-                                        "type": "string"
-                                    }
-                                }
                             }
                         }
                     },
@@ -3231,7 +3649,7 @@
                         "type": "string"
                     },
                     "stages": {
-                        "type": "array",
+                        "type": "object",
                         "properties": {
                             "title": {
                                 "type": "string"
@@ -3296,6 +3714,39 @@
                     "title",
                     "description"
                 ]
+            },
+            "RequestResponseDropPoint": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "type": "number"
+                    },
+                    "longitude": {
+                        "type": "number"
+                    },
+                    "schedule": {
+                        "type": "object",
+                        "properties": {
+                            "day": {
+                                "type": "string"
+                            },
+                            "open_time": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "close_time": {
+                                "type": "string",
+                                "format": "date"
+                            }
+                        }
+                    }
+                }
             }
         },
         "securitySchemes": {

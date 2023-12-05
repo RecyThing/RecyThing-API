@@ -57,6 +57,7 @@ func ReportCoreToReportResponseForDataReporting(report entity.ReportCore, user u
 		Location:     report.Location,
 		InsidentDate: report.InsidentDate,
 		Status:       report.Status,
+		CreatedAt:    report.CreatedAt,
 	}
 }
 
@@ -70,7 +71,7 @@ func ListReportCoresToReportResponseForDataReporting(reports []entity.ReportCore
 	return responReporting
 }
 
-func ListReportCoresToReportResponse(reports []entity.ReportCore) []ReportCreateResponse{
+func ListReportCoresToReportResponse(reports []entity.ReportCore) []ReportCreateResponse {
 	responReporting := []ReportCreateResponse{}
 	for _, report := range reports {
 		reports := ReportCoreToReportResponse(report)
@@ -78,7 +79,6 @@ func ListReportCoresToReportResponse(reports []entity.ReportCore) []ReportCreate
 	}
 	return responReporting
 }
-
 
 func ReportCoreToReportResponseForDataReportingId(report entity.ReportCore, user user.UsersCore) ReportDetailsById {
 	reportResponse := ReportDetailsById{

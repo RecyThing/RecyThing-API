@@ -42,8 +42,9 @@ const (
 	ERROR_HASH_PASSWORD    = "error hash password"
 	ERROR_DATA_NOT_FOUND   = "data tidak ditemukan"
 	ERROR_DATA_EXIST       = "error : data sudah ada"
-	ERROR_MISSION_LIMIT    = "error : tahapan misi tidak boleh dari 3"
+	ERROR_MISSION_LIMIT    = "error : tahapan misi tidak boleh dari 5"
 	ERROR_INVALID_TITLE    = "error: tahapan misi tidak boleh sama"
+	ERROR_INVALID_ID       = "error: id tidak boleh sama"
 	ERROR_INVALID_UPDATE   = "error: data harus berberbeda dengan data sebelumnya"
 	ERROR_INVALID_INPUT    = "data yang diinput tidak sesuai"
 	ERROR_NOT_FOUND        = "data tidak ditemukan"
@@ -73,6 +74,8 @@ var (
 
 //const for mission
 const (
-	OVERDUE = "Melewati Tenggat"
-	ACTIVE  = "Aktif"
+	OVERDUE   = "Melewati Tenggat"
+	ACTIVE    = "Aktif"
+	MAX_STAGE = 5
+	MIN_STAGE = 1
 )

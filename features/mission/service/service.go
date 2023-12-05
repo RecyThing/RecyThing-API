@@ -23,44 +23,13 @@ func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo 
 	}
 }
 
-// func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
-// 	if len(data.MissionStages) > 3 {
-// 		return errors.New(constanta.ERROR_MISSION_LIMIT)
-// 	}
+func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
 
-// 	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point)
-// 	if errEmpty != nil {
-// 		return errEmpty
-// 	}
+	if len(data.MissionStages) < constanta.MIN_STAGE {
+		return errors.New("tahapan misi tidak boleh kosong")
 
-// 	for _, stage := range data.MissionStages {
-// 		err := validation.CheckDataEmpty(stage.Description, data.Title)
-// 		if err != nil {
-// 			return err
-// 		}
-// 	}
-
-// 	err := validation.ValidateDate(data.StartDate, data.EndDate)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	imageURL, errUpload := storage.UploadThumbnail(image)
-// 	if errUpload != nil {
-// 		return err
-// 	}
-
-// 	data.MissionImage = imageURL
-// 	err = ms.MissionRepo.CreateMission(data)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
-
-func (ms *missionService) CreateMission(image *multipart.FileHeader,data entity.Mission) error {
-	if len(data.MissionStages) > 3 {
+	}
+	if len(data.MissionStages) > constanta.MAX_STAGE {
 		return errors.New(constanta.ERROR_MISSION_LIMIT)
 	}
 
@@ -152,45 +121,15 @@ func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID s
 	return nil
 }
 
-func (ms *missionService) UpdateMissionStage(missionStageID string, data entity.MissionStage) error {
-	errEmpty := validation.CheckDataEmpty(data.Title, data.Description)
-	if errEmpty != nil {
-		return errEmpty
-	}
-
-	err := ms.MissionRepo.UpdateMissionStage(missionStageID, data)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (ms *missionService) AddNewMissionStage(missionID string, data []entity.MissionStage) error {
-
-	for i, stage := range data {
+func (ms *missionService) UpdateMissionStage(missionID string, data []entity.MissionStage) error {
+	for _, stage := range data {
 		err := validation.CheckDataEmpty(stage.Description, stage.Title)
 		if err != nil {
 			return err
 		}
-
-		for j := i + 1; j < len(data); j++ {
-			if stage.Title == data[j].Title {
-				return errors.New(constanta.ERROR_INVALID_TITLE)
-			}
-		}
-
 	}
 
-	err := ms.MissionRepo.AddNewMissionStage(missionID, data)
-	if err != nil {
-		return err
-	}
-	return nil
-
-}
-
-func (ms *missionService) DeleteMissionStage(stageID string) error {
-	err := ms.MissionRepo.DeleteMissionStage(stageID)
+	err := ms.MissionRepo.UpdateMissionStage(missionID, data)
 	if err != nil {
 		return err
 	}

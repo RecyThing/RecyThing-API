@@ -26,3 +26,28 @@ type MissionStage struct {
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
+
+type ApprovalMission struct{
+	ID string
+	MissionName string
+	MissionActor string
+	Status string
+	Date string
+	MissionCompletionProof []MissionCompletionProof
+}
+
+type MissionCompletionProof struct{
+	ID string
+	missionStageID string
+	TitleStage string
+	Description string
+	MissionImageProf []Proof
+	Date string
+}
+
+type Proof struct{
+	ID string
+	File string 
+}
+
+

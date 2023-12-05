@@ -20,7 +20,7 @@ func MissionCoreToMissionModel(data Mission) model.Mission {
 	return missionModel
 }
 func MissionModelToMissionCore(data model.Mission) Mission {
-	missionCore := Mission{ 
+	missionCore := Mission{
 		ID:           data.ID,
 		Title:        data.Title,
 		Status:       data.Status,
@@ -41,6 +41,7 @@ func MissionModelToMissionCore(data model.Mission) Mission {
 func MissionStagesCoreToMissionStagesModel(data MissionStage) model.MissionStage {
 	missionStagesModel := model.MissionStage{
 		MissionID:   data.MissionID,
+		ID:          data.ID,
 		Title:       data.Title,
 		Description: data.Description,
 	}

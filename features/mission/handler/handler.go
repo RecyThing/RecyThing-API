@@ -119,7 +119,7 @@ func (mh *missionHandler) UpdateMission(e echo.Context) error {
 	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil mengupdate missi"))
 }
 
-func (mh *missionHandler) UpdateMissionStages(e echo.Context) error {
+func (mh *missionHandler) UpdateMissionStage(e echo.Context) error {
 
 	_, role, err := jwt.ExtractToken(e)
 	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
@@ -130,13 +130,13 @@ func (mh *missionHandler) UpdateMissionStages(e echo.Context) error {
 	}
 
 	id := e.Param("id")
-	requestStage := request.MissionStage{}
-	err = helper.BindFormData(e, &requestStage)
+	requestStage := request.RequestMissionStage{}
+	err = e.Bind(&requestStage)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	input := request.MissionStagesRequestToMissionStagesCore(requestStage)
+	input := request.RequestMissionStageToMissionStageCore(id, requestStage)
 	err = mh.missionService.UpdateMissionStage(id, input)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
@@ -154,55 +154,7 @@ func (mh *missionHandler) UpdateMissionStages(e echo.Context) error {
 
 }
 
-func (mh *missionHandler) AddNewMissionStage(e echo.Context) error {
-	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-	}
-	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
-	}
 
-	requestData := request.AddMissionStage{}
-	err = e.Bind(&requestData)
-	if err != nil {
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-
-	}
-
-	data := request.AddMissionStageToMissionStageCore(requestData)
-	err = mh.missionService.AddNewMissionStage(requestData.MissionID, data)
-	if err != nil {
-		if strings.Contains(err.Error(), constanta.ERROR) {
-			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-		}
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
-
-	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil menambahkan tahapan misi"))
-
-}
-func (mh *missionHandler) DeleteMissionStage(e echo.Context) error {
-	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-	}
-	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
-	}
-	id := e.Param("id")
-	err = mh.missionService.DeleteMissionStage(id)
-	if err != nil {
-		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
-			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_NOT_FOUND))
-		}
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
-
-	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil menghapus tahapan misi"))
-}
-
-// membuat admin, hanya untuk super admin
 func (mh *missionHandler) ClaimMission(e echo.Context) error {
 	userID, role, err := jwt.ExtractToken(e)
 
@@ -239,9 +191,7 @@ func (mh *missionHandler) ClaimMission(e echo.Context) error {
 }
 
 func (mh *missionHandler) FindById(e echo.Context) error {
-
 	missionID := e.Param("id")
-
 	_, role, err := jwt.ExtractToken(e)
 	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))

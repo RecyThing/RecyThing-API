@@ -31,6 +31,20 @@ func AddMissionStageToMissionStageCore(addMissionStage AddMissionStage) []entity
     return missionStages
 }
 
+func RequestMissionStageToMissionStageCore(missionID string, data RequestMissionStage) []entity.MissionStage {
+	missionStagesCore := []entity.MissionStage{}
+	for _, stage := range data.MissionStage {
+		newStage := entity.MissionStage{
+			MissionID:   missionID,
+			ID:          stage.ID,
+			Title:       stage.Title,
+			Description: stage.Description,
+		}
+		missionStagesCore =append(missionStagesCore, newStage)
+	}
+	return missionStagesCore
+}
+
 
 func MissionStagesRequestToMissionStagesCore(missionStages MissionStage) entity.MissionStage {
 	missionStagesCore := entity.MissionStage{

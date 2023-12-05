@@ -157,34 +157,13 @@ func (mr *MissionRepository) UpdateMission(missionID string, data entity.Mission
 	return nil
 }
 
-func (mr *MissionRepository) UpdateMissionStage(missionStageID string, data entity.MissionStage) error {
-	oldMissionStage := model.MissionStage{}
-	tx := mr.db.Where("id = ?", missionStageID).Take(&oldMissionStage)
+func (mr *MissionRepository) UpdateMissionStage(missionID string, data []entity.MissionStage) error {
+	tx := mr.db.Where("id = ?", missionID).Take(&model.Mission{})
 	if tx.Error != nil {
 		return tx.Error
 	}
-	ok := helper.FieldsEqual(oldMissionStage, data, "Title", "Description")
-	if ok {
-		return errors.New(constanta.ERROR_INVALID_UPDATE)
-	}
 
-	missionStage := entity.MissionStagesCoreToMissionStagesModel(data)
-	tx = mr.db.Where("id = ?", missionStageID).Updates(&missionStage)
-	if tx.Error != nil {
-		return errors.New(constanta.ERROR_DATA_ID)
-	}
-
-	return nil
-}
-func (mr *MissionRepository) AddNewMissionStage(missionID string, data []entity.MissionStage) error {
-	mission := model.Mission{}
-
-	tx := mr.db.Where("id = ?", missionID).Take(&mission)
-	if tx.Error != nil {
-		return errors.New(constanta.ERROR_DATA_ID)
-	}
-
-	if len(data) > 3 {
+	if len(data) > constanta.MAX_STAGE {
 		return errors.New(constanta.ERROR_MISSION_LIMIT)
 	}
 
@@ -194,32 +173,100 @@ func (mr *MissionRepository) AddNewMissionStage(missionID string, data []entity.
 		return tx.Error
 	}
 
-	if countStage > 3 {
-		return errors.New(constanta.ERROR_MISSION_LIMIT)
-	}
-
-	if int(countStage)+len(data) > 3 {
-		return errors.New(constanta.ERROR_MISSION_LIMIT)
-	}
-
-	missionStages := entity.ListMissionStagesCoreToMissionStagesModel(data)
-	tx = mr.db.Save(&missionStages)
+	allStages := []model.MissionStage{}
+	tx = mr.db.Where("mission_id = ?", missionID).Find(&allStages)
 	if tx.Error != nil {
 		return tx.Error
 	}
+
+    dataIDs := make(map[string]bool)
+    for _, stage := range data {
+        dataIDs[stage.ID] = true
+    }
+
+    for _, stage := range allStages {
+        if _, exists := dataIDs[stage.ID]; !exists {
+            tx = mr.db.Unscoped().Delete(&stage)
+            if tx.Error != nil {
+                return tx.Error
+            }
+        }
+    }
+
+
+	for _, stage := range data {
+		if stage.ID == "" {
+			countStage++
+		}
+	}
+
+	if countStage > constanta.MAX_STAGE {
+		return errors.New(constanta.ERROR_MISSION_LIMIT)
+	}
+
+	missionStage := entity.ListMissionStagesCoreToMissionStagesModel(data)
+
+	for i, stage := range missionStage {
+		if stage.ID == "" {
+			tx = mr.db.Create(&stage)
+			if tx.Error != nil {
+				return tx.Error
+			}
+		}
+
+		if stage.ID != "" {
+			for j := i + 1; j < len(data); j++ {
+				if stage.ID == data[j].ID {
+					return errors.New(constanta.ERROR_INVALID_ID)
+				}
+			}
+
+			existStage := model.MissionStage{}
+			tx = mr.db.Where("id = ?", stage.ID).First(&existStage)
+			if tx.Error != nil {
+				return tx.Error
+			}
+
+			existStage.Title = stage.Title
+			existStage.Description = stage.Description
+
+			tx = mr.db.Save(&existStage)
+			if tx.Error != nil {
+				return tx.Error
+			}
+
+		}
+	}
+
 	return nil
 }
 
-func (mr *MissionRepository) DeleteMissionStage(stageID string) error {
-	mission := model.MissionStage{}
-	tx := mr.db.Where("id = ?", stageID).Take(&mission)
+func (mr *MissionRepository) FindById(missionID string) (entity.Mission, error) {
+	dataMission := model.Mission{}
+
+	tx := mr.db.Where("id = ?", missionID).First(&dataMission)
+	if tx.Error != nil {
+		return entity.Mission{}, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return entity.Mission{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	}
+
+	dataResponse := entity.MissionModelToMissionCore(dataMission)
+	return dataResponse, nil
+}
+
+func (mr *MissionRepository) DeleteMission(missionID string) error {
+	dataMission := model.Mission{}
+
+	tx := mr.db.Where("id = ? ", missionID).Delete(&dataMission)
 	if tx.Error != nil {
 		return tx.Error
 	}
 
-	tx = mr.db.Where("id = ?", stageID).Delete(&mission)
-	if tx.Error != nil {
-		return tx.Error
+	if tx.RowsAffected == 0 {
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil
@@ -271,38 +318,6 @@ func (mr *MissionRepository) FindClaimed(userID, missionID string) error {
 
 	if tx.RowsAffected != 0 {
 		return errors.New("error : mission sudah di klaim")
-	}
-
-	return nil
-}
-
-func (mr *MissionRepository) FindById(missionID string) (entity.Mission, error) {
-	dataMission := model.Mission{}
-
-
-	tx := mr.db.Where("id = ?", missionID).First(&dataMission)
-	if tx.Error != nil {
-		return entity.Mission{}, tx.Error
-	}
-
-	if tx.RowsAffected == 0 {
-		return entity.Mission{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
-	}
-
-	dataResponse := entity.MissionModelToMissionCore(dataMission)
-	return dataResponse, nil
-}
-
-func (mr *MissionRepository) DeleteMission(missionID string) error {
-	dataMission := model.Mission{}
-
-	tx := mr.db.Where("id = ? ", missionID).Delete(&dataMission)
-	if tx.Error != nil {
-		return tx.Error
-	}
-
-	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil

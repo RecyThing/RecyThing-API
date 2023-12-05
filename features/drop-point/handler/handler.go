@@ -75,6 +75,7 @@ func (dph *dropPointHandler) GetAllDropPoint(e echo.Context) error {
 		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
 	}
 
+	
 	response := response.ListCoreDropPointToDropPointResponse(dropPoints)
 
 	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan data", response, paginationInfo,count))
@@ -100,7 +101,7 @@ func (dph *dropPointHandler) GetDropPointById(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	var reportResponse = response.CoreDropPointToDropPointDetailResponse(result)
+	var reportResponse = response.CoreDropPointToDropPointResponse(result)
 
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, reportResponse))
 }

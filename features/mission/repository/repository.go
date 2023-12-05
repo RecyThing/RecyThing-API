@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"log"
 	"mime/multipart"
 	"recything/features/mission/entity"
 	"recything/features/mission/model"
@@ -198,20 +197,19 @@ func (mr *MissionRepository) UpdateMissionStage(missionID string, data []entity.
 		return tx.Error
 	}
 
-    dataIDs := make(map[string]bool)
-    for _, stage := range data {
-        dataIDs[stage.ID] = true
-    }
+	dataIDs := make(map[string]bool)
+	for _, stage := range data {
+		dataIDs[stage.ID] = true
+	}
 
-    for _, stage := range allStages {
-        if _, exists := dataIDs[stage.ID]; !exists {
-            tx = mr.db.Unscoped().Delete(&stage)
-            if tx.Error != nil {
-                return tx.Error
-            }
-        }
-    }
-
+	for _, stage := range allStages {
+		if _, exists := dataIDs[stage.ID]; !exists {
+			tx = mr.db.Unscoped().Delete(&stage)
+			if tx.Error != nil {
+				return tx.Error
+			}
+		}
+	}
 
 	for _, stage := range data {
 		if stage.ID == "" {
@@ -259,8 +257,6 @@ func (mr *MissionRepository) UpdateMissionStage(missionID string, data []entity.
 
 	return nil
 }
-
-
 
 func (mr *MissionRepository) DeleteMission(missionID string) error {
 	dataMission := model.Mission{}
@@ -320,7 +316,7 @@ func (mr *MissionRepository) FindClaimed(userID, missionID string) error {
 }
 
 // Upload Mission User
-func (mr *MissionRepository) CreateUploadMission(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) error {
+func (mr *MissionRepository) CreateUploadMissionTask(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) error {
 	request := entity.UploadMissionTaskCoreToUploadMissionTaskModel(data)
 	request.UserID = userID
 	tx := mr.db.Create(&request)
@@ -350,24 +346,39 @@ func (mr *MissionRepository) CreateUploadMission(userID string, data entity.Uplo
 	return nil
 }
 
-func (mr *MissionRepository) FindUploadMission(userID, missionID, status string) error {
+func (mr *MissionRepository) FindUploadMissionStatus(id, missionID, userID, status string) error {
 	dataUpload := model.UploadMissionTask{}
-	log.Println("user", userID, "dada", missionID)
-	tx := mr.db.Where("user_id = ? AND mission_id = ? AND status = ?", userID, missionID, status).First(&dataUpload)
-	if tx.Error != nil {
-		return tx.Error
+
+	if id == "" {
+		tx := mr.db.Where("user_id = ? AND mission_id = ?", userID, missionID).First(&dataUpload)
+		if tx.Error != nil {
+			return tx.Error
+		}
+
+		if tx.RowsAffected == 0 {
+			return tx.Error
+		}
 	}
 
-	if tx.RowsAffected == 0 {
-		return tx.Error
+	if missionID == "" {
+		tx := mr.db.Where("id = ? AND user_id = ? AND status = ?", id, userID, status).First(&dataUpload)
+		if tx.Error != nil {
+			return tx.Error
+		}
+
+		if tx.RowsAffected == 0 {
+			return tx.Error
+		}
+
 	}
 
 	return nil
 }
 
-func (mr *MissionRepository) UpdateUploadMission(userID, id string, images []*multipart.FileHeader, data entity.UploadMissionTaskCore) error {
+func (mr *MissionRepository) UpdateUploadMissionTask(id string, images []*multipart.FileHeader, data entity.UploadMissionTaskCore) error {
 	dataUploadMission := model.UploadMissionTask{}
 	request := entity.UploadMissionTaskCoreToUploadMissionTaskModel(data)
+
 	tx := mr.db.Where("id = ?", id).First(&dataUploadMission)
 	if tx.Error != nil {
 		return tx.Error
@@ -376,38 +387,33 @@ func (mr *MissionRepository) UpdateUploadMission(userID, id string, images []*mu
 	if tx.RowsAffected == 0 {
 		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
-
+	request.Status = constanta.PERLU_TINJAUAN
 	errUpdate := mr.db.Model(&dataUploadMission).Updates(request)
 	if errUpdate.Error != nil {
 		return errUpdate.Error
 	}
 
+	ImageList := []model.ImageUploadMission{}
+
+	tx = mr.db.Where("upload_mission_task_id = ? ", id).Find(&ImageList)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	tx = mr.db.Unscoped().Delete(&ImageList)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
 	for _, image := range images {
-		ImageList := []model.ImageUploadMission{}
-
-		tx := mr.db.Where("upload_mission_task_id = ? ", id).Find(&ImageList)
-		if tx.Error != nil {
-			return tx.Error
-		}
-
-		tx = mr.db.Unscoped().Delete(&ImageList)
-		if tx.Error != nil {
-			return tx.Error
-		}
-
+		Imagedata := entity.ImageUploadMissionCore{}
 		imageURL, uploadErr := storage.UploadProof(image)
 		if uploadErr != nil {
 			return uploadErr
 		}
 
-
-
-		Imagedata := entity.ImageUploadMissionCore{}
 		Imagedata.UploadMissionTaskID = id
 		Imagedata.Image = imageURL
-
-		log.Println("foto baru nich : ", imageURL)
-		
 		ImageSave := entity.ImageUploadMissionCoreToImageUploadMissionModel(Imagedata)
 
 		if err := mr.db.Create(&ImageSave).Error; err != nil {
@@ -415,6 +421,21 @@ func (mr *MissionRepository) UpdateUploadMission(userID, id string, images []*mu
 		}
 
 		data.Images = append(data.Images, Imagedata)
+	}
+
+	return nil
+}
+
+func (mr *MissionRepository) FindUploadById(id string) error{
+	dataUploadMission := model.UploadMissionTask{}
+
+	tx := mr.db.Where("id = ? ", id).First(&dataUploadMission)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return  errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
 
 	return nil

@@ -108,16 +108,15 @@ func UploadMissionTaskCoreToUploadMissionTaskModel(data UploadMissionTaskCore) m
 		UserID:      data.UserID,
 		MissionID:   data.MissionID,
 		Description: data.Description,
-		Images:   ListImageUploadMissionCoreToImageUploadMissionModel(data.Images),
-		// Stage_two:   ListImageUploadMissionCoreToImageUploadMissionModel(data.Stage_two),
-		// Stage_three: ListImageUploadMissionCoreToImageUploadMissionModel(data.Stage_three),
+		Images:      ListImageUploadMissionCoreToImageUploadMissionModel(data.Images),
+		Status:      data.Status,
 	}
 }
 
 func ImageUploadMissionCoreToImageUploadMissionModel(data ImageUploadMissionCore) model.ImageUploadMission {
 	return model.ImageUploadMission{
 		UploadMissionTaskID: data.UploadMissionTaskID,
-		Image: data.Image,
+		Image:               data.Image,
 	}
 }
 

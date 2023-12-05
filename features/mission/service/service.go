@@ -16,6 +16,8 @@ type missionService struct {
 	AdminRepo   admin.AdminRepositoryInterface
 }
 
+
+
 func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo admin.AdminRepositoryInterface) entity.MissionServiceInterface {
 	return &missionService{
 		MissionRepo: missionRepo,
@@ -176,16 +178,16 @@ func (ms *missionService) DeleteMission(missionID string) error {
 }
 
 // Upload Mission User
+func (ms *missionService) CreateUploadMissionTask(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) error {
 
-func (ms *missionService) CreateUploadMission(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) error {
-	err := ms.MissionRepo.FindUploadMission(userID, data.MissionID, constanta.PERLU_TINJAUAN)
+	err := ms.MissionRepo.FindUploadMissionStatus("", data.MissionID, userID, "")
 	if err == nil {
-		return errors.New("error : sudah mengupload data, tunggu proses verifikasi")
+		return errors.New("error : sudah mengupload data")
 	}
 
-	_, errn := ms.MissionRepo.FindById(data.MissionID)
-	if errn != nil {
-		return errn
+	_, err = ms.MissionRepo.FindById(data.MissionID)
+	if err != nil {
+		return err
 	}
 
 	err = ms.MissionRepo.FindClaimed(userID, data.MissionID)
@@ -193,7 +195,7 @@ func (ms *missionService) CreateUploadMission(userID string, data entity.UploadM
 		return errors.New("error : belum melakukan klaim mission")
 	}
 
-	err = ms.MissionRepo.CreateUploadMission(userID, data, images)
+	err = ms.MissionRepo.CreateUploadMissionTask(userID, data, images)
 	if err != nil {
 		return err
 	}
@@ -201,13 +203,18 @@ func (ms *missionService) CreateUploadMission(userID string, data entity.UploadM
 	return nil
 }
 
-func (ms *missionService) UpdateUploadMission(userID, id ,missionID string, images []*multipart.FileHeader, data entity.UploadMissionTaskCore) error {
-	err := ms.MissionRepo.FindUploadMission(userID, missionID, constanta.DITOLAK)
+func (ms *missionService) UpdateUploadMissionTask(userID, id string, images []*multipart.FileHeader, data entity.UploadMissionTaskCore) error {
+	err := ms.MissionRepo.FindUploadById(id)
+	if err != nil {
+		return err
+	}
+
+	err = ms.MissionRepo.FindUploadMissionStatus(id, "", userID, constanta.DITOLAK)
 	if err != nil {
 		return errors.New("error : tidak ada data mission yang ditolak")
 	}
 
-	errUpdate := ms.MissionRepo.UpdateUploadMission(userID, id, images, data)
+	errUpdate := ms.MissionRepo.UpdateUploadMissionTask(id, images, data)
 	if errUpdate != nil {
 		return errUpdate
 	}

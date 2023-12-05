@@ -51,8 +51,7 @@ type UploadMissionTaskCore struct {
 	MissionID   string
 	Description string
 	Images      []ImageUploadMissionCore
-	// Stage_two   []ImageUploadMissionCore
-	// Stage_three []ImageUploadMissionCore
+	Status      string 
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

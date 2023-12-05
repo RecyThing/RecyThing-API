@@ -260,19 +260,18 @@ func (mh *missionHandler) CreateUploadMission(e echo.Context) error {
 
 	request := request.UploadMissionTaskRequestToUploadMissionTaskCore(input)
 
-	err = mh.missionService.CreateUploadMission(userID, request, images)
+	err = mh.missionService.CreateUploadMissionTask(userID, request, images)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
 		}
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
-	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan mission"))
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil mengupload bukti"))
 }
 
 func (mh *missionHandler) UpdateUploadMission(e echo.Context) error {
 	UploadMissionID := e.Param("id")
-	MissionID := e.Param("idMission")
 	input := request.UpdateUploadMissionTask{}
 
 	userID, role, err := jwt.ExtractToken(e)
@@ -296,12 +295,12 @@ func (mh *missionHandler) UpdateUploadMission(e echo.Context) error {
 
 	request := request.UpdateUploadMissionTaskRequestToUpdateUploadMissionTaskCore(input)
 
-	err = mh.missionService.UpdateUploadMission(userID, UploadMissionID,MissionID, images,request)
+	err = mh.missionService.UpdateUploadMissionTask(userID, UploadMissionID, images,request)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
 		}
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
-	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan mission"))
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil memperbarui bukti"))
 }

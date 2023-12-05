@@ -44,3 +44,50 @@ func ListModelCommunityToCoreCommunity(data []model.Community) []CommunityCore {
 	}
 	return list
 }
+
+func EventCoreToEventModel(event CommunityEventCore) model.CommunityEvent {
+	eventModel := model.CommunityEvent{
+		Id:          event.Id,
+		CommunityId: event.CommunityId,
+		Title:       event.Title,
+		Image:       event.Image,
+		Description: event.Description,
+		Location:    event.Location,
+		MapLink:     event.MapLink,
+		FormLink:    event.FormLink,
+		Quota:       event.Quota,
+		Date:        event.Date,
+		Status:      event.Status,
+		CreatedAt:   event.CreatedAt,
+		UpdatedAt:   event.UpdatedAt,
+	}
+	return eventModel
+}
+
+func EventModelToEventCore(event model.CommunityEvent) CommunityEventCore {
+	eventCore := CommunityEventCore{
+		Id:          event.Id,
+		CommunityId: event.CommunityId,
+		Title:       event.Title,
+		Image:       event.Image,
+		Description: event.Description,
+		Location:    event.Location,
+		MapLink:     event.MapLink,
+		FormLink:    event.FormLink,
+		Quota:       event.Quota,
+		Date:        event.Date,
+		Status:      event.Status,
+		CreatedAt:   event.CreatedAt,
+		UpdatedAt:   event.UpdatedAt,
+	}
+	return eventCore
+}
+
+func ListEventModelToEventCore(event []model.CommunityEvent) []CommunityEventCore {
+	coreEvent := []CommunityEventCore{}
+	for _, v := range event {
+		event := EventModelToEventCore(v)
+		coreEvent = append(coreEvent, event)
+	}
+	return coreEvent
+}

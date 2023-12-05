@@ -8,6 +8,7 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
+	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -167,4 +168,147 @@ func (ch *communityHandler) UpdateCommunityById(e echo.Context) error {
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil update data"))
+}
+
+// Event
+
+func (ch *communityHandler) CreateEvent(e echo.Context) error{
+	Id, role, _ := jwt.ExtractToken(e)
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan id"))
+	}
+	if role == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan role"))
+	}
+
+	if role != "admin" && role != "super_admin" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("akses ditolak"))
+	}
+
+	idParams := e.Param("idkomunitas")
+
+	newEvent := request.EventRequest{}
+	err := e.Bind(&newEvent)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	image, err := e.FormFile("image")
+	if err != nil {
+		if err == http.ErrMissingFile {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse("tidak ada file yang di upload"))
+		}
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal upload file"))
+	}
+
+	eventInput := request.EventRequestToEventCore(newEvent)
+	errCreate := ch.communityService.CreateEvent(idParams,eventInput,image)
+	if errCreate != nil {
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errCreate.Error()))
+	}
+
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil menambahkan event"))
+}
+
+func (ch *communityHandler) DeleteEvent(e echo.Context) error{
+	Id, role, _ := jwt.ExtractToken(e)
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan id"))
+	}
+	if role == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan role"))
+	}
+
+	if role != "admin" && role != "super_admin" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("akses ditolak"))
+	}
+
+	idKom := e.Param("idkomunitas")
+	idEve := e.Param("idevent")
+
+	errDelete := ch.communityService.DeleteEvent(idKom,idEve)
+	if errDelete != nil {
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errDelete.Error()))
+	}
+
+	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil menghapus event"))
+}
+
+func (ch *communityHandler) ReadAllEvent(e echo.Context) error{
+	search := e.QueryParam("search")
+	page, _ := strconv.Atoi(e.QueryParam("page"))
+	limit, _ := strconv.Atoi(e.QueryParam("limit"))
+	idKom := e.Param("idkomunitas")
+
+	Id, _, err := jwt.ExtractToken(e)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
+	}
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
+	}
+
+	eventData, paginationInfo, count, err := ch.communityService.ReadAllEvent(page, limit, search, idKom)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan artikel"))
+	}
+
+	var eventResponse = response.ListEventCoreToListEventRessponse(eventData)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan semua event", eventResponse, paginationInfo, count))
+}
+
+func (ch *communityHandler) ReadEvent(e echo.Context) error{
+	idKom := e.Param("idkomunitas")
+	idEve := e.Param("idevent")
+
+	Id, _, err := jwt.ExtractToken(e)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
+	}
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
+	}
+
+	eventData, errRead := ch.communityService.ReadEvent(idKom, idEve)
+	if errRead != nil{
+		return e.JSON(http.StatusNotFound, helper.ErrorResponse("gagal membaca data"))
+	}
+
+	var eventResponse = response.EventCoreToEventResponse(eventData)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan event", eventResponse))
+}
+
+func (ch *communityHandler) UpdateEvent(e echo.Context) error{
+	Id, role, _ := jwt.ExtractToken(e)
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan id"))
+	}
+	if role == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan role"))
+	}
+
+	if role != "admin" && role != "super_admin" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("akses ditolak"))
+	}
+
+	idKom := e.Param("idkomunitas")
+	idEve := e.Param("idevent")
+
+	updateData := request.EventRequest{}
+	errBind := e.Bind(&updateData)
+	if errBind != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
+	}
+
+	image,_ := e.FormFile("image")
+
+	eventInput := request.EventRequestToEventCore(updateData)
+	errUpdate := ch.communityService.UpdateEvent(idKom, idEve, eventInput, image)
+	if errUpdate != nil{
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errUpdate.Error()))
+	}
+
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil update artikel"))
 }

@@ -20,7 +20,7 @@ func UsersCoreToLoginResponse(data entity.UsersCore, token string) UserLoginResp
 }
 
 func UsersCoreToResponseProfile(data entity.UsersCore) UserResponseProfile {
-	return UserResponseProfile{
+	userResp := UserResponseProfile{
 		Id:          data.Id,
 		Fullname:    data.Fullname,
 		Email:       data.Email,
@@ -29,7 +29,11 @@ func UsersCoreToResponseProfile(data entity.UsersCore) UserResponseProfile {
 		Address:     data.Address,
 		Purpose:     data.Purpose,
 		Point:       data.Point,
+		Community_id: data.Community_id,
 	}
+	community := ListCommunityCoreToCommunityResponse(data.Communities)
+	userResp.Communities = community
+	return userResp
 }
 
 func UsersCoreToResponseManageUsers(data entity.UsersCore) UserResponseManageUsers {
@@ -60,4 +64,20 @@ func UsersCoreToResponseDetailManageUsers(data entity.UsersCore) UserResponseDet
 		Purpose:     data.Purpose,
 		CreatedAt:   data.CreatedAt,
 	}
+}
+
+func CommunityCoreToCommunityResponse(community entity.UserCommunityCore) UserCommunityResponse {
+	return UserCommunityResponse{
+		Id: community.Id,
+		Name: community.Name,
+	}
+}
+
+func ListCommunityCoreToCommunityResponse(communities []entity.UserCommunityCore) []UserCommunityResponse {
+	ResponseCommunity := []UserCommunityResponse{}
+	for _, v := range communities {
+		community := CommunityCoreToCommunityResponse(v)
+		ResponseCommunity = append(ResponseCommunity, community)
+	}
+	return ResponseCommunity
 }

@@ -11,3 +11,10 @@ func (community *Community) BeforeCreate(tx *gorm.DB) (err error) {
 
 	return nil
 }
+
+func (communityevent *CommunityEvent) BeforeCreate(tx *gorm.DB) (err error) {
+	newUuid := uuid.New()
+	communityevent.Id = newUuid.String()
+
+	return nil
+}

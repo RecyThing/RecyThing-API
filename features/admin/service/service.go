@@ -164,9 +164,9 @@ func (as *AdminService) GetByIdUsers(userId string) (user.UsersCore, error) {
 
 	data, err := as.AdminRepository.GetByIdUser(userId)
 
-	if data == (user.UsersCore{}) {
-		return user.UsersCore{}, errors.New("null")
-	}
+	// if data == (user.UsersCore{}) {
+	// 	return user.UsersCore{}, errors.New("null")
+	// }
 
 	if err != nil {
 		return user.UsersCore{}, err

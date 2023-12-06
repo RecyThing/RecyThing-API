@@ -44,3 +44,42 @@ func ListModelVoucherToCoreVoucher(data []model.Voucher) []VoucherCore {
 	}
 	return list
 }
+
+func CoreExchangeVoucherToModelExchangeVoucher(data ExchangeVoucherCore) model.ExchangeVoucher {
+	return model.ExchangeVoucher{
+		IdUser:    data.IdUser,
+		IdVoucher: data.IdVoucher,
+		Phone:     data.Phone,
+		Status:    data.Status,
+	}
+}
+
+func ListCoreExchangeVoucherToModelExchangeVoucher(data []ExchangeVoucherCore) []model.ExchangeVoucher {
+	list := []model.ExchangeVoucher{}
+	for _, v := range data {
+		result := CoreExchangeVoucherToModelExchangeVoucher(v)
+		list = append(list, result)
+	}
+	return list
+}
+
+func ModelExchangeVoucherToCoreExchangeVoucher(data model.ExchangeVoucher) ExchangeVoucherCore {
+	return ExchangeVoucherCore{
+		Id:        data.Id,
+		IdUser:    data.IdUser,
+		IdVoucher: data.IdVoucher,
+		Phone:     data.Phone,
+		Status:    data.Status,
+		CreatedAt: data.CreatedAt,
+		UpdatedAt: data.UpdatedAt,
+	}
+}
+
+func ListModelExchangeVoucherToCoreExchangeVoucher(data []model.ExchangeVoucher) []ExchangeVoucherCore {
+	list := []ExchangeVoucherCore{}
+	for _, v := range data {
+		result := ModelExchangeVoucherToCoreExchangeVoucher(v)
+		list = append(list, result)
+	}
+	return list
+}

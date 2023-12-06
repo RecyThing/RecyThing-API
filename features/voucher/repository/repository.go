@@ -41,6 +41,19 @@ func (vr *voucherRepository) Create(image *multipart.FileHeader, data entity.Vou
 	return nil
 }
 
+// CreateExchangeVoucher implements entity.VoucherRepositoryInterface.
+func (vr *voucherRepository) CreateExchangeVoucher(idUser string, data entity.ExchangeVoucherCore) error {
+	input := entity.CoreExchangeVoucherToModelExchangeVoucher(data)
+
+	input.IdUser = idUser
+	tx := vr.db.Create(&input)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	return nil
+}
+
 func (vr *voucherRepository) GetAll(page, limit int, search string) ([]entity.VoucherCore, pagination.PageInfo, int, error) {
 	dataVouchers := []model.Voucher{}
 	offsetInt := (page - 1) * limit
@@ -114,7 +127,7 @@ func (vr *voucherRepository) Update(idVoucher string, image *multipart.FileHeade
 	if tx.Error != nil {
 		return tx.Error
 	}
-	
+
 	if image != nil {
 		imageURL, errUpload := storage.UploadThumbnail(image)
 		if errUpload != nil {
@@ -149,4 +162,53 @@ func (vr *voucherRepository) Delete(idVoucher string) error {
 	}
 
 	return nil
+}
+
+// Exchange Point
+
+func (vr *voucherRepository) GetAllExchange() ([]entity.ExchangeVoucherCore, error) {
+	dataExchange := []model.ExchangeVoucher{}
+
+	tx := vr.db.Find(&dataExchange)
+	if tx.Error != nil {
+		return []entity.ExchangeVoucherCore{}, tx.Error
+	}
+
+	dataResponse := []entity.ExchangeVoucherCore{}
+
+	for _, exchange := range dataExchange {
+		vr.db.Model(&exchange).Association("Users").Find(&exchange.Users)
+		vr.db.Model(&exchange).Association("Vouchers").Find(&exchange.Vouchers)
+
+		exchange.IdUser = exchange.Users.Fullname
+		exchange.IdVoucher = exchange.Vouchers.RewardName
+		data := entity.ModelExchangeVoucherToCoreExchangeVoucher(exchange)
+
+		dataResponse = append(dataResponse, data)
+	}
+
+	return dataResponse, nil
+}
+
+func (vr *voucherRepository) GetByIdExchange(idExchange string) (entity.ExchangeVoucherCore, error) {
+	dataExchange := model.ExchangeVoucher{}
+
+	tx := vr.db.Where("id = ?", idExchange).First(&dataExchange)
+	if tx.Error != nil {
+		return entity.ExchangeVoucherCore{}, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return entity.ExchangeVoucherCore{}, tx.Error
+	}
+
+	vr.db.Model(&dataExchange).Association("Users").Find(&dataExchange.Users)
+	vr.db.Model(&dataExchange).Association("Vouchers").Find(&dataExchange.Vouchers)
+
+	dataExchange.IdUser = dataExchange.Users.Fullname
+	dataExchange.IdVoucher = dataExchange.Vouchers.RewardName
+
+	dataResponse := entity.ModelExchangeVoucherToCoreExchangeVoucher(dataExchange)
+
+	return dataResponse, nil
 }

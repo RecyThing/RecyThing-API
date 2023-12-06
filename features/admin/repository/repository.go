@@ -253,8 +253,9 @@ func (ar *AdminRepository) GetAllReport(status, search string, page, limit int) 
 	}
 
 	var totalCount int64
-	if err := query.Count(&totalCount).Error; err != nil {
-		return nil, pagination.PageInfo{}, pagination.CountDataInfo{},err
+	err := ar.db.Model(&reportModel.Report{}).Count(&totalCount).Error
+	if err != nil {
+		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
 
 	countPerluDitinjau, err := ar.GetCountByStatus("perlu ditinjau")
@@ -274,7 +275,8 @@ func (ar *AdminRepository) GetAllReport(status, search string, page, limit int) 
 
 	query = query.Offset(offset).Limit(limit)
 
-	if err := query.Find(&dataReports).Error; err != nil {
+	err = query.Find(&dataReports).Error
+	if err != nil {
 		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
 

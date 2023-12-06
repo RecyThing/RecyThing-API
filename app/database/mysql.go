@@ -7,8 +7,8 @@ import (
 	achievement "recything/features/achievement/model"
 	admin "recything/features/admin/model"
 	article "recything/features/article/model"
-	dropPoint "recything/features/drop-point/model"
 	daily "recything/features/daily_point/model"
+	dropPoint "recything/features/drop-point/model"
 	faq "recything/features/faq/model"
 	mission "recything/features/mission/model"
 	recybot "recything/features/recybot/model"
@@ -17,8 +17,6 @@ import (
 	trashExchange "recything/features/trash_exchange/model"
 	user "recything/features/user/model"
 	voucher "recything/features/voucher/model"
-	trashExchange "recything/features/trash_exchange/model"
-	dropPoint "recything/features/drop-point/model"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

@@ -1587,7 +1587,7 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
-                               "$ref": "#/components/schemas/RequestMissionUser"
+                                "$ref": "#/components/schemas/RequestMissionUser"
                             }
                         }
                     }
@@ -1596,12 +1596,12 @@
                     "200": {
                         "description": "OK",
                         "content": {
-                            "application/json":{
-                                "examples":{
-                                    "success":{
-                                        "value":{
-                                            "status":true,
-                                            "message":"berhasil mengupload bukti"
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mengupload bukti"
                                         }
                                     }
                                 }
@@ -1632,7 +1632,7 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
-                               "$ref": "#/components/schemas/RequestMissionUser"
+                                "$ref": "#/components/schemas/RequestMissionUser"
                             }
                         }
                     }
@@ -1657,20 +1657,27 @@
             }
         },
         "/users/point/daily": {
-            "post": {"tags": [
-                    "Users Point & Voucher"],
-                    "summary": "claim daily point",
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Users Point & Voucher"
+                ],
+                "summary": "claim daily point",
                 "description": "claim your daily point",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "content": {
-                            "application/json":{
+                            "application/json": {
                                 "examples": {
-                                    "succes":{
-                                        "value":{
-                                            "status":true,
-                                            "message":"berhasil melakukan daily claim"
+                                    "succes": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil melakukan daily claim"
                                         }
                                     }
                                 }

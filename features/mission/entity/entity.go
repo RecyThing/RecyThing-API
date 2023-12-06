@@ -36,9 +36,31 @@ type Stage struct {
 }
 
 type ClaimedMission struct {
-	ID         string         
-	UserID     string       
-	MissionID  string       
-	Claimed    bool           
-	CreatedAt  time.Time
+	ID        string
+	UserID    string
+	MissionID string
+	Claimed   bool
+	CreatedAt time.Time
+}
+
+// User Upload
+
+type UploadMissionTaskCore struct {
+	ID          string
+	UserID      string
+	User        string
+	MissionID   string
+	Description string
+	Reason      string
+	Images      []ImageUploadMissionCore
+	Status      string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+type ImageUploadMissionCore struct {
+	ID                  string
+	UploadMissionTaskID string
+	Image               string
+	CreatedAt           time.Time
 }

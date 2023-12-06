@@ -4,6 +4,8 @@ import (
 	"errors"
 	"mime/multipart"
 	admin "recything/features/admin/entity"
+	user "recything/features/user/entity"
+
 	"recything/features/mission/entity"
 	"recything/utils/constanta"
 	"recything/utils/pagination"
@@ -14,16 +16,29 @@ import (
 type missionService struct {
 	MissionRepo entity.MissionRepositoryInterface
 	AdminRepo   admin.AdminRepositoryInterface
+	UserRepo    user.UsersRepositoryInterface
 }
 
-func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo admin.AdminRepositoryInterface) entity.MissionServiceInterface {
+
+
+func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo admin.AdminRepositoryInterface, userRepo    user.UsersRepositoryInterface) entity.MissionServiceInterface {
 	return &missionService{
 		MissionRepo: missionRepo,
 		AdminRepo:   adminRepo,
+		UserRepo:    userRepo,
 	}
 }
 
 func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
+
+	// if len(data.MissionStages) < constanta.MIN_STAGE {
+	// 	return errors.New("tahapan misi tidak boleh kosong")
+
+	// }
+	if len(data.MissionStages) > constanta.MAX_STAGE {
+		return errors.New(constanta.ERROR_MISSION_LIMIT)
+	}
+
 	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point)
 	if errEmpty != nil {
 		return errEmpty
@@ -45,6 +60,7 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 	if errUpload != nil {
 		return err
 	}
+
 	data.MissionImage = imageURL
 	err = ms.MissionRepo.CreateMission(data)
 	if err != nil {
@@ -52,16 +68,15 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 	}
 
 	return nil
-
 }
 
-func (ms *missionService) FindAllMission(page, limit, search, status string) ([]entity.Mission, pagination.PageInfo, int, error) {
+func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]entity.Mission, pagination.PageInfo, int, error) {
 	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
 
-	data, pagnationInfo, count, err := ms.MissionRepo.FindAllMission(pageInt, limitInt, search, status)
+	data, pagnationInfo, count, err := ms.MissionRepo.FindAllMission(pageInt, limitInt, search, filter)
 	if err != nil {
 		return nil, pagination.PageInfo{}, 0, err
 	}
@@ -84,6 +99,10 @@ func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID s
 	if err != nil {
 		return err
 	}
+	err = validation.CheckDataEmpty(data.Title, data.Description, data.Point, data.EndDate, data.StartDate)
+	if err != nil {
+		return err
+	}
 
 	imageURL, err := ms.MissionRepo.GetImageURL(missionID)
 	if err != nil {
@@ -96,9 +115,7 @@ func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID s
 			return err
 		}
 		data.MissionImage = newImageURL
-	}
-
-	if image == nil {
+	} else {
 		data.MissionImage = imageURL
 	}
 
@@ -110,13 +127,15 @@ func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID s
 	return nil
 }
 
-func (ms *missionService) UpdateMissionStage(missionStageID string, data entity.MissionStage) error {
-	errEmpty := validation.CheckDataEmpty(data.Title, data.Description)
-	if errEmpty != nil {
-		return errEmpty
+func (ms *missionService) UpdateMissionStage(missionID string, data []entity.MissionStage) error {
+	for _, stage := range data {
+		err := validation.CheckDataEmpty(stage.Description, stage.Title)
+		if err != nil {
+			return err
+		}
 	}
 
-	err := ms.MissionRepo.UpdateMissionStage(missionStageID, data)
+	err := ms.MissionRepo.UpdateMissionStage(missionID, data)
 	if err != nil {
 		return err
 	}
@@ -128,10 +147,96 @@ func (ms *missionService) ClaimMission(userID string, data entity.ClaimedMission
 	if data.MissionID == "" {
 		return errors.New(constanta.ERROR_EMPTY)
 	}
-	err := ms.MissionRepo.ClaimMission(userID, data)
+
+	_, err := ms.MissionRepo.FindById(data.MissionID)
+	if err != nil {
+		return err
+	}
+
+	err = ms.MissionRepo.ClaimMission(userID, data)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (ms *missionService) FindById(missionID string) (entity.Mission, error) {
+
+	dataMission, err := ms.MissionRepo.FindById(missionID)
+	if err != nil {
+		return entity.Mission{}, err
+	}
+
+	return dataMission, nil
+}
+
+func (ms *missionService) DeleteMission(missionID string) error {
+
+	err := ms.MissionRepo.DeleteMission(missionID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Upload Mission User
+func (ms *missionService) CreateUploadMissionTask(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) error {
+
+	err := ms.MissionRepo.FindUploadMissionStatus("", data.MissionID, userID, "")
+	if err == nil {
+		return errors.New("error : sudah mengupload data")
+	}
+
+	_, err = ms.MissionRepo.FindById(data.MissionID)
+	if err != nil {
+		return err
+	}
+
+	err = ms.MissionRepo.FindClaimed(userID, data.MissionID)
+	if err != nil {
+		return errors.New("error : belum melakukan klaim mission")
+	}
+
+	err = ms.MissionRepo.CreateUploadMissionTask(userID, data, images)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (ms *missionService) UpdateUploadMissionTask(userID, id string, images []*multipart.FileHeader, data entity.UploadMissionTaskCore) error {
+	err := ms.MissionRepo.FindUploadById(id)
+	if err != nil {
+		return err
+	}
+
+	err = ms.MissionRepo.FindUploadMissionStatus(id, "", userID, constanta.DITOLAK)
+	if err != nil {
+		return errors.New("error : tidak ada data mission yang ditolak")
+	}
+
+	errUpdate := ms.MissionRepo.UpdateUploadMissionTask(id, images, data)
+	if errUpdate != nil {
+		return errUpdate
+	}
+
+	return nil
+}
+
+// Mission Approval
+func (ms *missionService) FindAllMissionApproval() ([]entity.UploadMissionTaskCore, error) {
+	data, err := ms.MissionRepo.FindAllMissionApproval()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, missionTask := range data {
+		userData, _ := ms.UserRepo.GetById(missionTask.UserID)
+		missionTask.User = userData.Fullname
+	}
+
+	return data, nil
 }

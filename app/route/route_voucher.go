@@ -25,4 +25,10 @@ func RouteVoucher(e *echo.Group, db *gorm.DB) {
 	user := e.Group("/vouchers", jwt.JWTMiddleware())
 	user.GET("", voucherHandler.GetAllVoucher)
 	user.GET("/:id", voucherHandler.GetVoucherById)
+	user.POST("", voucherHandler.CreateExchangeVoucher)
+
+	adminExchange := e.Group("/admins/manage/exchange-point", jwt.JWTMiddleware())
+	adminExchange.GET("", voucherHandler.GetAllExchange)
+	adminExchange.GET("/:id", voucherHandler.GetByIdExchange)
+
 }

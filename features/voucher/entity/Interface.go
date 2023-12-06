@@ -13,6 +13,8 @@ type VoucherRepositoryInterface interface {
 	Update(idVoucher string, image *multipart.FileHeader,data VoucherCore) error
 	Delete(idVoucher string) error
 	CreateExchangeVoucher(idUser string, data ExchangeVoucherCore) error
+	GetAllExchange() ([]ExchangeVoucherCore, error) 
+	GetByIdExchange(idExchange string) (ExchangeVoucherCore, error)
 }
 
 type VoucherServiceInterface interface {
@@ -22,4 +24,6 @@ type VoucherServiceInterface interface {
 	UpdateData(idVoucher string, image *multipart.FileHeader,data VoucherCore) error
 	DeleteData(idVoucher string) error
 	CreateExchangeVoucher(idUser string, data ExchangeVoucherCore) error
+	GetAllExchange() ([]ExchangeVoucherCore, error) 
+	GetByIdExchange(idExchange string) (ExchangeVoucherCore, error)
 }

@@ -192,3 +192,64 @@ func (vh *voucherHandler) CreateExchangeVoucher(e echo.Context) error {
 
 	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil menukarkan voucher"))
 }
+
+func (vh *voucherHandler) GetAllExchange(e echo.Context) error {
+	idUser, role, errExtract := jwt.ExtractToken(e)
+
+	if errExtract != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+	if idUser == "" {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+
+	}
+
+	result, errGet := vh.VoucherService.GetAllExchange()
+	if errGet != nil {
+		if helper.HttpResponseCondition(errGet, constanta.ERROR_MESSAGE...) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errGet.Error()))
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errGet.Error()))
+	}
+
+	if len(result) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
+	}
+
+	response := response.ListCoreExchangeVoucherToExchangeVoucheResponse(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, response))
+}
+
+
+
+func (vh *voucherHandler) GetByIdExchange(e echo.Context) error {
+	idUser, role, errExtract := jwt.ExtractToken(e)
+	if errExtract != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+	if idUser == "" {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+
+	}
+
+	id := e.Param("id")
+	result, err := vh.VoucherService.GetByIdExchange(id)
+	if err != nil {
+		if helper.HttpResponseCondition(err, constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	response := response.CoreExchangeVoucherToExchangeVoucheResponse(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, response))
+}

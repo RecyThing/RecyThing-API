@@ -125,3 +125,24 @@ func (vs *voucherService) CreateExchangeVoucher(idUser string, data entity.Excha
 	}
 	return nil
 }
+
+
+func (vs *voucherService) GetAllExchange() ([]entity.ExchangeVoucherCore, error) {
+
+	dataExchange,errGet := vs.voucherRepository.GetAllExchange()
+	if errGet != nil {
+		return []entity.ExchangeVoucherCore{},errGet
+	}
+
+	return dataExchange,nil
+}
+
+func (vs *voucherService) GetByIdExchange(idExchange string) (entity.ExchangeVoucherCore, error){
+
+	dataExchange ,errGet := vs.voucherRepository.GetByIdExchange(idExchange)
+	if errGet != nil {
+		return entity.ExchangeVoucherCore{},errGet
+	}
+
+	return dataExchange,nil
+}

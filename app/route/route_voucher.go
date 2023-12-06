@@ -1,6 +1,7 @@
 package route
 
 import (
+	userRepo "recything/features/user/repository"
 	"recything/features/voucher/handler"
 	"recything/features/voucher/repository"
 	"recything/features/voucher/service"
@@ -11,8 +12,9 @@ import (
 )
 
 func RouteVoucher(e *echo.Group, db *gorm.DB) {
+	userRepository := userRepo.NewUserRepository(db)
 	voucherRepository := repository.NewVoucherRepository(db)
-	voucherService := service.NewVoucherService(voucherRepository)
+	voucherService := service.NewVoucherService(voucherRepository, userRepository)
 	voucherHandler := handler.NewVoucherHandler(voucherService)
 
 	admin := e.Group("/admins/manage/vouchers", jwt.JWTMiddleware())
@@ -25,4 +27,11 @@ func RouteVoucher(e *echo.Group, db *gorm.DB) {
 	user := e.Group("/vouchers", jwt.JWTMiddleware())
 	user.GET("", voucherHandler.GetAllVoucher)
 	user.GET("/:id", voucherHandler.GetVoucherById)
+	user.POST("", voucherHandler.CreateExchangeVoucher)
+	user.POST("", voucherHandler.CreateExchangeVoucher)
+
+	adminExchange := e.Group("/admins/manage/exchange-point", jwt.JWTMiddleware())
+	adminExchange.GET("", voucherHandler.GetAllExchange)
+	adminExchange.GET("/:id", voucherHandler.GetByIdExchange)
+
 }

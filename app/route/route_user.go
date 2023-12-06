@@ -20,7 +20,5 @@ func RouteUser(e *echo.Group, db *gorm.DB) {
 	user.GET("", userHandler.GetUserById)
 	user.PUT("", userHandler.UpdateById)
 	user.PATCH("/reset-password", userHandler.UpdatePassword)
-	
-
 
 }

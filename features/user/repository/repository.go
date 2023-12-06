@@ -4,6 +4,7 @@ import (
 	"errors"
 	"recything/features/user/entity"
 	"recything/features/user/model"
+	moco "recything/features/community/model"
 	"recything/utils/constanta"
 
 	"gorm.io/gorm"
@@ -36,7 +37,7 @@ func (ur *userRepository) Register(data entity.UsersCore) (entity.UsersCore, err
 func (ur *userRepository) GetById(id string) (entity.UsersCore, error) {
 	dataUsers := model.Users{}
 
-	tx := ur.db.Where("id = ?", id).First(&dataUsers)
+	tx := ur.db.Preload("Communities").Where("id = ?", id).First(&dataUsers)
 	if tx.Error != nil {
 		return entity.UsersCore{}, tx.Error
 	}
@@ -236,5 +237,26 @@ func (ur *userRepository) UpdateUserPoint(id string, point int) error {
 	if tx.Error != nil {
 		return tx.Error
 	}
+	return nil
+}
+// JoinCommunity implements entity.UsersRepositoryInterface.
+func (ur *userRepository) JoinCommunity(communityId string, userId string) error {
+	dataCommunity := moco.Community{}
+	saveData := model.UserCommunity{}
+
+	// ambil data community
+	txCommunity := ur.db.Where("id = ?", communityId).First(&dataCommunity)
+	if txCommunity.Error != nil{
+		return txCommunity.Error
+	}
+
+	saveData.CommunityID = dataCommunity.Id
+	saveData.UsersID = userId
+
+	txSave := ur.db.Save(saveData).Error
+	if txSave != nil {
+		return txSave
+	}
+
 	return nil
 }

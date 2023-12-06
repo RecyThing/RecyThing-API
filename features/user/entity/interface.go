@@ -13,6 +13,7 @@ type UsersRepositoryInterface interface {
 	ResetOTP(otp string) (UsersCore, error)
 	NewPassword(email string, data UsersCore) (UsersCore, error)
 	UpdateUserPoint(id string, point int)error
+	JoinCommunity(communityId string, userId string) error
 }
 
 type UsersUsecaseInterface interface {
@@ -26,4 +27,5 @@ type UsersUsecaseInterface interface {
 	SendOTP(emailUser string) error
 	VerifyOTP(email, otp string) (string, error)
 	NewPassword(email string, data UsersCore) error
+	JoinCommunity(communityId string, userId string) error
 }

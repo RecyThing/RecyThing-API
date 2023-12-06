@@ -8,15 +8,17 @@ import (
 
 type UsersCore struct {
 	Id                string
-	Email             string 
-	Password          string 
-	ConfirmPassword   string 
+	Email             string
+	Password          string
+	ConfirmPassword   string
 	Fullname          string
 	Phone             string
 	Address           string
 	DateOfBirth       string
 	Purpose           string
 	Point             int
+	Communities       []UserCommunityCore
+	Community_id      []string
 	IsVerified        bool
 	VerificationToken string
 	Otp               string
@@ -25,4 +27,9 @@ type UsersCore struct {
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 	DeleteAt          gorm.DeletedAt
+}
+
+type UserCommunityCore struct {
+	Id   string
+	Name string
 }

@@ -16,14 +16,16 @@ type UserLoginResponse struct {
 }
 
 type UserResponseProfile struct {
-	Id          string `json:"id"`
-	Fullname    string `json:"fullname"`
-	Email       string `json:"email"`
-	DateOfBirth string `json:"date_of_birth"`
-	Point       int    `json:"point"`
-	Phone       string `json:"phone"`
-	Address     string `json:"address"`
-	Purpose     string `json:"purpose"`
+	Id           string                  `json:"id"`
+	Fullname     string                  `json:"fullname"`
+	Email        string                  `json:"email"`
+	DateOfBirth  string                  `json:"date_of_birth"`
+	Point        int                     `json:"point"`
+	Phone        string                  `json:"phone"`
+	Address      string                  `json:"address"`
+	Purpose      string                  `json:"purpose"`
+	Communities  []UserCommunityResponse `json:"communities"`
+	Community_id []string                `json:"community_id"`
 }
 
 type UserResponseManageUsers struct {
@@ -42,4 +44,9 @@ type UserResponseDetailManageUsers struct {
 	Purpose     string    `json:"purpose"`
 	Address     string    `json:"address"`
 	CreatedAt   time.Time `json:"created_at"`
+}
+
+type UserCommunityResponse struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }

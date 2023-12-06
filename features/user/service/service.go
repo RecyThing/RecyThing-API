@@ -15,6 +15,8 @@ type userService struct {
 	userRepo entity.UsersRepositoryInterface
 }
 
+
+
 func NewUserService(userRepo entity.UsersRepositoryInterface) entity.UsersUsecaseInterface {
 	return &userService{
 		userRepo: userRepo,
@@ -22,21 +24,21 @@ func NewUserService(userRepo entity.UsersRepositoryInterface) entity.UsersUsecas
 }
 
 // Register implements entity.UsersUsecaseInterface.
-func (us *userService) Register(data entity.UsersCore) (entity.UsersCore,error) {
+func (us *userService) Register(data entity.UsersCore) (entity.UsersCore, error) {
 
 	errEmpty := validation.CheckDataEmpty(data.Fullname, data.Email, data.Password, data.ConfirmPassword)
 	if errEmpty != nil {
-		return entity.UsersCore{},errEmpty
+		return entity.UsersCore{}, errEmpty
 	}
 
 	errEmail := validation.EmailFormat(data.Email)
 	if errEmail != nil {
-		return entity.UsersCore{},errEmail
+		return entity.UsersCore{}, errEmail
 	}
 
 	errLength := validation.MinLength(data.Password, 8)
 	if errLength != nil {
-		return entity.UsersCore{},errLength
+		return entity.UsersCore{}, errLength
 	}
 
 	// _, err := us.userRepo.FindByEmail(data.Email)
@@ -45,26 +47,26 @@ func (us *userService) Register(data entity.UsersCore) (entity.UsersCore,error) 
 	// }
 
 	if data.Password != data.ConfirmPassword {
-		return entity.UsersCore{},errors.New(constanta.ERROR_CONFIRM_PASSWORD)
+		return entity.UsersCore{}, errors.New(constanta.ERROR_CONFIRM_PASSWORD)
 	}
 
 	hashedPassword, err := helper.HashPassword(data.Password)
 	if err != nil {
-		return entity.UsersCore{},errors.New(constanta.ERROR_HASH_PASSWORD)
+		return entity.UsersCore{}, errors.New(constanta.ERROR_HASH_PASSWORD)
 	}
 
 	data.Password = hashedPassword
 	uniqueToken := email.GenerateUniqueToken()
 	data.VerificationToken = uniqueToken
 
-	dataUsers,err := us.userRepo.Register(data)
+	dataUsers, err := us.userRepo.Register(data)
 	if err != nil {
-		return entity.UsersCore{},err
+		return entity.UsersCore{}, err
 	}
 
 	email.SendVerificationEmail(data.Email, uniqueToken)
 
-	return dataUsers,nil
+	return dataUsers, nil
 }
 
 // Login implements entity.UsersUsecaseInterface.
@@ -125,11 +127,11 @@ func (us *userService) UpdateById(id string, data entity.UsersCore) error {
 		return errGet
 	}
 
-	errEmpty := validation.CheckDataEmpty(data.Fullname,data.Phone,data.Address,data.DateOfBirth,data.Purpose)
+	errEmpty := validation.CheckDataEmpty(data.Fullname, data.Phone, data.Address, data.DateOfBirth, data.Purpose)
 	if errEmpty != nil {
 		return errEmpty
 	}
-	
+
 	errPhone := validation.PhoneNumber(data.Phone)
 	if errPhone != nil {
 		return errPhone
@@ -261,9 +263,9 @@ func (us *userService) SendOTP(emailUser string) error {
 // VerifyOTP implements entity.UsersUsecaseInterface.
 func (us *userService) VerifyOTP(email, otp string) (string, error) {
 
-	errEmpty := validation.CheckDataEmpty(email,otp)
+	errEmpty := validation.CheckDataEmpty(email, otp)
 	if errEmpty != nil {
-		return  "", errEmpty
+		return "", errEmpty
 	}
 
 	dataUsers, err := us.userRepo.VerifyOTP(email, otp)
@@ -323,6 +325,20 @@ func (us *userService) NewPassword(email string, data entity.UsersCore) error {
 	_, errNew := us.userRepo.NewPassword(email, data)
 	if errNew != nil {
 		return errNew
+	}
+
+	return nil
+}
+
+// JoinCommunity implements entity.UsersUsecaseInterface.
+func (us *userService) JoinCommunity(communityId string, userId string) error {
+	if communityId == "" || userId == ""{
+		return errors.New("id tidak boleh kosong")
+	}
+
+	tx := us.userRepo.JoinCommunity(communityId,userId)
+	if tx != nil{
+		return tx
 	}
 
 	return nil

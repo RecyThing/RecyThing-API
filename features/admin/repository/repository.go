@@ -243,34 +243,38 @@ func (ar *AdminRepository) GetAllReport(status, search string, page, limit int) 
 	offset := (page - 1) * limit
 	query := ar.db.Model(&reportModel.Report{})
 
-	if status != "" {
-		query = query.Where("status = ?", status)
+	var totalCountWithoutFilter int64
+	if err := query.Count(&totalCountWithoutFilter).Error; err != nil {
+		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
+	totalCountWithFilter := totalCountWithoutFilter
 
 	if search != "" {
-		query = query.Joins("JOIN users AS u ON reports.users_id = u.id").
-			Where("u.fullname LIKE ? or reports.id LIKE ? ", "%"+search+"%", "%"+search+"%")
+		if err := query.Joins("JOIN users AS u_search ON reports.users_id = u_search.id").
+			Where("u_search.fullname LIKE ? or reports.id LIKE ?", "%"+search+"%", "%"+search+"%").
+			Count(&totalCountWithFilter).Error; err != nil {
+			return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
+		}
 	}
 
-	var totalCount int64
-	err := ar.db.Model(&reportModel.Report{}).Count(&totalCount).Error
+	countPerluDitinjau, err := ar.GetCountByStatus("perlu ditinjau", search)
 	if err != nil {
 		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
 
-	countPerluDitinjau, err := ar.GetCountByStatus("perlu ditinjau")
+	countDiterima, err := ar.GetCountByStatus("diterima", search)
 	if err != nil {
 		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
 
-	countDiterima, err := ar.GetCountByStatus("diterima")
+	countDitolak, err := ar.GetCountByStatus("ditolak", search)
 	if err != nil {
 		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
 
-	countDitolak, err := ar.GetCountByStatus("ditolak")
-	if err != nil {
-		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
+	if status != "" {
+		query = query.Where("reports.status = ?", status)
+		totalCountWithFilter = totalCountWithoutFilter
 	}
 
 	query = query.Offset(offset).Limit(limit)
@@ -281,17 +285,24 @@ func (ar *AdminRepository) GetAllReport(status, search string, page, limit int) 
 	}
 
 	dataAllReport := report.ListReportModelToReportCore(dataReports)
-	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
+	paginationInfo := pagination.CalculateData(int(totalCountWithFilter), limit, page)
 
-	countData := pagination.MapCountData(totalCount, countPerluDitinjau, countDiterima, countDitolak)
+	countData := pagination.MapCountData(totalCountWithFilter, countPerluDitinjau, countDiterima, countDitolak)
 
 	return dataAllReport, paginationInfo, countData, nil
 }
 
 // GetCountByStatus implements entity.AdminRepositoryInterface.
-func (ar *AdminRepository) GetCountByStatus(status string) (int64, error) {
+func (ar *AdminRepository) GetCountByStatus(status, search string) (int64, error) {
 	var count int64
-	tx := ar.db.Model(&reportModel.Report{}).Where("status = ?", status).Count(&count)
+	query := ar.db.Model(&reportModel.Report{}).Where("reports.status = ?", status)
+
+	if search != "" {
+		query = query.Joins("JOIN users AS u_status_filtered ON reports.users_id = u_status_filtered.id").
+			Where("u_status_filtered.fullname LIKE ? or reports.id LIKE ? ", "%"+search+"%", "%"+search+"%")
+	}
+
+	tx := query.Count(&count)
 	if tx.Error != nil {
 		return 0, tx.Error
 	}

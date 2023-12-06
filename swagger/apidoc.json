@@ -2830,6 +2830,349 @@
                     }
                 }
             }
+        },
+        "/admins/manage/recycles": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Exchange Trash"
+                ],
+                "summary": "view all recycles ",
+                "description": "view all recycles",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseExchangeTrash"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": [
+                                                {
+                                                    "name": "Al Hilaluddin",
+                                                    "email": "tehpucuk8700@gmail.com",
+                                                    "address": "deket kolam",
+                                                    "total_unit": 9.3,
+                                                    "total_point": 17690,
+                                                    "created_at": "2023-12-02T00:33:56.344+08:00",
+                                                    "trash_exchange_details": [
+                                                        {
+                                                            "trash_type": "Koran",
+                                                            "unit": "3.7 Kg",
+                                                            "total_points": 4810
+                                                        },
+                                                        {
+                                                            "trash_type": "Plastik",
+                                                            "unit": "5.6 Kg",
+                                                            "total_points": 12880
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "tiara",
+                                                    "email": "tiara@gmail.com",
+                                                    "address": "deket kolam",
+                                                    "total_unit": 9.3,
+                                                    "total_point": 17690,
+                                                    "created_at": "2023-12-03T13:59:35.916+08:00",
+                                                    "trash_exchange_details": [
+                                                        {
+                                                            "trash_type": "Plastik",
+                                                            "unit": "5.6 Kg",
+                                                            "total_points": 12880
+                                                        },
+                                                        {
+                                                            "trash_type": "Koran",
+                                                            "unit": "3.7 Kg",
+                                                            "total_points": 4810
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "hanip",
+                                                    "email": "hanip@gmail.com",
+                                                    "address": "deket kolam",
+                                                    "total_unit": 9.3,
+                                                    "total_point": 17690,
+                                                    "created_at": "2023-12-02T19:13:21.393+08:00",
+                                                    "trash_exchange_details": [
+                                                        {
+                                                            "trash_type": "Koran",
+                                                            "unit": "3.7 Kg",
+                                                            "total_points": 4810
+                                                        },
+                                                        {
+                                                            "trash_type": "Plastik",
+                                                            "unit": "5.6 Kg",
+                                                            "total_points": 12880
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "juan",
+                                                    "email": "juan@gmail.com",
+                                                    "address": "deket kolam",
+                                                    "total_unit": 8.3,
+                                                    "total_point": 16390,
+                                                    "created_at": "2023-12-02T00:34:10.327+08:00",
+                                                    "trash_exchange_details": [
+                                                        {
+                                                            "trash_type": "Plastik",
+                                                            "unit": "5.6 Kg",
+                                                            "total_points": 12880
+                                                        },
+                                                        {
+                                                            "trash_type": "Koran",
+                                                            "unit": "2.7 Ltr",
+                                                            "total_points": 3510
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "stanlee",
+                                                    "email": "stanlee@gmail.com",
+                                                    "address": "deket kolam",
+                                                    "total_unit": 9.3,
+                                                    "total_point": 17690,
+                                                    "created_at": "2023-12-02T19:21:57.844+08:00",
+                                                    "trash_exchange_details": [
+                                                        {
+                                                            "trash_type": "Plastik",
+                                                            "unit": "5.6 Kg",
+                                                            "total_points": 12880
+                                                        },
+                                                        {
+                                                            "trash_type": "Koran",
+                                                            "unit": "3.7 Kg",
+                                                            "total_points": 4810
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "yaya",
+                                                    "email": "yaya@gmail.com",
+                                                    "address": "deket kolam",
+                                                    "total_unit": 9.3,
+                                                    "total_point": 17690,
+                                                    "created_at": "2023-12-02T00:36:21.405+08:00",
+                                                    "trash_exchange_details": [
+                                                        {
+                                                            "trash_type": "Koran",
+                                                            "unit": "3.7 Kg",
+                                                            "total_points": 4810
+                                                        },
+                                                        {
+                                                            "trash_type": "Plastik",
+                                                            "unit": "5.6 Kg",
+                                                            "total_points": 12880
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "Hilaluddin",
+                                                    "email": "tehpucuk8700@gmail.com",
+                                                    "address": "deket kolam",
+                                                    "total_unit": 9.3,
+                                                    "total_point": 17690,
+                                                    "created_at": "2023-12-02T19:21:49.599+08:00",
+                                                    "trash_exchange_details": [
+                                                        {
+                                                            "trash_type": "Koran",
+                                                            "unit": "3.7 Kg",
+                                                            "total_points": 4810
+                                                        },
+                                                        {
+                                                            "trash_type": "Plastik",
+                                                            "unit": "5.6 Kg",
+                                                            "total_points": 12880
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            },
+                                            "count_data": 7
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Exchange Trash"
+                ],
+                "summary": "add new exchange trash",
+                "description": "add new exchange trash",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestExchangeTrash"
+                            },
+                            "examples": {
+                                "succes": {
+                                    "value": {
+                                        "name": "Al Hilaluddin",
+                                        "email": "tehpucuk8700@gmail.com",
+                                        "address": "deket kolam",
+                                        "trash_exchange_details": [
+                                            {
+                                                "trash_type": "test",
+                                                "unit": "3.7 kg"
+                                            },
+                                            {
+                                                "trash_type": "seng",
+                                                "unit": "5.6 kg"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil membuat data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/recycles/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Exchange Trash"
+                ],
+                "summary": "view detail recycles ",
+                "description": "view detail recycles",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseDetailExchangeTrash"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": {
+                                                "name": "Al Hilaluddin",
+                                                "email": "tehpucuk8700@gmail.com",
+                                                "address": "deket kolam",
+                                                "total_unit": 9.3,
+                                                "total_point": 17690,
+                                                "created_at": "2023-12-02T19:13:21.393+08:00",
+                                                "trash_exchange_details": [
+                                                    {
+                                                        "trash_type": "Koran",
+                                                        "unit": "3.7 Kg",
+                                                        "total_points": 4810
+                                                    },
+                                                    {
+                                                        "trash_type": "Plastik",
+                                                        "unit": "5.6 Kg",
+                                                        "total_points": 12880
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Exchange Trash"
+                ],
+                "summary": "delete recycles by id ",
+                "description": "view recycles by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "200": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil menghapus data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -3735,16 +4078,15 @@
                         "type": "string",
                         "format": "Date"
                     },
-                    "mission_stages":{
+                    "mission_stages": {
                         "type": "object",
                         "properties": {
-                            "title":{
+                            "title": {
                                 "type": "string"
                             },
-                            "description":{
+                            "description": {
                                 "type": "string"
                             }
-                            
                         }
                     }
                 },
@@ -3755,7 +4097,129 @@
                     "description",
                     "start_date",
                     "end_date"
-                   
+                ]
+            },
+            "ResponseExchangeTrash": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "total_unit": {
+                        "type": "number"
+                    },
+                    "total_point": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "trash_exchange_details": {
+                        "type": "object",
+                        "properties": {
+                            "trash_type": {
+                                "type": "string"
+                            },
+                            "unit": {
+                                "type": "string"
+                            },
+                            "total_points": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "pagination": {
+                        "type": "object",
+                        "properties": {
+                            "last_page": {
+                                "type": "integer"
+                            },
+                            "current_page": {
+                                "type": "integer"
+                            },
+                            "limit": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "count_data": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "ResponseDetailExchangeTrash": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "total_unit": {
+                        "type": "number"
+                    },
+                    "total_point": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "trash_exchange_details": {
+                        "type": "object",
+                        "properties": {
+                            "trash_type": {
+                                "type": "string"
+                            },
+                            "unit": {
+                                "type": "string"
+                            },
+                            "total_points": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "RequestExchangeTrash": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "trash_exchange_details": {
+                        "type": "object",
+                        "properties": {
+                            "trash_type": {
+                                "type": "string"
+                            },
+                            "unit": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "name",
+                    "email",
+                    "address"
                 ]
             }
         },

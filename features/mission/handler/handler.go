@@ -294,7 +294,7 @@ func (mh *missionHandler) UpdateUploadMission(e echo.Context) error {
 
 	request := request.UpdateUploadMissionTaskRequestToUpdateUploadMissionTaskCore(input)
 
-	err = mh.missionService.UpdateUploadMissionTask(userID, UploadMissionID, images,request)
+	err = mh.missionService.UpdateUploadMissionTask(userID, UploadMissionID, images, request)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
@@ -315,12 +315,74 @@ func (mh *missionHandler) GetAllMissionApproval(e echo.Context) error {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
-	data, err := mh.missionService.FindAllMissionApproval()
+	page := e.QueryParam("page")
+	limit := e.QueryParam("limit")
+	search := e.QueryParam("search")
+	filter := e.QueryParam("filter")
+
+	data, pagenation, count, err := mh.missionService.FindAllMissionApproval(page, limit, search, filter)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 
 	}
-	return e.JSON(http.StatusForbidden, helper.SuccessWithDataResponse("succes mendapatkan data",data))
 
-	
+	response := response.ListUpMissionTaskCoreToUpMissionTaskResp(data)
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("Berhasil mendapatkan data", response, pagenation, count))
+
+}
+
+func (mh *missionHandler) GetMissionApprovalById(e echo.Context) error {
+	id := e.Param("id")
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	result, err := mh.missionService.FindMissionApprovalById(id)
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	response := response.UpMissionTaskCoreToUpMissionTaskResp(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mengambil data mission", response))
+}
+
+func (mh *missionHandler) UpdateStatusApprovalMission(e echo.Context) error {
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+	id := e.Param("id")
+	newStatus := request.StatusApproval{}
+	if err := e.Bind(&newStatus); err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	err = mh.missionService.UpdateStatusMissionApproval(id, newStatus.Status, newStatus.Reason)
+	if err != nil {
+		if helper.HttpResponseCondition(err, constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+
+		}
+
+		if helper.HttpResponseCondition(err, constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil mengupdate status approval"))
+
 }

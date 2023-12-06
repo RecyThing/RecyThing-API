@@ -231,6 +231,14 @@ func (ur *userRepository) NewPassword(email string, data entity.UsersCore) (enti
 	return dataResponse, nil
 }
 
+func (ur *userRepository) UpdateUserPoint(id string, point int) error {
+
+	tx := ur.db.Model(&model.Users{}).Where("id = ?", id).Update("point", point)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
 // JoinCommunity implements entity.UsersRepositoryInterface.
 func (ur *userRepository) JoinCommunity(communityId string, userId string) error {
 	dataCommunity := moco.Community{}

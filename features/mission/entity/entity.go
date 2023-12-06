@@ -50,6 +50,7 @@ type UploadMissionTaskCore struct {
 	UserID      string
 	User        string
 	MissionID   string
+	MissionName string
 	Description string
 	Reason      string
 	Images      []ImageUploadMissionCore

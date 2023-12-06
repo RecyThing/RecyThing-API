@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	drop_point"recything/features/drop-point/entity"
 	"recything/utils/constanta"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -147,4 +149,14 @@ func ChangeStatusMission(endDate string) (string, error) {
 		status = constanta.ACTIVE
 	}
 	return status, nil
+}
+
+
+func SortByDay(schedules []drop_point.ScheduleCore) []drop_point.ScheduleCore {
+    sort.Slice(schedules, func(i, j int) bool {
+        daysOrder := map[string]int{"senin": 1, "selasa": 2, "rabu": 3, "kamis": 4, "jumat": 5, "sabtu": 6, "minggu": 7}
+        return daysOrder[schedules[i].Day] < daysOrder[schedules[j].Day]
+    })
+
+    return schedules
 }

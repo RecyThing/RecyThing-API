@@ -70,11 +70,11 @@ func ArticleModelToArticleCore(article model.Article) ArticleCore {
 	return articleCore
 }
 
-func ListArticleModelToArticleCore(category []model.Article) []ArticleCore{
-	coreCategorys := []ArticleCore{}
-	for _, v := range category {
-		categorys := ArticleModelToArticleCore(v)
-		coreCategorys = append(coreCategorys, categorys)
+func ListArticleModelToArticleCore(article []model.Article) []ArticleCore{
+	coreArticle := []ArticleCore{}
+	for _, v := range article {
+		articles := ArticleModelToArticleCore(v)
+		coreArticle = append(coreArticle, articles)
 	}
-	return coreCategorys
+	return coreArticle
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"recything/features/user/dto/request"
 	"recything/features/user/dto/response"
@@ -55,13 +56,14 @@ func (uh *userHandler) Login(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errLogin.Error()))
 	}
 
-	response := response.UsersCoreToLoginResponse(dataUser,token)
+	response := response.UsersCoreToLoginResponse(dataUser, token)
 
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_LOGIN, response))
 }
 
 func (uh *userHandler) GetUserById(e echo.Context) error {
 	idUser, _, errExtract := jwt.ExtractToken(e)
+	fmt.Println(idUser)
 	if errExtract != nil {
 		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(errExtract.Error()))
 	}
@@ -205,4 +207,20 @@ func (uh *userHandler) NewPassword(e echo.Context) error {
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil update password"))
+}
+
+func (uh *userHandler) JoinCommunity(e echo.Context) error {
+	Id, _, _ := jwt.ExtractToken(e)
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan id"))
+	}
+
+	communityId := e.Param("idKomunitas")
+
+	err := uh.userUseCase.JoinCommunity(communityId, Id)
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil bergabung dengan komunitas"))
 }

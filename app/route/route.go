@@ -29,5 +29,5 @@ func New(e *echo.Echo, db *gorm.DB) {
 	RouteDailyPoint(user,db)
 	RouteTrash(admin,db)
 	RouteTrashExchange(admin, db)
-
+	RouteCommunity(base, db)
 }

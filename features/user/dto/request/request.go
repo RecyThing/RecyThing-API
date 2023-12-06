@@ -38,3 +38,7 @@ type UserVerifyOTP struct {
 	Email string `json:"email"`
 	Otp   string `json:"otp"`
 }
+
+type UserJoinCommunity struct{
+	Communitiy string `json:"community"`
+}

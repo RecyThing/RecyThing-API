@@ -172,7 +172,7 @@ func (ch *communityHandler) UpdateCommunityById(e echo.Context) error {
 
 // Event
 
-func (ch *communityHandler) CreateEvent(e echo.Context) error{
+func (ch *communityHandler) CreateEvent(e echo.Context) error {
 	Id, role, _ := jwt.ExtractToken(e)
 	if Id == "" {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan id"))
@@ -202,7 +202,7 @@ func (ch *communityHandler) CreateEvent(e echo.Context) error{
 	}
 
 	eventInput := request.EventRequestToEventCore(newEvent)
-	errCreate := ch.communityService.CreateEvent(idParams,eventInput,image)
+	errCreate := ch.communityService.CreateEvent(idParams, eventInput, image)
 	if errCreate != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errCreate.Error()))
 	}
@@ -210,7 +210,7 @@ func (ch *communityHandler) CreateEvent(e echo.Context) error{
 	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil menambahkan event"))
 }
 
-func (ch *communityHandler) DeleteEvent(e echo.Context) error{
+func (ch *communityHandler) DeleteEvent(e echo.Context) error {
 	Id, role, _ := jwt.ExtractToken(e)
 	if Id == "" {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan id"))
@@ -226,7 +226,7 @@ func (ch *communityHandler) DeleteEvent(e echo.Context) error{
 	idKom := e.Param("idkomunitas")
 	idEve := e.Param("idevent")
 
-	errDelete := ch.communityService.DeleteEvent(idKom,idEve)
+	errDelete := ch.communityService.DeleteEvent(idKom, idEve)
 	if errDelete != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errDelete.Error()))
 	}
@@ -234,7 +234,7 @@ func (ch *communityHandler) DeleteEvent(e echo.Context) error{
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil menghapus event"))
 }
 
-func (ch *communityHandler) ReadAllEvent(e echo.Context) error{
+func (ch *communityHandler) ReadAllEvent(e echo.Context) error {
 	search := e.QueryParam("search")
 	page, _ := strconv.Atoi(e.QueryParam("page"))
 	limit, _ := strconv.Atoi(e.QueryParam("limit"))
@@ -258,7 +258,7 @@ func (ch *communityHandler) ReadAllEvent(e echo.Context) error{
 	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan semua event", eventResponse, paginationInfo, count))
 }
 
-func (ch *communityHandler) ReadEvent(e echo.Context) error{
+func (ch *communityHandler) ReadEvent(e echo.Context) error {
 	idKom := e.Param("idkomunitas")
 	idEve := e.Param("idevent")
 
@@ -271,7 +271,7 @@ func (ch *communityHandler) ReadEvent(e echo.Context) error{
 	}
 
 	eventData, errRead := ch.communityService.ReadEvent(idKom, idEve)
-	if errRead != nil{
+	if errRead != nil {
 		return e.JSON(http.StatusNotFound, helper.ErrorResponse("gagal membaca data"))
 	}
 
@@ -280,7 +280,7 @@ func (ch *communityHandler) ReadEvent(e echo.Context) error{
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan event", eventResponse))
 }
 
-func (ch *communityHandler) UpdateEvent(e echo.Context) error{
+func (ch *communityHandler) UpdateEvent(e echo.Context) error {
 	Id, role, _ := jwt.ExtractToken(e)
 	if Id == "" {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan id"))
@@ -302,11 +302,11 @@ func (ch *communityHandler) UpdateEvent(e echo.Context) error{
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errBind.Error()))
 	}
 
-	image,_ := e.FormFile("image")
+	image, _ := e.FormFile("image")
 
 	eventInput := request.EventRequestToEventCore(updateData)
 	errUpdate := ch.communityService.UpdateEvent(idKom, idEve, eventInput, image)
-	if errUpdate != nil{
+	if errUpdate != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errUpdate.Error()))
 	}
 

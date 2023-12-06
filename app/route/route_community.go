@@ -42,6 +42,6 @@ func RouteCommunity(e *echo.Group, db *gorm.DB) {
 	event.DELETE("/:idkomunitas/:idevent", communityHandler.DeleteEvent)
 
 	userEvent := e.Group("/users/event", jwt.JWTMiddleware())
-	userEvent.GET("/:idKomunitas", communityHandler.ReadAllEvent)
+	userEvent.GET("/:idkomunitas", communityHandler.ReadAllEvent)
 	userEvent.GET("/:idkomunitas/:idevent", communityHandler.ReadEvent)
 }

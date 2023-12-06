@@ -50,3 +50,46 @@ func ListMissionCoreToMissionResponse(mission []entity.Mission) []Mission {
 	}
 	return missions
 }
+
+func ImgUpMissionCoreToImgUpMissionResponse(data entity.ImageUploadMissionCore) ImageUploadMission {
+	return ImageUploadMission{
+		ID:                  data.ID,
+		UploadMissionTaskID: data.UploadMissionTaskID,
+		Image:               data.Image,
+		CreatedAt:           data.CreatedAt,
+	}
+}
+
+func ListImgUpMissionCoreToImgUpMissionResponse(data []entity.ImageUploadMissionCore) []ImageUploadMission {
+	list := []ImageUploadMission{}
+	for _, v := range data {
+		result := ImgUpMissionCoreToImgUpMissionResponse(v)
+		list = append(list, result)
+	}
+	return list
+}
+
+func UpMissionTaskCoreToUpMissionTaskResp(data entity.UploadMissionTaskCore) UploadMissionTask {
+	return UploadMissionTask{
+		ID:          data.ID,
+		UserID:      data.UserID,
+		User:        data.User,
+		MissionID:   data.MissionID,
+		MissionName: data.MissionName,
+		Description: data.Description,
+		Reason:      data.Reason,
+		Images:      ListImgUpMissionCoreToImgUpMissionResponse(data.Images),
+		Status:      data.Status,
+		CreatedAt:   data.CreatedAt,
+		UpdatedAt:   data.UpdatedAt,
+	}
+}
+
+func ListUpMissionTaskCoreToUpMissionTaskResp(data []entity.UploadMissionTaskCore) []UploadMissionTask {
+	list := []UploadMissionTask{}
+	for _, v := range data {
+		result := UpMissionTaskCoreToUpMissionTaskResp(v)
+		list = append(list, result)
+	}
+	return list
+}

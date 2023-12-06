@@ -27,24 +27,25 @@ type MissionStage struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-type ApprovalMission struct {
-	ID                      string                   `json:"id"`
-	MissionName             string                   `json:"mission_name"`
-	User                    string                   `json:"user"`
-	Status                  string                   `json:"status"`
-	Reason                  string                   `json:"reason"`
-	Date                    string                   `json:"date"`
-	CreatedAt               string                   `json:"created_at"`
-	MissionCompletionProofs []MissionCompletionProof `json:"mission_completion_proofs"`
+type UploadMissionTask struct {
+	ID          string               `json:"id"`
+	UserID      string               `json:"user_id"`
+	User        string               `json:"user"`
+	MissionID   string               `json:"mission_id"`
+	MissionName string               `json:"mission_name"`
+	Description string               `json:"description"`
+	Reason      string               `json:"reason,omitempty"`
+	Images      []ImageUploadMission `json:"images"`
+	Status      string               `json:"status"`
+	CreatedAt   time.Time            `json:"created_at"`
+	UpdatedAt   time.Time            `json:"updated_at"`
 }
 
-type MissionCompletionProof struct {
-	ID                 string  `json:"id"`
-	MissionStageID     string  `json:"mission_stage_id"`
-	TitleStage         string  `json:"title_stage"`
-	Description        string  `json:"description"`
-	MissionImageProofs []Proof `json:"mission_Image_proofs"`
-	Date               string  `json:"date"`
+type ImageUploadMission struct {
+	ID                  string    `json:"id"`
+	UploadMissionTaskID string    `json:"upload_mission_task_id"`
+	Image               string    `json:"image"`
+	CreatedAt           time.Time `json:"created_at"`
 }
 
 type Proof struct {

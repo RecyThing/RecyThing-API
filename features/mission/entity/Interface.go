@@ -2,6 +2,7 @@ package entity
 
 import (
 	"mime/multipart"
+	"recything/utils/helper"
 	"recything/utils/pagination"
 )
 
@@ -9,7 +10,9 @@ type MissionRepositoryInterface interface {
 	CreateMission(input Mission) error
 	FindAllMission(page, limit int, search, filter string) ([]Mission, pagination.PageInfo, int, error)
 	FindById(missionID string) (Mission, error)
-	GetCount(status, search string) (int, error)
+	GetCountMission(status, search string) (int, error)
+	GetCountMissionApproval(filter, search string) (int, error)
+	GetCountDataMissionApproval() (helper.CountMissionApproval, error)
 	GetImageURL(missionID string) (string, error)
 	UpdateMission(missionID string, data Mission) error
 	DeleteMission(missionID string) error
@@ -23,7 +26,9 @@ type MissionRepositoryInterface interface {
 	CreateUploadMissionTask(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) error
 	UpdateUploadMissionTask(id string, images []*multipart.FileHeader, data UploadMissionTaskCore) error
 
-	FindAllMissionApproval() ([]UploadMissionTaskCore, error)
+	FindAllMissionApproval(page, limit int, search, filter string) ([]UploadMissionTaskCore, pagination.PageInfo, int, error)
+	FindMissionApprovalById(UploadMissionTaskID string) (UploadMissionTaskCore, error)
+	UpdateStatusMissionApproval(uploadMissionTaskID, status, reason string) error
 }
 
 type MissionServiceInterface interface {
@@ -40,5 +45,7 @@ type MissionServiceInterface interface {
 	CreateUploadMissionTask(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) error
 	UpdateUploadMissionTask(userID, id string, images []*multipart.FileHeader, data UploadMissionTaskCore) error
 
-	FindAllMissionApproval() ([]UploadMissionTaskCore, error)
+	FindAllMissionApproval(page, limit, search, filter string) ([]UploadMissionTaskCore, pagination.PageInfo, int, error)
+	FindMissionApprovalById(UploadMissionTaskID string) (UploadMissionTaskCore, error)
+	UpdateStatusMissionApproval(uploadMissionTaskID, status, reason string) error
 }

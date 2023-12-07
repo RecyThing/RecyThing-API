@@ -1894,7 +1894,190 @@
                     }
                 }
             }
+        },
+        "/trashes": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Trash Category"
+                ],
+                "description": "get all trash category",
+                "summary": "get all category trash",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseTrashCategories"
+                                },
+                                "examples": {
+                                    "succes ": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan seluruh kategori sampah",
+                                            "data": [
+                                                {
+                                                    "id": "1afa0ba9-5e67-4e2d-a21f-a904aa8c0a56",
+                                                    "trash_type": "limbah 3",
+                                                    "point": 100,
+                                                    "unit": "barang",
+                                                    "created_at": "2023-11-20T20:20:26.441Z",
+                                                    "updated_at": "2023-11-20T20:20:26.441Z"
+                                                },
+                                                {
+                                                    "id": "28bac944-38f4-4f0a-9c03-41f5b64531df",
+                                                    "trash_type": "kaleng",
+                                                    "point": 100,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T01:01:22.204Z",
+                                                    "updated_at": "2023-11-23T12:28:09.279Z"
+                                                },
+                                                {
+                                                    "id": "28c64e17-40f5-42fb-9ba5-9d82b81d26c5",
+                                                    "trash_type": "bahhh",
+                                                    "point": 100,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T00:57:46.253Z",
+                                                    "updated_at": "2023-11-22T00:57:46.253Z"
+                                                },
+                                                {
+                                                    "id": "29a14bb0-f1ff-45e3-afd9-1a4c35e28b73",
+                                                    "trash_type": "test",
+                                                    "point": 100,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T18:48:22.683Z",
+                                                    "updated_at": "2023-11-22T18:48:22.683Z"
+                                                },
+                                                {
+                                                    "id": "2e619697-8471-4230-aab5-b51715deb73d",
+                                                    "trash_type": "limbah 2",
+                                                    "point": 100,
+                                                    "unit": "barang",
+                                                    "created_at": "2023-11-20T20:16:12.983Z",
+                                                    "updated_at": "2023-11-20T20:16:12.983Z"
+                                                },
+                                                {
+                                                    "id": "2fb9235f-50f4-4f27-9a78-c3b1aa14d183",
+                                                    "trash_type": "seng",
+                                                    "point": 7000,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T18:42:50.176Z",
+                                                    "updated_at": "2023-11-22T18:42:50.176Z"
+                                                },
+                                                {
+                                                    "id": "3011c4aa-0d0f-436e-adb3-acafc9a9bf39",
+                                                    "trash_type": "bahhh 22",
+                                                    "point": 100,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T00:58:23.006Z",
+                                                    "updated_at": "2023-11-22T00:58:23.006Z"
+                                                },
+                                                {
+                                                    "id": "4de15e8a-c1d3-489f-b1d3-d16863c2e909",
+                                                    "trash_type": "bahhh 21",
+                                                    "point": 100,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T00:58:18.236Z",
+                                                    "updated_at": "2023-11-22T00:58:18.236Z"
+                                                },
+                                                {
+                                                    "id": "565d6795-852d-4470-88f2-6b6ac131f4f0",
+                                                    "trash_type": "test 1",
+                                                    "point": 100,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T18:52:38.065Z",
+                                                    "updated_at": "2023-11-22T18:52:38.065Z"
+                                                },
+                                                {
+                                                    "id": "6078292c-4701-4b88-a793-9c5afb1a6d26",
+                                                    "trash_type": "limbah minyak",
+                                                    "point": 100,
+                                                    "unit": "kilogram",
+                                                    "created_at": "2023-11-22T03:33:34.648Z",
+                                                    "updated_at": "2023-11-22T03:33:34.648Z"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 2
+                                            },
+                                            "count_data": 20
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/trashes/{id}":{
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Trash Category"
+                ],
+                "summary": "get detail",
+                "description": "get detail category trash",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "succes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseTrashCategories"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan detail kategori sampah",
+                                            "data": {
+                                                "id": "6f6dd30a-12c7-468a-a57a-bda6cf5cdaf5",
+                                                "trash_type": "kayu",
+                                                "point": 100,
+                                                "unit": "barang",
+                                                "created_at": "2023-11-20T13:23:09.262+08:00",
+                                                "updated_at": "2023-11-20T13:23:09.262+08:00"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+
     },
     "components": {
         "parameters": {
@@ -2448,6 +2631,38 @@
                                 "type": "integer"
                             }
                         }
+                    }
+                }
+            },
+            "ResponseTrashCategories": {
+                "type": "object",
+                "properties": {
+                    "trash_type": {
+                        "type": "string"
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "barang",
+                            "kilogram"
+                        ]
+                    },
+                    "pagination": {
+                        "type": "object",
+                        "properties": {
+                            "last_page": {
+                                "type": "string"
+                            },
+                            "current_page": {
+                                "type": "string"
+                            },
+                            "limit": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "count_data": {
+                        "type": "string"
                     }
                 }
             }

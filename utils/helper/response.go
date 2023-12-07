@@ -25,11 +25,11 @@ type SuccessResponseJsonWithPagenationAndCount struct {
 	Count      int         `json:"count_data,omitempty"`
 }
 type SuccessResponseJsonWithPagenationAndCountMission struct {
-	Status     bool                        `json:"status"`
-	Message    string                      `json:"message"`
-	Data       interface{}                 `json:"data,omitempty"`
-	Pagination interface{}                 `json:"pagination,omitempty"`
-	Count      CountMissionApproval `json:"count,omitempty"`
+	Status     bool        `json:"status"`
+	Message    string      `json:"message"`
+	Data       interface{} `json:"data,omitempty"`
+	Pagination interface{} `json:"pagination,omitempty"`
+	Count      interface{} `json:"count,omitempty"`
 }
 
 type SuccessResponseJsonWithPaginationAndCount struct {
@@ -82,12 +82,12 @@ func SuccessWithPagnationAndCount(message string, data interface{}, pagnation in
 		Count:      count,
 	}
 }
-func SuccessWithPagnationAndCountApprovalMission(message string, data interface{}, pagnation interface{}, count CountMissionApproval) SuccessResponseJsonWithPagenationAndCountMission {
+func SuccessWithPagnationAndCountAll(message string, data interface{}, pagnation interface{}, count interface{}) SuccessResponseJsonWithPagenationAndCountMission {
 	return SuccessResponseJsonWithPagenationAndCountMission{
 		Status:     false,
 		Message:    message,
 		Data:       data,
-		Pagination: SuccessWithPaginationAndCount,
+		Pagination: pagnation,
 		Count:      count,
 	}
 }

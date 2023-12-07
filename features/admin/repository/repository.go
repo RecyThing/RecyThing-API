@@ -94,7 +94,7 @@ func (ar *AdminRepository) GetCount(search, role string) (int, error) {
 func (ar *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) {
 	dataAdmins := model.Admin{}
 
-	tx := ar.db.Where("id = ? AND role = ?", adminId, constanta.ADMIN).First(&dataAdmins)
+	tx := ar.db.Where("id = ? ", adminId).First(&dataAdmins)
 	if tx.Error != nil {
 		return entity.AdminCore{}, tx.Error
 	}

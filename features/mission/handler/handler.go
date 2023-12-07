@@ -83,7 +83,7 @@ func (mh *missionHandler) GetAllMission(e echo.Context) error {
 	}
 
 	response := response.ListMissionCoreToMissionResponse(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("Berhasil mendapatkan seluruh missi", response, pagnation, count))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCountAll("Berhasil mendapatkan seluruh missi", response, pagnation, count))
 }
 
 func (mh *missionHandler) UpdateMission(e echo.Context) error {
@@ -320,14 +320,14 @@ func (mh *missionHandler) GetAllMissionApproval(e echo.Context) error {
 	search := e.QueryParam("search")
 	filter := e.QueryParam("filter")
 
-	data, pagenation, count, err := mh.missionService.FindAllMissionApproval(page, limit, search, filter)
+	data, pagination, counts, err := mh.missionService.FindAllMissionApproval(page, limit, search, filter)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 
 	}
 
 	response := response.ListUpMissionTaskCoreToUpMissionTaskResp(data)
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("Berhasil mendapatkan data", response, pagenation, count))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCountAll("Berhasil mendapatkan data", response, pagination, counts))
 
 }
 

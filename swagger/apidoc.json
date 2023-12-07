@@ -3410,6 +3410,194 @@
                     }
                 }
             }
+        },
+        "/admins/manage/exchange-point": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Exchange Point / Tukar Point"
+                ],
+                "summary": "get all data of exchange voucher",
+                "description": "get all data of exchange voucher with pagination",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/FilterExchangePoint"
+                    },
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan data",
+                                            "data": [
+                                                {
+                                                    "id": "213133",
+                                                    "user": "jiddan",
+                                                    "voucher": "DANA 100K",
+                                                    "phone": "0822241213",
+                                                    "status": "selesai",
+                                                    "created_at": "2023-12-07T19:28:25Z"
+                                                },
+                                                {
+                                                    "id": "21321313",
+                                                    "user": "Vi",
+                                                    "voucher": "",
+                                                    "phone": "089731632",
+                                                    "status": "diproses",
+                                                    "created_at": "2023-12-07T19:27:41Z"
+                                                },
+                                                {
+                                                    "id": "sdadsada",
+                                                    "user": "i Nyoman Toto",
+                                                    "voucher": "DANA 100K",
+                                                    "phone": "0822985773",
+                                                    "status": "terbaru",
+                                                    "created_at": "2023-12-06T14:00:18Z"
+                                                },
+                                                {
+                                                    "id": "wqadwda",
+                                                    "user": "Vi",
+                                                    "voucher": "DANA 100K",
+                                                    "phone": "0896513123",
+                                                    "status": "terbaru",
+                                                    "created_at": "2023-12-06T13:54:46Z"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            },
+                                            "count": {
+                                                "total_count": 4,
+                                                "count_newest": 2,
+                                                "count_process": 1,
+                                                "count_done": 1
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/exchange-point/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Exchange Point / Tukar Point"
+                ],
+                "summary": "get data by id ",
+                "description": "get data by id of exchange voucher with pagination",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": {
+                                                "id": "213133",
+                                                "user": "jiddan",
+                                                "voucher": "DANA 100K",
+                                                "phone": "0822241213",
+                                                "status": "selesai",
+                                                "created_at": "2023-12-07T19:28:25Z"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Exchange Point / Tukar Point"
+                ],
+                "summary": "update status exchange point/voucher ",
+                "description": "",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "example": {
+                                    "value": {
+                                        "status": "diproses"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status":true,
+                                            "message":"berhasil memperbarui status"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -3480,6 +3668,19 @@
                         "perlu ditinjau",
                         "diterima",
                         "ditolak"
+                    ]
+                }
+            },
+            "FilterExchangePoint": {
+                "name": "filter",
+                "in": "query",
+                "description": "status reporting",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "terbaru",
+                        "diproses",
+                        "selesai"
                     ]
                 }
             },

@@ -86,4 +86,7 @@ const (
 	PERLU_TINJAUAN = "perlu tinjauan"
 	DISETUJUI      = "disetujui"
 	DITOLAK        = "ditolak"
+	DIPROSES       = "diproses"
+	SELESAI        = "selesai"
+	TERBARU        = "terbaru"
 )

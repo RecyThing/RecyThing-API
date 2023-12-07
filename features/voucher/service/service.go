@@ -6,6 +6,7 @@ import (
 	user "recything/features/user/entity"
 	"recything/features/voucher/entity"
 	"recything/utils/constanta"
+	"recything/utils/helper"
 	"recything/utils/pagination"
 	"recything/utils/validation"
 )
@@ -110,11 +111,11 @@ func (vs *voucherService) CreateExchangeVoucher(idUser string, data entity.Excha
 
 	voucherData, err := vs.voucherRepository.GetById(data.IdVoucher)
 	if err != nil {
-		return errors.New("voucher tidak ditemukan")
+		return err
 	}
 
 	if userData.Point <= voucherData.Point {
-		return errors.New("point tidak cukup")
+		return errors.New("error : point tidak cukup")
 	}
 
 	userData.Point -= voucherData.Point
@@ -131,15 +132,19 @@ func (vs *voucherService) CreateExchangeVoucher(idUser string, data entity.Excha
 	}
 	return nil
 }
+func (vs *voucherService) GetAllExchange(page, limit, search, filter string) ([]entity.ExchangeVoucherCore, pagination.PageInfo, helper.CountExchangeVoucher, error) {
 
-func (vs *voucherService) GetAllExchange() ([]entity.ExchangeVoucherCore, error) {
+	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
+	if err != nil {
+		return nil, pagination.PageInfo{}, helper.CountExchangeVoucher{}, err
+	}
+	dataExchange, pagination, count, err := vs.voucherRepository.GetAllExchange(pageInt, limitInt, search, filter)
+	if err != nil {
+		return nil, pagination, count, err
 
-	dataExchange, errGet := vs.voucherRepository.GetAllExchange()
-	if errGet != nil {
-		return []entity.ExchangeVoucherCore{}, errGet
 	}
 
-	return dataExchange, nil
+	return dataExchange, pagination, count, nil
 }
 
 func (vs *voucherService) GetByIdExchange(idExchange string) (entity.ExchangeVoucherCore, error) {

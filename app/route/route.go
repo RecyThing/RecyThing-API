@@ -30,4 +30,5 @@ func New(e *echo.Echo, db *gorm.DB) {
 	RouteTrash(admin,db)
 	RouteTrashExchange(admin, db)
 	RouteCommunity(base, db)
+	RouteDashboard(base, db)
 }

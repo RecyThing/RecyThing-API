@@ -2488,349 +2488,6 @@
                 }
             }
         },
-        "/admins/manage/missions": {
-            "get": {
-                "security": [
-                    {
-                        "token": []
-                    }
-                ],
-                "tags": [
-                    "Manage Missions"
-                ],
-                "summary": "view all missions ",
-                "description": "view all missions",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/statusMissions"
-                    },
-                    {
-                        "$ref": "#/components/parameters/searchMissions"
-                    },
-                    {
-                        "$ref": "#/components/parameters/limit"
-                    },
-                    {
-                        "$ref": "#/components/parameters/page"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ResponseMission"
-                                },
-                                "examples": {
-                                    "200": {
-                                        "value": {
-                                            "status": true,
-                                            "message": "Berhasil mendapatkan seluruh missi",
-                                            "data": [
-                                                {
-                                                    "id": "02f9fa77-a866-449e-81f8-df99702151e3",
-                                                    "name": "buang sampah",
-                                                    "creator": "admin2",
-                                                    "status": "Aktif",
-                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/65e62484-4263-4b24-9c2f-d911d5aac3c4.png",
-                                                    "point": 100,
-                                                    "description": "njnasd",
-                                                    "start_date": "2023-12-05",
-                                                    "end_date": "2023-12-06",
-                                                    "mission_stages": [
-                                                        {
-                                                            "id": "02f9fa77-a866-449e-df99702151e3-81f8",
-                                                            "title": "stage 1",
-                                                            "description": "ini stage 1",
-                                                            "created_at": "0001-01-01T00:00:00Z",
-                                                            "updated_at": "0001-01-01T00:00:00Z"
-                                                        }
-                                                    ],
-                                                    "created_at": "2023-12-02T16:19:15.656+08:00",
-                                                    "updated_at": "2023-12-03T19:31:31.664+08:00"
-                                                },
-                                                {
-                                                    "id": "07102bcf-70c3-4bcd-a72f-e27937a5849a",
-                                                    "name": "peduli lingkungan",
-                                                    "creator": "admin2",
-                                                    "status": "Aktif",
-                                                    "mission_image": "",
-                                                    "point": 150000,
-                                                    "description": "peduli dengan lingkungan",
-                                                    "start_date": "2023-12-03",
-                                                    "end_date": "2023-12-06",
-                                                    "mission_stages": [],
-                                                    "created_at": "2023-12-02T12:16:49.596+08:00",
-                                                    "updated_at": "2023-12-03T19:31:31.687+08:00"
-                                                }
-                                            ],
-                                            "pagination": {
-                                                "limit": 2,
-                                                "current_page": 1,
-                                                "last_page": 7
-                                            },
-                                            "count_data": 14
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "token": []
-                    }
-                ],
-                "tags": [
-                    "Manage Missions"
-                ],
-                "summary": "add new mission",
-                "description": "add new mission",
-                "requestBody": {
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RequestMission"
-                            },
-                            "encoding": {
-                                "image": {
-                                    "style": "form"
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "examples": {
-                                    "success": {
-                                        "value": {
-                                            "status": true,
-                                            "message": "Berhasil menambahkan missi"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admins/manage/missions/{id}": {
-            "delete": {
-                "security": [
-                    {
-                        "token": []
-                    }
-                ],
-                "tags": [
-                    "Manage Missions"
-                ],
-                "summary": "delete  mission by id ",
-                "description": "Delete mission by ID",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/idMission"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "examples": {
-                                    "200": {
-                                        "value": {
-                                            "status": true,
-                                            "message": "Berhasil menghapus misi"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "token": []
-                    }
-                ],
-                "tags": [
-                    "Manage Missions"
-                ],
-                "summary": "update by id",
-                "description": "update mission by id",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/idMission"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RequestMissionUpdate"
-                            },
-                            "encoding": {
-                                "image": {
-                                    "style": "form"
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "examples": {
-                                    "success": {
-                                        "description": "OK",
-                                        "value": {
-                                            "status": true,
-                                            "message": "Berhasil mengupdate missi"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "get": {
-                "security": [
-                    {
-                        "token": []
-                    }
-                ],
-                "tags": [
-                    "Manage Missions"
-                ],
-                "summary": "get detail missions",
-                "description": "get detail missions",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/idMission"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ResponseMission"
-                                },
-                                "examples": {
-                                    "success": {
-                                        "value": {
-                                            "status": true,
-                                            "message": "berhasil mengambil data mission",
-                                            "data": {
-                                                "id": "MIS-1DF224B4D5A8407",
-                                                "name": "membuang sampah pada tempatnya",
-                                                "creator": "",
-                                                "status": "Aktif",
-                                                "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/db1efea2-806a-4ce1-b104-149ff3c50e98.png",
-                                                "point": 150000,
-                                                "description": "SEPULSA",
-                                                "start_date": "2023-12-05",
-                                                "end_date": "2023-12-06",
-                                                "mission_stages": [
-                                                    {
-                                                        "id": "xxxxxxxx",
-                                                        "title": "tahap 1",
-                                                        "description": "ini tahap 1",
-                                                        "created_at": "0001-01-01T00:00:00Z",
-                                                        "updated_at": "0001-01-01T00:00:00Z"
-                                                    }
-                                                ],
-                                                "created_at": "2023-12-05T23:14:56.185+08:00",
-                                                "updated_at": "2023-12-06T03:39:21.854+08:00"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admins/manage/missions/{id}/stages": {
-            "put": {
-                "security": [
-                    {
-                        "token": []
-                    }
-                ],
-                "tags": [
-                    "Manage Missions"
-                ],
-                "summary": "update stage mission by id mission",
-                "description": "update stage mission by id mission",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/idMission"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RequestMissionStageUpdate"
-                            },
-                            "examples": {
-                                "succes": {
-                                    "value": {
-                                        "mission_stage": [
-                                            {
-                                                "id": "tahapan 1",
-                                                "title": "Tahapan 1 Updated",
-                                                "description": "Deskripsi Tahapan 2 Updated"
-                                            },
-                                            {
-                                                "title": "Tahapan 2 baru",
-                                                "description": "Deskripsi Tahapan 2 baru"
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "examples": {
-                                    "success": {
-                                        "description": "OK",
-                                        "value": {
-                                            "status": true,
-                                            "message": "Berhasil mengupdate tahapan misi"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/admins/manage/recycles": {
             "get": {
                 "security": [
@@ -3173,6 +2830,586 @@
                     }
                 }
             }
+        },
+        "/admins/manage/missions": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Missions"
+                ],
+                "summary": "view all missions ",
+                "description": "view all missions",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/statusMissions"
+                    },
+                    {
+                        "$ref": "#/components/parameters/searchMissions"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseMission"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan seluruh missi",
+                                            "data": [
+                                                {
+                                                    "id": "02f9fa77-a866-449e-81f8-df99702151e3",
+                                                    "name": "buang sampah",
+                                                    "creator": "admin2",
+                                                    "status": "Aktif",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/65e62484-4263-4b24-9c2f-d911d5aac3c4.png",
+                                                    "point": 100,
+                                                    "description": "njnasd",
+                                                    "start_date": "2023-12-05",
+                                                    "end_date": "2023-12-06",
+                                                    "mission_stages": [
+                                                        {
+                                                            "id": "02f9fa77-a866-449e-df99702151e3-81f8",
+                                                            "title": "stage 1",
+                                                            "description": "ini stage 1",
+                                                            "created_at": "0001-01-01T00:00:00Z",
+                                                            "updated_at": "0001-01-01T00:00:00Z"
+                                                        }
+                                                    ],
+                                                    "created_at": "2023-12-02T16:19:15.656+08:00",
+                                                    "updated_at": "2023-12-03T19:31:31.664+08:00"
+                                                },
+                                                {
+                                                    "id": "07102bcf-70c3-4bcd-a72f-e27937a5849a",
+                                                    "name": "peduli lingkungan",
+                                                    "creator": "admin2",
+                                                    "status": "Aktif",
+                                                    "mission_image": "",
+                                                    "point": 150000,
+                                                    "description": "peduli dengan lingkungan",
+                                                    "start_date": "2023-12-03",
+                                                    "end_date": "2023-12-06",
+                                                    "mission_stages": [],
+                                                    "created_at": "2023-12-02T12:16:49.596+08:00",
+                                                    "updated_at": "2023-12-03T19:31:31.687+08:00"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            },
+                                            "count": {
+                                                "total_count": 2,
+                                                "count_active": 2,
+                                                "count_expired": 0
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Missions"
+                ],
+                "summary": "add new mission",
+                "description": "add new mission",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestMission"
+                            },
+                            "encoding": {
+                                "image": {
+                                    "style": "form"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil menambahkan missi"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/missions/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Missions"
+                ],
+                "summary": "delete  mission by id ",
+                "description": "Delete mission by ID",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idMission"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "200": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil menghapus misi"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Missions"
+                ],
+                "summary": "update by id",
+                "description": "update mission by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idMission"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestMissionUpdate"
+                            },
+                            "encoding": {
+                                "image": {
+                                    "style": "form"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mengupdate missi"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Missions"
+                ],
+                "summary": "get detail missions",
+                "description": "get detail missions",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idMission"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseMission"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mengambil data mission",
+                                            "data": {
+                                                "id": "MIS-1DF224B4D5A8407",
+                                                "name": "membuang sampah pada tempatnya",
+                                                "creator": "",
+                                                "status": "Aktif",
+                                                "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/db1efea2-806a-4ce1-b104-149ff3c50e98.png",
+                                                "point": 150000,
+                                                "description": "SEPULSA",
+                                                "start_date": "2023-12-05",
+                                                "end_date": "2023-12-06",
+                                                "mission_stages": [
+                                                    {
+                                                        "id": "xxxxxxxx",
+                                                        "title": "tahap 1",
+                                                        "description": "ini tahap 1",
+                                                        "created_at": "0001-01-01T00:00:00Z",
+                                                        "updated_at": "0001-01-01T00:00:00Z"
+                                                    }
+                                                ],
+                                                "created_at": "2023-12-05T23:14:56.185+08:00",
+                                                "updated_at": "2023-12-06T03:39:21.854+08:00"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/missions/{id}/stages": {
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Missions"
+                ],
+                "summary": "update stage mission by id mission",
+                "description": "update stage mission by id mission",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idMission"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestMissionStageUpdate"
+                            },
+                            "examples": {
+                                "succes": {
+                                    "value": {
+                                        "mission_stage": [
+                                            {
+                                                "id": "tahapan 1",
+                                                "title": "Tahapan 1 Updated",
+                                                "description": "Deskripsi Tahapan 2 Updated"
+                                            },
+                                            {
+                                                "title": "Tahapan 2 baru",
+                                                "description": "Deskripsi Tahapan 2 baru"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mengupdate tahapan misi"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/missions/approvals": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Mission Approvals"
+                ],
+                "summary": "view all missions approvals ",
+                "description": "view all missions",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/statusMissionsApprovals"
+                    },
+                    {
+                        "$ref": "#/components/parameters/searchMissionsApprovals"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseMissionApprovals"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan data",
+                                            "data": [
+                                                {
+                                                    "id": "xxxxxxxx",
+                                                    "user_id": "7b27f83b-8512-48de-a623-109aece77a2b",
+                                                    "user": "Samantha Davis",
+                                                    "mission_id": "5539f3a0-e330-4d08-8656-213558137113",
+                                                    "mission_name": "ayam",
+                                                    "description": "ini descripsi",
+                                                    "images": [],
+                                                    "status": "perlu tinjauan",
+                                                    "created_at": "2023-12-06T13:19:26+08:00",
+                                                    "updated_at": "0001-01-01T00:00:00Z"
+                                                },
+                                                {
+                                                    "id": "yyyyyyyy",
+                                                    "user_id": "642c7061-5ad8-452d-b8a3-548a69b45c4e",
+                                                    "user": "tehpucuk",
+                                                    "mission_id": "5539f3a0-e330-4d08-8656-213558137113",
+                                                    "mission_name": "ayam",
+                                                    "description": "ini juga decripi",
+                                                    "images": [
+                                                        {
+                                                            "id": "xxxxxxxxx",
+                                                            "upload_mission_task_id": "yyyyyyyy",
+                                                            "image": "ini image",
+                                                            "created_at": "2023-12-06T13:20:15+08:00"
+                                                        },
+                                                        {
+                                                            "id": "zzzzzzzz",
+                                                            "upload_mission_task_id": "yyyyyyyy",
+                                                            "image": "ini image",
+                                                            "created_at": "2023-12-06T13:20:15+08:00"
+                                                        }
+                                                    ],
+                                                    "status": "disetujui",
+                                                    "created_at": "2023-12-06T13:19:26+08:00",
+                                                    "updated_at": "0001-01-01T00:00:00Z"
+                                                },
+                                                {
+                                                    "id": "zzzzzzzzz",
+                                                    "user_id": "642c7061-5ad8-452d-b8a3-548a69b45c4e",
+                                                    "user": "tehpucuk",
+                                                    "mission_id": "5539f3a0-e330-4d08-8656-213558137113",
+                                                    "mission_name": "ayam",
+                                                    "description": "ini juga decripi",
+                                                    "reason": "foto tidak jelas",
+                                                    "images": [],
+                                                    "status": "ditolak",
+                                                    "created_at": "2023-12-06T13:19:26+08:00",
+                                                    "updated_at": "0001-01-01T00:00:00Z"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            },
+                                            "count": {
+                                                "total_count": 3,
+                                                "count_pending": 1,
+                                                "count_approved": 1,
+                                                "count_rejected": 1
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/missions/approvals/:id": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Mission Approvals"
+                ],
+                "summary": "view detail missions approvals ",
+                "description": "view detail missions approvals",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseMissionApprovals"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan data",
+                                            "data": {
+                                                "id": "yyyyyyyy",
+                                                "user_id": "642c7061-5ad8-452d-b8a3-548a69b45c4e",
+                                                "user": "yaya",
+                                                "mission_id": "5539f3a0-e330-4d08-8656-213558137113",
+                                                "mission_name": "membuang sampah",
+                                                "description": "membuang sampah pada tempatnya",
+                                                "images": [
+                                                    {
+                                                        "id": "xxxxxxxxx",
+                                                        "upload_mission_task_id": "yyyyyyyy",
+                                                        "image": "ini image url",
+                                                        "created_at": "2023-12-06T13:20:15+08:00"
+                                                    },
+                                                    {
+                                                        "id": "zzzzzzzz",
+                                                        "upload_mission_task_id": "yyyyyyyy",
+                                                        "image": "ini image url",
+                                                        "created_at": "2023-12-06T13:20:15+08:00"
+                                                    }
+                                                ],
+                                                "status": "disetujui",
+                                                "created_at": "2023-12-06T13:19:26+08:00",
+                                                "updated_at": "0001-01-01T00:00:00Z"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Mission Approvals"
+                ],
+                "summary": "update Mission Approvals by id mission",
+                "description": "update Mission Approvals by id mission",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequesStatusMissionApproval"
+                            },
+                            "examples": {
+                                "ditolak": {
+                                    "value": {
+                                        "status": "ditolak",
+                                        "reason": "foto tidak jelas"
+                                    }
+                                },
+                                "disetujui": {
+                                    "value": {
+                                        "status": "disetujui"
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "description": "OK",
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mengupdate status approval"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -3394,6 +3631,22 @@
                 "name": "search",
                 "in": "query",
                 "description": "search by title of missions",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "searchMissionsApprovals": {
+                "name": "search",
+                "in": "query",
+                "description": "search by name of user",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "statusMissionsApprovals": {
+                "name": "filter",
+                "in": "query",
+                "description": "status of mission approvals",
                 "schema": {
                     "type": "string"
                 }
@@ -3887,6 +4140,129 @@
                     }
                 }
             },
+            "ResponseExchangeTrash": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "total_unit": {
+                        "type": "number"
+                    },
+                    "total_point": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "trash_exchange_details": {
+                        "type": "object",
+                        "properties": {
+                            "trash_type": {
+                                "type": "string"
+                            },
+                            "unit": {
+                                "type": "string"
+                            },
+                            "total_points": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "pagination": {
+                        "type": "object",
+                        "properties": {
+                            "last_page": {
+                                "type": "integer"
+                            },
+                            "current_page": {
+                                "type": "integer"
+                            },
+                            "limit": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "count_data": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "ResponseDetailExchangeTrash": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "total_unit": {
+                        "type": "number"
+                    },
+                    "total_point": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "trash_exchange_details": {
+                        "type": "object",
+                        "properties": {
+                            "trash_type": {
+                                "type": "string"
+                            },
+                            "unit": {
+                                "type": "string"
+                            },
+                            "total_points": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "RequestExchangeTrash": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "trash_exchange_details": {
+                        "type": "object",
+                        "properties": {
+                            "trash_type": {
+                                "type": "string"
+                            },
+                            "unit": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "name",
+                    "email",
+                    "address"
+                ]
+            },
             "ResponseMission": {
                 "type": "object",
                 "properties": {
@@ -3940,8 +4316,19 @@
                             }
                         }
                     },
-                    "count_data": {
-                        "type": "string"
+                    "count": {
+                        "type": "object",
+                        "properties": {
+                            "total_count": {
+                                "type": "integer"
+                            },
+                            "count_active": {
+                                "type": "integer"
+                            },
+                            "count_expired": {
+                                "type": "integer"
+                            }
+                        }
                     }
                 }
             },
@@ -4099,38 +4486,45 @@
                     "end_date"
                 ]
             },
-            "ResponseExchangeTrash": {
+            "ResponseMissionApprovals": {
                 "type": "object",
                 "properties": {
-                    "name": {
+                    "user_id": {
                         "type": "string"
                     },
-                    "email": {
+                    "user": {
                         "type": "string"
                     },
-                    "address": {
+                    "mission_id": {
                         "type": "string"
                     },
-                    "total_unit": {
-                        "type": "number"
+                    "mission_name": {
+                        "type": "string"
                     },
-                    "total_point": {
-                        "type": "integer"
+                    "description": {
+                        "type": "string"
                     },
-                    "created_at": {
+                    "reason": {
+                        "type": "string"
+                    },
+                    "status": {
                         "type": "string",
-                        "format": "date"
+                        "enum": [
+                            "perlu tinjauan",
+                            "disetujui",
+                            "ditolak"
+                        ]
                     },
-                    "trash_exchange_details": {
+                    "images": {
                         "type": "object",
                         "properties": {
-                            "trash_type": {
+                            "images": {
                                 "type": "string"
                             },
-                            "unit": {
+                            "upload_mission_task_id": {
                                 "type": "string"
                             },
-                            "total_points": {
+                            "created_at": {
                                 "type": "string"
                             }
                         }
@@ -4139,87 +4533,92 @@
                         "type": "object",
                         "properties": {
                             "last_page": {
-                                "type": "integer"
+                                "type": "string"
                             },
                             "current_page": {
-                                "type": "integer"
+                                "type": "string"
                             },
                             "limit": {
                                 "type": "integer"
                             }
                         }
                     },
-                    "count_data": {
-                        "type": "integer"
+                    "count": {
+                        "type": "object",
+                        "properties": {
+                            "total_count": {
+                                "type": "string"
+                            },
+                            "count_pending": {
+                                "type": "string"
+                            },
+                            "count_rejected": {
+                                "type": "string"
+                            },
+                            "count_approved": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             },
-            "ResponseDetailExchangeTrash": {
+            "ResponseMissionDetailsApprovals": {
                 "type": "object",
                 "properties": {
-                    "name": {
+                    "user_id": {
                         "type": "string"
                     },
-                    "email": {
+                    "user": {
                         "type": "string"
                     },
-                    "address": {
+                    "mission_id": {
                         "type": "string"
                     },
-                    "total_unit": {
-                        "type": "number"
+                    "mission_name": {
+                        "type": "string"
                     },
-                    "total_point": {
-                        "type": "integer"
+                    "description": {
+                        "type": "string"
                     },
-                    "created_at": {
+                    "reason": {
+                        "type": "string"
+                    },
+                    "status": {
                         "type": "string",
-                        "format": "date"
+                        "enum": [
+                            "perlu tinjauan",
+                            "disetujui",
+                            "ditolak"
+                        ]
                     },
-                    "trash_exchange_details": {
+                    "images": {
                         "type": "object",
                         "properties": {
-                            "trash_type": {
+                            "images": {
                                 "type": "string"
                             },
-                            "unit": {
+                            "upload_mission_task_id": {
                                 "type": "string"
                             },
-                            "total_points": {
+                            "created_at": {
                                 "type": "string"
                             }
                         }
                     }
                 }
             },
-            "RequestExchangeTrash": {
+            "RequesStatusMissionApproval": {
                 "type": "object",
                 "properties": {
-                    "name": {
+                    "status": {
                         "type": "string"
                     },
-                    "email": {
-                        "type": "string"
-                    },
-                    "address": {
-                        "type": "string"
-                    },
-                    "trash_exchange_details": {
-                        "type": "object",
-                        "properties": {
-                            "trash_type": {
-                                "type": "string"
-                            },
-                            "unit": {
-                                "type": "string"
-                            }
-                        }
+                    "reason": {
+                        "type": "integer"
                     }
                 },
                 "required": [
-                    "name",
-                    "email",
-                    "address"
+                    "status"
                 ]
             }
         },

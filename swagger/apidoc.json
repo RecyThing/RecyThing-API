@@ -3289,7 +3289,7 @@
                 }
             }
         },
-        "/admins/manage/missions/approvals/:id": {
+        "/admins/manage/missions/approvals/{id}": {
             "get": {
                 "security": [
                     {

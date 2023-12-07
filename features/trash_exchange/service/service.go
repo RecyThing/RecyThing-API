@@ -34,7 +34,7 @@ func NewTrashExchangeService(trashExchange trashExchange.TrashExchangeRepository
 // CreateTrashExchange implements entity.TrashExchangeServiceInterface.
 func (tes *trashExchangeService) CreateTrashExchange(data trashExchange.TrashExchangeCore) (trashExchange.TrashExchangeCore, error) {
 	
-	data.Id = helper.GenerateRandomID(4)
+	data.Id = helper.GenerateRandomID("PS", 5)
 	errEmpty := validation.CheckDataEmpty(data.Name, data.EmailUser, data.Address)
 	if errEmpty != nil {
 		return trashExchange.TrashExchangeCore{}, errEmpty

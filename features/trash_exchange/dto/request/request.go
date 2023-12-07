@@ -8,6 +8,6 @@ type TrashExchangeRequest struct {
 }
 
 type TrashExchangeDetailRequest struct {
-	TrashType string `json:"trash_type"`
-	Unit      string `json:"unit"`
+	TrashType string  `json:"trash_type"`
+	Amount    float64 `json:"amount"`
 }

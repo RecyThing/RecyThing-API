@@ -25,3 +25,4 @@ jobs:
             git pull origin apidoc
             rm -rf /var/www/html/swagger
             cp -r swagger /var/www/html/
+            

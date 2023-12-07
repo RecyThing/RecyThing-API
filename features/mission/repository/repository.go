@@ -43,7 +43,9 @@ func (mr *MissionRepository) CreateMission(input entity.Mission) error {
 func (mr *MissionRepository) FindAllMission(page, limit int, search, filter string) ([]entity.Mission, pagination.PageInfo, helper.CountMission, error) {
 	data := []model.Mission{}
 	offsetInt := (page - 1) * limit
+
 	paginationQuery := mr.db.Limit(limit).Offset(offsetInt)
+
 	counts, _ := mr.GetCountDataMission()
 	totalCount, err := mr.GetCountMission(filter, search)
 	if err != nil {
@@ -56,13 +58,28 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 			return nil, pagination.PageInfo{}, counts, tx.Error
 		}
 	}
-
+	newCount := helper.CountMission{}
 	if search != "" {
-		counts.TotalCount = int64(totalCount)
-		tx := paginationQuery.Where("title LIKE?", "%"+search+"%").Preload("MissionStages").Find(&data)
+
+		list := model.Mission{}
+		tx := mr.db.Model(&list).Where("status LIKE ? AND title LIKE ?", "%"+constanta.OVERDUE+"%", "%"+search+"%").Count(&newCount.CountExpired)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, counts, tx.Error
 		}
+
+		list2 := model.Mission{}
+		tx = mr.db.Model(&list2).Where("status LIKE ? AND title LIKE ?", "%"+constanta.ACTIVE+"%", "%"+search+"%").Count(&newCount.CountActive)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, tx.Error
+		}
+
+		counts.TotalCount = int64(totalCount)
+		tx = paginationQuery.Where("title LIKE ?", "%"+search+"%").Preload("MissionStages").Find(&data)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, tx.Error
+		}
+		counts.CountActive = newCount.CountActive
+		counts.CountExpired = newCount.CountExpired
 	}
 
 	if search == "" || filter == "" {
@@ -566,8 +583,31 @@ func (mr *MissionRepository) FindAllMissionApproval(page, limit int, search, fil
 	}
 
 	if search != "" {
+		newCounts := helper.CountMissionApproval{}
+		tx := mr.db.Model(&model.UploadMissionTask{}).
+			Joins("JOIN users ON upload_mission_tasks.user_id = users.id").
+			Where("users.fullname LIKE ? AND status LIKE ?", "%"+search+"%", "%"+constanta.DISETUJUI+"%").Count(&newCounts.CountApproved)
+
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, errors.New("error disini")
+
+		}
+
+		tx = mr.db.Model(&model.UploadMissionTask{}).
+			Joins("JOIN users ON upload_mission_tasks.user_id = users.id").
+			Where("users.fullname LIKE ? AND status LIKE ?", "%"+search+"%", "%"+constanta.DITOLAK+"%").Count(&newCounts.CountRejected)
+
+		tx = mr.db.Model(&model.UploadMissionTask{}).
+			Joins("JOIN users ON upload_mission_tasks.user_id = users.id").
+			Where("users.fullname LIKE ? AND status LIKE ?", "%"+search+"%", "%"+constanta.PERLU_TINJAUAN+"%").Count(&newCounts.CountPending)
+
 		counts.TotalCount = int64(totalCount)
-		tx := paginationQuery.Model(&model.UploadMissionTask{}).
+		counts.CountApproved = newCounts.CountApproved
+		counts.CountRejected = newCounts.CountRejected
+		counts.CountPending = newCounts.CountPending
+
+		
+		tx = paginationQuery.Model(&model.UploadMissionTask{}).
 			Joins("JOIN users ON upload_mission_tasks.user_id = users.id").
 			Where("users.fullname LIKE ?", "%"+search+"%").Preload("Images").
 			Find(&approvalMission)

@@ -2037,7 +2037,7 @@
                     }
                 ],
                 "tags": [
-                    "Manage Trash Category"
+                    "Trash Category"
                 ],
                 "summary": "get detail",
                 "description": "get detail category trash",
@@ -2076,7 +2076,61 @@
                     }
                 }
             }
+        },
+        "/achievements": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Achievements"
+                ],
+                "summary": "get all Achievements",
+                "description": "",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil mengambil semua data",
+                                            "data": [
+                                                {
+                                                    "id": 1,
+                                                    "name": "platinum",
+                                                    "target_point": 250000
+                                                },
+                                                {
+                                                    "id": 2,
+                                                    "name": "gold",
+                                                    "target_point": 51000
+                                                },
+                                                {
+                                                    "id": 3,
+                                                    "name": "silver",
+                                                    "target_point": 50000
+                                                },
+                                                {
+                                                    "id": 4,
+                                                    "name": "bronze",
+                                                    "target_point": 0
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+
 
     },
     "components": {

@@ -6,7 +6,7 @@ on:
       - apidoc
 
 jobs:
-  deploy-prod:
+  deploy-swagger:
     runs-on: ubuntu-latest
 
     steps:

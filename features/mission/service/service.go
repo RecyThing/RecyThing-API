@@ -8,6 +8,7 @@ import (
 
 	"recything/features/mission/entity"
 	"recything/utils/constanta"
+	"recything/utils/helper"
 	"recything/utils/pagination"
 	"recything/utils/storage"
 	"recything/utils/validation"
@@ -68,21 +69,21 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 	return nil
 }
 
-func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]entity.Mission, pagination.PageInfo, int, error) {
+func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]entity.Mission, pagination.PageInfo, helper.CountMission, error) {
 	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
-		return nil, pagination.PageInfo{}, 0, err
+		return nil, pagination.PageInfo{}, helper.CountMission{}, err
 	}
 
 	data, pagnationInfo, count, err := ms.MissionRepo.FindAllMission(pageInt, limitInt, search, filter)
 	if err != nil {
-		return nil, pagination.PageInfo{}, 0, err
+		return nil, pagination.PageInfo{}, count, err
 	}
 
 	for i := range data {
 		admin, err := ms.AdminRepo.SelectById(data[i].AdminID)
 		if err != nil {
-			return nil, pagination.PageInfo{}, 0, err
+			return nil, pagination.PageInfo{}, count, err
 		}
 
 		data[i].Creator = admin.Fullname
@@ -225,14 +226,14 @@ func (ms *missionService) UpdateUploadMissionTask(userID, id string, images []*m
 }
 
 // Mission Approval
-func (ms *missionService) FindAllMissionApproval(page, limit, search, filter string) ([]entity.UploadMissionTaskCore, pagination.PageInfo, int, error) {
+func (ms *missionService) FindAllMissionApproval(page, limit, search, filter string) ([]entity.UploadMissionTaskCore, pagination.PageInfo, helper.CountMissionApproval, error) {
 	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
-		return nil, pagination.PageInfo{}, 0, err
+		return nil, pagination.PageInfo{}, helper.CountMissionApproval{}, err
 	}
 	data, pagination, count, err := ms.MissionRepo.FindAllMissionApproval(pageInt, limitInt, search, filter)
 	if err != nil {
-		return nil, pagination, 0, err
+		return nil, pagination, count, err
 
 	}
 	newData := []entity.UploadMissionTaskCore{}

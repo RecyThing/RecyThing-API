@@ -3,11 +3,12 @@ package repository
 import (
 	"recything/features/dashboard/entity"
 	report "recything/features/report/entity"
-	voucher "recything/features/voucher/entity"
 	modelReport "recything/features/report/model"
+	trash "recything/features/trash_exchange/entity"
 	modelTrash "recything/features/trash_exchange/model"
 	user "recything/features/user/entity"
 	modelUser "recything/features/user/model"
+	voucher "recything/features/voucher/entity"
 	modelVoucher "recything/features/voucher/model"
 	"time"
 
@@ -104,69 +105,103 @@ func (dr *dashboardRepository) CountVoucherExchanges() ([]voucher.ExchangeVouche
 }
 
 // CountReports implements entity.DashboardRepositoryInterface.
-func (dr *dashboardRepository) CountReports() (int64, int64, error) {
+func (dr *dashboardRepository) CountReports() ([]report.ReportCore, []report.ReportCore, error) {
 	now := time.Now()
 	lastMonth := now.AddDate(0, -1, 0)
 
 	// Hitung total pelaporan bulan ini
-	var totalThisMonth int64
+	var reportThisMonth []modelReport.Report
 	if err := dr.db.Model(&modelReport.Report{}).
 		Where("MONTH(created_at) = ? AND YEAR(created_at) = ?", now.Month(), now.Year()).
-		Count(&totalThisMonth).Error; err != nil {
-		return 0, 0, err
+		Find(&reportThisMonth).Error; err != nil {
+		return nil, nil, err
 	}
 
 	// Hitung total pelaporan bulan lalu
-	var totalLastMonth int64
+	var reportLastMonth []modelReport.Report
 	if err := dr.db.Model(&modelReport.Report{}).
 		Where("MONTH(created_at) = ? AND YEAR(created_at) = ?", lastMonth.Month(), lastMonth.Year()).
-		Count(&totalLastMonth).Error; err != nil {
-		return 0, 0, err
+		Find(&reportLastMonth).Error; err != nil {
+		return nil, nil, err
 	}
 
-	return totalThisMonth, totalLastMonth, nil
+	coreThisMonth := report.ListReportModelToReportCore(reportThisMonth)
+	coreLastMonth := report.ListReportModelToReportCore(reportLastMonth)
+
+	return coreThisMonth, coreLastMonth, nil
 }
 
 // CountTrashExchanges implements entity.DashboardRepositoryInterface.
-func (dr *dashboardRepository) CountTrashExchanges() (int64, int64, error) {
+func (dr *dashboardRepository) CountTrashExchanges() ([]trash.TrashExchangeCore, []trash.TrashExchangeCore, error) {
 	now := time.Now()
 	lastMonth := now.AddDate(0, -1, 0)
 
 	// Hitung total TrashExchange bulan ini
-	var totalThisMonth int64
+	var totalThisMonth []modelTrash.TrashExchange
 	if err := dr.db.Model(&modelTrash.TrashExchange{}).
 		Where("MONTH(created_at) = ? AND YEAR(created_at) = ?", now.Month(), now.Year()).
-		Count(&totalThisMonth).Error; err != nil {
-		return 0, 0, err
+		Find(&totalThisMonth).Error; err != nil {
+		return nil, nil, err
 	}
 
 	// Hitung total TrashExchange bulan lalu
-	var totalLastMonth int64
+	var totalLastMonth []modelTrash.TrashExchange
 	if err := dr.db.Model(&modelTrash.TrashExchange{}).
 		Where("MONTH(created_at) = ? AND YEAR(created_at) = ?", lastMonth.Month(), lastMonth.Year()).
-		Count(&totalLastMonth).Error; err != nil {
-		return 0, 0, err
+		Find(&totalLastMonth).Error; err != nil {
+		return nil, nil, err
 	}
 
-	return totalThisMonth, totalLastMonth, nil
+	coreThisMonth := trash.ListTrashExchangeModelToTrashExchangeCoreForGetData(totalThisMonth)
+	coreLastMonth := trash.ListTrashExchangeModelToTrashExchangeCoreForGetData(totalLastMonth)
+
+	return coreThisMonth, coreLastMonth, nil
 }
 
 // CountScaleTypes implements entity.DashboardRepositoryInterface.
-func (dr *dashboardRepository) CountScaleTypes() (int64, int64, error) {
-	var totalLargeScale int64
+func (dr *dashboardRepository) CountScaleTypes() ([]report.ReportCore, []report.ReportCore, error) {
+	var totalLargeScale []modelReport.Report
 	if err := dr.db.Model(&modelReport.Report{}).
 		Where("scale_type = ?", "skala besar").
-		Count(&totalLargeScale).Error; err != nil {
-		return 0, 0, err
+		Find(&totalLargeScale).Error; err != nil {
+		return nil, nil, err
 	}
 
 	// Hitung total pelaporan skala kecil
-	var totalSmallScale int64
+	var totalSmallScale []modelReport.Report
 	if err := dr.db.Model(&modelReport.Report{}).
 		Where("scale_type = ?", "skala kecil").
-		Count(&totalSmallScale).Error; err != nil {
-		return 0, 0, err
+		Find(&totalSmallScale).Error; err != nil {
+		return nil, nil, err
 	}
 
-	return totalLargeScale, totalSmallScale, nil
+	coreThisMonth := report.ListReportModelToReportCore(totalLargeScale)
+	coreLastMonth := report.ListReportModelToReportCore(totalSmallScale)
+
+	return coreThisMonth, coreLastMonth, nil
+}
+
+// GetUserRanking implements entity.DashboardRepositoryInterface.
+func (dr *dashboardRepository) GetUserRanking() ([]user.UsersCore, error) {
+	var userPoints []modelUser.Users
+	limit := 3
+	err := dr.db.Model(&modelUser.Users{}).Order("point DESC").Limit(limit).Find(&userPoints).Error
+	if err != nil {
+		return nil, err
+	}
+
+	mappedUsers := user.ListUserModelToUserCore(userPoints)
+	return mappedUsers, nil
+}
+
+// CountWeeklyTrashAndScalaTypes implements entity.DashboardRepositoryInterface.
+func (dr *dashboardRepository) CountWeeklyTrashAndScalaTypes() ([]report.ReportCore, error) {
+	var trashAndScalaTypes []modelReport.Report
+	if err := dr.db.Model(&modelReport.Report{}).
+		Find(&trashAndScalaTypes).Error; err != nil {
+		return nil, err
+	}
+
+	coreThisMonth := report.ListReportModelToReportCore(trashAndScalaTypes)
+	return coreThisMonth, nil
 }

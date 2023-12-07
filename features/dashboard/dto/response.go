@@ -1,30 +1,42 @@
 package dto
 
 type GetCountUserResponse struct {
-	TotalPenggunaAktif string `json:"total_pengguna_aktif"`
-	Persentase         string `json:"persentase"`
-	Status             string `json:"status"`
+	TotalUserActive string `json:"total_user_active"`
+	Percentage      string `json:"percentage"`
+	Status          string `json:"status"`
 }
 
 type GetCountExchangeVoucherResponse struct {
-	TotalPenukaran string `json:"total_penukaran"`
-	Persentase     string `json:"persentase"`
-	Status         string `json:"status"`
+	TotalExchange string `json:"total_exchange"`
+	Percentage    string `json:"percentage"`
+	Status        string `json:"status"`
 }
 
 type GetCountReportingResponse struct {
 	TotalReporting string `json:"total_report"`
-	Persentase     string `json:"persentase"`
+	Percentage     string `json:"percentage"`
 	Status         string `json:"status"`
 }
 
 type GetCountTrashExchangeResponse struct {
 	TotalTrashExchange string `json:"total_recycle"`
-	Persentase         string `json:"persentase"`
+	Percentage         string `json:"percentage"`
 	Status             string `json:"status"`
 }
 
 type GetCountScaleTypeResponse struct {
-	PersentaseLargeScale string `json:"large_scale"`
-	PersentaseSmallScale string `json:"small_scale"`
+	PercentageLargeScale string `json:"large_scale"`
+	PercentageSmallScale string `json:"small_scale"`
+}
+
+type UserRankingResponse struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Point int    `json:"point"`
+}
+
+type WeeklyStatsResponse struct {
+	Week      int `json:"week"`
+	TrashType int `json:"trash_type"`
+	ScaleType int `json:"scale_type"`
 }

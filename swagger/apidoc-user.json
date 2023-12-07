@@ -1002,6 +1002,60 @@
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Users Point & Voucher"
+                ],
+                "summary": "exchange point/claim voucher",
+                "description": "",
+                "requestBody":{
+                    "content": {
+                        "application/json":{
+                            "schema":{
+                                "properties": {
+                                    "id_voucher":{
+                                        "type": "string"
+                                    },
+                                    "phone":{
+                                        "type": "string"
+                                    }
+                                }
+                                
+                            },
+                            "examples": {
+                                "success":{
+                                    "value":{
+                                        "id_voucher": "6ed16184-ac8b-4c1c-8102-015d6231157b",
+                                        "phone": "082298667543"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "examples": {
+                                    "success":{
+                                        "value":{
+                                            "status":true,
+                                            "message":"berhasil membuat data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/vouchers/{id}": {

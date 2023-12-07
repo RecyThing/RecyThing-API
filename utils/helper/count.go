@@ -1,9 +1,14 @@
 package helper
 
 type CountMissionApproval struct {
-	All         int64 `json:"all"`
-	NeedReview  int64 `json:"need_review"`
-	NotApproved int64 `json:"not_approved"`
-	Approved    int64 `json:"approved"`
-	Search      int64 `json:"search,omitempty"`
+	TotalCount    int64 `json:"total_count"`
+	CountPending  int64 `json:"count_pending"`
+	CountApproved int64 `json:"count_approved"`
+	CountRejected int64 `json:"count_rejected"`
+}
+
+type CountMission struct {
+	TotalCount   int64 `json:"total_count"`
+	CountActive  int64 `json:"count_active"`
+	CountExpired int64 `json:"count_expired"`
 }

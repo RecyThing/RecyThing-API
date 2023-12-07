@@ -1,0 +1,27 @@
+name: Deploy Swagger to Server
+
+on:
+  push:
+    branches:
+      - apidoc
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Connect to server using SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd RecyThing-API/
+            git pull origin apidoc
+            rm -rf /var/www/html/swagger
+            cp -r swagger /var/www/html/

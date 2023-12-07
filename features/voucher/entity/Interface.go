@@ -15,6 +15,7 @@ type VoucherRepositoryInterface interface {
 	CreateExchangeVoucher(idUser string, data ExchangeVoucherCore) error
 	GetAllExchange() ([]ExchangeVoucherCore, error) 
 	GetByIdExchange(idExchange string) (ExchangeVoucherCore, error)
+	UpdateStatusExchange(id, status string)  error
 }
 
 type VoucherServiceInterface interface {
@@ -26,4 +27,5 @@ type VoucherServiceInterface interface {
 	CreateExchangeVoucher(idUser string, data ExchangeVoucherCore) error
 	GetAllExchange() ([]ExchangeVoucherCore, error) 
 	GetByIdExchange(idExchange string) (ExchangeVoucherCore, error)
+	UpdateStatusExchange(id string, status string)  error
 }

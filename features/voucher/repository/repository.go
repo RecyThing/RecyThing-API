@@ -212,3 +212,25 @@ func (vr *voucherRepository) GetByIdExchange(idExchange string) (entity.Exchange
 
 	return dataResponse, nil
 }
+
+func (vr *voucherRepository) UpdateStatusExchange(id, status string) error {
+	dataExchange := model.ExchangeVoucher{}
+
+	errData := vr.db.Where("id = ?", id).First(&dataExchange)
+	if errData.Error != nil {
+		return errData.Error
+	}
+
+	dataExchange.Status = status
+
+	tx := vr.db.Save(&dataExchange)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	}
+
+	return nil
+}

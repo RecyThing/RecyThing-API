@@ -33,5 +33,5 @@ func RouteVoucher(e *echo.Group, db *gorm.DB) {
 	adminExchange := e.Group("/admins/manage/exchange-point", jwt.JWTMiddleware())
 	adminExchange.GET("", voucherHandler.GetAllExchange)
 	adminExchange.GET("/:id", voucherHandler.GetByIdExchange)
-
+	adminExchange.PATCH("/:id", voucherHandler.UpdateStatusExchange)
 }

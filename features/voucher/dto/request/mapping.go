@@ -28,3 +28,9 @@ func RequestVoucherExchangeToCoreVoucherExchange(data VoucherExchangeRequest) en
 		Phone:     data.Phone,
 	}
 }
+
+func RequestExchangeVoucherRequestToCoreExchangeVoucher(data ExchangeVoucherRequest) entity.ExchangeVoucherCore {
+	return entity.ExchangeVoucherCore{
+		Status: data.Status,
+	}
+}

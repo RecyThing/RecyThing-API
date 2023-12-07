@@ -12,3 +12,10 @@ type CountMission struct {
 	CountActive  int64 `json:"count_active"`
 	CountExpired int64 `json:"count_expired"`
 }
+
+type CountExchangeVoucher struct {
+	TotalCount   int64 `json:"total_count"`
+	CountNewest  int64 `json:"count_newest"`
+	CountProcess int64 `json:"count_process"`
+	CountDone    int64 `json:"count_done"`
+}

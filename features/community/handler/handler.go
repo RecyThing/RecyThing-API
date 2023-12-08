@@ -101,10 +101,14 @@ func (ch *communityHandler) GetCommunityById(e echo.Context) error {
 	id := e.Param("id")
 	result, err := ch.communityService.GetCommunityById(id)
 	if err != nil {
-		if helper.HttpResponseCondition(err, constanta.ERROR_RECORD_NOT_FOUND) {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
-
 		}
+
+		if strings.Contains(err.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
+
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
@@ -125,9 +129,14 @@ func (ch *communityHandler) DeleteCommunityById(e echo.Context) error {
 	id := e.Param("id")
 	err := ch.communityService.DeleteCommunityById(id)
 	if err != nil {
-		if helper.HttpResponseCondition(err, constanta.ERROR_DATA_NOT_FOUND) {
-			return e.JSON(http.StatusNotFound, helper.ErrorResponse(err.Error()))
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
 		}
+
+		if strings.Contains(err.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
+
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
@@ -157,10 +166,11 @@ func (ch *communityHandler) UpdateCommunityById(e echo.Context) error {
 	request := request.RequestCommunityToCoreCommunity(input)
 	err = ch.communityService.UpdateCommunityById(id, image, request)
 	if err != nil {
-		if helper.HttpResponseCondition(err, constanta.ERROR_RECORD_NOT_FOUND) {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
 		}
-		if helper.HttpResponseCondition(err, constanta.ERROR_MESSAGE...) {
+
+		if strings.Contains(err.Error(), constanta.ERROR) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 		}
 
@@ -204,6 +214,14 @@ func (ch *communityHandler) CreateEvent(e echo.Context) error {
 	eventInput := request.EventRequestToEventCore(newEvent)
 	errCreate := ch.communityService.CreateEvent(idParams, eventInput, image)
 	if errCreate != nil {
+		if strings.Contains(errCreate.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+
+		if strings.Contains(errCreate.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errCreate.Error()))
+		}
+
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errCreate.Error()))
 	}
 
@@ -228,6 +246,13 @@ func (ch *communityHandler) DeleteEvent(e echo.Context) error {
 
 	errDelete := ch.communityService.DeleteEvent(idKom, idEve)
 	if errDelete != nil {
+		if strings.Contains(errDelete.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+
+		if strings.Contains(errDelete.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errDelete.Error()))
+		}
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errDelete.Error()))
 	}
 
@@ -250,7 +275,14 @@ func (ch *communityHandler) ReadAllEvent(e echo.Context) error {
 
 	eventData, paginationInfo, count, err := ch.communityService.ReadAllEvent(page, limit, search, idKom)
 	if err != nil {
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan artikel"))
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+
+		if strings.Contains(err.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	var eventResponse = response.ListEventCoreToListEventRessponse(eventData)
@@ -272,10 +304,17 @@ func (ch *communityHandler) ReadEvent(e echo.Context) error {
 
 	eventData, errRead := ch.communityService.ReadEvent(idKom, idEve)
 	if errRead != nil {
-		return e.JSON(http.StatusNotFound, helper.ErrorResponse("gagal membaca data"))
+		if strings.Contains(errRead.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+
+		if strings.Contains(errRead.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errRead.Error()))
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errRead.Error()))
 	}
 
-	var eventResponse = response.EventCoreToEventResponse(eventData)
+	var eventResponse = response.EventCoreToEventResponseDetail(eventData)
 
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan event", eventResponse))
 }
@@ -307,6 +346,13 @@ func (ch *communityHandler) UpdateEvent(e echo.Context) error {
 	eventInput := request.EventRequestToEventCore(updateData)
 	errUpdate := ch.communityService.UpdateEvent(idKom, idEve, eventInput, image)
 	if errUpdate != nil {
+		if strings.Contains(errUpdate.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+
+		if strings.Contains(errUpdate.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(errUpdate.Error()))
+		}
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errUpdate.Error()))
 	}
 

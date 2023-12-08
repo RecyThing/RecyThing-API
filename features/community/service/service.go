@@ -122,22 +122,22 @@ func (cs *communityService) UpdateCommunityById(id string, image *multipart.File
 
 // CreateEvent implements entity.CommunityServiceInterface.
 func (cs *communityService) CreateEvent(communityId string, eventInput entity.CommunityEventCore, image *multipart.FileHeader) error {
-	errEmpty := validation.CheckDataEmpty(eventInput.Title, eventInput.Description, eventInput.Date, 
+	errEmpty := validation.CheckDataEmpty(eventInput.Title, eventInput.Description, eventInput.Date,
 		eventInput.Quota, eventInput.Location, eventInput.MapLink, eventInput.FormLink)
-	if errEmpty != nil{
+	if errEmpty != nil {
 		return errEmpty
 	}
 
 	if _, parseErr := time.Parse("2006/01/02", eventInput.Date); parseErr != nil {
-		return  errors.New("error, tanggal harus dalam format 'yyyy/mm/dd'")
+		return errors.New("error, tanggal harus dalam format 'yyyy/mm/dd'")
 	}
 
 	if image != nil && image.Size > 5*1024*1024 {
 		return errors.New("ukuran file tidak boleh lebih dari 5 MB")
 	}
 
-	errInsert := cs.communityRepository.CreateEvent(communityId,eventInput,image)
-	if errInsert != nil{
+	errInsert := cs.communityRepository.CreateEvent(communityId, eventInput, image)
+	if errInsert != nil {
 		return errInsert
 	}
 
@@ -145,12 +145,12 @@ func (cs *communityService) CreateEvent(communityId string, eventInput entity.Co
 }
 
 // DeleteEvent implements entity.CommunityServiceInterface.
-func (cs *communityService) DeleteEvent(communityId string ,eventId string) error {
-	if eventId == ""{
+func (cs *communityService) DeleteEvent(communityId string, eventId string) error {
+	if eventId == "" {
 		return errors.New("id event tidak ditemukan")
 	}
 
-	errEvent := cs.communityRepository.DeleteEvent(communityId,eventId)
+	errEvent := cs.communityRepository.DeleteEvent(communityId, eventId)
 	if errEvent != nil {
 		return errors.New("gagal menghapus event " + errEvent.Error())
 	}
@@ -161,11 +161,11 @@ func (cs *communityService) DeleteEvent(communityId string ,eventId string) erro
 // ReadAllEvent implements entity.CommunityServiceInterface.
 func (cs *communityService) ReadAllEvent(page int, limit int, search string, communityId string) ([]entity.CommunityEventCore, pagination.PageInfo, int, error) {
 	if limit > 10 {
-		return nil, pagination.PageInfo{}, 0,errors.New("limit tidak boleh lebih dari 10")
-    }
+		return nil, pagination.PageInfo{}, 0, errors.New("limit tidak boleh lebih dari 10")
+	}
 
 	page, limit = validation.ValidateCountLimitAndPage(page, limit)
-	
+
 	event, pageInfo, count, err := cs.communityRepository.ReadAllEvent(page, limit, search, communityId)
 	if err != nil {
 		return []entity.CommunityEventCore{}, pagination.PageInfo{}, 0, err
@@ -176,12 +176,12 @@ func (cs *communityService) ReadAllEvent(page int, limit int, search string, com
 
 // ReadEvent implements entity.CommunityServiceInterface.
 func (cs *communityService) ReadEvent(communityId string, eventId string) (entity.CommunityEventCore, error) {
-	if eventId == ""{
+	if eventId == "" {
 		return entity.CommunityEventCore{}, errors.New("event tidak ditemukan")
 	}
 
 	eventData, err := cs.communityRepository.ReadEvent(communityId, eventId)
-	if err != nil{
+	if err != nil {
 		return entity.CommunityEventCore{}, errors.New("gagal membaca data event")
 	}
 
@@ -190,18 +190,18 @@ func (cs *communityService) ReadEvent(communityId string, eventId string) (entit
 
 // UpdateEvent implements entity.CommunityServiceInterface.
 func (cs *communityService) UpdateEvent(communityId string, eventId string, eventInput entity.CommunityEventCore, image *multipart.FileHeader) error {
-	if eventId == ""{
+	if eventId == "" {
 		return errors.New("event tidak ditemukan")
 	}
 
-	errEmpty := validation.CheckDataEmpty(eventInput.Title, eventInput.Description, eventInput.Date, 
+	errEmpty := validation.CheckDataEmpty(eventInput.Title, eventInput.Description, eventInput.Date,
 		eventInput.Quota, eventInput.Location, eventInput.MapLink, eventInput.FormLink)
-	if errEmpty != nil{
+	if errEmpty != nil {
 		return errEmpty
 	}
 
 	if _, parseErr := time.Parse("2006/01/02", eventInput.Date); parseErr != nil {
-		return  errors.New("error, tanggal harus dalam format 'yyyy/mm/dd'")
+		return errors.New("error, tanggal harus dalam format 'yyyy/mm/dd'")
 	}
 
 	if image != nil && image.Size > 5*1024*1024 {
@@ -209,7 +209,7 @@ func (cs *communityService) UpdateEvent(communityId string, eventId string, even
 	}
 
 	errInsert := cs.communityRepository.UpdateEvent(communityId, eventId, eventInput, image)
-	if errInsert != nil{
+	if errInsert != nil {
 		return errInsert
 	}
 

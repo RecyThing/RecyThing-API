@@ -3703,7 +3703,7 @@
                 }
             }
         },
-        "/admins/manage/communities/{id}": {
+        "/admins/manage/communities/{idcommunity}": {
             "get": {
                 "security": [
                     {
@@ -3797,7 +3797,7 @@
                 "tags": [
                     "Manage Community"
                 ],
-                "summary": "update community",
+                "summary": "delete community",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/IdCommunity"
@@ -3807,12 +3807,254 @@
                     "200": {
                         "description": "OK",
                         "content": {
-                            "application/json":{
+                            "application/json": {
                                 "examples": {
-                                    "success":{
-                                        "value":{
+                                    "success": {
+                                        "value": {
                                             "status": true,
                                             "message": "berhasil menghapus data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/event/{idcommunity}": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Community Event"
+                ],
+                "summary": "create new event",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdCommunity"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestCommunityEvent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil menambahkan event"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Community Event"
+                ],
+                "summary": "get all event",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdCommunity"
+                    },
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan semua event",
+                                            "data": [
+                                                {
+                                                    "id": "31ab023d-c3fd-43c7-b34f-d9fd15324924",
+                                                    "communityId": "dc47e2f1-2c4f-4047-b90f-e0a25d8d43a9",
+                                                    "title": "Minggu Bersih",
+                                                    "quota": 100,
+                                                    "date": "2023/12/30",
+                                                    "status": "belum berjalan"
+                                                },
+                                                {
+                                                    "id": "f32cc071-f274-4ff7-9bf6-3017e00173f4",
+                                                    "communityId": "dc47e2f1-2c4f-4047-b90f-e0a25d8d43a9",
+                                                    "title": "Minggu Bersih",
+                                                    "quota": 100,
+                                                    "date": "2023/12/30",
+                                                    "status": "belum berjalan"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            },
+                                            "count_data": 2
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/event/{idcommunity}/{idevent}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Community Event"
+                ],
+                "summary": "get detail event",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdCommunity"
+                    },
+                    {
+                        "$ref": "#/components/parameters/IdCommunityEvent"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan event",
+                                            "data": {
+                                                "id": "f32cc071-f274-4ff7-9bf6-3017e00173f4",
+                                                "communityId": "dc47e2f1-2c4f-4047-b90f-e0a25d8d43a9",
+                                                "title": "Minggu Bersih",
+                                                "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/111ce96d-3629-4471-90b8-9c9b8432a4e4.jpg",
+                                                "description": "Hari minggu bersih bersih",
+                                                "location": "Jakarta Selatan",
+                                                "maplink": "https://maps.app.goo.gl/JN4bsdsTYwVMBkkg8",
+                                                "formlink": "https://www.google.com/intl/id_id/forms/about/",
+                                                "quota": 100,
+                                                "date": "2023/12/29",
+                                                "status": "berjalan"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Community Event"
+                ],
+                "summary": "update community event",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdCommunity"
+                    },
+                    {
+                        "$ref": "#/components/parameters/IdCommunityEvent"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestCommunityEvent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil update event"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Community Event"
+                ],
+                "summary": "get detail event",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdCommunity"
+                    },
+                    {
+                        "$ref": "#/components/parameters/IdCommunityEvent"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": false,
+                                            "message": "data tidak ditemukan"
                                         }
                                     }
                                 }
@@ -4044,7 +4286,7 @@
                 }
             },
             "IdCommunity": {
-                "name": "id",
+                "name": "idcommunity",
                 "in": "path",
                 "description": "id of community",
                 "required": true,
@@ -4054,6 +4296,20 @@
                 "examples": {
                     "id": {
                         "value": "dc47e2f1-2c4f-4047-b90f-e0a25d8d43a9"
+                    }
+                }
+            },
+            "IdCommunityEvent": {
+                "name": "idevent",
+                "in": "path",
+                "description": "id of community event",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "id": {
+                        "value": "f32cc071-f274-4ff7-9bf6-3017e00173f4"
                     }
                 }
             },
@@ -5081,6 +5337,56 @@
                     "description",
                     "location",
                     "max_members"
+                ]
+            },
+            "RequestCommunityEvent": {
+                "type": "object",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "maplink": {
+                        "type": "string"
+                    },
+                    "formlink": {
+                        "type": "string"
+                    },
+                    "quota": {
+                        "type": "integer"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "berjalan",
+                            "belum berjalan",
+                            "selesai"
+                        ]
+                    }
+                },
+                "required": [
+                    "image",
+                    "title",
+                    "description",
+                    "location",
+                    "maplink",
+                    "formlink",
+                    "quota",
+                    "date",
+                    "status"
                 ]
             }
         },

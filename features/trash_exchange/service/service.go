@@ -77,7 +77,11 @@ func (tes *trashExchangeService) CreateTrashExchange(data trashExchange.TrashExc
 		details = append(details, detail)
 	}
 
-	data.TotalPoint = totalPoints
+	reductionPercentage := 0.10
+	reductionAmount := int(float64(totalPoints) * reductionPercentage)
+	reducedPoints := totalPoints - reductionAmount
+
+	data.TotalPoint = reducedPoints
 	data.TotalUnit = totalUnits
 
 	user.Point += data.TotalPoint

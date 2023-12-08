@@ -4002,7 +4002,7 @@
                 ],
                 "requestBody": {
                     "content": {
-                        "multipart/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "$ref": "#/components/schemas/RequestCommunityEvent"
                             }
@@ -4053,8 +4053,8 @@
                                 "examples": {
                                     "success": {
                                         "value": {
-                                            "status": false,
-                                            "message": "data tidak ditemukan"
+                                            "status": true,
+                                            "message": "berhasil menghapus event"
                                         }
                                     }
                                 }
@@ -5322,6 +5322,9 @@
                         "type": "string",
                         "format": "binary"
                     },
+                    "name":{
+                        "type": "string"
+                    },
                     "description": {
                         "type": "string"
                     },
@@ -5334,6 +5337,7 @@
                 },
                 "required": [
                     "image",
+                    "name",
                     "description",
                     "location",
                     "max_members"

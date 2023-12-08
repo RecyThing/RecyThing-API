@@ -167,6 +167,12 @@ func (ms *missionService) FindById(missionID string) (entity.Mission, error) {
 		return entity.Mission{}, err
 	}
 
+	admin, err := ms.AdminRepo.SelectById(dataMission.AdminID)
+	if err != nil {
+		return entity.Mission{}, err
+	}
+
+	dataMission.Creator = admin.Fullname
 	return dataMission, nil
 }
 

@@ -56,3 +56,8 @@ func PaginationMessage(paginationInfo PageInfo, totalData int) string {
 	responseMessage := fmt.Sprintf("menampilkan data %d sampai %d dari %d data", startIndex, endIndex, totalData)
 	return responseMessage
 }
+
+func Offset(page, limit int) int {
+	offset := (page - 1) * limit
+	return offset
+}

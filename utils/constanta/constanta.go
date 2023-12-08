@@ -18,8 +18,8 @@ const (
 
 // Constanta For Utils
 const (
-	VERIFICATION_URL = "http://localhost:8080/verify-token?token="
-	// VERIFICATION_URL   = "https://api.recything.my.id/verify-token?token="
+	//VERIFICATION_URL = "http://localhost:8080/verify-token?token="
+	VERIFICATION_URL   = "https://api.recything.my.id/verify-token?token="
 	EMAIL_NOT_REGISTER = "email belum terdaftar"
 )
 

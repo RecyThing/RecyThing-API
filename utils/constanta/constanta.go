@@ -69,6 +69,8 @@ var (
 	Unit            = []string{"barang", "kilogram"}
 	Category        = []string{"sampah anorganik", "sampah organik", "informasi", "batasan"}
 	Days            = []string{"senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"}
+	REPORT_TYPE     = []string{"pelanggaran sampah", "tumpukan sampah"}
+	SCALE_TYPE      = []string{"skala besar", "skala kecil"}
 	Status_Exchange = []string{"diproses", "selesai"}
 	ERROR_MESSAGE   = []string{"sudah", "tidak", "harus", "gagal", "harap"}
 )

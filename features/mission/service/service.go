@@ -297,8 +297,9 @@ func (ms *missionService) UpdateStatusMissionApproval(UploadMissionTaskID, statu
 	if status == constanta.DISETUJUI {
 		approv.Status = status
 		approv.Reason = ""
-		totalPoint := user.Point + mission.Point
 
+		bonus := helper.CalculateBonus(user.Badge, mission.Point)
+		totalPoint := user.Point + int(bonus)
 		err := ms.UserRepo.UpdateUserPoint(approv.UserID, totalPoint)
 		if err != nil {
 			return err

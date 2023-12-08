@@ -575,7 +575,7 @@ func (mr *MissionRepository) FindAllMissionApproval(page, limit int, search, fil
 		}
 		if strings.Contains(filter, constanta.DITOLAK) {
 			totalCount = int(counts.CountRejected)
-		}
+		}	
 		if strings.Contains(filter, constanta.DISETUJUI) {
 			totalCount = int(counts.CountApproved)
 		}

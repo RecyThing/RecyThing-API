@@ -92,3 +92,10 @@ const (
 	SELESAI        = "selesai"
 	TERBARU        = "terbaru"
 )
+
+const (
+	BRONZE   = "bronze"
+	PLATINUM = "platinum"
+	SILVER   = "silver"
+	GOLD     = "gold"
+)

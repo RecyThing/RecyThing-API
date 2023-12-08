@@ -121,7 +121,6 @@ func ConvertUnitToDecimal(unit string) (float64, error) {
 	return result, nil
 }
 
-
 func GenerateRandomID(prefix string, length int) string {
 	source := rand.NewSource(time.Now().UnixNano())
 	randomGenerator := rand.New(source)
@@ -158,3 +157,24 @@ func SortByDay(schedules []drop_point.ScheduleCore) []drop_point.ScheduleCore {
 
 	return schedules
 }
+
+func CalculateBonus(badge string, missionPoint int) float64 {
+	var bonusRate float64
+
+	switch badge {
+	case constanta.BRONZE:
+		bonusRate = 0.1
+	case constanta.SILVER:
+		bonusRate = 0.12
+	case constanta.GOLD:
+		bonusRate = 0.15
+	case constanta.PLATINUM:
+		bonusRate = 0.2
+	default:
+		return 0
+	}
+
+	bonus := float64(missionPoint) * bonusRate
+	return bonus + float64(missionPoint)
+}
+

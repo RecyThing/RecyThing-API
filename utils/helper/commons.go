@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	drop_point"recything/features/drop-point/entity"
+	"math/rand"
+	drop_point "recything/features/drop-point/entity"
 	"recything/utils/constanta"
 	"reflect"
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 	"unicode"
 
@@ -121,19 +121,18 @@ func ConvertUnitToDecimal(unit string) (float64, error) {
 	return result, nil
 }
 
-var (
-	idCounter int
-	idMutex   sync.Mutex
-)
 
-func GenerateRandomID(length int) string {
-	idMutex.Lock()
-	defer idMutex.Unlock()
+func GenerateRandomID(prefix string, length int) string {
+	source := rand.NewSource(time.Now().UnixNano())
+	randomGenerator := rand.New(source)
 
-	idCounter++
-	formatString := fmt.Sprintf("PS%%0%dd", length)
-	result := fmt.Sprintf(formatString, idCounter)
-	return result
+	generatedID := prefix
+
+	for i := 0; i < length; i++ {
+		generatedID += fmt.Sprintf("%d", randomGenerator.Intn(10))
+	}
+
+	return generatedID
 }
 
 func ChangeStatusMission(endDate string) (string, error) {
@@ -151,12 +150,11 @@ func ChangeStatusMission(endDate string) (string, error) {
 	return status, nil
 }
 
-
 func SortByDay(schedules []drop_point.ScheduleCore) []drop_point.ScheduleCore {
-    sort.Slice(schedules, func(i, j int) bool {
-        daysOrder := map[string]int{"senin": 1, "selasa": 2, "rabu": 3, "kamis": 4, "jumat": 5, "sabtu": 6, "minggu": 7}
-        return daysOrder[schedules[i].Day] < daysOrder[schedules[j].Day]
-    })
+	sort.Slice(schedules, func(i, j int) bool {
+		daysOrder := map[string]int{"senin": 1, "selasa": 2, "rabu": 3, "kamis": 4, "jumat": 5, "sabtu": 6, "minggu": 7}
+		return daysOrder[schedules[i].Day] < daysOrder[schedules[j].Day]
+	})
 
-    return schedules
+	return schedules
 }

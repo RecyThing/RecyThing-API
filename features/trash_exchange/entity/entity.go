@@ -22,6 +22,7 @@ type TrashExchangeDetailCore struct {
 	Id              string     `json:"id"`
 	TrashExchangeId string     `json:"trash_exchange_id"`
 	TrashType       string     `json:"trash_type"`
+	Amount          float64    `json:"amount"`
 	Unit            string     `json:"unit"`
 	TotalPoints     int        `json:"total_points"`
 	CreatedAt       time.Time  `json:"created_at"`

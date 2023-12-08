@@ -19,16 +19,17 @@ type TrashExchange struct {
 	UpdatedAt  time.Time
 	DeletedAt  gorm.DeletedAt `gorm:"index"`
 
-	DropPointId          string              `gorm:"index"`
-	DropPoint            dropPoint.DropPoints `gorm:"foreignKey:DropPointId"`
+	DropPointId          string                `gorm:"index"`
+	DropPoint            dropPoint.DropPoints  `gorm:"foreignKey:DropPointId"`
 	TrashExchangeDetails []TrashExchangeDetail `gorm:"foreignKey:TrashExchangeId;constraint:OnDelete:CASCADE;"`
 }
 
 type TrashExchangeDetail struct {
-	Id              string `gorm:"primary key"`
-	TrashExchangeId string `gorm:"index"`
-	Unit            string `gorm:"not null"`
-	TotalPoints     int    `gorm:"not null"`
+	Id              string  `gorm:"primary key"`
+	TrashExchangeId string  `gorm:"index"`
+	Amount          float64 `gorm:"not null"`
+	Unit            string  `gorm:"not null"`
+	TotalPoints     int     `gorm:"not null"`
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 	DeletedAt       gorm.DeletedAt              `gorm:"index"`

@@ -33,16 +33,16 @@ func (dh *dashboardHandler) Dashboard(e echo.Context) error {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
-	result, voucherResult, reportResult, trashExchangeResult, scalaResult, userRanking, err := dh.dashboardService.Dashboard()
+	result, voucherResult, reportResult, trashExchangeResult, scalaResult, userRanking, weekStats, err := dh.dashboardService.DashboardMonthly()
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	combinedResponse := dto.MapToCombinedResponse(result, voucherResult, reportResult, trashExchangeResult, scalaResult, userRanking)
+	combinedResponse := dto.MapToCombinedResponseMonthly(result, voucherResult, reportResult, trashExchangeResult, scalaResult, userRanking, weekStats)
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, combinedResponse))
 }
 
-func (dh *dashboardHandler) CountWeeklyTrashAndScalaTypes(e echo.Context) error {
+func (dh *dashboardHandler) DashboardYears(e echo.Context) error {
 
 	_, role, err := jwt.ExtractToken(e)
 
@@ -53,14 +53,57 @@ func (dh *dashboardHandler) CountWeeklyTrashAndScalaTypes(e echo.Context) error 
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
-	
-    weeklyStats, err := dh.dashboardService.CountWeeklyTrashAndScalaTypes()
-    if err != nil {
-        return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-    }
 
-    weeklyStatsResponse := dto.ListMapToWeeklyStatsResponses(weeklyStats)
+	result, voucherResult, reportResult, trashExchangeResult, scalaResult, userRanking, monthlyStats, err := dh.dashboardService.DashboardYears()
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
 
-    return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, weeklyStatsResponse))
+	combinedResponse := dto.MapToCombinedResponseYears(result, voucherResult, reportResult, trashExchangeResult, scalaResult, userRanking, monthlyStats)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, combinedResponse))
 }
 
+// func (dh *dashboardHandler) CountMonthlyTrashAndScalaTypes(e echo.Context) error {
+
+// 	_, role, err := jwt.ExtractToken(e)
+
+// 	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+// 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+// 	}
+
+// 	if err != nil {
+// 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+// 	}
+	
+//     monthlyStats, err := dh.dashboardService.CountMonthlyTrashAndScalaTypesYear()
+//     if err != nil {
+//         return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+//     }
+
+//     monthlyStatsResponse := dto.ListMapToMonthlyStatsResponses(monthlyStats)
+
+//     return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, monthlyStatsResponse))
+// }
+
+
+// func (dh *dashboardHandler) CountWeeklyTrashAndScalaTypes(e echo.Context) error {
+
+// 	_, role, err := jwt.ExtractToken(e)
+
+// 	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+// 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+// 	}
+
+// 	if err != nil {
+// 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+// 	}
+	
+//     weeklyStats, err := dh.dashboardService.CountWeeklyTrashAndScalaTypes()
+//     if err != nil {
+//         return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+//     }
+
+//     weeklyStatsResponse := dto.ListMapToWeeklyStatsResponses(weeklyStats)
+
+//     return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, weeklyStatsResponse))
+// }

@@ -25,8 +25,8 @@ type GetCountTrashExchangeResponse struct {
 }
 
 type GetCountScaleTypeResponse struct {
-	PercentageLargeScale string `json:"large_scale"`
-	PercentageSmallScale string `json:"small_scale"`
+	Company string `json:"company"`
+	Person  string `json:"person"`
 }
 
 type UserRankingResponse struct {
@@ -37,6 +37,12 @@ type UserRankingResponse struct {
 
 type WeeklyStatsResponse struct {
 	Week      int `json:"week"`
+	TrashType int `json:"trash_type"`
+	ScaleType int `json:"scale_type"`
+}
+
+type MonthlyStatsResponse struct {
+	Month     int `json:"month"`
 	TrashType int `json:"trash_type"`
 	ScaleType int `json:"scale_type"`
 }

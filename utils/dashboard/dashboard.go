@@ -2,9 +2,11 @@ package dashboard
 
 import (
 	"fmt"
+	"log"
 	"math"
 	report "recything/features/report/entity"
 	user "recything/features/user/entity"
+	"recything/utils/helper"
 	"time"
 )
 
@@ -33,8 +35,8 @@ type GetCountTrashExchange struct {
 }
 
 type GetCountScaleType struct {
-	PersentaseLargeScale string
-	PersentaseSmallScale string
+	Company string
+	Person  string
 }
 
 type UserRanking struct {
@@ -45,6 +47,12 @@ type UserRanking struct {
 
 type WeeklyStats struct {
 	Week  int
+	Trash int
+	Scala int
+}
+
+type MonthlyStats struct {
+	Month int
 	Trash int
 	Scala int
 }
@@ -180,7 +188,7 @@ func MapToGetCountTrashExchange(totalThisMonth int, totalLastMonth int) GetCount
 	}
 
 	persentasePerubahanInt := int(math.Round(persentasePerubahanTrash))
-	
+
 	// Buat map hasil untuk pertukaran voucher
 	result := GetCountTrashExchange{
 		TotalTrashExchange: fmt.Sprintf("%d", totalThisMonth),
@@ -210,8 +218,8 @@ func MapToGetCountScaleTypePercentage(totalLargeScale int, totalSmallScale int) 
 
 	// Buat map hasil untuk persentase pelaporan skala besar dan skala kecil
 	result := GetCountScaleType{
-		PersentaseLargeScale: fmt.Sprintf("%d", persentaseLargeScalePerubahanInt),
-		PersentaseSmallScale: fmt.Sprintf("%d", persentaseSmallScalePerubahanInt),
+		Company: fmt.Sprintf("%d", persentaseLargeScalePerubahanInt),
+		Person:  fmt.Sprintf("%d", persentaseSmallScalePerubahanInt),
 	}
 
 	return result
@@ -231,25 +239,87 @@ func MapUserRanking(users []user.UsersCore) []UserRanking {
 
 // Function untuk memfilter data berdasarkan range tanggal
 func FilterDataByDate(data []report.ReportCore, startDate, endDate time.Time) []report.ReportCore {
-    var filteredData []report.ReportCore
-    for _, entry := range data {
-        if entry.CreatedAt.After(startDate) && entry.CreatedAt.Before(endDate) {
-            filteredData = append(filteredData, entry)
-        }
-    }
-    return filteredData
+	var filteredData []report.ReportCore
+	for _, entry := range data {
+		if entry.CreatedAt.After(startDate) && entry.CreatedAt.Before(endDate) {
+			filteredData = append(filteredData, entry)
+		}
+	}
+	return filteredData
 }
 
 // Function untuk menghitung jumlah data trash_type dan scala_type
 func CountTrashAndScalaTypes(data []report.ReportCore) (int, int) {
-    var trashCount, scalaCount int
-    for _, entry := range data {
-        if entry.TrashType != "" {
-            trashCount++
-        }
-        if entry.ScaleType != "" {
-            scalaCount++
-        }
-    }
-    return trashCount, scalaCount
+	var trashCount, scalaCount int
+	for _, entry := range data {
+		if entry.TrashType != "" {
+			trashCount++
+		}
+		if entry.ScaleType != "" {
+			scalaCount++
+		}
+	}
+	return trashCount, scalaCount
 }
+
+func CalculateMonthlyStats(data []report.ReportCore, startOfYear time.Time, monthsInYear int) []MonthlyStats {
+	monthlyStats := make([]MonthlyStats, monthsInYear)
+
+	for i := 0; i < monthsInYear; i++ {
+		// Menghitung awal dan akhir bulan
+		monthStartDate := startOfYear.AddDate(0, i, 0)
+		monthEndDate := monthStartDate.AddDate(0, 1, -1)
+
+		// Filter data yang berada dalam rentang waktu bulan ini
+		filteredData := FilterDataByDate(data, monthStartDate, monthEndDate)
+
+		// Hitung jumlah data trash_type dan scala_type
+		trashCount, scalaCount := CountTrashAndScalaTypes(filteredData)
+
+		// Set nilai MonthlyStats
+		monthlyStats[i].Month = i + 1
+		monthlyStats[i].Trash = trashCount
+		monthlyStats[i].Scala = scalaCount
+	}
+
+	return monthlyStats
+}
+
+func CalculateWeeklyStats(data []report.ReportCore, startOfMonth time.Time) []WeeklyStats {
+	year, month, _ := startOfMonth.Date()
+	weeksInMonth := helper.GetWeeksInMonth(year, month)
+	weeklyStats := make([]WeeklyStats, weeksInMonth)
+
+	for i := 0; i < weeksInMonth; i++ {
+		// Menghitung awal dan akhir minggu
+		weekStartDate := time.Date(year, month, 1, 0, 0, 0, 0, time.UTC).AddDate(0, 0, 7*i)
+		weekEndDate := time.Date(year, month, 1, 0, 0, 0, 0, time.UTC).AddDate(0, 0, 7*(i+1)-1)
+
+		// Jika tanggal 28 termasuk dalam minggu ini
+		if weekStartDate.Day() <= 28 && weekEndDate.Day() >= 28 {
+			weekEndDate = time.Date(year, month, 28, 23, 59, 59, 999999999, time.UTC)
+		}
+
+		if i == weeksInMonth-1 {
+			lastDayOfMonth := time.Date(year, month+1, 0, 0, 0, 0, 0, time.UTC).Day()
+			weekEndDate = time.Date(year, month, lastDayOfMonth, 23, 59, 59, 999999999, time.UTC)
+		}
+		log.Printf("Week %d: StartDate: %s, EndDate: %s\n", i+1, weekStartDate, weekEndDate)
+
+		// Filter data yang berada dalam rentang waktu minggu ini
+		filteredData := FilterDataByDate(data, weekStartDate, weekEndDate)
+
+		// Hitung jumlah data trash_type dan scala_type
+		trashCount, scalaCount := CountTrashAndScalaTypes(filteredData)
+
+		// Set nilai WeeklyStats
+		weeklyStats[i].Week = i + 1
+		weeklyStats[i].Trash = trashCount
+		weeklyStats[i].Scala = scalaCount
+	}
+
+	return weeklyStats
+}
+
+
+

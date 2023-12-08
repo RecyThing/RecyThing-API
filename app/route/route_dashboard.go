@@ -17,6 +17,8 @@ func RouteDashboard(e *echo.Group, db *gorm.DB) {
 	dashboardHandler := handler.NewDashboardHandler(dashboardService)
 
 	dashboard := e.Group("/dashboard", jwt.JWTMiddleware())
-	dashboard.GET("", dashboardHandler.Dashboard)
-	dashboard.GET("/statistik", dashboardHandler.CountWeeklyTrashAndScalaTypes)
+	dashboard.GET("/monthly", dashboardHandler.Dashboard)
+	dashboard.GET("/years", dashboardHandler.DashboardYears)
+	// dashboard.GET("/statistik/monthly", dashboardHandler.CountWeeklyTrashAndScalaTypes)
+	// dashboard.GET("/statistik/years", dashboardHandler.CountMonthlyTrashAndScalaTypes)
 }

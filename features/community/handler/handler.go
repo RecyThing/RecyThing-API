@@ -285,6 +285,11 @@ func (ch *communityHandler) ReadAllEvent(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
+	if len(eventData) == 0 {
+	return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
+
+	}
+
 	var eventResponse = response.ListEventCoreToListEventRessponse(eventData)
 
 	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan semua event", eventResponse, paginationInfo, count))
@@ -356,5 +361,5 @@ func (ch *communityHandler) UpdateEvent(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(errUpdate.Error()))
 	}
 
-	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil update artikel"))
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil update event"))
 }

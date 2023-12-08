@@ -122,6 +122,12 @@ func (cs *communityService) UpdateCommunityById(id string, image *multipart.File
 
 // CreateEvent implements entity.CommunityServiceInterface.
 func (cs *communityService) CreateEvent(communityId string, eventInput entity.CommunityEventCore, image *multipart.FileHeader) error {
+	_,errFind := cs.communityRepository.GetCommunityById(communityId)
+	if errFind != nil {
+		return errFind
+	}
+	
+	
 	errEmpty := validation.CheckDataEmpty(eventInput.Title, eventInput.Description, eventInput.Date,
 		eventInput.Quota, eventInput.Location, eventInput.MapLink, eventInput.FormLink)
 	if errEmpty != nil {
@@ -152,7 +158,7 @@ func (cs *communityService) DeleteEvent(communityId string, eventId string) erro
 
 	errEvent := cs.communityRepository.DeleteEvent(communityId, eventId)
 	if errEvent != nil {
-		return errors.New("gagal menghapus event " + errEvent.Error())
+		return errEvent
 	}
 
 	return nil
@@ -160,6 +166,11 @@ func (cs *communityService) DeleteEvent(communityId string, eventId string) erro
 
 // ReadAllEvent implements entity.CommunityServiceInterface.
 func (cs *communityService) ReadAllEvent(page int, limit int, search string, communityId string) ([]entity.CommunityEventCore, pagination.PageInfo, int, error) {
+	_,errFind := cs.communityRepository.GetCommunityById(communityId)
+	if errFind != nil {
+		return []entity.CommunityEventCore{},pagination.PageInfo{},0,errFind
+	}
+	
 	if limit > 10 {
 		return nil, pagination.PageInfo{}, 0, errors.New("limit tidak boleh lebih dari 10")
 	}
@@ -182,7 +193,7 @@ func (cs *communityService) ReadEvent(communityId string, eventId string) (entit
 
 	eventData, err := cs.communityRepository.ReadEvent(communityId, eventId)
 	if err != nil {
-		return entity.CommunityEventCore{}, errors.New("gagal membaca data event")
+		return entity.CommunityEventCore{}, err
 	}
 
 	return eventData, nil
@@ -194,6 +205,10 @@ func (cs *communityService) UpdateEvent(communityId string, eventId string, even
 		return errors.New("event tidak ditemukan")
 	}
 
+	dataStatus,errEqual := validation.CheckEqualData(eventInput.Status,constanta.STATUS_EVENT)
+	if errEqual != nil {
+		return errors.New("error : status input tidak valid")
+	}
 	errEmpty := validation.CheckDataEmpty(eventInput.Title, eventInput.Description, eventInput.Date,
 		eventInput.Quota, eventInput.Location, eventInput.MapLink, eventInput.FormLink)
 	if errEmpty != nil {
@@ -208,6 +223,7 @@ func (cs *communityService) UpdateEvent(communityId string, eventId string, even
 		return errors.New("ukuran file tidak boleh lebih dari 5 MB")
 	}
 
+	eventInput.Status = dataStatus
 	errInsert := cs.communityRepository.UpdateEvent(communityId, eventId, eventInput, image)
 	if errInsert != nil {
 		return errInsert

@@ -17,19 +17,19 @@ func MissionRequestToMissionCore(missi Mission) entity.Mission {
 	return missionCore
 }
 
-func AddMissionStageToMissionStageCore(addMissionStage AddMissionStage) []entity.MissionStage {
-    var missionStages []entity.MissionStage
-    for _, stage := range addMissionStage.Stages {
-        newStage := entity.MissionStage{
-            MissionID:   addMissionStage.MissionID,
-            Title:       stage.Name,
-            Description: stage.DescriptionStage,
+// func AddMissionStageToMissionStageCore(addMissionStage AddMissionStage) []entity.MissionStage {
+//     var missionStages []entity.MissionStage
+//     for _, stage := range addMissionStage.Stages {
+//         newStage := entity.MissionStage{
+//             MissionID:   addMissionStage.MissionID,
+//             Title:       stage.Name,
+//             Description: stage.DescriptionStage,
            
-        }
-        missionStages = append(missionStages, newStage)
-    }
-    return missionStages
-}
+//         }
+//         missionStages = append(missionStages, newStage)
+//     }
+//     return missionStages
+// }
 
 func RequestMissionStageToMissionStageCore(missionID string, data RequestMissionStage) []entity.MissionStage {
 	missionStagesCore := []entity.MissionStage{}

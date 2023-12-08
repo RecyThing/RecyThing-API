@@ -13,10 +13,11 @@ type VoucherResponse struct {
 }
 
 type ExchangeVoucheResponse struct {
-	Id        string    `json:"id"`
-	IdUser    string    `json:"user"`
-	IdVoucher string    `json:"voucher"`
-	Phone     string    `json:"phone"`
-	Status    string    `json:"status"`
-	CreatedAt time.Time `json:"created_at"`
+	Id              string    `json:"id"`
+	IdUser          string    `json:"user"`
+	IdVoucher       string    `json:"voucher"`
+	Phone           string    `json:"phone"`
+	Status          string    `json:"status"`
+	TimeTransaction string `json:"time_transaction"`
+	CreatedAt       time.Time `json:"created_at"`
 }

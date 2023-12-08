@@ -13,3 +13,7 @@ type VoucherExchangeRequest struct {
 	IdVoucher string `json:"id_voucher"`
 	Phone     string `json:"phone"`
 }
+
+type ExchangeVoucherRequest struct {
+	Status string `json:"status"`
+}

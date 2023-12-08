@@ -47,10 +47,11 @@ func ListModelVoucherToCoreVoucher(data []model.Voucher) []VoucherCore {
 
 func CoreExchangeVoucherToModelExchangeVoucher(data ExchangeVoucherCore) model.ExchangeVoucher {
 	return model.ExchangeVoucher{
-		IdUser:    data.IdUser,
-		IdVoucher: data.IdVoucher,
-		Phone:     data.Phone,
-		Status:    data.Status,
+		IdUser:          data.IdUser,
+		IdVoucher:       data.IdVoucher,
+		Phone:           data.Phone,
+		Status:          data.Status,
+		TimeTransaction: data.TimeTransaction,
 	}
 }
 
@@ -65,13 +66,14 @@ func ListCoreExchangeVoucherToModelExchangeVoucher(data []ExchangeVoucherCore) [
 
 func ModelExchangeVoucherToCoreExchangeVoucher(data model.ExchangeVoucher) ExchangeVoucherCore {
 	return ExchangeVoucherCore{
-		Id:        data.Id,
-		IdUser:    data.IdUser,
-		IdVoucher: data.IdVoucher,
-		Phone:     data.Phone,
-		Status:    data.Status,
-		CreatedAt: data.CreatedAt,
-		UpdatedAt: data.UpdatedAt,
+		Id:              data.Id,
+		IdUser:          data.IdUser,
+		IdVoucher:       data.IdVoucher,
+		Phone:           data.Phone,
+		Status:          data.Status,
+		TimeTransaction: data.TimeTransaction,
+		CreatedAt:       data.CreatedAt,
+		UpdatedAt:       data.UpdatedAt,
 	}
 }
 

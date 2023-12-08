@@ -15,10 +15,10 @@ type MissionStage struct {
 	DescriptionStage string `form:"description_stage" json:"description_stage"`
 }
 
-type AddMissionStage struct {
-	MissionID string         `json:"mission_id"`
-	Stages    []MissionStage `json:"stages"`
-}
+// type AddMissionStage struct {
+// 	MissionID string         `json:"mission_id"`
+// 	Stages    []MissionStage `json:"stages"`
+// }
 
 type RequestMissionStage struct {
 	MissionStage []UpdatedMissionStage `json:"mission_stage"`
@@ -30,10 +30,16 @@ type UpdatedMissionStage struct {
 	Description string `json:"description"`
 }
 
-type NewMissionStage struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
+// type NewMissionStage struct {
+// 	Title       string `json:"title"`
+// 	Description string `json:"description"`
+// }
+
+type StatusApproval struct {
+	Status string `json:"status"`
+	Reason string `json:"reason"`
 }
+
 type Claim struct {
 	MissionID string `json:"mission_id"`
 }

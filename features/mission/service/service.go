@@ -8,6 +8,7 @@ import (
 
 	"recything/features/mission/entity"
 	"recything/utils/constanta"
+	"recything/utils/helper"
 	"recything/utils/pagination"
 	"recything/utils/storage"
 	"recything/utils/validation"
@@ -19,9 +20,7 @@ type missionService struct {
 	UserRepo    user.UsersRepositoryInterface
 }
 
-
-
-func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo admin.AdminRepositoryInterface, userRepo    user.UsersRepositoryInterface) entity.MissionServiceInterface {
+func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo admin.AdminRepositoryInterface, userRepo user.UsersRepositoryInterface) entity.MissionServiceInterface {
 	return &missionService{
 		MissionRepo: missionRepo,
 		AdminRepo:   adminRepo,
@@ -70,21 +69,21 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 	return nil
 }
 
-func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]entity.Mission, pagination.PageInfo, int, error) {
+func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]entity.Mission, pagination.PageInfo, helper.CountMission, error) {
 	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
-		return nil, pagination.PageInfo{}, 0, err
+		return nil, pagination.PageInfo{}, helper.CountMission{}, err
 	}
 
 	data, pagnationInfo, count, err := ms.MissionRepo.FindAllMission(pageInt, limitInt, search, filter)
 	if err != nil {
-		return nil, pagination.PageInfo{}, 0, err
+		return nil, pagination.PageInfo{}, count, err
 	}
 
 	for i := range data {
 		admin, err := ms.AdminRepo.SelectById(data[i].AdminID)
 		if err != nil {
-			return nil, pagination.PageInfo{}, 0, err
+			return nil, pagination.PageInfo{}, count, err
 		}
 
 		data[i].Creator = admin.Fullname
@@ -168,6 +167,12 @@ func (ms *missionService) FindById(missionID string) (entity.Mission, error) {
 		return entity.Mission{}, err
 	}
 
+	admin, err := ms.AdminRepo.SelectById(dataMission.AdminID)
+	if err != nil {
+		return entity.Mission{}, err
+	}
+
+	dataMission.Creator = admin.Fullname
 	return dataMission, nil
 }
 
@@ -227,16 +232,93 @@ func (ms *missionService) UpdateUploadMissionTask(userID, id string, images []*m
 }
 
 // Mission Approval
-func (ms *missionService) FindAllMissionApproval() ([]entity.UploadMissionTaskCore, error) {
-	data, err := ms.MissionRepo.FindAllMissionApproval()
+func (ms *missionService) FindAllMissionApproval(page, limit, search, filter string) ([]entity.UploadMissionTaskCore, pagination.PageInfo, helper.CountMissionApproval, error) {
+	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
-		return nil, err
+		return nil, pagination.PageInfo{}, helper.CountMissionApproval{}, err
 	}
+	data, pagination, count, err := ms.MissionRepo.FindAllMissionApproval(pageInt, limitInt, search, filter)
+	if err != nil {
+		return nil, pagination, count, err
+
+	}
+	newData := []entity.UploadMissionTaskCore{}
 
 	for _, missionTask := range data {
+
+		missionData, _ := ms.MissionRepo.FindById(missionTask.MissionID)
+		missionTask.MissionName = missionData.Title
+
 		userData, _ := ms.UserRepo.GetById(missionTask.UserID)
 		missionTask.User = userData.Fullname
+		newData = append(newData, missionTask)
 	}
 
+	return newData, pagination, count, nil
+}
+
+func (ms *missionService) FindMissionApprovalById(UploadMissionTaskID string) (entity.UploadMissionTaskCore, error) {
+
+	data, err := ms.MissionRepo.FindMissionApprovalById(UploadMissionTaskID)
+	if err != nil {
+		return entity.UploadMissionTaskCore{}, err
+	}
+	missionData, _ := ms.MissionRepo.FindById(data.MissionID)
+	data.MissionName = missionData.Title
+
+	userData, _ := ms.UserRepo.GetById(data.UserID)
+	data.User = userData.Fullname
+
 	return data, nil
+}
+
+func (ms *missionService) UpdateStatusMissionApproval(UploadMissionTaskID, status, reason string) error {
+
+	err := validation.CheckDataEmpty(status)
+	if err != nil {
+		return err
+	}
+
+	approv, err := ms.FindMissionApprovalById(UploadMissionTaskID)
+	if err != nil {
+		return err
+	}
+
+	mission, err := ms.FindById(approv.MissionID)
+	if err != nil {
+		return err
+	}
+
+	user, err := ms.UserRepo.GetById(approv.UserID)
+	if err != nil {
+		return err
+	}
+
+	if status == constanta.DISETUJUI {
+		approv.Status = status
+		approv.Reason = ""
+		totalPoint := user.Point + mission.Point
+
+		err := ms.UserRepo.UpdateUserPoint(approv.UserID, totalPoint)
+		if err != nil {
+			return err
+		}
+	}
+
+	if status == constanta.DITOLAK {
+		err := validation.CheckDataEmpty(reason)
+		if err != nil {
+			return err
+		}
+		approv.Status = status
+		approv.Reason = reason
+	}
+
+	err = ms.MissionRepo.UpdateStatusMissionApproval(UploadMissionTaskID, approv.Status, approv.Reason)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }

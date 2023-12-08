@@ -94,7 +94,7 @@ func (ar *AdminRepository) GetCount(search, role string) (int, error) {
 func (ar *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) {
 	dataAdmins := model.Admin{}
 
-	tx := ar.db.Where("id = ? AND role = ?", adminId, constanta.ADMIN).First(&dataAdmins)
+	tx := ar.db.Where("id = ? ", adminId).First(&dataAdmins)
 	if tx.Error != nil {
 		return entity.AdminCore{}, tx.Error
 	}
@@ -247,6 +247,7 @@ func (ar *AdminRepository) GetAllReport(status, search string, page, limit int) 
 	if err := query.Count(&totalCountWithoutFilter).Error; err != nil {
 		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
+
 	totalCountWithFilter := totalCountWithoutFilter
 
 	if search != "" {
@@ -255,6 +256,17 @@ func (ar *AdminRepository) GetAllReport(status, search string, page, limit int) 
 			Count(&totalCountWithFilter).Error; err != nil {
 			return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 		}
+	}
+
+	if status != "" {
+		query = query.Where("reports.status = ?", status)
+	}
+
+	query = query.Offset(offset).Limit(limit)
+
+	err := query.Find(&dataReports).Error
+	if err != nil {
+		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
 
 	countPerluDitinjau, err := ar.GetCountByStatus("perlu ditinjau", search)
@@ -272,25 +284,13 @@ func (ar *AdminRepository) GetAllReport(status, search string, page, limit int) 
 		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
 
-	if status != "" {
-		query = query.Where("reports.status = ?", status)
-		totalCountWithFilter = totalCountWithoutFilter
-	}
-
-	query = query.Offset(offset).Limit(limit)
-
-	err = query.Find(&dataReports).Error
-	if err != nil {
-		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
-	}
-
-	dataAllReport := report.ListReportModelToReportCore(dataReports)
 	paginationInfo := pagination.CalculateData(int(totalCountWithFilter), limit, page)
 
 	countData := pagination.MapCountData(totalCountWithFilter, countPerluDitinjau, countDiterima, countDitolak)
 
-	return dataAllReport, paginationInfo, countData, nil
+	return report.ListReportModelToReportCore(dataReports), paginationInfo, countData, nil
 }
+
 
 // GetCountByStatus implements entity.AdminRepositoryInterface.
 func (ar *AdminRepository) GetCountByStatus(status, search string) (int64, error) {

@@ -29,11 +29,13 @@ func RouteMissions(e *echo.Group, db *gorm.DB) {
 	admin.PUT("/:id", missionHandler.UpdateMission)
 	admin.PUT("/:id/stages", missionHandler.UpdateMissionStage)
 	admin.GET("/approvals", missionHandler.GetAllMissionApproval)
+	admin.GET("/approvals/:id", missionHandler.GetMissionApprovalById)
+	admin.PUT("/approvals/:id", missionHandler.UpdateStatusApprovalMission)
 
 	user := e.Group("/missions", jwt.JWTMiddleware())
 	user.GET("", missionHandler.GetAllMission)
 	user.GET("/:id", missionHandler.FindById)
 	user.POST("", missionHandler.ClaimMission)
-	user.POST("/proof",missionHandler.CreateUploadMission)
-	user.PUT("/proof/:id",missionHandler.UpdateUploadMission)
+	user.POST("/proof", missionHandler.CreateUploadMission)
+	user.PUT("/proof/:id", missionHandler.UpdateUploadMission)
 }

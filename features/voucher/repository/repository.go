@@ -7,6 +7,9 @@ import (
 	"recything/features/voucher/entity"
 	"recything/features/voucher/model"
 	"recything/utils/constanta"
+	"recything/utils/helper"
+
+	//"recything/utils/helper"
 	"recything/utils/pagination"
 	"recything/utils/storage"
 
@@ -41,7 +44,6 @@ func (vr *voucherRepository) Create(image *multipart.FileHeader, data entity.Vou
 	return nil
 }
 
-// CreateExchangeVoucher implements entity.VoucherRepositoryInterface.
 func (vr *voucherRepository) CreateExchangeVoucher(idUser string, data entity.ExchangeVoucherCore) error {
 	input := entity.CoreExchangeVoucherToModelExchangeVoucher(data)
 
@@ -166,14 +168,137 @@ func (vr *voucherRepository) Delete(idVoucher string) error {
 
 // Exchange Point
 
-func (vr *voucherRepository) GetAllExchange() ([]entity.ExchangeVoucherCore, error) {
-	dataExchange := []model.ExchangeVoucher{}
+func (vr *voucherRepository) GetCountVouchers(filter, search string) (int, error) {
 
-	tx := vr.db.Find(&dataExchange)
-	if tx.Error != nil {
-		return []entity.ExchangeVoucherCore{}, tx.Error
+	var totalCount int64
+	models := vr.db.Model(&model.ExchangeVoucher{})
+
+	if filter == "" || search == "" {
+		tx := models.Count(&totalCount)
+		if tx.Error != nil {
+			return 0, tx.Error
+		}
 	}
 
+	if search != "" {
+		if err := models.
+			Joins("JOIN vouchers ON exchange_vouchers.id_voucher = vouchers.id").
+			Joins("JOIN users ON exchange_vouchers.id_user = users.id").
+			Where("vouchers.reward_name LIKE ? OR users.fullname LIKE ?", "%"+search+"%", "%"+search+"%").
+			Count(&totalCount).Error; err != nil {
+			return 0, err
+		}
+
+	}
+
+	if filter != "" {
+		tx := models.Where("status LIKE ?", "%"+filter+"%").Count(&totalCount)
+		if tx.Error != nil {
+			return 0, tx.Error
+		}
+
+	}
+	return int(totalCount), nil
+}
+
+func (vr *voucherRepository) GetCountDataVouchers() (helper.CountExchangeVoucher, error) {
+
+	counts := helper.CountExchangeVoucher{}
+
+	tx := vr.db.Model(&model.ExchangeVoucher{}).Count(&counts.TotalCount)
+	if tx.Error != nil {
+		return counts, tx.Error
+	}
+
+	err := vr.db.Model(&model.ExchangeVoucher{}).Where("status LIKE ?", "%"+constanta.TERBARU+"%").Count(&counts.CountNewest).Error
+	if err != nil {
+		return counts, err
+	}
+	err = vr.db.Model(&model.ExchangeVoucher{}).Where("status LIKE ?", "%"+constanta.DIPROSES+"%").Count(&counts.CountProcess).Error
+	if err != nil {
+		return counts, err
+	}
+	err = vr.db.Model(&model.ExchangeVoucher{}).Where("status LIKE ?", "%"+constanta.SELESAI+"%").Count(&counts.CountDone).Error
+	if err != nil {
+		return counts, err
+	}
+
+	return counts, nil
+}
+
+func (vr *voucherRepository) GetAllExchange(page, limit int, search, filter string) ([]entity.ExchangeVoucherCore, pagination.PageInfo, helper.CountExchangeVoucher, error) {
+	dataExchange := []model.ExchangeVoucher{}
+	offsetInt := (page - 1) * limit
+	paginationQuery := vr.db.Limit(limit).Offset(offsetInt)
+	counts, _ := vr.GetCountDataVouchers()
+	totalCount, err := vr.GetCountVouchers(filter, search)
+
+	if err != nil {
+		return nil, pagination.PageInfo{}, counts, err
+	}
+
+	if filter != "" {
+		tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Find(&dataExchange)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, tx.Error
+		}
+	}
+
+	if search != "" {
+		newCounts := helper.CountExchangeVoucher{}
+		tx := vr.db.Model(&model.ExchangeVoucher{}).
+			Joins("JOIN vouchers ON exchange_vouchers.id_voucher = vouchers.id").
+			Joins("JOIN users ON exchange_vouchers.id_user = users.id").
+			Where("(vouchers.reward_name LIKE ? OR users.fullname LIKE ?) AND status LIKE ?", "%"+search+"%", "%"+search+"%", "%"+constanta.TERBARU+"%").
+			Count(&newCounts.CountNewest)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, errors.New("error disini")
+
+		}
+
+		tx = vr.db.Model(&model.ExchangeVoucher{}).
+			Joins("JOIN vouchers ON exchange_vouchers.id_voucher = vouchers.id").
+			Joins("JOIN users ON exchange_vouchers.id_user = users.id").
+			Where("(vouchers.reward_name LIKE ? OR users.fullname LIKE ?) AND status LIKE ?", "%"+search+"%", "%"+search+"%", "%"+constanta.DIPROSES+"%").
+			Count(&newCounts.CountProcess)
+
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, errors.New("error disini")
+
+		}
+
+		tx = vr.db.Model(&model.ExchangeVoucher{}).
+			Joins("JOIN vouchers ON exchange_vouchers.id_voucher = vouchers.id").
+			Joins("JOIN users ON exchange_vouchers.id_user = users.id").
+			Where("(vouchers.reward_name LIKE ? OR users.fullname LIKE ?) AND status LIKE ?", "%"+search+"%", "%"+search+"%", "%"+constanta.SELESAI+"%").
+			Count(&newCounts.CountDone)
+
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, errors.New("error disini")
+
+		}
+
+		counts.TotalCount = int64(totalCount)
+		counts.CountNewest = newCounts.CountNewest
+		counts.CountProcess = newCounts.CountProcess
+		counts.CountDone = newCounts.CountDone
+		tx = paginationQuery.Model(&model.ExchangeVoucher{}).
+			Joins("JOIN vouchers ON exchange_vouchers.id_voucher = vouchers.id").
+			Joins("JOIN users ON exchange_vouchers.id_user = users.id").
+			Where("vouchers.reward_name LIKE ? OR users.fullname LIKE ?", "%"+search+"%", "%"+search+"%").
+			Find(&dataExchange)
+
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, errors.New("error disini")
+		}
+	}
+
+	if search == "" && filter == "" {
+		tx := paginationQuery.Find(&dataExchange)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, tx.Error
+		}
+	}
 	dataResponse := []entity.ExchangeVoucherCore{}
 
 	for _, exchange := range dataExchange {
@@ -187,8 +312,35 @@ func (vr *voucherRepository) GetAllExchange() ([]entity.ExchangeVoucherCore, err
 		dataResponse = append(dataResponse, data)
 	}
 
-	return dataResponse, nil
+	paginationInfo := pagination.CalculateData(totalCount, limit, page)
+
+	return dataResponse, paginationInfo, counts, nil
+
 }
+
+// func (vr *voucherRepository) GetAllExchange() ([]entity.ExchangeVoucherCore, error) {
+// 	dataExchange := []model.ExchangeVoucher{}
+
+// 	tx := vr.db.Find(&dataExchange)
+// 	if tx.Error != nil {
+// 		return []entity.ExchangeVoucherCore{}, tx.Error
+// 	}
+
+// 	dataResponse := []entity.ExchangeVoucherCore{}
+
+// 	for _, exchange := range dataExchange {
+// 		vr.db.Model(&exchange).Association("Users").Find(&exchange.Users)
+// 		vr.db.Model(&exchange).Association("Vouchers").Find(&exchange.Vouchers)
+
+// 		exchange.IdUser = exchange.Users.Fullname
+// 		exchange.IdVoucher = exchange.Vouchers.RewardName
+// 		data := entity.ModelExchangeVoucherToCoreExchangeVoucher(exchange)
+
+// 		dataResponse = append(dataResponse, data)
+// 	}
+
+// 	return dataResponse, nil
+// }
 
 func (vr *voucherRepository) GetByIdExchange(idExchange string) (entity.ExchangeVoucherCore, error) {
 	dataExchange := model.ExchangeVoucher{}
@@ -211,4 +363,26 @@ func (vr *voucherRepository) GetByIdExchange(idExchange string) (entity.Exchange
 	dataResponse := entity.ModelExchangeVoucherToCoreExchangeVoucher(dataExchange)
 
 	return dataResponse, nil
+}
+
+func (vr *voucherRepository) UpdateStatusExchange(id, status string) error {
+	dataExchange := model.ExchangeVoucher{}
+
+	errData := vr.db.Where("id = ?", id).First(&dataExchange)
+	if errData.Error != nil {
+		return errData.Error
+	}
+
+	dataExchange.Status = status
+
+	tx := vr.db.Save(&dataExchange)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	}
+
+	return nil
 }

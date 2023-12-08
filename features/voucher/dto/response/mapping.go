@@ -25,12 +25,13 @@ func ListCoreVoucherToCoreVoucher(data []entity.VoucherCore) []VoucherResponse {
 
 func CoreExchangeVoucherToExchangeVoucheResponse(data entity.ExchangeVoucherCore) ExchangeVoucheResponse {
 	return ExchangeVoucheResponse{
-		Id:        data.Id,
-		IdUser:    data.IdUser,
-		IdVoucher: data.IdVoucher,
-		Phone:     data.Phone,
-		Status:    data.Status,
-		CreatedAt: data.CreatedAt,
+		Id:              data.Id,
+		IdUser:          data.IdUser,
+		IdVoucher:       data.IdVoucher,
+		Phone:           data.Phone,
+		Status:          data.Status,
+		TimeTransaction: data.TimeTransaction,
+		CreatedAt:       data.CreatedAt,
 	}
 }
 

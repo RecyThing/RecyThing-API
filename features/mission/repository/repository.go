@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"mime/multipart"
 	"recything/features/mission/entity"
 	"recything/features/mission/model"
@@ -10,6 +11,7 @@ import (
 	"recything/utils/pagination"
 	"recything/utils/storage"
 	"recything/utils/validation"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -18,6 +20,10 @@ import (
 type MissionRepository struct {
 	db *gorm.DB
 }
+
+
+
+// UpdateStatusMissionApproval implements entity.MissionRepositoryInterface.
 
 func NewMissionRepository(db *gorm.DB) entity.MissionRepositoryInterface {
 	return &MissionRepository{
@@ -38,34 +44,52 @@ func (mr *MissionRepository) CreateMission(input entity.Mission) error {
 	return nil
 }
 
-func (mr *MissionRepository) FindAllMission(page, limit int, search, filter string) ([]entity.Mission, pagination.PageInfo, int, error) {
+func (mr *MissionRepository) FindAllMission(page, limit int, search, filter string) ([]entity.Mission, pagination.PageInfo, helper.CountMission, error) {
 	data := []model.Mission{}
 	offsetInt := (page - 1) * limit
+
 	paginationQuery := mr.db.Limit(limit).Offset(offsetInt)
 
-	totalCount, err := mr.GetCount(filter, search)
+	counts, _ := mr.GetCountDataMission()
+	totalCount, err := mr.GetCountMission(filter, search)
 	if err != nil {
-		return nil, pagination.PageInfo{}, 0, err
+		return nil, pagination.PageInfo{}, counts, err
 	}
 
 	if filter != "" {
 		tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Preload("MissionStages").Find(&data)
 		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, 0, tx.Error
+			return nil, pagination.PageInfo{}, counts, tx.Error
 		}
 	}
-
+	newCount := helper.CountMission{}
 	if search != "" {
-		tx := paginationQuery.Where("title LIKE?", "%"+search+"%").Preload("MissionStages").Find(&data)
+
+		list := model.Mission{}
+		tx := mr.db.Model(&list).Where("status LIKE ? AND title LIKE ?", "%"+constanta.OVERDUE+"%", "%"+search+"%").Count(&newCount.CountExpired)
 		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, 0, tx.Error
+			return nil, pagination.PageInfo{}, counts, tx.Error
 		}
+
+		list2 := model.Mission{}
+		tx = mr.db.Model(&list2).Where("status LIKE ? AND title LIKE ?", "%"+constanta.ACTIVE+"%", "%"+search+"%").Count(&newCount.CountActive)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, tx.Error
+		}
+
+		counts.TotalCount = int64(totalCount)
+		tx = paginationQuery.Where("title LIKE ?", "%"+search+"%").Preload("MissionStages").Find(&data)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, tx.Error
+		}
+		counts.CountActive = newCount.CountActive
+		counts.CountExpired = newCount.CountExpired
 	}
 
 	if search == "" || filter == "" {
 		tx := paginationQuery.Preload("MissionStages").Find(&data)
 		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, 0, tx.Error
+			return nil, pagination.PageInfo{}, counts, tx.Error
 		}
 	}
 
@@ -74,27 +98,27 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 	for _, v := range data {
 		newStatus, err := helper.ChangeStatusMission(v.EndDate)
 		if err != nil {
-			return nil, pagination.PageInfo{}, 0, err
+			return nil, pagination.PageInfo{}, counts, err
 		}
 
 		v.Status = newStatus
 		err = mr.db.Model(&v).Updates(map[string]interface{}{"status": v.Status}).Error
 		if err != nil {
-			return nil, pagination.PageInfo{}, 0, err
+			return nil, pagination.PageInfo{}, counts, err
 		}
 
 		if err := mr.db.Where("id = ?", v.ID).Preload("MissionStages").Take(&v).Error; err != nil {
-			return nil, pagination.PageInfo{}, 0, err
+			return nil, pagination.PageInfo{}, counts, err
 		}
 		result = append(result, v)
 	}
 
 	dataMission := entity.ListMissionModelToMissionCore(result)
 	paginationInfo := pagination.CalculateData(totalCount, limit, page)
-	return dataMission, paginationInfo, totalCount, nil
+	return dataMission, paginationInfo, counts, nil
 }
 
-func (mr *MissionRepository) GetCount(filter, search string) (int, error) {
+func (mr *MissionRepository) GetCountMission(filter, search string) (int, error) {
 	var totalCount int64
 	model := mr.db.Model(&model.Mission{})
 	if filter == "" || search == "" {
@@ -119,6 +143,79 @@ func (mr *MissionRepository) GetCount(filter, search string) (int, error) {
 
 	}
 	return int(totalCount), nil
+}
+
+func (mr *MissionRepository) GetCountDataMission() (helper.CountMission, error) {
+	counts := helper.CountMission{}
+
+	tx := mr.db.Model(&model.Mission{}).Count(&counts.TotalCount)
+	if tx.Error != nil {
+		return counts, tx.Error
+	}
+
+	tx = mr.db.Model(&model.Mission{}).Where("status LIKE ?", "%"+constanta.OVERDUE+"%").Count(&counts.CountExpired)
+	if tx.Error != nil {
+		return counts, tx.Error
+	}
+
+	tx = mr.db.Model(&model.Mission{}).Where("status LIKE ?", "%"+constanta.ACTIVE+"%").Count(&counts.CountActive)
+	if tx.Error != nil {
+		return counts, tx.Error
+	}
+
+	return counts, nil
+}
+
+func (mr *MissionRepository) GetCountDataMissionApproval(search string) (helper.CountMissionApproval, error) {
+
+	counts := helper.CountMissionApproval{}
+	if search != "" {
+		newCounts := helper.CountMissionApproval{}
+		join:=fmt.Sprint("JOIN users ON upload_mission_tasks.user_id = users.id")
+		query := fmt.Sprint("users.fullname LIKE ")
+
+
+		tx := mr.db.Model(&model.UploadMissionTask{}).
+			Joins(join).
+			Where(query, "%"+search+"%").Count(&newCounts.TotalCount)
+
+		tx = mr.db.Model(&model.UploadMissionTask{}).
+			Joins("JOIN users ON upload_mission_tasks.user_id = users.id").
+			Where("users.fullname LIKE ? AND status LIKE ?", "%"+search+"%", "%"+constanta.DISETUJUI+"%").Count(&newCounts.CountApproved)
+
+		tx = mr.db.Model(&model.UploadMissionTask{}).
+			Joins("JOIN users ON upload_mission_tasks.user_id = users.id").
+			Where("users.fullname LIKE ? AND status LIKE ?", "%"+search+"%", "%"+constanta.DITOLAK+"%").Count(&newCounts.CountRejected)
+
+		tx = mr.db.Model(&model.UploadMissionTask{}).
+			Joins("JOIN users ON upload_mission_tasks.user_id = users.id").
+			Where("users.fullname LIKE ? AND status LIKE ?", "%"+search+"%", "%"+constanta.PERLU_TINJAUAN+"%").Count(&newCounts.CountPending)
+
+		if tx.Error != nil {
+			return counts, tx.Error
+		}
+		return newCounts, nil
+	}
+
+	tx := mr.db.Model(&model.UploadMissionTask{}).Count(&counts.TotalCount)
+	if tx.Error != nil {
+		return counts, tx.Error
+	}
+
+	err := mr.db.Model(&model.UploadMissionTask{}).Where("status LIKE ?", "%"+constanta.DISETUJUI+"%").Count(&counts.CountApproved).Error
+	if err != nil {
+		return counts, err
+	}
+	err = mr.db.Model(&model.UploadMissionTask{}).Where("status LIKE ?", "%"+constanta.DITOLAK+"%").Count(&counts.CountRejected).Error
+	if err != nil {
+		return counts, err
+	}
+	err = mr.db.Model(&model.UploadMissionTask{}).Where("status LIKE ?", "%"+constanta.PERLU_TINJAUAN+"%").Count(&counts.CountPending).Error
+	if err != nil {
+		return counts, err
+	}
+
+	return counts, nil
 }
 
 func (mr *MissionRepository) FindById(missionID string) (entity.Mission, error) {
@@ -448,14 +545,82 @@ func (mr *MissionRepository) FindUploadById(id string) error {
 
 	return nil
 }
+func (mr *MissionRepository) FindMissionApprovalById(UploadMissionTaskID string) (entity.UploadMissionTaskCore, error) {
+	data := model.UploadMissionTask{}
 
-func (mr *MissionRepository) FindAllMissionApproval() ([]entity.UploadMissionTaskCore, error) {
-	approvalMission := []model.UploadMissionTask{}
-	tx := mr.db.Find(&approvalMission)
+	tx := mr.db.Where("id = ? ", UploadMissionTaskID).Preload("Images").First(&data)
 	if tx.Error != nil {
-		return nil, tx.Error
+		return entity.UploadMissionTaskCore{}, tx.Error
 	}
+
+	// if tx.RowsAffected == 0 {
+	// 	return entity.UploadMissionTaskCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	// }
+
+	result := entity.UploadMissionTaskModelToUploadMissionTaskCore(data)
+
+	return result, nil
+}
+
+func (mr *MissionRepository) FindAllMissionApproval(page, limit int, search, filter string) ([]entity.UploadMissionTaskCore, pagination.PageInfo, helper.CountMissionApproval, error) {
+	approvalMission := []model.UploadMissionTask{}
+	offsetInt := pagination.Offset(page, limit)
+	paginationQuery := mr.db.Limit(limit).Offset(offsetInt)
+	counts, _ := mr.GetCountDataMissionApproval(search)
+
+	var totalCount int
+	if filter != "" {
+		if strings.Contains(filter, constanta.PERLU_TINJAUAN) {
+			totalCount = int(counts.CountPending)
+		}
+		if strings.Contains(filter, constanta.DITOLAK) {
+			totalCount = int(counts.CountRejected)
+		}
+		if strings.Contains(filter, constanta.DISETUJUI) {
+			totalCount = int(counts.CountApproved)
+		}
+
+		tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Preload("Images").Find(&approvalMission)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, tx.Error
+		}
+	}
+
+	if search != "" {
+		totalCount = int(counts.TotalCount)
+		tx := paginationQuery.Model(&model.UploadMissionTask{}).
+			Joins("JOIN users ON upload_mission_tasks.user_id = users.id").
+			Where("users.fullname LIKE ?", "%"+search+"%").Preload("Images").
+			Find(&approvalMission)
+
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, errors.New("error disini")
+		}
+	}
+
+	if search == "" && filter == "" {
+		totalCount = int(counts.TotalCount)
+		tx := paginationQuery.Preload("Images").Find(&approvalMission)
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, counts, tx.Error
+		}
+	}
+
+	paginationInfo := pagination.CalculateData(totalCount, limit, page)
 	result := entity.ListUploadMissionTaskModelToUploadMissionTaskCore(approvalMission)
-	return result, tx.Error
+	return result, paginationInfo, counts, nil
+
+}
+
+func (mr *MissionRepository) UpdateStatusMissionApproval(uploadMissionTaskID, status, reason string) error {
+	err := mr.db.Model(&model.UploadMissionTask{}).Where("id = ?", uploadMissionTaskID).Updates(map[string]interface{}{
+		"status": status,
+		"reason": reason,
+	}).Error
+
+	if err != nil {
+		return err
+	}
+	return nil
 
 }

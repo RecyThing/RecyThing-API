@@ -18,12 +18,18 @@ func RouteTrash(e *echo.Group, db *gorm.DB) {
 	trashCategoryHandler := handler.NewTrashCategoryHandler(trashCategoryService)
 
 	//Manage trash category
-	trashCategory := e.Group("/manage/trashes", jwt.JWTMiddleware())
-	trashCategory.POST("", trashCategoryHandler.CreateCategory)
-	trashCategory.GET("", trashCategoryHandler.GetAllCategory)
-	trashCategory.GET("/categories", trashCategoryHandler.GetAllCategoriesFetch)
-	trashCategory.GET("/:id", trashCategoryHandler.GetById)
-	trashCategory.PUT("/:id", trashCategoryHandler.UpdateCategory)
-	trashCategory.DELETE("/:id", trashCategoryHandler.DeleteById)
+	admin := e.Group("admins/manage/trashes", jwt.JWTMiddleware())
+	admin.POST("", trashCategoryHandler.CreateCategory)
+	admin.GET("", trashCategoryHandler.GetAllCategory)
+	admin.GET("/categories", trashCategoryHandler.GetAllCategoriesFetch)
+	admin.GET("/:id", trashCategoryHandler.GetById)
+	admin.PUT("/:id", trashCategoryHandler.UpdateCategory)
+	admin.DELETE("/:id", trashCategoryHandler.DeleteById)
+
+	user := e.Group("/trashes", jwt.JWTMiddleware())
+	user.GET("/:id", trashCategoryHandler.GetById)
+	user.GET("", trashCategoryHandler.GetAllCategory)
+
+
 
 }

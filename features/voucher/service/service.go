@@ -5,8 +5,11 @@ import (
 	"mime/multipart"
 	user "recything/features/user/entity"
 	"recything/features/voucher/entity"
+	"recything/utils/constanta"
+	"recything/utils/helper"
 	"recything/utils/pagination"
 	"recything/utils/validation"
+	"time"
 )
 
 type voucherService struct {
@@ -97,6 +100,11 @@ func (vs *voucherService) CreateExchangeVoucher(idUser string, data entity.Excha
 		return errEmpty
 	}
 
+	errPhone := validation.PhoneNumber(data.Phone)
+	if errPhone != nil {
+		return errors.New("error : nomor telepon tidak valid")
+	}
+
 	userData, err := vs.userRepository.GetById(idUser)
 	if err != nil {
 		return errors.New("user tidak ditemukan")
@@ -104,12 +112,12 @@ func (vs *voucherService) CreateExchangeVoucher(idUser string, data entity.Excha
 
 	voucherData, err := vs.voucherRepository.GetById(data.IdVoucher)
 	if err != nil {
-		return errors.New("voucher tidak ditemukan")
+		return err
 	}
 
 	if userData.Point <= voucherData.Point {
-        return errors.New("point tidak cukup")
-    }
+		return errors.New("error : point tidak cukup")
+	}
 
 	userData.Point -= voucherData.Point
 
@@ -119,30 +127,71 @@ func (vs *voucherService) CreateExchangeVoucher(idUser string, data entity.Excha
 		return errors.New("gagal memperbarui nilai point pengguna")
 	}
 
+	data.TimeTransaction = time.Now().Format("15:04:05.000")
 	err = vs.voucherRepository.CreateExchangeVoucher(idUser, data)
 	if err != nil {
 		return err
 	}
 	return nil
 }
+func (vs *voucherService) GetAllExchange(page, limit, search, filter string) ([]entity.ExchangeVoucherCore, pagination.PageInfo, helper.CountExchangeVoucher, error) {
 
+	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
+	if err != nil {
+		return nil, pagination.PageInfo{}, helper.CountExchangeVoucher{}, err
+	}
+	dataExchange, pagination, count, err := vs.voucherRepository.GetAllExchange(pageInt, limitInt, search, filter)
+	if err != nil {
+		return nil, pagination, count, err
 
-func (vs *voucherService) GetAllExchange() ([]entity.ExchangeVoucherCore, error) {
-
-	dataExchange,errGet := vs.voucherRepository.GetAllExchange()
-	if errGet != nil {
-		return []entity.ExchangeVoucherCore{},errGet
 	}
 
-	return dataExchange,nil
+	return dataExchange, pagination, count, nil
 }
 
-func (vs *voucherService) GetByIdExchange(idExchange string) (entity.ExchangeVoucherCore, error){
+func (vs *voucherService) GetByIdExchange(idExchange string) (entity.ExchangeVoucherCore, error) {
 
-	dataExchange ,errGet := vs.voucherRepository.GetByIdExchange(idExchange)
+	dataExchange, errGet := vs.voucherRepository.GetByIdExchange(idExchange)
 	if errGet != nil {
-		return entity.ExchangeVoucherCore{},errGet
+		return entity.ExchangeVoucherCore{}, errGet
 	}
 
-	return dataExchange,nil
+	return dataExchange, nil
+}
+
+func (vs *voucherService) UpdateStatusExchange(id string, status string) error {
+
+	errEmpty := validation.CheckDataEmpty(status)
+	if errEmpty != nil {
+		return errors.New("error : status harus diisi")
+	}
+
+	statusEqual, errEqual := validation.CheckEqualData(status, constanta.Status_Exchange)
+	if errEqual != nil {
+		return errors.New("error : input status tidak valid")
+	}
+
+	dataStatus, err := vs.voucherRepository.GetByIdExchange(id)
+	if err != nil {
+		return err
+	}
+
+	if dataStatus.Status == "selesai" {
+		return errors.New("error : status sudah selesai")
+	}
+
+	if dataStatus.Status == "diproses" && statusEqual == "perlu ditinjau" {
+		return errors.New("error : status sudah diproses ")
+	}
+
+	if dataStatus.Status == statusEqual {
+		return errors.New("error : status sudah diperbarui tidak bisa diubah ")
+	}
+
+	err = vs.voucherRepository.UpdateStatusExchange(id, statusEqual)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

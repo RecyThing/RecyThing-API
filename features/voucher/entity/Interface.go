@@ -2,6 +2,7 @@ package entity
 
 import (
 	"mime/multipart"
+	"recything/utils/helper"
 	"recything/utils/pagination"
 )
 
@@ -13,8 +14,10 @@ type VoucherRepositoryInterface interface {
 	Update(idVoucher string, image *multipart.FileHeader,data VoucherCore) error
 	Delete(idVoucher string) error
 	CreateExchangeVoucher(idUser string, data ExchangeVoucherCore) error
-	GetAllExchange() ([]ExchangeVoucherCore, error) 
+	//GetAllExchange() ([]ExchangeVoucherCore, error) 
 	GetByIdExchange(idExchange string) (ExchangeVoucherCore, error)
+	UpdateStatusExchange(id, status string)  error
+	GetAllExchange(page, limit int, search, filter string) ([]ExchangeVoucherCore, pagination.PageInfo, helper.CountExchangeVoucher, error)
 }
 
 type VoucherServiceInterface interface {
@@ -24,6 +27,8 @@ type VoucherServiceInterface interface {
 	UpdateData(idVoucher string, image *multipart.FileHeader,data VoucherCore) error
 	DeleteData(idVoucher string) error
 	CreateExchangeVoucher(idUser string, data ExchangeVoucherCore) error
-	GetAllExchange() ([]ExchangeVoucherCore, error) 
+	//GetAllExchange() ([]ExchangeVoucherCore, error) 
 	GetByIdExchange(idExchange string) (ExchangeVoucherCore, error)
+	UpdateStatusExchange(id string, status string)  error
+	GetAllExchange(page, limit, search, filter string) ([]ExchangeVoucherCore, pagination.PageInfo, helper.CountExchangeVoucher, error)
 }

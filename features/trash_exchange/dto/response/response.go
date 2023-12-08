@@ -14,7 +14,8 @@ type TrashExchangeResponse struct {
 }
 
 type TrashExchangeDetailRespose struct {
-	TrashType   string `json:"trash_type"`
-	Unit        string `json:"unit"`
-	TotalPoints int    `json:"total_points"`
+	TrashType   string  `json:"trash_type"`
+	Amount      float64 `json:"amount"`
+	Unit        string  `json:"unit"`
+	TotalPoints int     `json:"total_points"`
 }

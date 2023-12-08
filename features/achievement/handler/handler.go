@@ -27,10 +27,6 @@ func NewAchievementHandler(achievement entity.AchievementServiceInterface) *achi
 func (ah *achievementHandler) GetAllAchievement(e echo.Context) error {
 	_, role, err := jwt.ExtractToken(e)
 
-	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-	}
-
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
@@ -44,9 +40,13 @@ func (ah *achievementHandler) GetAllAchievement(e echo.Context) error {
 		return e.JSON(http.StatusOK, helper.SuccessResponse("data achievement belum ada"))
 	}
 
-	response := response.ListAchievementCoreToAchievementResponse(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mengambil semua data", response))
-
+	if role != "" {
+		response := response.ListAchievementCoreToAchievementResponse(result)
+		return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mengambil semua data", response))
+	} else {
+		response := response.ListAchievementCoreToAchievementResponseUser(result)
+		return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mengambil semua data", response))
+	}
 }
 
 func (ah *achievementHandler) UpdateById(e echo.Context) error {

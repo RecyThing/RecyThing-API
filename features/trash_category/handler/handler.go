@@ -46,10 +46,11 @@ func (tc *trashCategoryHandler) CreateCategory(e echo.Context) error {
 
 func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 
-	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+	id, _, err := jwt.ExtractToken(e)
+	if id == "" {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
+
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
@@ -77,8 +78,8 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 
 func (tc *trashCategoryHandler) GetAllCategoriesFetch(e echo.Context) error {
 
-	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+	idUser, _, err := jwt.ExtractToken(e)
+	if idUser == "" {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
 	if err != nil {
@@ -104,16 +105,17 @@ func (tc *trashCategoryHandler) GetAllCategoriesFetch(e echo.Context) error {
 
 func (tc *trashCategoryHandler) GetById(e echo.Context) error {
 
-	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+	id, _, err := jwt.ExtractToken(e)
+	if id == "" {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
+	
 	if err != nil {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
-	id := e.Param("id")
-	result, err := tc.trashCategory.GetById(id)
+	idTrash := e.Param("id")
+	result, err := tc.trashCategory.GetById(idTrash)
 
 	if err != nil {
 		if strings.Contains(constanta.ERROR_DATA_ID, err.Error()) {

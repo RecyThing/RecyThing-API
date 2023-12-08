@@ -3386,7 +3386,6 @@
                                         "status": "disetujui"
                                     }
                                 }
-
                             }
                         }
                     }
@@ -3586,10 +3585,234 @@
                         "content": {
                             "application/json": {
                                 "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil memperbarui status"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/communities": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Community"
+                ],
+                "summary": "Create community",
+                "description": "",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestCommunity"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil membuat data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Community"
+                ],
+                "summary": "get all community",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": [
+                                                {
+                                                    "id": "212eab14-0aa6-4360-82e7-f467d6f522f2",
+                                                    "name": "Recy Update",
+                                                    "location": "Bekasi Barat",
+                                                    "created_at": "2023-12-08T16:03:42.774+07:00"
+                                                },
+                                                {
+                                                    "id": "5f0a0aca-9d28-46b2-85fc-d8cbf13ea2a7",
+                                                    "name": "Recyb3",
+                                                    "location": "Bekasi Timur",
+                                                    "created_at": "2023-12-08T23:21:47.861+07:00"
+                                                },
+                                                {
+                                                    "id": "dc47e2f1-2c4f-4047-b90f-e0a25d8d43a9",
+                                                    "name": "Recy Organik",
+                                                    "location": "Bekasi Timur",
+                                                    "created_at": "2023-12-08T23:22:36.349+07:00"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            },
+                                            "count_data": 3
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/manage/communities/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Community"
+                ],
+                "summary": "get detail community",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdCommunity"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": {
+                                                "id": "dc47e2f1-2c4f-4047-b90f-e0a25d8d43a9",
+                                                "name": "Recy Organik",
+                                                "description": "Komunitas ini untuk mengelola banyak samah khusus B3, banyak juga yang ahli kimia disini sambil belajar zat-zat yang terkandung dalam sampah berbahaya",
+                                                "location": "Bekasi Timur",
+                                                "max_members": 600,
+                                                "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/de943b4d-ab8d-4b85-81fd-47ba3a491151.png",
+                                                "created_at": "2023-12-08T23:22:36.349+07:00"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Community"
+                ],
+                "summary": "update community",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdCommunity"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestCommunity"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil update data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Manage Community"
+                ],
+                "summary": "update community",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IdCommunity"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "examples": {
                                     "success":{
                                         "value":{
-                                            "status":true,
-                                            "message":"berhasil memperbarui status"
+                                            "status": true,
+                                            "message": "berhasil menghapus data"
                                         }
                                     }
                                 }
@@ -3818,6 +4041,20 @@
                 "required": true,
                 "schema": {
                     "type": "string"
+                }
+            },
+            "IdCommunity": {
+                "name": "id",
+                "in": "path",
+                "description": "id of community",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "id": {
+                        "value": "dc47e2f1-2c4f-4047-b90f-e0a25d8d43a9"
+                    }
                 }
             },
             "statusMissions": {
@@ -4820,6 +5057,30 @@
                 },
                 "required": [
                     "status"
+                ]
+            },
+            "RequestCommunity": {
+                "type": "object",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "max_members": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "image",
+                    "description",
+                    "location",
+                    "max_members"
                 ]
             }
         },

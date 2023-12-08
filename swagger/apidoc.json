@@ -2700,17 +2700,17 @@
                             "examples": {
                                 "succes": {
                                     "value": {
-                                        "name": "Al Hilaluddin",
+                                        "name": "roni daru",
                                         "email": "tehpucuk8700@gmail.com",
-                                        "address": "deket kolam",
+                                        "address": "Jl. Bukit Barisan I No.78e, Glugur Darat II, Kec. Medan Tim., Kota Medan, Sumatera Utara 20238, Indonesia",
                                         "trash_exchange_details": [
                                             {
-                                                "trash_type": "test",
-                                                "unit": "3.7 kg"
+                                                "trash_type": "botol",
+                                                "amount": 5.5
                                             },
                                             {
-                                                "trash_type": "seng",
-                                                "unit": "5.6 kg"
+                                                "trash_type": "kayu",
+                                                "amount": 6.7
                                             }
                                         ]
                                     }

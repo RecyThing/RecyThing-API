@@ -267,8 +267,10 @@ func CalculateMonthlyStats(data []report.ReportCore, startOfYear time.Time, mont
 
 	for i := 0; i < monthsInYear; i++ {
 		// Menghitung awal dan akhir bulan
-		monthStartDate := startOfYear.AddDate(0, i, 0)
-		monthEndDate := monthStartDate.AddDate(0, 1, -1)
+		monthStartDate := time.Date(startOfYear.Year(), startOfYear.Month(), 1, 0, 0, 0, 0, time.UTC).AddDate(0, i, 0)
+		monthEndDate := time.Date(monthStartDate.Year(), monthStartDate.Month()+1, 1, 0, 0, 0, 0, time.UTC).Add(-time.Nanosecond)
+
+		log.Printf("Month %d: StartDate: %s, EndDate: %s\n", i+1, monthStartDate, monthEndDate)
 
 		// Filter data yang berada dalam rentang waktu bulan ini
 		filteredData := FilterDataByDate(data, monthStartDate, monthEndDate)
@@ -284,6 +286,7 @@ func CalculateMonthlyStats(data []report.ReportCore, startOfYear time.Time, mont
 
 	return monthlyStats
 }
+
 
 func CalculateWeeklyStats(data []report.ReportCore, startOfMonth time.Time) []WeeklyStats {
 	year, month, _ := startOfMonth.Date()

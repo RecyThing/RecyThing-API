@@ -124,7 +124,8 @@ func (ds *dashboardService) DashboardYears() (dashboard.GetCountUser, dashboard.
 	}
 
 	// Menghitung jumlah bulan dalam setahun
-	startOfYear := time.Now().AddDate(-1, 0, 0)
+	currentTime := time.Now()
+	startOfYear := time.Date(currentTime.Year(), 1, 1, 0, 0, 0, 0, currentTime.Location())
 	monthsInYear := 12
 
 	monthlyStats := dashboard.CalculateMonthlyStats(trashAndScalaTypes, startOfYear, monthsInYear)
@@ -138,36 +139,36 @@ func (ds *dashboardService) DashboardYears() (dashboard.GetCountUser, dashboard.
 }
 
 // CountMonthlyTrashAndScalaTypesYear implements entity.DashboardServiceInterface.
-// func (ds *dashboardService) CountMonthlyTrashAndScalaTypesYear() ([]dashboard.MonthlyStats, error) {
-// 	trashAndScalaTypes, err := ds.dashboardRepository.CountWeeklyTrashAndScalaTypes()
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (ds *dashboardService) CountMonthlyTrashAndScalaTypesYear() ([]dashboard.MonthlyStats, error) {
+	trashAndScalaTypes, err := ds.dashboardRepository.CountWeeklyTrashAndScalaTypes()
+	if err != nil {
+		return nil, err
+	}
 
-// 	// Menghitung jumlah bulan dalam setahun
-// 	startOfYear := time.Now().AddDate(-1, 0, 0) // Mengubah ke -1 untuk mendapatkan awal tahun sekarang
-// 	monthsInYear := 12
-// 	monthlyStats := make([]dashboard.MonthlyStats, monthsInYear)
+	// Menghitung jumlah bulan dalam setahun
+	startOfYear := time.Now().AddDate(-1, 0, 0) // Mengubah ke -1 untuk mendapatkan awal tahun sekarang
+	monthsInYear := 12
+	monthlyStats := make([]dashboard.MonthlyStats, monthsInYear)
 
-// 	for i := 0; i < monthsInYear; i++ {
-// 		// Menghitung awal dan akhir bulan
-// 		monthStartDate := startOfYear.AddDate(0, i, 0)
-// 		monthEndDate := monthStartDate.AddDate(0, 1, -1)
+	for i := 0; i < monthsInYear; i++ {
+		// Menghitung awal dan akhir bulan
+		monthStartDate := startOfYear.AddDate(0, i, 0)
+		monthEndDate := monthStartDate.AddDate(0, 1, -1)
 
-// 		// Filter data yang berada dalam rentang waktu bulan ini
-// 		filteredData := dashboard.FilterDataByDate(trashAndScalaTypes, monthStartDate, monthEndDate)
+		// Filter data yang berada dalam rentang waktu bulan ini
+		filteredData := dashboard.FilterDataByDate(trashAndScalaTypes, monthStartDate, monthEndDate)
 
-// 		// Hitung jumlah data trash_type dan scala_type
-// 		trashCount, scalaCount := dashboard.CountTrashAndScalaTypes(filteredData)
+		// Hitung jumlah data trash_type dan scala_type
+		trashCount, scalaCount := dashboard.CountTrashAndScalaTypes(filteredData)
 
-// 		// Set nilai MonthlyStats
-// 		monthlyStats[i].Month = i + 1
-// 		monthlyStats[i].Trash = trashCount
-// 		monthlyStats[i].Scala = scalaCount
-// 	}
+		// Set nilai MonthlyStats
+		monthlyStats[i].Month = i + 1
+		monthlyStats[i].Trash = trashCount
+		monthlyStats[i].Scala = scalaCount
+	}
 
-// 	return monthlyStats, nil
-// }
+	return monthlyStats, nil
+}
 
 // // CountWeeklyTrashAndScalaTypes implements entity.DashboardServiceInterface.
 // func (ds *dashboardService) CountWeeklyTrashAndScalaTypes() ([]dashboard.WeeklyStats, error) {

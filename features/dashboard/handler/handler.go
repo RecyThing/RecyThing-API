@@ -63,27 +63,27 @@ func (dh *dashboardHandler) DashboardYears(e echo.Context) error {
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, combinedResponse))
 }
 
-// func (dh *dashboardHandler) CountMonthlyTrashAndScalaTypes(e echo.Context) error {
+func (dh *dashboardHandler) CountMonthlyTrashAndScalaTypes(e echo.Context) error {
 
-// 	_, role, err := jwt.ExtractToken(e)
+	_, role, err := jwt.ExtractToken(e)
 
-// 	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
-// 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-// 	}
+	if role != constanta.SUPERADMIN && role != constanta.ADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
 
-// 	if err != nil {
-// 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
-// 	}
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
 	
-//     monthlyStats, err := dh.dashboardService.CountMonthlyTrashAndScalaTypesYear()
-//     if err != nil {
-//         return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-//     }
+    monthlyStats, err := dh.dashboardService.CountMonthlyTrashAndScalaTypesYear()
+    if err != nil {
+        return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+    }
 
-//     monthlyStatsResponse := dto.ListMapToMonthlyStatsResponses(monthlyStats)
+    monthlyStatsResponse := dto.ListMapToMonthlyStatsResponses(monthlyStats)
 
-//     return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, monthlyStatsResponse))
-// }
+    return e.JSON(http.StatusOK, helper.SuccessWithDataResponse(constanta.SUCCESS_GET_DATA, monthlyStatsResponse))
+}
 
 
 // func (dh *dashboardHandler) CountWeeklyTrashAndScalaTypes(e echo.Context) error {

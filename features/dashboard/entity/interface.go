@@ -34,5 +34,5 @@ type DashboardServiceInterface interface {
 	// CountWeeklyTrashAndScalaTypes() ([]dashboard.WeeklyStats, error)
 
 	DashboardYears() (dashboard.GetCountUser, dashboard.GetCountExchangeVoucher, dashboard.GetCountReporting, dashboard.GetCountTrashExchange, dashboard.GetCountScaleType, []dashboard.UserRanking, []dashboard.MonthlyStats, error)
-	// CountMonthlyTrashAndScalaTypesYear() ([]dashboard.MonthlyStats, error)
+	CountMonthlyTrashAndScalaTypesYear() ([]dashboard.MonthlyStats, error)
 }

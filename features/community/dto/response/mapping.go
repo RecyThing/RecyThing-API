@@ -4,6 +4,7 @@ import "recything/features/community/entity"
 
 func CoreCommunityToResponCommunity(data entity.CommunityCore) CommunityResponse {
 	return CommunityResponse{
+		Id:        data.Id,
 		Name:      data.Name,
 		Location:  data.Location,
 		CreatedAt: data.CreatedAt,
@@ -12,6 +13,7 @@ func CoreCommunityToResponCommunity(data entity.CommunityCore) CommunityResponse
 
 func CoreCommunityToResponCommunityForDetails(data entity.CommunityCore) CommunityResponseForDetails {
 	return CommunityResponseForDetails{
+		Id:          data.Id,
 		Name:        data.Name,
 		Description: data.Description,
 		Location:    data.Location,
@@ -35,11 +37,6 @@ func EventCoreToEventResponse(event entity.CommunityEventCore) EventResponse {
 		Id:          event.Id,
 		CommunityId: event.CommunityId,
 		Title:       event.Title,
-		Image:       event.Image,
-		Description: event.Description,
-		Location:    event.Location,
-		MapLink:     event.MapLink,
-		FormLink:    event.FormLink,
 		Quota:       event.Quota,
 		Date:        event.Date,
 		Status:      event.Status,
@@ -53,4 +50,20 @@ func ListEventCoreToListEventRessponse(event []entity.CommunityEventCore) []Even
 		list = append(list, eventData)
 	}
 	return list
+}
+
+func EventCoreToEventResponseDetail(event entity.CommunityEventCore) EventResponseDetail {
+	return EventResponseDetail{
+		Id:          event.Id,
+		CommunityId: event.CommunityId,
+		Title:       event.Title,
+		Image:       event.Image,
+		Description: event.Description,
+		Location:    event.Location,
+		MapLink:     event.MapLink,
+		FormLink:    event.FormLink,
+		Quota:       event.Quota,
+		Date:        event.Date,
+		Status:      event.Status,
+	}
 }

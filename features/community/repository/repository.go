@@ -156,7 +156,7 @@ func (cr *communityRepository) GetByName(name string) (entity.CommunityCore, err
 // Event
 
 // CreateEvent implements entity.CommunityRepositoryInterface.
-func (communityRepo *communityRepository) CreateEvent(communityId string,eventInput entity.CommunityEventCore, image *multipart.FileHeader) error {
+func (communityRepo *communityRepository) CreateEvent(communityId string, eventInput entity.CommunityEventCore, image *multipart.FileHeader) error {
 	eventData := entity.EventCoreToEventModel(eventInput)
 
 	imageURL, uploadErr := storage.UploadThumbnail(image)
@@ -168,7 +168,7 @@ func (communityRepo *communityRepository) CreateEvent(communityId string,eventIn
 	eventData.CommunityId = communityId
 
 	tx := communityRepo.db.Create(&eventData)
-	if tx.Error != nil{
+	if tx.Error != nil {
 		return tx.Error
 	}
 
@@ -179,13 +179,13 @@ func (communityRepo *communityRepository) CreateEvent(communityId string,eventIn
 func (communityRepo *communityRepository) DeleteEvent(communityId string, eventId string) error {
 	checkId := model.CommunityEvent{}
 
-	tx := communityRepo.db.Where("community_id = ? AND id = ?",communityId, eventId).Delete(&checkId)
-	if tx.Error != nil{
+	tx := communityRepo.db.Where("community_id = ? AND id = ?", communityId, eventId).Delete(&checkId)
+	if tx.Error != nil {
 		return tx.Error
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_NOT_FOUND)
+		return errors.New(constanta.ERROR_RECORD_NOT_FOUND)
 	}
 
 	return nil
@@ -225,9 +225,12 @@ func (communityRepo *communityRepository) ReadAllEvent(page int, limit int, sear
 func (communityRepo *communityRepository) ReadEvent(communityId string, eventId string) (entity.CommunityEventCore, error) {
 	eventData := model.CommunityEvent{}
 
-	tx := communityRepo.db.Where("community_id = ? AND id = ?",communityId, eventId).First(&eventData)
+	tx := communityRepo.db.Where("community_id = ? AND id = ?", communityId, eventId).First(&eventData)
 	if tx.Error != nil {
 		return entity.CommunityEventCore{}, tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return entity.CommunityEventCore{}, errors.New(constanta.ERROR_RECORD_NOT_FOUND)
 	}
 
 	dataResponse := entity.EventModelToEventCore(eventData)
@@ -235,12 +238,12 @@ func (communityRepo *communityRepository) ReadEvent(communityId string, eventId 
 }
 
 // UpdateEvent implements entity.CommunityRepositoryInterface.
-func (communityRepo *communityRepository) UpdateEvent(communityId string, eventId string, eventInput entity.CommunityEventCore, image *multipart.FileHeader) (error) {
+func (communityRepo *communityRepository) UpdateEvent(communityId string, eventId string, eventInput entity.CommunityEventCore, image *multipart.FileHeader) error {
 	input := entity.EventCoreToEventModel(eventInput)
 	var eventData model.CommunityEvent
 
-	check := communityRepo.db.Where("community_id = ? AND id = ?",communityId, eventId).First(&eventData)
-	if check.Error != nil{
+	check := communityRepo.db.Where("community_id = ? AND id = ?", communityId, eventId).First(&eventData)
+	if check.Error != nil {
 		return check.Error
 	}
 
@@ -255,8 +258,8 @@ func (communityRepo *communityRepository) UpdateEvent(communityId string, eventI
 		input.Image = eventData.Image
 	}
 
-	tx := communityRepo.db.Where("community_id = ? AND id = ?",communityId, eventId).Updates(&input)
-	if tx.Error != nil{
+	tx := communityRepo.db.Where("community_id = ? AND id = ?", communityId, eventId).Updates(&input)
+	if tx.Error != nil {
 		return tx.Error
 	}
 

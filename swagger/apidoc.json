@@ -2410,8 +2410,8 @@
                             },
                             "examples": {
                                 "example": {
+                                    "description": "Jika closed key tidak diisi maka secara langsung bernilai closed = false",
                                     "value": {
-                                        "description": "Jika closed key tidak diisi maka secara langsung bernilai closed = false",
                                         "name": "Update Recycle",
                                         "address": "Jl koja 2 kp, Jl. Kebantenan No.9, RT.002/RW.012, Jatiasih, Kec. Jatiasih, Kota Bks, Jawa Barat 17423",
                                         "latitude": -6.2914552,

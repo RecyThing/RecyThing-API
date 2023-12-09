@@ -29,4 +29,8 @@ func RouteArticle(e *echo.Group, db *gorm.DB) {
 	user := e.Group("/articles", jwt.JWTMiddleware())
 	user.GET("", articleHand.GetAllArticle)
 	user.GET("/:id", articleHand.GetSpecificArticle)
+	user.GET("/:idcategory", articleHand.GetArticleByCategory)
+	user.GET("/popular", articleHand.GetPopularArticle)
+	user.POST("/like/:id", articleHand.PostLike)
+	user.POST("/share/:id", articleHand.PostShare)
 }

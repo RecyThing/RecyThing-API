@@ -151,7 +151,6 @@ func (article *articleRepository) GetAllArticle(page, limit int, search string) 
 	pageInfo := pagination.CalculateData(int(totalCount), limit, page)
 
 	return dataResponse, pageInfo, int(totalCount), nil
-
 }
 
 // CreateArticle implements entity.ArticleRepositoryInterface.
@@ -214,4 +213,77 @@ func (article *articleRepository) CreateArticle(articleInput entity.ArticleCore,
 	txOuter.Commit()
 
 	return articleCreated, nil
+}
+
+// PostLike implements entity.ArticleRepositoryInterface.
+func (article *articleRepository) PostLike(idArticle string) error {
+	var articleData model.Article
+
+	check := article.db.Where("id = ?", idArticle).First(&articleData)
+	if check.Error != nil {
+		return check.Error
+	}
+
+	articleData.Like += 1
+
+	tx := article.db.Updates(articleData)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	return nil
+}
+
+// PostShare implements entity.ArticleRepositoryInterface.
+func (article *articleRepository) PostShare(idArticle string) error {
+	var articleData model.Article
+
+	check := article.db.Where("id = ?", idArticle).First(&articleData)
+	if check.Error != nil {
+		return check.Error
+	}
+
+	articleData.Share += 1
+
+	tx := article.db.Updates(articleData)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	return nil
+}
+
+// GetPopularArticle implements entity.ArticleRepositoryInterface.
+func (article *articleRepository) GetPopularArticle(search string) ([]entity.ArticleCore, error) {
+	var articleData []model.Article
+
+	tx := article.db.Order("`like` DESC").Limit(10).Find(&articleData)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	dataResponse := entity.ListArticleModelToArticleCore(articleData)
+
+	return dataResponse, nil
+}
+
+// GetArticleByCategory implements entity.ArticleRepositoryInterface.
+func (article *articleRepository) GetArticleByCategory(idCategory string) ([]entity.ArticleCore, error) {
+	var articleData []model.Article
+
+	data := article.db.
+		Table("articles").
+		Select("articles.*").
+		Joins("INNER JOIN article_trash_categories ON articles.id = article_trash_categories.article_id").
+		Where("article_trash_categories.trash_category_id = ?", idCategory).
+		Preload("Categories").
+		Find(&articleData)
+
+	if data.Error != nil {
+		return nil, data.Error
+	}
+
+	articles := entity.ListArticleModelToArticleCore(articleData)
+
+	return articles, nil
 }

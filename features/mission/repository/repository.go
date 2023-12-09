@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"fmt"
+
 	"mime/multipart"
 	"recything/features/mission/entity"
 	"recything/features/mission/model"
@@ -21,17 +22,12 @@ type MissionRepository struct {
 	db *gorm.DB
 }
 
-
-
-// UpdateStatusMissionApproval implements entity.MissionRepositoryInterface.
-
 func NewMissionRepository(db *gorm.DB) entity.MissionRepositoryInterface {
 	return &MissionRepository{
 		db: db,
 	}
 }
 
-// Create implements entity.MissionRepositoryInterface.
 func (mr *MissionRepository) CreateMission(input entity.Mission) error {
 	data := entity.MissionCoreToMissionModel(input)
 	tx := mr.db.Create(&data)
@@ -118,6 +114,79 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 	return dataMission, paginationInfo, counts, nil
 }
 
+func (mr *MissionRepository) FindAllMissionUser(userID string, filter string) ([]entity.MissionHistories, error) {
+	if filter != "" {
+		if filter == constanta.BERJALAN {
+			var missionsWithoutTasks []model.Mission
+
+			var claimedMissionIDs []string
+			mr.db.Model(&model.ClaimedMission{}).Pluck("mission_id", &claimedMissionIDs)
+
+			var rejectedOrPendingMissionIDs []string
+			mr.db.Model(&model.UploadMissionTask{}).Where("status IN (?)", []string{constanta.PERLU_TINJAUAN, constanta.DITOLAK}).Pluck("mission_id", &rejectedOrPendingMissionIDs)
+
+			uniqueMissionIDs := append(claimedMissionIDs, rejectedOrPendingMissionIDs...)
+			subQuery := mr.db.Model(&model.UploadMissionTask{}).Select("mission_id").Where("status = ?", constanta.DISETUJUI)
+
+			mr.db.Preload("MissionStages").Where("id IN (?) AND id NOT IN (?)", uniqueMissionIDs, subQuery).Find(&missionsWithoutTasks)
+
+			histories := []entity.MissionHistories{}
+
+			for _, v := range missionsWithoutTasks {
+				upmistask := model.UploadMissionTask{}
+				claimed := model.ClaimedMission{}
+				mr.db.Where("mission_id = ? AND user_id = ?", v.ID, userID).First(&upmistask)
+				mr.db.Where("mission_id = ? AND user_id = ?", v.ID, userID).First(&claimed)
+
+				if upmistask.ID == "" {
+					newHis := entity.MissionToMissionHistoriesCore(v, claimed, upmistask)
+					newHis.TransactionID = ""
+					histories = append(histories, newHis)
+
+				}
+				if upmistask.ID != "" {
+					newHis := entity.MissionToMissionHistoriesCore(v, claimed, upmistask)
+					histories = append(histories, newHis)
+				}
+			}
+			return histories, nil
+		}
+
+		if filter == constanta.SELESAI {
+			var missions []model.Mission
+
+			tx := mr.db.Joins("JOIN upload_mission_tasks ON missions.id = upload_mission_tasks.mission_id").
+				Where("upload_mission_tasks.user_id = ? AND upload_mission_tasks.status = ?", userID, constanta.DISETUJUI).
+				Find(&missions)
+			if tx.Error != nil {
+				return nil, tx.Error
+			}
+
+			histories := []entity.MissionHistories{}
+
+			for _, v := range missions {
+				claimed := model.ClaimedMission{}
+				upmistask := model.UploadMissionTask{}
+				mr.db.Where("mission_id = ? AND user_id = ?", v.ID, userID).First(&upmistask)
+				mr.db.Where("mission_id = ? AND user_id = ?", v.ID, userID).First(&claimed)
+				newHis := entity.MissionToMissionHistoriesCore(v, claimed, upmistask)
+				histories = append(histories, newHis)
+			}
+			return histories, nil
+		}
+	}
+
+	missions := []model.Mission{}
+	tx := mr.db.Where("status = ?", constanta.ACTIVE).Find(&missions)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	histories := entity.ListMissionModelTomissionHistoriesCore(missions)
+	return histories, nil
+
+}
+
 func (mr *MissionRepository) GetCountMission(filter, search string) (int, error) {
 	var totalCount int64
 	model := mr.db.Model(&model.Mission{})
@@ -171,9 +240,8 @@ func (mr *MissionRepository) GetCountDataMissionApproval(search string) (helper.
 	counts := helper.CountMissionApproval{}
 	if search != "" {
 		newCounts := helper.CountMissionApproval{}
-		join:=fmt.Sprint("JOIN users ON upload_mission_tasks.user_id = users.id")
+		join := fmt.Sprint("JOIN users ON upload_mission_tasks.user_id = users.id")
 		query := fmt.Sprint("users.fullname LIKE ")
-
 
 		tx := mr.db.Model(&model.UploadMissionTask{}).
 			Joins(join).
@@ -307,14 +375,14 @@ func (mr *MissionRepository) UpdateMissionStage(missionID string, data []entity.
 			}
 		}
 	}
-	for _, stage := range allStages {
-		if _, exists := dataIDs[stage.ID]; !exists {
-			tx = mr.db.Unscoped().Delete(&stage)
-			if tx.Error != nil {
-				return tx.Error
-			}
-		}
-	}
+	// for _, stage := range allStages {
+	// 	if _, exists := dataIDs[stage.ID]; !exists {
+	// 		tx = mr.db.Unscoped().Delete(&stage)
+	// 		if tx.Error != nil {
+	// 			return tx.Error
+	// 		}
+	// 	}
+	// }
 
 	for _, stage := range data {
 		if stage.ID == "" {
@@ -622,5 +690,17 @@ func (mr *MissionRepository) UpdateStatusMissionApproval(uploadMissionTaskID, st
 		return err
 	}
 	return nil
+
+}
+
+func (mr *MissionRepository) FindHistoryById(userID, transactionID string) (entity.UploadMissionTaskCore, error) {
+	data := model.UploadMissionTask{}
+	tx := mr.db.Where("user_id = ? AND id = ?", userID, transactionID).Preload("Images").First(&data)
+	if tx.Error != nil {
+		return entity.UploadMissionTaskCore{}, tx.Error
+	}
+
+	result := entity.UploadMissionTaskModelToUploadMissionTaskCore(data)
+	return result, nil
 
 }

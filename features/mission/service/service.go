@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"log"
 	"mime/multipart"
 	admin "recything/features/admin/entity"
 	user "recything/features/user/entity"
@@ -90,6 +91,20 @@ func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]
 	}
 
 	return data, pagnationInfo, count, nil
+}
+
+func (ms *missionService) FindAllMissionUser(userID string, filter string) ([]entity.MissionHistories, error) {
+
+	data, err := validation.CheckEqualData(filter, constanta.STATUS_MISSION_USER)
+	if err != nil {
+		return nil, errors.New("error: filter tidak sesuai")
+	}
+
+	missions, err := ms.MissionRepo.FindAllMissionUser(userID, data)
+	if err != nil {
+		return nil, err
+	}
+	return missions, nil
 }
 
 func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID string, data entity.Mission) error {
@@ -297,8 +312,9 @@ func (ms *missionService) UpdateStatusMissionApproval(UploadMissionTaskID, statu
 	if status == constanta.DISETUJUI {
 		approv.Status = status
 		approv.Reason = ""
-		totalPoint := user.Point + mission.Point
 
+		bonus := helper.CalculateBonus(user.Badge, mission.Point)
+		totalPoint := user.Point + int(bonus)
 		err := ms.UserRepo.UpdateUserPoint(approv.UserID, totalPoint)
 		if err != nil {
 			return err
@@ -320,5 +336,22 @@ func (ms *missionService) UpdateStatusMissionApproval(UploadMissionTaskID, statu
 	}
 
 	return nil
+
+}
+
+func (ms *missionService) FindHistoryById(userID, transactionID string) (entity.UploadMissionTaskCore, error) {
+	log.Println("")
+	data, err := ms.MissionRepo.FindHistoryById(userID, transactionID)
+	if err != nil {
+		return data, err
+	}
+
+	missionData, _ := ms.MissionRepo.FindById(data.MissionID)
+	data.MissionName = missionData.Title
+
+	userData, _ := ms.UserRepo.GetById(data.UserID)
+	data.User = userData.Fullname
+
+	return data, nil
 
 }

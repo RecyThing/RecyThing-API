@@ -89,7 +89,6 @@ func (article *articleHandler) GetAllArticle(e echo.Context) error {
 	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
 
 	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan semua article", articleResponse, paginationInfo, count))
-
 }
 
 func (article *articleHandler) GetSpecificArticle(e echo.Context) error {
@@ -167,4 +166,83 @@ func (article *articleHandler) DeleteArticle(e echo.Context) error {
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil menghapus artikel"))
+}
+
+func (article *articleHandler) PostLike(e echo.Context) error{
+	Id, _, errId := jwt.ExtractToken(e)
+	if errId != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(errId.Error()))
+	}
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
+	}
+
+	idParams := e.Param("id")
+
+	err := article.articleService.PostLike(idParams)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil melakukan like"))
+}
+
+func (article *articleHandler) PostShare(e echo.Context) error{
+	Id, _, errId := jwt.ExtractToken(e)
+	if errId != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(errId.Error()))
+	}
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
+	}
+
+	idParams := e.Param("id")
+
+	err := article.articleService.PostShare(idParams)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil melakukan share"))
+}
+
+func (article *articleHandler) GetPopularArticle(e echo.Context) error{
+	Id, _, err := jwt.ExtractToken(e)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
+	}
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
+	}
+
+	search := e.QueryParam("search")
+	
+	articleData, errData := article.articleService.GetPopularArticle(search)
+	if errData != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan artikel"))
+	}
+
+	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan artikel populer", articleResponse))
+}
+
+func (article *articleHandler) GetArticleByCategory(e echo.Context) error{
+	Id, _, err := jwt.ExtractToken(e)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
+	}
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
+	}
+
+	idParams := e.Param("idcategory")
+
+	articleData, err := article.articleService.GetArticleByCategory(idParams)
+	if err != nil {
+		return e.JSON(http.StatusNotFound, helper.ErrorResponse("gagal membaca data"))
+	}
+	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan artikel", articleResponse))
 }

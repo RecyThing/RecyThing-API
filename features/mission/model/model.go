@@ -11,7 +11,7 @@ import (
 type Mission struct {
 	ID              string `gorm:"type:varchar(255)"`
 	Title           string `gorm:"not null;unique"`
-	Status          string `gorm:"type:enum('Aktif', 'Melewati Tenggat');default:'aktif'"`
+	Status          string `gorm:"type:enum('Aktif', 'Melewati Tenggat');default:'Aktif'"`
 	AdminID         string
 	MissionImage    string
 	Point           int

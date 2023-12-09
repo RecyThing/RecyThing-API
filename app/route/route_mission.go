@@ -33,9 +33,12 @@ func RouteMissions(e *echo.Group, db *gorm.DB) {
 	admin.PUT("/approvals/:id", missionHandler.UpdateStatusApprovalMission)
 
 	user := e.Group("/missions", jwt.JWTMiddleware())
-	user.GET("", missionHandler.GetAllMission)
+	// user.GET("", missionHandler.GetAllMission)
 	user.GET("/:id", missionHandler.FindById)
 	user.POST("", missionHandler.ClaimMission)
 	user.POST("/proof", missionHandler.CreateUploadMission)
 	user.PUT("/proof/:id", missionHandler.UpdateUploadMission)
+	user.GET("", missionHandler.GetAllMissionUser)
+	user.GET("/histories/:idTransaksi", missionHandler.FindHistoryById)
+
 }

@@ -66,21 +66,22 @@ const (
 
 // const for fix data
 var (
-	Unit            = []string{"barang", "kilogram"}
-	Category        = []string{"sampah anorganik", "sampah organik", "informasi", "batasan"}
-	Days            = []string{"senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"}
-	REPORT_TYPE     = []string{"pelanggaran sampah", "tumpukan sampah"}
-	SCALE_TYPE      = []string{"skala besar", "skala kecil"}
-	STATUS_EVENT    = []string{"berjalan", "belum berjalan", "selesai"}
-	Status_Exchange = []string{"diproses", "selesai"}
-	ERROR_MESSAGE   = []string{"sudah", "tidak", "harus", "gagal", "harap"}
+	Unit                = []string{"barang", "kilogram"}
+	Category            = []string{"sampah anorganik", "sampah organik", "informasi", "batasan"}
+	Days                = []string{"senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"}
+	REPORT_TYPE         = []string{"pelanggaran sampah", "tumpukan sampah"}
+	SCALE_TYPE          = []string{"skala besar", "skala kecil"}
+	STATUS_EVENT        = []string{"berjalan", "belum berjalan", "selesai"}
+	Status_Exchange     = []string{"diproses", "selesai"}
+	STATUS_MISSION_USER = []string{"berjalan", "selesai"}
+	ERROR_MESSAGE       = []string{"sudah", "tidak", "harus", "gagal", "harap"}
 )
 
 // const for mission
 const (
 	OVERDUE   = "Melewati Tenggat"
 	ACTIVE    = "Aktif"
-	MAX_STAGE = 5
+	MAX_STAGE = 1
 	MIN_STAGE = 1
 )
 
@@ -92,4 +93,12 @@ const (
 	DIPROSES       = "diproses"
 	SELESAI        = "selesai"
 	TERBARU        = "terbaru"
+	BERJALAN       = "berjalan"
+)
+
+const (
+	BRONZE   = "bronze"
+	PLATINUM = "platinum"
+	SILVER   = "silver"
+	GOLD     = "gold"
 )

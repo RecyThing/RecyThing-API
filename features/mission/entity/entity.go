@@ -65,3 +65,23 @@ type ImageUploadMissionCore struct {
 	Image               string
 	CreatedAt           time.Time
 }
+
+// histories
+
+type MissionHistories struct {
+	MissionID      string
+	ClaimedID      string
+	TransactionID  string
+	Title          string
+	StatusApproval string
+	StatusMission  string
+	MissionImage   string
+	Reason         string
+	Point          int
+	Description    string
+	StartDate      string
+	EndDate        string
+	MissionStages  []MissionStage
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+}

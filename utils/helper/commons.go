@@ -156,5 +156,15 @@ func SortByDay(schedules []drop_point.ScheduleCore) []drop_point.ScheduleCore {
 		return daysOrder[schedules[i].Day] < daysOrder[schedules[j].Day]
 	})
 
-	return schedules
+    return schedules
 }
+
+func GetWeeksInMonth(year int, month time.Month) int {
+	// Menghitung jumlah hari dalam bulan ini
+	daysInMonth := time.Date(year, month+1, 0, 0, 0, 0, 0, time.UTC).Day()
+
+	// Menghitung jumlah minggu dalam bulan ini
+	weeksInMonth := (daysInMonth + 6) / 7
+	return int(weeksInMonth)
+}
+

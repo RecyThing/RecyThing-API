@@ -76,21 +76,20 @@ func (article *articleService) UpdateArticle(idArticle string, articleInput enti
 }
 
 // GetAllArticle implements entity.ArticleServiceInterface.
-func (ac *articleService) GetAllArticle(page, limit int, search string) ([]entity.ArticleCore, pagination.PageInfo,int ,error) {
-	
-	if limit > 10 {
-		return nil, pagination.PageInfo{}, 0,errors.New("limit tidak boleh lebih dari 10")
-    }
+func (ac *articleService) GetAllArticle(page, limit int, search string) ([]entity.ArticleCore, pagination.PageInfo, int, error) {
 
-	page, limit = validation.ValidateCountLimitAndPage(page, limit)
-	
-	article, pageInfo ,count,err := ac.ArticleRepository.GetAllArticle(page, limit, search)
-	if err != nil {
-		return []entity.ArticleCore{}, pagination.PageInfo{},0,err
+	if limit > 10 {
+		return nil, pagination.PageInfo{}, 0, errors.New("limit tidak boleh lebih dari 10")
 	}
 
+	page, limit = validation.ValidateCountLimitAndPage(page, limit)
 
-	return article, pageInfo,count, nil
+	article, pageInfo, count, err := ac.ArticleRepository.GetAllArticle(page, limit, search)
+	if err != nil {
+		return []entity.ArticleCore{}, pagination.PageInfo{}, 0, err
+	}
+
+	return article, pageInfo, count, nil
 }
 
 // CreateArticle implements entity.ArticleServiceInterface.
@@ -114,4 +113,46 @@ func (article *articleService) CreateArticle(articleInput entity.ArticleCore, im
 	}
 
 	return articleCreate, nil
+}
+
+// PostLike implements entity.ArticleServiceInterface.
+func (article *articleService) PostLike(idArticle string) error {
+	postLike := article.ArticleRepository.PostLike(idArticle)
+	if postLike != nil {
+		return postLike
+	}
+	return nil
+}
+
+// PostShare implements entity.ArticleServiceInterface.
+func (article *articleService) PostShare(idArticle string) error {
+	postShare := article.ArticleRepository.PostShare(idArticle)
+	if postShare != nil {
+		return postShare
+	}
+	return nil
+}
+
+// GetPopularArticle implements entity.ArticleServiceInterface.
+func (article *articleService) GetPopularArticle(search string) ([]entity.ArticleCore, error) {
+	articleData, err := article.ArticleRepository.GetPopularArticle(search)
+	if err != nil {
+		return []entity.ArticleCore{}, err
+	}
+
+	return articleData, nil
+}
+
+// GetArticleByCategory implements entity.ArticleServiceInterface.
+func (article *articleService) GetArticleByCategory(idCategory string) ([]entity.ArticleCore, error) {
+	if idCategory == ""{
+		return nil, errors.New("id tidak cocok")
+	}
+
+	articleData, err := article.ArticleRepository.GetArticleByCategory(idCategory)
+	if err != nil {
+		return nil, errors.New("gagal membaca data")
+	}
+
+	return articleData, nil
 }

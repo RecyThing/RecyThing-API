@@ -59,7 +59,7 @@ func (mh *missionHandler) CreateMission(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan missi"))
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("Berhasil menambahkan misi"))
 }
 
 func (mh *missionHandler) GetAllMission(e echo.Context) error {
@@ -79,11 +79,39 @@ func (mh *missionHandler) GetAllMission(e echo.Context) error {
 	}
 
 	if len(result) == 0 {
-		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada missi"))
+		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada misi"))
 	}
 
 	response := response.ListMissionCoreToMissionResponse(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCountAll("Berhasil mendapatkan seluruh missi", response, pagnation, count))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCountAll("Berhasil mendapatkan seluruh misi", response, pagnation, count))
+}
+
+func (mh *missionHandler) GetAllMissionUser(e echo.Context) error {
+
+	id, _, err := jwt.ExtractToken(e)
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+	filter := e.QueryParam("filter")
+	result, err := mh.missionService.FindAllMissionUser(id, filter)
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_NOT_FOUND))
+		}
+
+		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
+
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	if len(result) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada misi"))
+	}
+
+	response := response.ListMissionCoreToMissionResponse(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh misi", response))
 }
 
 func (mh *missionHandler) UpdateMission(e echo.Context) error {
@@ -116,7 +144,7 @@ func (mh *missionHandler) UpdateMission(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil mengupdate missi"))
+	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil mengupdate misi"))
 }
 
 func (mh *missionHandler) UpdateMissionStage(e echo.Context) error {
@@ -192,7 +220,7 @@ func (mh *missionHandler) ClaimMission(e echo.Context) error {
 func (mh *missionHandler) FindById(e echo.Context) error {
 	missionID := e.Param("id")
 	id, _, err := jwt.ExtractToken(e)
-	if id ==""{
+	if id == "" {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
 
@@ -205,7 +233,7 @@ func (mh *missionHandler) FindById(e echo.Context) error {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
 		}
-		
+
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
@@ -233,7 +261,7 @@ func (mh *missionHandler) DeleteMission(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil menghapus data mission"))
+	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil menghapus data misi"))
 
 }
 

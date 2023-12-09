@@ -92,6 +92,14 @@ func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]
 	return data, pagnationInfo, count, nil
 }
 
+func (ms *missionService) FindAllMissionUser(userID string, filter string) ([]entity.Mission, error) {
+	missions, err := ms.MissionRepo.FindAllMissionUser(userID, filter)
+	if err != nil {
+		return nil, err
+	}
+	return missions, nil
+}
+
 func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID string, data entity.Mission) error {
 
 	err := validation.ValidateDateForUpdate(data.StartDate, data.EndDate)

@@ -79,7 +79,7 @@ var (
 const (
 	OVERDUE   = "Melewati Tenggat"
 	ACTIVE    = "Aktif"
-	MAX_STAGE = 5
+	MAX_STAGE = 1
 	MIN_STAGE = 1
 )
 
@@ -91,6 +91,8 @@ const (
 	DIPROSES       = "diproses"
 	SELESAI        = "selesai"
 	TERBARU        = "terbaru"
+	BERJALAN       = "berjalan"
+	
 )
 
 const (

@@ -6,6 +6,7 @@ import (
 	"mime/multipart"
 	"recything/features/mission/entity"
 	"recything/features/mission/model"
+
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/pagination"
@@ -20,8 +21,6 @@ import (
 type MissionRepository struct {
 	db *gorm.DB
 }
-
-
 
 // UpdateStatusMissionApproval implements entity.MissionRepositoryInterface.
 
@@ -118,6 +117,70 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 	return dataMission, paginationInfo, counts, nil
 }
 
+func (mr *MissionRepository) FindAllMissionUser(userID string, filter string) ([]entity.Mission, error) {
+	if filter != "" {
+		if filter == constanta.BERJALAN {
+			var missionsWithoutTasks []model.Mission
+
+			var claimedMissionIDs []string
+			mr.db.Model(&model.ClaimedMission{}).Pluck("MissionID", &claimedMissionIDs)
+
+			var rejectedOrPendingMissionIDs []string
+			mr.db.Model(&model.UploadMissionTask{}).Where("Status IN (?)", []string{constanta.PERLU_TINJAUAN, constanta.DITOLAK}).Pluck("MissionID", &rejectedOrPendingMissionIDs)
+
+			uniqueMissionIDs := append(claimedMissionIDs, rejectedOrPendingMissionIDs...)
+			subQuery := mr.db.Model(&model.UploadMissionTask{}).Select("MissionID").Where("Status = ?", constanta.DISETUJUI)
+
+			mr.db.Preload("MissionStages").Where("ID IN (?) AND ID NOT IN (?)", uniqueMissionIDs, subQuery).Find(&missionsWithoutTasks)
+
+			result := entity.ListMissionModelToMissionCore(missionsWithoutTasks)
+			return result, nil
+
+		}
+
+		if filter == constanta.SELESAI {
+			var missions []model.Mission
+
+			tx := mr.db.Joins("JOIN upload_mission_tasks ON missions.id = upload_mission_tasks.mission_id").
+				Where("upload_mission_tasks.user_id = ? AND upload_mission_tasks.status = ?", userID, constanta.DISETUJUI).
+				Find(&missions)
+			if tx.Error != nil {
+				return nil, tx.Error
+			}
+			result := entity.ListMissionModelToMissionCore(missions)
+			return result, nil
+
+		}
+	}
+
+	missions := []model.Mission{}
+	tx:=mr.db.Where("status = ?", constanta.ACTIVE).Find(&missions)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	result := entity.ListMissionModelToMissionCore(missions)
+	return result, nil
+}
+
+func removeDuplicates(slice []string) []string {
+	result := []string{}
+
+	for i := range slice {
+		found := false
+		for j := range result {
+			if slice[i] == result[j] {
+				found = true
+				break
+			}
+		}
+		if !found {
+			result = append(result, slice[i])
+		}
+	}
+	return result
+}
+
 func (mr *MissionRepository) GetCountMission(filter, search string) (int, error) {
 	var totalCount int64
 	model := mr.db.Model(&model.Mission{})
@@ -171,9 +234,8 @@ func (mr *MissionRepository) GetCountDataMissionApproval(search string) (helper.
 	counts := helper.CountMissionApproval{}
 	if search != "" {
 		newCounts := helper.CountMissionApproval{}
-		join:=fmt.Sprint("JOIN users ON upload_mission_tasks.user_id = users.id")
+		join := fmt.Sprint("JOIN users ON upload_mission_tasks.user_id = users.id")
 		query := fmt.Sprint("users.fullname LIKE ")
-
 
 		tx := mr.db.Model(&model.UploadMissionTask{}).
 			Joins(join).
@@ -307,14 +369,14 @@ func (mr *MissionRepository) UpdateMissionStage(missionID string, data []entity.
 			}
 		}
 	}
-	for _, stage := range allStages {
-		if _, exists := dataIDs[stage.ID]; !exists {
-			tx = mr.db.Unscoped().Delete(&stage)
-			if tx.Error != nil {
-				return tx.Error
-			}
-		}
-	}
+	// for _, stage := range allStages {
+	// 	if _, exists := dataIDs[stage.ID]; !exists {
+	// 		tx = mr.db.Unscoped().Delete(&stage)
+	// 		if tx.Error != nil {
+	// 			return tx.Error
+	// 		}
+	// 	}
+	// }
 
 	for _, stage := range data {
 		if stage.ID == "" {
@@ -575,7 +637,7 @@ func (mr *MissionRepository) FindAllMissionApproval(page, limit int, search, fil
 		}
 		if strings.Contains(filter, constanta.DITOLAK) {
 			totalCount = int(counts.CountRejected)
-		}	
+		}
 		if strings.Contains(filter, constanta.DISETUJUI) {
 			totalCount = int(counts.CountApproved)
 		}

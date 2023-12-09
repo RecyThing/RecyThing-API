@@ -21,3 +21,16 @@ func RequestVoucherToCoreVoucher(data VoucherRequest) entity.VoucherCore {
 // 	}
 // 	return list
 // }
+
+func RequestVoucherExchangeToCoreVoucherExchange(data VoucherExchangeRequest) entity.ExchangeVoucherCore {
+	return entity.ExchangeVoucherCore{
+		IdVoucher: data.IdVoucher,
+		Phone:     data.Phone,
+	}
+}
+
+func RequestExchangeVoucherRequestToCoreExchangeVoucher(data ExchangeVoucherRequest) entity.ExchangeVoucherCore {
+	return entity.ExchangeVoucherCore{
+		Status: data.Status,
+	}
+}

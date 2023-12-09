@@ -5,6 +5,7 @@ import "recything/features/trash_exchange/entity"
 func TrashExchangeDetailCoreToTrashExchangeDetailResponse(data entity.TrashExchangeDetailCore) TrashExchangeDetailRespose {
 	return TrashExchangeDetailRespose{
 		TrashType:   data.TrashType,
+		Amount:      data.Amount,
 		Unit:        data.Unit,
 		TotalPoints: data.TotalPoints,
 	}

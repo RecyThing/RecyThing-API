@@ -13,3 +13,14 @@ type VoucherCore struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
+
+type ExchangeVoucherCore struct {
+	Id              string
+	IdUser          string
+	IdVoucher       string
+	Phone           string
+	Status          string
+	TimeTransaction string
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+}

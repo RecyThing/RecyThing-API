@@ -66,7 +66,7 @@ func (dph *dropPointHandler) GetAllDropPoint(e echo.Context) error {
 	page, _ := strconv.Atoi(e.QueryParam("page"))
 	limit, _ := strconv.Atoi(e.QueryParam("limit"))
 
-	dropPoints, paginationInfo,count, err := dph.dropPointService.GetAllDropPoint(page, limit, search)
+	dropPoints, paginationInfo, count, err := dph.dropPointService.GetAllDropPoint(page, limit, search)
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
@@ -74,13 +74,19 @@ func (dph *dropPointHandler) GetAllDropPoint(e echo.Context) error {
 	if len(dropPoints) == 0 {
 		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
 	}
+	   for _, dropPoint := range dropPoints {
+        dropPoint.Schedule = helper.SortByDay(dropPoint.Schedule)
+    }
 
 	
-	response := response.ListCoreDropPointToDropPointResponse(dropPoints)
+	
+    response := response.ListCoreDropPointToDropPointResponse(dropPoints)
 
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan data", response, paginationInfo,count))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan data", response, paginationInfo, count))
 
 }
+
+
 
 func (dph *dropPointHandler) GetDropPointById(e echo.Context) error {
 	idUser, _, err := jwt.ExtractToken(e)

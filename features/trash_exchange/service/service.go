@@ -34,7 +34,7 @@ func NewTrashExchangeService(trashExchange trashExchange.TrashExchangeRepository
 // CreateTrashExchange implements entity.TrashExchangeServiceInterface.
 func (tes *trashExchangeService) CreateTrashExchange(data trashExchange.TrashExchangeCore) (trashExchange.TrashExchangeCore, error) {
 	
-	data.Id = helper.GenerateRandomID(4)
+	data.Id = helper.GenerateRandomID("PS", 5)
 	errEmpty := validation.CheckDataEmpty(data.Name, data.EmailUser, data.Address)
 	if errEmpty != nil {
 		return trashExchange.TrashExchangeCore{}, errEmpty
@@ -56,7 +56,7 @@ func (tes *trashExchangeService) CreateTrashExchange(data trashExchange.TrashExc
 	var details []trashExchange.TrashExchangeDetailCore
 	for _, detail := range data.TrashExchangeDetails {
 
-		errEmptyDetail := validation.CheckDataEmpty(detail.TrashType, detail.Unit)
+		errEmptyDetail := validation.CheckDataEmpty(detail.TrashType, detail.Amount)
 		if errEmptyDetail != nil {
 			return trashExchange.TrashExchangeCore{}, errEmptyDetail
 		}
@@ -68,16 +68,12 @@ func (tes *trashExchangeService) CreateTrashExchange(data trashExchange.TrashExc
 			return trashExchange.TrashExchangeCore{}, errors.New("kategori sampah tidak ditemukan")
 		}
 
-		detail.Unit = titleCase.String(detail.Unit)
-		unit, err := helper.ConvertUnitToDecimal(detail.Unit)
-		if err != nil {
-			return trashExchange.TrashExchangeCore{}, err
-		}
+		detail.Unit = trashCategory.Unit
 
-		detail.TotalPoints = int(unit * float64(trashCategory.Point))
+		detail.TotalPoints = int(float64(detail.Amount) * float64(trashCategory.Point))
 		totalPoints += detail.TotalPoints
 
-		totalUnits += unit
+		totalUnits += detail.Amount
 		details = append(details, detail)
 	}
 

@@ -22,3 +22,24 @@ func ListCoreVoucherToCoreVoucher(data []entity.VoucherCore) []VoucherResponse {
 	}
 	return list
 }
+
+func CoreExchangeVoucherToExchangeVoucheResponse(data entity.ExchangeVoucherCore) ExchangeVoucheResponse {
+	return ExchangeVoucheResponse{
+		Id:              data.Id,
+		IdUser:          data.IdUser,
+		IdVoucher:       data.IdVoucher,
+		Phone:           data.Phone,
+		Status:          data.Status,
+		TimeTransaction: data.TimeTransaction,
+		CreatedAt:       data.CreatedAt,
+	}
+}
+
+func ListCoreExchangeVoucherToExchangeVoucheResponse(data []entity.ExchangeVoucherCore) []ExchangeVoucheResponse {
+	list := []ExchangeVoucheResponse{}
+	for _, v := range data {
+		result := CoreExchangeVoucherToExchangeVoucheResponse(v)
+		list = append(list, result)
+	}
+	return list
+}

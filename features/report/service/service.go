@@ -2,11 +2,12 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"mime/multipart"
 	"recything/features/report/entity"
+	"recything/utils/constanta"
+	"recything/utils/validation"
 )
 
 type reportService struct {
@@ -48,10 +49,19 @@ func (rc *reportService) SelectById(idReport string) (entity.ReportCore, error) 
 }
 
 func (report *reportService) Create(reportInput entity.ReportCore, userId string, images []*multipart.FileHeader) (entity.ReportCore, error) {
+	var dataScale string
 
-	if reportInput.ReportType == "Pelanggaran Sampah" {
+	dataType, errEqual := validation.CheckEqualData(reportInput.ReportType, constanta.REPORT_TYPE)
+	if errEqual != nil {
+		return entity.ReportCore{}, errors.New("error : report type tidak sesuai")
+	}
 
-		fmt.Println("service : ", reportInput.InsidentDate)
+	if dataType == "pelanggaran sampah" {
+		dataScale, errEqual = validation.CheckEqualData(reportInput.ScaleType, constanta.SCALE_TYPE)
+		if errEqual != nil {
+			return entity.ReportCore{}, errors.New("error : scale type tidak sesuai")
+		}
+
 		if _, parseErr := time.Parse("2006-01-02", reportInput.InsidentDate); parseErr != nil {
 			return entity.ReportCore{}, errors.New("error, tanggal harus dalam format 'yyyy-mm-dd'")
 		}
@@ -62,15 +72,18 @@ func (report *reportService) Create(reportInput entity.ReportCore, userId string
 	}
 
 	for _, image := range images {
-        if image != nil && image.Size > 20*1024*1024 {
-            return entity.ReportCore{}, errors.New("ukuran file tidak boleh lebih dari 20 MB")
-        }
-    }
+		if image != nil && image.Size > 20*1024*1024 {
+			return entity.ReportCore{}, errors.New("ukuran file tidak boleh lebih dari 20 MB")
+		}
+	}
 
 	reportInput.UserId = userId
-	createdReport, errinsert := report.ReportRepository.Insert(reportInput, images)
-	if errinsert != nil {
-		return entity.ReportCore{}, errinsert
+	reportInput.ReportType = dataType
+	reportInput.ScaleType = dataScale
+
+	createdReport, errInsert := report.ReportRepository.Insert(reportInput, images)
+	if errInsert != nil {
+		return entity.ReportCore{}, errInsert
 	}
 
 	return createdReport, nil

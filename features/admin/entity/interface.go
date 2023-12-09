@@ -23,7 +23,7 @@ type AdminRepositoryInterface interface {
 	GetAllReport(status, search string, page, limit int) ([]report.ReportCore, pagination.PageInfo, pagination.CountDataInfo, error)
 	UpdateStatusReport(id, status, reason string) (report.ReportCore, error)
 	GetReportById(id string) (report.ReportCore, error)
-	GetCountByStatus(status string) (int64, error)
+	GetCountByStatus(status, search string) (int64, error)
 }
 
 type AdminServiceInterface interface {

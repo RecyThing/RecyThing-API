@@ -94,7 +94,7 @@ func (ar *AdminRepository) GetCount(search, role string) (int, error) {
 func (ar *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) {
 	dataAdmins := model.Admin{}
 
-	tx := ar.db.Where("id = ? AND role = ?", adminId, constanta.ADMIN).First(&dataAdmins)
+	tx := ar.db.Where("id = ? ", adminId).First(&dataAdmins)
 	if tx.Error != nil {
 		return entity.AdminCore{}, tx.Error
 	}
@@ -243,55 +243,66 @@ func (ar *AdminRepository) GetAllReport(status, search string, page, limit int) 
 	offset := (page - 1) * limit
 	query := ar.db.Model(&reportModel.Report{})
 
-	if status != "" {
-		query = query.Where("status = ?", status)
+	var totalCountWithoutFilter int64
+	if err := query.Count(&totalCountWithoutFilter).Error; err != nil {
+		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
+
+	totalCountWithFilter := totalCountWithoutFilter
 
 	if search != "" {
-		query = query.Joins("JOIN users AS u ON reports.users_id = u.id").
-			Where("u.fullname LIKE ? or reports.id LIKE ? ", "%"+search+"%", "%"+search+"%")
+		if err := query.Joins("JOIN users AS u_search ON reports.users_id = u_search.id").
+			Where("u_search.fullname LIKE ? or reports.id LIKE ?", "%"+search+"%", "%"+search+"%").
+			Count(&totalCountWithFilter).Error; err != nil {
+			return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
+		}
 	}
 
-	var totalCount int64
-	err := ar.db.Model(&reportModel.Report{}).Count(&totalCount).Error
-	if err != nil {
-		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
-	}
-
-	countPerluDitinjau, err := ar.GetCountByStatus("perlu ditinjau")
-	if err != nil {
-		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
-	}
-
-	countDiterima, err := ar.GetCountByStatus("diterima")
-	if err != nil {
-		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
-	}
-
-	countDitolak, err := ar.GetCountByStatus("ditolak")
-	if err != nil {
-		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
+	if status != "" {
+		query = query.Where("reports.status = ?", status)
 	}
 
 	query = query.Offset(offset).Limit(limit)
 
-	err = query.Find(&dataReports).Error
+	err := query.Find(&dataReports).Error
 	if err != nil {
 		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
 
-	dataAllReport := report.ListReportModelToReportCore(dataReports)
-	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
+	countPerluDitinjau, err := ar.GetCountByStatus("perlu ditinjau", search)
+	if err != nil {
+		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
+	}
 
-	countData := pagination.MapCountData(totalCount, countPerluDitinjau, countDiterima, countDitolak)
+	countDiterima, err := ar.GetCountByStatus("diterima", search)
+	if err != nil {
+		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
+	}
 
-	return dataAllReport, paginationInfo, countData, nil
+	countDitolak, err := ar.GetCountByStatus("ditolak", search)
+	if err != nil {
+		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
+	}
+
+	paginationInfo := pagination.CalculateData(int(totalCountWithFilter), limit, page)
+
+	countData := pagination.MapCountData(totalCountWithFilter, countPerluDitinjau, countDiterima, countDitolak)
+
+	return report.ListReportModelToReportCore(dataReports), paginationInfo, countData, nil
 }
 
+
 // GetCountByStatus implements entity.AdminRepositoryInterface.
-func (ar *AdminRepository) GetCountByStatus(status string) (int64, error) {
+func (ar *AdminRepository) GetCountByStatus(status, search string) (int64, error) {
 	var count int64
-	tx := ar.db.Model(&reportModel.Report{}).Where("status = ?", status).Count(&count)
+	query := ar.db.Model(&reportModel.Report{}).Where("reports.status = ?", status)
+
+	if search != "" {
+		query = query.Joins("JOIN users AS u_status_filtered ON reports.users_id = u_status_filtered.id").
+			Where("u_status_filtered.fullname LIKE ? or reports.id LIKE ? ", "%"+search+"%", "%"+search+"%")
+	}
+
+	tx := query.Count(&count)
 	if tx.Error != nil {
 		return 0, tx.Error
 	}

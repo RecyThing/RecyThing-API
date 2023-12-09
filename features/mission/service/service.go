@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"log"
 	"mime/multipart"
 	admin "recything/features/admin/entity"
 	user "recything/features/user/entity"
@@ -92,8 +93,14 @@ func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]
 	return data, pagnationInfo, count, nil
 }
 
-func (ms *missionService) FindAllMissionUser(userID string, filter string) ([]entity.Mission, error) {
-	missions, err := ms.MissionRepo.FindAllMissionUser(userID, filter)
+func (ms *missionService) FindAllMissionUser(userID string, filter string) ([]entity.MissionHistories, error) {
+
+	data, err := validation.CheckEqualData(filter, constanta.STATUS_MISSION_USER)
+	if err != nil {
+		return nil, errors.New("error: filter tidak sesuai")
+	}
+
+	missions, err := ms.MissionRepo.FindAllMissionUser(userID, data)
 	if err != nil {
 		return nil, err
 	}
@@ -329,5 +336,22 @@ func (ms *missionService) UpdateStatusMissionApproval(UploadMissionTaskID, statu
 	}
 
 	return nil
+
+}
+
+func (ms *missionService) FindHistoryById(userID, transactionID string) (entity.UploadMissionTaskCore, error) {
+	log.Println("")
+	data, err := ms.MissionRepo.FindHistoryById(userID, transactionID)
+	if err != nil {
+		return data, err
+	}
+
+	missionData, _ := ms.MissionRepo.FindById(data.MissionID)
+	data.MissionName = missionData.Title
+
+	userData, _ := ms.UserRepo.GetById(data.UserID)
+	data.User = userData.Fullname
+
+	return data, nil
 
 }

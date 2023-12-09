@@ -109,8 +109,7 @@ func (mh *missionHandler) GetAllMissionUser(e echo.Context) error {
 	if len(result) == 0 {
 		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada misi"))
 	}
-
-	// response := response.ListMissionCoreToMissionResponse(result)
+	response.ListHistoriesCoreToHistoriesResponse(result)
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh misi", result))
 }
 

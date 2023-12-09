@@ -92,6 +92,14 @@ func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]
 	return data, pagnationInfo, count, nil
 }
 
+func (ms *missionService) FindAllMissionUser(userID string, filter string) ([]entity.Mission, error) {
+	missions, err := ms.MissionRepo.FindAllMissionUser(userID, filter)
+	if err != nil {
+		return nil, err
+	}
+	return missions, nil
+}
+
 func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID string, data entity.Mission) error {
 
 	err := validation.ValidateDateForUpdate(data.StartDate, data.EndDate)
@@ -297,8 +305,9 @@ func (ms *missionService) UpdateStatusMissionApproval(UploadMissionTaskID, statu
 	if status == constanta.DISETUJUI {
 		approv.Status = status
 		approv.Reason = ""
-		totalPoint := user.Point + mission.Point
 
+		bonus := helper.CalculateBonus(user.Badge, mission.Point)
+		totalPoint := user.Point + int(bonus)
 		err := ms.UserRepo.UpdateUserPoint(approv.UserID, totalPoint)
 		if err != nil {
 			return err

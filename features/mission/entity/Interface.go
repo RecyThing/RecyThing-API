@@ -18,6 +18,8 @@ type MissionRepositoryInterface interface {
 	UpdateMission(missionID string, data Mission) error
 	DeleteMission(missionID string) error
 
+	FindAllMissionUser(userID string, filter string) ([]Mission, error)
+
 	UpdateMissionStage(missionStageID string, data []MissionStage) error
 	ClaimMission(userID string, data ClaimedMission) error
 	FindClaimed(userID, missionID string) error
@@ -36,6 +38,7 @@ type MissionServiceInterface interface {
 	CreateMission(image *multipart.FileHeader, data Mission) error
 	// CreateMission(data Mission) error
 	FindAllMission(page, limit, search, filter string) ([]Mission, pagination.PageInfo, helper.CountMission, error)
+	FindAllMissionUser(userID string, filter string) ([]Mission, error)
 	FindById(missionID string) (Mission, error)
 	UpdateMission(image *multipart.FileHeader, missionID string, data Mission) error
 

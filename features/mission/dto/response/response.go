@@ -52,3 +52,17 @@ type Proof struct {
 	ID   string `json:"id"`
 	File string `json:"file"`
 }
+
+type MissionHistories struct {
+	MissionID           string         `json:"mission_id"`
+	ClaimedID           string         `json:"claimed_id,omitempty"`
+	UploadMissionTaskID string         `json:"upload_Mission_task_id,omitempty"`
+	Title               string         `json:"title"`
+	StatusApproval      string         `json:"status_approval,omitempty"`
+	StatusMission       string         `json:"status_mission"`
+	MissionImage        string         `json:"mission_image"`
+	Reason              string         `json:"reason,omitempty"`
+	Point               int            `json:"point"`
+	CreatedAt           time.Time      `json:"created_at"`
+	UpdatedAt           time.Time      `json:"updated_at,omitempty"`
+}

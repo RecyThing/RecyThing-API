@@ -99,7 +99,7 @@ func (mh *missionHandler) GetAllMissionUser(e echo.Context) error {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_NOT_FOUND))
 		}
 
-		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
+		if strings.Contains(err.Error(), constanta.ERROR) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 		}
 
@@ -110,8 +110,8 @@ func (mh *missionHandler) GetAllMissionUser(e echo.Context) error {
 		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada misi"))
 	}
 
-	response := response.ListMissionCoreToMissionResponse(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh misi", response))
+	// response := response.ListMissionCoreToMissionResponse(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh misi", result))
 }
 
 func (mh *missionHandler) UpdateMission(e echo.Context) error {
@@ -414,4 +414,28 @@ func (mh *missionHandler) UpdateStatusApprovalMission(e echo.Context) error {
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil mengupdate status approval"))
 
+}
+
+func (mh *missionHandler) FindHistoryById(e echo.Context) error {
+	trasactionID := e.Param("idTransaksi")
+	id, _, err := jwt.ExtractToken(e)
+	if id == "" {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	result, err := mh.missionService.FindHistoryById(id, trasactionID)
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	response := response.UpMissionTaskCoreToUpMissionTaskResp(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mengambil data misi", response))
 }

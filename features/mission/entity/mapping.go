@@ -160,3 +160,45 @@ func ListImageUploadMissionCoreToImageUploadMissionModel(data []ImageUploadMissi
 	}
 	return dataImage
 }
+
+func MissionModelTomissionHistoriesCore(data model.Mission) MissionHistories {
+	return MissionHistories{
+		MissionID:     data.AdminID,
+		Title:         data.Title,
+		StatusMission: data.Status,
+		MissionImage:  data.MissionImage,
+		Point:         data.Point,
+		Description:   data.Description,
+		StartDate:     data.StartDate,
+		EndDate:       data.EndDate,
+		MissionStages: []MissionStage{},
+		CreatedAt:     data.CreatedAt,
+	}
+}
+
+func ListMissionModelTomissionHistoriesCore(data []model.Mission) []MissionHistories {
+	dataMissi := []MissionHistories{}
+	for _, v := range data {
+		result := MissionModelTomissionHistoriesCore(v)
+		dataMissi = append(dataMissi, result)
+	}
+	return dataMissi
+}
+
+func MissionToMissionHistoriesCore(data model.Mission, claimed model.ClaimedMission, upMisTask model.UploadMissionTask) MissionHistories {
+	return MissionHistories{
+		MissionID:      data.ID,
+		ClaimedID:      claimed.ID,
+		TransactionID:  upMisTask.ID,
+		Title:          data.Title,
+		StatusApproval: upMisTask.Status,
+		StatusMission:  data.Status,
+		MissionImage:   data.MissionImage,
+		Reason:         upMisTask.Reason,
+		Point:          data.Point,
+		Description:    data.Description,
+		StartDate:      data.StartDate,
+		EndDate:        data.EndDate,
+		CreatedAt:      upMisTask.CreatedAt,
+	}
+}

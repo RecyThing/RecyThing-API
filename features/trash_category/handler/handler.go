@@ -78,8 +78,8 @@ func (tc *trashCategoryHandler) GetAllCategory(e echo.Context) error {
 
 func (tc *trashCategoryHandler) GetAllCategoriesFetch(e echo.Context) error {
 
-	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+	idUser, _, err := jwt.ExtractToken(e)
+	if idUser == "" {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
 	}
 	if err != nil {

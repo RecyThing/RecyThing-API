@@ -28,7 +28,7 @@ func RouteTrash(e *echo.Group, db *gorm.DB) {
 
 	user := e.Group("/trashes", jwt.JWTMiddleware())
 	user.GET("/:id", trashCategoryHandler.GetById)
-	user.GET("", trashCategoryHandler.GetAllCategory)
+	user.GET("", trashCategoryHandler.GetAllCategoriesFetch)
 
 
 

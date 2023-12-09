@@ -18,8 +18,8 @@ const (
 
 // Constanta For Utils
 const (
-	VERIFICATION_URL = "http://localhost:8080/verify-token?token="
-	// VERIFICATION_URL   = "https://api.recything.my.id/verify-token?token="
+	//VERIFICATION_URL = "http://localhost:8080/verify-token?token="
+	VERIFICATION_URL   = "https://api.recything.my.id/verify-token?token="
 	EMAIL_NOT_REGISTER = "email belum terdaftar"
 )
 
@@ -71,6 +71,7 @@ var (
 	Days            = []string{"senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"}
 	REPORT_TYPE     = []string{"pelanggaran sampah", "tumpukan sampah"}
 	SCALE_TYPE      = []string{"skala besar", "skala kecil"}
+	STATUS_EVENT    = []string{"berjalan", "belum berjalan", "selesai"}
 	Status_Exchange = []string{"diproses", "selesai"}
 	ERROR_MESSAGE   = []string{"sudah", "tidak", "harus", "gagal", "harap"}
 )

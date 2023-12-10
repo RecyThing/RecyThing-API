@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"mime/multipart"
 	"recything/features/community/entity"
 	"recything/features/community/model"
@@ -203,7 +204,8 @@ func (communityRepo *communityRepository) ReadAllEvent(page int, limit int, sear
 	}
 
 	var totalCount int64
-	tx := query.Count(&totalCount).Find(&eventData)
+	fmt.Println("community id : ", communityId)
+	tx := query.Where("community_id = ?", communityId).Count(&totalCount).Find(&eventData)
 	if tx.Error != nil {
 		return nil, pagination.PageInfo{}, 0, tx.Error
 	}

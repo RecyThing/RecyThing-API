@@ -4,21 +4,23 @@ import "recything/features/mission/entity"
 
 func MissionCoreToMissionResponse(missi entity.Mission) Mission {
 	missionResp := Mission{
-		ID:            missi.ID,
-		Title:         missi.Title,
-		Status:        missi.Status,
-		Creator:       missi.Creator,
-		MissionImage:  missi.MissionImage,
-		Point:         missi.Point,
-		Description:   missi.Description,
-		StartDate:     missi.StartDate,
-		EndDate:       missi.EndDate,
-		MissionStages: []MissionStage{},
-		CreatedAt:     missi.CreatedAt,
-		UpdatedAt:     missi.UpdatedAt,
+		ID:               missi.ID,
+		Title:            missi.Title,
+		Status:           missi.Status,
+		Creator:          missi.Creator,
+		MissionImage:     missi.MissionImage,
+		Point:            missi.Point,
+		Description:      missi.Description,
+		StartDate:        missi.StartDate,
+		EndDate:          missi.EndDate,
+		DescriptionStage: missi.DescriptionStage,
+		TitleStage:       missi.TitleStage,
+		// MissionStages: []MissionStage{},
+		CreatedAt: missi.CreatedAt,
+		UpdatedAt: missi.UpdatedAt,
 	}
-	missionStagesResp := ListMissionStagesCoreToMissionStagesResponse(missi.MissionStages)
-	missionResp.MissionStages = missionStagesResp
+	// missionStagesResp := ListMissionStagesCoreToMissionStagesResponse(missi.MissionStages)
+	// missionResp.MissionStages = missionStagesResp
 	return missionResp
 }
 

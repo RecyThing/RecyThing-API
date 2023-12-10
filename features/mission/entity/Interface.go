@@ -20,7 +20,7 @@ type MissionRepositoryInterface interface {
 
 	FindAllMissionUser(userID string, filter string) ([]MissionHistories, error)
 	FindHistoryById(userID, transactionID string) (UploadMissionTaskCore, error) 
-	UpdateMissionStage(missionStageID string, data []MissionStage) error
+	// UpdateMissionStage(missionStageID string, data []MissionStage) error
 	ClaimMission(userID string, data ClaimedMission) error
 	FindClaimed(userID, missionID string) error
 
@@ -45,7 +45,7 @@ type MissionServiceInterface interface {
 	FindById(missionID string) (Mission, error)
 	UpdateMission(image *multipart.FileHeader, missionID string, data Mission) error
 
-	UpdateMissionStage(missionStageID string, data []MissionStage) error
+	// UpdateMissionStage(missionStageID string, data []MissionStage) error
 	ClaimMission(userID string, data ClaimedMission) error
 	DeleteMission(missionID string) error
 

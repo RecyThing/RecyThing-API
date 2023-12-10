@@ -27,7 +27,8 @@ func RouteMissions(e *echo.Group, db *gorm.DB) {
 	admin.DELETE("/:id", missionHandler.DeleteMission)
 	admin.GET("/:id", missionHandler.FindById)
 	admin.PUT("/:id", missionHandler.UpdateMission)
-	admin.PUT("/:id/stages", missionHandler.UpdateMissionStage)
+	// admin.PUT("/:id/stages", missionHandler.UpdateMissionStage)
+	
 	admin.GET("/approvals", missionHandler.GetAllMissionApproval)
 	admin.GET("/approvals/:id", missionHandler.GetMissionApprovalById)
 	admin.PUT("/approvals/:id", missionHandler.UpdateStatusApprovalMission)

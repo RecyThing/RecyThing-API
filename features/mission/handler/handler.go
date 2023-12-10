@@ -39,8 +39,8 @@ func (mh *missionHandler) CreateMission(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	log.Println("mission : ", requestMission)
-	log.Println("mission stages", requestMission.MissionStages)
+	// log.Println("mission : ", requestMission)
+	// log.Println("mission stages", requestMission.MissionStages)
 
 	image, err := e.FormFile("image")
 	if err != nil {
@@ -84,136 +84,6 @@ func (mh *missionHandler) GetAllMission(e echo.Context) error {
 
 	response := response.ListMissionCoreToMissionResponse(result)
 	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCountAll("Berhasil mendapatkan seluruh misi", response, pagnation, count))
-}
-
-func (mh *missionHandler) GetAllMissionUser(e echo.Context) error {
-
-	id, _, err := jwt.ExtractToken(e)
-	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
-	}
-	filter := e.QueryParam("filter")
-	result, err := mh.missionService.FindAllMissionUser(id, filter)
-	if err != nil {
-		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
-			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_NOT_FOUND))
-		}
-
-		if strings.Contains(err.Error(), constanta.ERROR) {
-			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-		}
-
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
-
-	if len(result) == 0 {
-		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada misi"))
-	}
-	resp := response.ListHistoriesCoreToHistoriesResponse(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh misi", resp))
-}
-
-func (mh *missionHandler) UpdateMission(e echo.Context) error {
-	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-	}
-	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
-	}
-	id := e.Param("id")
-	requestMission := request.Mission{}
-	err = e.Bind(&requestMission)
-	if err != nil {
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-	}
-
-	input := request.MissionRequestToMissionCore(requestMission)
-	image, _ := e.FormFile("image")
-
-	err = mh.missionService.UpdateMission(image, id, input)
-	if err != nil {
-		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
-			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_NOT_FOUND))
-		}
-		if strings.Contains(err.Error(), constanta.ERROR) {
-			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-
-		}
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
-
-	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil mengupdate misi"))
-}
-
-func (mh *missionHandler) UpdateMissionStage(e echo.Context) error {
-
-	_, role, err := jwt.ExtractToken(e)
-	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-	}
-	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
-	}
-
-	id := e.Param("id")
-	requestStage := request.RequestMissionStage{}
-	err = e.Bind(&requestStage)
-	if err != nil {
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-	}
-
-	input := request.RequestMissionStageToMissionStageCore(id, requestStage)
-	err = mh.missionService.UpdateMissionStage(id, input)
-	if err != nil {
-		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
-			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_NOT_FOUND))
-		}
-
-		if strings.Contains(err.Error(), constanta.ERROR) {
-			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-
-		}
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
-
-	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil mengupdate tahapan misi"))
-
-}
-
-func (mh *missionHandler) ClaimMission(e echo.Context) error {
-	userID, role, err := jwt.ExtractToken(e)
-
-	if role != "" {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
-	}
-
-	if err != nil {
-		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
-	}
-
-	input := request.Claim{}
-	err = helper.DecodeJSON(e, &input)
-	if err != nil {
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-	}
-
-	request := request.ClaimRequestToClaimCore(input)
-	log.Println(userID)
-	err = mh.missionService.ClaimMission(userID, request)
-	if err != nil {
-		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
-			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
-		}
-		if strings.Contains(err.Error(), constanta.ERROR) {
-			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
-		}
-
-		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
-	}
-
-	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil melakukan klaim"))
-
 }
 
 func (mh *missionHandler) FindById(e echo.Context) error {
@@ -264,8 +134,75 @@ func (mh *missionHandler) DeleteMission(e echo.Context) error {
 
 }
 
-// Upload User
+func (mh *missionHandler) UpdateMission(e echo.Context) error {
+	_, role, err := jwt.ExtractToken(e)
+	if role != constanta.ADMIN && role != constanta.SUPERADMIN {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+	id := e.Param("id")
+	requestMission := request.Mission{}
+	err = e.Bind(&requestMission)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
 
+	input := request.MissionRequestToMissionCore(requestMission)
+	image, _ := e.FormFile("image")
+
+	err = mh.missionService.UpdateMission(image, id, input)
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_NOT_FOUND))
+		}
+		if strings.Contains(err.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusOK, helper.SuccessResponse("Berhasil mengupdate misi"))
+}
+
+func (mh *missionHandler) ClaimMission(e echo.Context) error {
+	userID, role, err := jwt.ExtractToken(e)
+
+	if role != "" {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_AKSES_ROLE))
+	}
+
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+
+	input := request.Claim{}
+	err = helper.DecodeJSON(e, &input)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	request := request.ClaimRequestToClaimCore(input)
+	log.Println(userID)
+	err = mh.missionService.ClaimMission(userID, request)
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+		if strings.Contains(err.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
+
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil melakukan klaim"))
+
+}
+
+// Upload User
 func (mh *missionHandler) CreateUploadMission(e echo.Context) error {
 	userID, role, err := jwt.ExtractToken(e)
 	if role != "" {
@@ -356,7 +293,6 @@ func (mh *missionHandler) GetAllMissionApproval(e echo.Context) error {
 
 	response := response.ListUpMissionTaskCoreToUpMissionTaskResp(data)
 	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCountAll("Berhasil mendapatkan data", response, pagination, counts))
-
 }
 
 func (mh *missionHandler) GetMissionApprovalById(e echo.Context) error {
@@ -415,6 +351,8 @@ func (mh *missionHandler) UpdateStatusApprovalMission(e echo.Context) error {
 
 }
 
+
+//histories user
 func (mh *missionHandler) FindHistoryById(e echo.Context) error {
 	trasactionID := e.Param("idTransaksi")
 	id, _, err := jwt.ExtractToken(e)
@@ -437,4 +375,31 @@ func (mh *missionHandler) FindHistoryById(e echo.Context) error {
 
 	resp := response.UpMissionTaskCoreToUpMissionTaskResp(result)
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mengambil data misi", resp))
+}
+
+func (mh *missionHandler) GetAllMissionUser(e echo.Context) error {
+
+	id, _, err := jwt.ExtractToken(e)
+	if err != nil {
+		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
+	}
+	filter := e.QueryParam("filter")
+	result, err := mh.missionService.FindAllMissionUser(id, filter)
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_NOT_FOUND))
+		}
+
+		if strings.Contains(err.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
+
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	if len(result) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada misi"))
+	}
+	resp := response.ListHistoriesCoreToHistoriesResponse(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh misi", resp))
 }

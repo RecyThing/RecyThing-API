@@ -15,7 +15,9 @@ type Mission struct {
 	Description   string
 	StartDate     string
 	EndDate       string
-	MissionStages []MissionStage
+	TitleStage       string 
+	DescriptionStage string 
+	// MissionStages []MissionStage
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
@@ -29,11 +31,7 @@ type MissionStage struct {
 	UpdatedAt   time.Time
 }
 
-type Stage struct {
-	ID          string
-	Title       string
-	Description string
-}
+
 
 type ClaimedMission struct {
 	ID        string

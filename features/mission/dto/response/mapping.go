@@ -98,20 +98,22 @@ func ListUpMissionTaskCoreToUpMissionTaskResp(data []entity.UploadMissionTaskCor
 
 func HistoriesCoreToHistoriesResponse(data entity.MissionHistories) MissionHistories {
 	return MissionHistories{
-		MissionID:      data.MissionID,
-		ClaimedID:      data.ClaimedID,
-		TransactionID:  data.TransactionID,
-		Title:          data.Title,
-		StatusApproval: data.StatusApproval,
-		StatusMission:  data.StatusMission,
-		MissionImage:   data.MissionImage,
-		Reason:         data.Reason,
-		Point:          data.Point,
-		Description:    data.Description,
-		StartDate:      data.StartDate,
-		EndDate:        data.EndDate,
-		MissionStages:  []MissionStage{},
-		CreatedAt:      data.CreatedAt,
+		MissionID:        data.MissionID,
+		ClaimedID:        data.ClaimedID,
+		TransactionID:    data.TransactionID,
+		Title:            data.Title,
+		StatusApproval:   data.StatusApproval,
+		StatusMission:    data.StatusMission,
+		MissionImage:     data.MissionImage,
+		Reason:           data.Reason,
+		Point:            data.Point,
+		Description:      data.Description,
+		StartDate:        data.StartDate,
+		EndDate:          data.EndDate,
+		DescriptionStage: data.DescriptionStage,
+		TitleStage:       data.TitleStage,
+		// MissionStages:  []MissionStage{},
+		CreatedAt: data.CreatedAt,
 	}
 }
 

@@ -21,11 +21,10 @@ type CountDataInfo struct {
 
 type CountEventInfo struct {
 	TotalCount         int `json:"total_count"`
-	CountBelumBerjalan int `json:"belum_berjalan"`
-	CountBerjalan      int `json:"berjalan"`
-	CountSelesai       int `json:"selesai"`
+	CountBelumBerjalan int `json:"count_pending"`
+	CountBerjalan      int `json:"count_active"`
+	CountSelesai       int `json:"count_finished"`
 }
-
 
 func MapCountData(totalCount, countPerluDitinjau, countDiterima, countDitolak int64) CountDataInfo {
 	return CountDataInfo{

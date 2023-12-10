@@ -4063,6 +4063,242 @@
                     }
                 }
             }
+        },
+        "/dashboard/monthly": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "get monthly dashboard monthly",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": {
+                                                "exchange": {
+                                                    "total_exchange": "52",
+                                                    "percentage": "0",
+                                                    "status": "tetap"
+                                                },
+                                                "monthly": [
+                                                    {
+                                                        "week": 1,
+                                                        "trash_type": 21,
+                                                        "scale_type": 1
+                                                    },
+                                                    {
+                                                        "week": 2,
+                                                        "trash_type": 4,
+                                                        "scale_type": 1
+                                                    },
+                                                    {
+                                                        "week": 3,
+                                                        "trash_type": 0,
+                                                        "scale_type": 0
+                                                    },
+                                                    {
+                                                        "week": 4,
+                                                        "trash_type": 0,
+                                                        "scale_type": 0
+                                                    },
+                                                    {
+                                                        "week": 5,
+                                                        "trash_type": 0,
+                                                        "scale_type": 0
+                                                    }
+                                                ],
+                                                "ranking": [
+                                                    {
+                                                        "name": "i Nyoman Toto",
+                                                        "email": "toto@example.com",
+                                                        "point": 9975250
+                                                    },
+                                                    {
+                                                        "name": "Jacob Hunter",
+                                                        "email": "jacob.hunter@example.com",
+                                                        "point": 250000
+                                                    },
+                                                    {
+                                                        "name": "Mia Robinson",
+                                                        "email": "mia.robinson@example.com",
+                                                        "point": 250000
+                                                    }
+                                                ],
+                                                "recycle": {
+                                                    "total_recycle": "2",
+                                                    "percentage": "0",
+                                                    "status": "tetap"
+                                                },
+                                                "report": {
+                                                    "total_report": "34",
+                                                    "percentage": "17",
+                                                    "status": "naik"
+                                                },
+                                                "scale": {
+                                                    "company": "3",
+                                                    "person": "97"
+                                                },
+                                                "user_active": {
+                                                    "total_user_active": "65",
+                                                    "percentage": "442",
+                                                    "status": "naik"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/years": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "get all dashboard years",
+                "description": "",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": {
+                                                "exchange": {
+                                                    "total_exchange": "52",
+                                                    "percentage": "0",
+                                                    "status": "tetap"
+                                                },
+                                                "ranking": [
+                                                    {
+                                                        "name": "i Nyoman Toto",
+                                                        "email": "toto@example.com",
+                                                        "point": 9975250
+                                                    },
+                                                    {
+                                                        "name": "Jacob Hunter",
+                                                        "email": "jacob.hunter@example.com",
+                                                        "point": 250000
+                                                    },
+                                                    {
+                                                        "name": "Mia Robinson",
+                                                        "email": "mia.robinson@example.com",
+                                                        "point": 250000
+                                                    }
+                                                ],
+                                                "recycle": {
+                                                    "total_recycle": "2",
+                                                    "percentage": "0",
+                                                    "status": "tetap"
+                                                },
+                                                "report": {
+                                                    "total_report": "63",
+                                                    "percentage": "0",
+                                                    "status": "tetap"
+                                                },
+                                                "scale": {
+                                                    "company": "3",
+                                                    "person": "97"
+                                                },
+                                                "user_active": {
+                                                    "total_user_active": "75",
+                                                    "percentage": "0",
+                                                    "status": "tetap"
+                                                },
+                                                "years": [
+                                                    {
+                                                        "month": 1,
+                                                        "trash_type": 0,
+                                                        "scale_type": 0
+                                                    },
+                                                    {
+                                                        "month": 2,
+                                                        "trash_type": 0,
+                                                        "scale_type": 0
+                                                    },
+                                                    {
+                                                        "month": 3,
+                                                        "trash_type": 0,
+                                                        "scale_type": 0
+                                                    },
+                                                    {
+                                                        "month": 4,
+                                                        "trash_type": 0,
+                                                        "scale_type": 0
+                                                    },
+                                                    {
+                                                        "month": 5,
+                                                        "trash_type": 0,
+                                                        "scale_type": 0
+                                                    },
+                                                    {
+                                                        "month": 6,
+                                                        "trash_type": 0,
+                                                        "scale_type": 0
+                                                    },
+                                                    {
+                                                        "month": 7,
+                                                        "trash_type": 0,
+                                                        "scale_type": 0
+                                                    },
+                                                    {
+                                                        "month": 8,
+                                                        "trash_type": 0,
+                                                        "scale_type": 0
+                                                    },
+                                                    {
+                                                        "month": 9,
+                                                        "trash_type": 0,
+                                                        "scale_type": 0
+                                                    },
+                                                    {
+                                                        "month": 10,
+                                                        "trash_type": 0,
+                                                        "scale_type": 0
+                                                    },
+                                                    {
+                                                        "month": 11,
+                                                        "trash_type": 30,
+                                                        "scale_type": 2
+                                                    },
+                                                    {
+                                                        "month": 12,
+                                                        "trash_type": 19,
+                                                        "scale_type": 2
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -5322,7 +5558,7 @@
                         "type": "string",
                         "format": "binary"
                     },
-                    "name":{
+                    "name": {
                         "type": "string"
                     },
                     "description": {

@@ -14,6 +14,7 @@ type UsersRepositoryInterface interface {
 	NewPassword(email string, data UsersCore) (UsersCore, error)
 	UpdateUserPoint(id string, point int)error
 	JoinCommunity(communityId string, userId string) error
+	FindById(userID string) (UsersCore,error)
 }
 
 type UsersUsecaseInterface interface {

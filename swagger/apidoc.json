@@ -2869,43 +2869,52 @@
                                     "200": {
                                         "value": {
                                             "status": true,
-                                            "message": "Berhasil mendapatkan seluruh missi",
+                                            "message": "Berhasil mendapatkan seluruh misi",
                                             "data": [
                                                 {
-                                                    "id": "02f9fa77-a866-449e-81f8-df99702151e3",
-                                                    "name": "buang sampah",
-                                                    "creator": "admin2",
+                                                    "id": "MIS-357F3CD5F1DA427",
+                                                    "name": "ini misi rahasiaa 1",
+                                                    "creator": "admin",
                                                     "status": "Aktif",
-                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/65e62484-4263-4b24-9c2f-d911d5aac3c4.png",
-                                                    "point": 100,
-                                                    "description": "njnasd",
-                                                    "start_date": "2023-12-05",
-                                                    "end_date": "2023-12-06",
-                                                    "mission_stages": [
-                                                        {
-                                                            "id": "02f9fa77-a866-449e-df99702151e3-81f8",
-                                                            "title": "stage 1",
-                                                            "description": "ini stage 1",
-                                                            "created_at": "0001-01-01T00:00:00Z",
-                                                            "updated_at": "0001-01-01T00:00:00Z"
-                                                        }
-                                                    ],
-                                                    "created_at": "2023-12-02T16:19:15.656+08:00",
-                                                    "updated_at": "2023-12-03T19:31:31.664+08:00"
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/88f1b3e0-b845-4baf-ba98-ffeabde4cd4f.png",
+                                                    "point": 150000,
+                                                    "description": "SEPULSA",
+                                                    "start_date": "2023-12-10",
+                                                    "end_date": "2023-12-11",
+                                                    "title_stage": "SEPULSA",
+                                                    "description_stage": "stage1",
+                                                    "created_at": "2023-12-10T22:25:40.685+08:00",
+                                                    "updated_at": "2023-12-11T05:28:20.643+08:00"
                                                 },
                                                 {
-                                                    "id": "07102bcf-70c3-4bcd-a72f-e27937a5849a",
-                                                    "name": "peduli lingkungan",
-                                                    "creator": "admin2",
+                                                    "id": "MIS-437B37CDF0C142D",
+                                                    "name": "mission update",
+                                                    "creator": "admin",
+                                                    "status": "Melewati Tenggat",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/61347247-6522-4e3a-a69b-1599a3a13f88.jpg",
+                                                    "point": 10000,
+                                                    "description": "GOPAY 10000",
+                                                    "start_date": "2010-02-03",
+                                                    "end_date": "2010-02-04",
+                                                    "title_stage": "GOPAY 10000",
+                                                    "description_stage": "ini new title",
+                                                    "created_at": "2023-12-10T21:58:33.852+08:00",
+                                                    "updated_at": "2023-12-11T05:28:20.979+08:00"
+                                                },
+                                                {
+                                                    "id": "MIS-BC35B3011CF2435",
+                                                    "name": "title misi",
+                                                    "creator": "admin",
                                                     "status": "Aktif",
-                                                    "mission_image": "",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/bce41b2f-ffb5-4462-a386-c07f7ca1e8e9.png",
                                                     "point": 150000,
-                                                    "description": "peduli dengan lingkungan",
-                                                    "start_date": "2023-12-03",
-                                                    "end_date": "2023-12-06",
-                                                    "mission_stages": [],
-                                                    "created_at": "2023-12-02T12:16:49.596+08:00",
-                                                    "updated_at": "2023-12-03T19:31:31.687+08:00"
+                                                    "description": "desc misi",
+                                                    "start_date": "2023-12-11",
+                                                    "end_date": "2023-12-12",
+                                                    "title_stage": "desc misi",
+                                                    "description_stage": "tahap pertama",
+                                                    "created_at": "2023-12-11T05:26:51.024+08:00",
+                                                    "updated_at": "2023-12-11T05:28:21.309+08:00"
                                                 }
                                             ],
                                             "pagination": {
@@ -2914,9 +2923,9 @@
                                                 "last_page": 1
                                             },
                                             "count": {
-                                                "total_count": 2,
+                                                "total_count": 3,
                                                 "count_active": 2,
-                                                "count_expired": 0
+                                                "count_expired": 1
                                             }
                                         }
                                     }
@@ -2960,7 +2969,7 @@
                                     "success": {
                                         "value": {
                                             "status": true,
-                                            "message": "Berhasil menambahkan missi"
+                                            "message": "Berhasil menambahkan misi"
                                         }
                                     }
                                 }
@@ -3026,7 +3035,7 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
-                                "$ref": "#/components/schemas/RequestMissionUpdate"
+                                "$ref": "#/components/schemas/RequestMission"
                             },
                             "encoding": {
                                 "image": {
@@ -3046,7 +3055,7 @@
                                         "description": "OK",
                                         "value": {
                                             "status": true,
-                                            "message": "Berhasil mengupdate missi"
+                                            "message": "Berhasil mengupdate misi"
                                         }
                                     }
                                 }
@@ -3085,90 +3094,20 @@
                                             "status": true,
                                             "message": "berhasil mengambil data mission",
                                             "data": {
-                                                "id": "MIS-1DF224B4D5A8407",
-                                                "name": "membuang sampah pada tempatnya",
-                                                "creator": "",
+                                                "id": "MIS-BC35B3011CF2435",
+                                                "name": "title misi",
+                                                "creator": "admin",
                                                 "status": "Aktif",
-                                                "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/db1efea2-806a-4ce1-b104-149ff3c50e98.png",
+                                                "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/bce41b2f-ffb5-4462-a386-c07f7ca1e8e9.png",
                                                 "point": 150000,
-                                                "description": "SEPULSA",
-                                                "start_date": "2023-12-05",
-                                                "end_date": "2023-12-06",
-                                                "mission_stages": [
-                                                    {
-                                                        "id": "xxxxxxxx",
-                                                        "title": "tahap 1",
-                                                        "description": "ini tahap 1",
-                                                        "created_at": "0001-01-01T00:00:00Z",
-                                                        "updated_at": "0001-01-01T00:00:00Z"
-                                                    }
-                                                ],
-                                                "created_at": "2023-12-05T23:14:56.185+08:00",
-                                                "updated_at": "2023-12-06T03:39:21.854+08:00"
+                                                "description": "desc misi",
+                                                "start_date": "2023-12-11",
+                                                "end_date": "2023-12-12",
+                                                "title_stage": "desc misi",
+                                                "description_stage": "tahap pertama",
+                                                "created_at": "2023-12-11T05:26:51.024+08:00",
+                                                "updated_at": "2023-12-11T05:28:21.309+08:00"
                                             }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admins/manage/missions/{id}/stages": {
-            "put": {
-                "security": [
-                    {
-                        "token": []
-                    }
-                ],
-                "tags": [
-                    "Manage Missions"
-                ],
-                "summary": "update stage mission by id mission",
-                "description": "update stage mission by id mission",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/idMission"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RequestMissionStageUpdate"
-                            },
-                            "examples": {
-                                "succes": {
-                                    "value": {
-                                        "mission_stage": [
-                                            {
-                                                "id": "tahapan 1",
-                                                "title": "Tahapan 1 Updated",
-                                                "description": "Deskripsi Tahapan 2 Updated"
-                                            },
-                                            {
-                                                "title": "Tahapan 2 baru",
-                                                "description": "Deskripsi Tahapan 2 baru"
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "examples": {
-                                    "success": {
-                                        "description": "OK",
-                                        "value": {
-                                            "status": true,
-                                            "message": "Berhasil mengupdate tahapan misi"
                                         }
                                     }
                                 }
@@ -4554,7 +4493,12 @@
                 "in": "query",
                 "description": "status of missions",
                 "schema": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "aktif",
+                        "melewati tenggat"
+                    ]
+
                 }
             },
             "searchMissions": {
@@ -5221,16 +5165,11 @@
                             "Aktif"
                         ]
                     },
-                    "mission_stages": {
-                        "type": "object",
-                        "properties": {
-                            "title": {
-                                "type": "string"
-                            },
-                            "description": {
-                                "type": "string"
-                            }
-                        }
+                    "title_stages": {
+                        "type": "string"
+                    },
+                    "description_stages": {
+                        "type": "string"
                     },
                     "pagination": {
                         "type": "object",
@@ -5395,16 +5334,10 @@
                         "type": "string",
                         "format": "Date"
                     },
-                    "mission_stages": {
-                        "type": "object",
-                        "properties": {
-                            "title": {
-                                "type": "string"
-                            },
-                            "description": {
-                                "type": "string"
-                            }
-                        }
+                    "title_stage": {
+                        "type": "string"
+                    },"description_stage": {
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -5413,7 +5346,9 @@
                     "point",
                     "description",
                     "start_date",
-                    "end_date"
+                    "end_date",
+                    "title_stage",
+                    "description_stage"
                 ]
             },
             "ResponseMissionApprovals": {

@@ -32,6 +32,8 @@ type MissionRepositoryInterface interface {
 	FindAllMissionApproval(page, limit int, search, filter string) ([]UploadMissionTaskCore, pagination.PageInfo, helper.CountMissionApproval, error)
 	FindMissionApprovalById(UploadMissionTaskID string) (UploadMissionTaskCore, error)
 	UpdateStatusMissionApproval(uploadMissionTaskID, status, reason string) error
+
+	FindHistoryByIdTransaction(userID, transactionID string) (map[string]interface{}, error)
 }
 
 type MissionServiceInterface interface {

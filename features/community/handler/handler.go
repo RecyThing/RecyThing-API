@@ -260,7 +260,7 @@ func (ch *communityHandler) DeleteEvent(e echo.Context) error {
 
 func (ch *communityHandler) ReadAllEvent(e echo.Context) error {
 
-	status := e.QueryParam("status")
+	filter := e.QueryParam("filter")
 	search := e.QueryParam("search")
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
@@ -274,7 +274,7 @@ func (ch *communityHandler) ReadAllEvent(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
 	}
 
-	eventData, paginationInfo, count, err := ch.communityService.ReadAllEvent(status, page, limit, search, idKom)
+	eventData, paginationInfo, count, err := ch.communityService.ReadAllEvent(filter, page, limit, search, idKom)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))

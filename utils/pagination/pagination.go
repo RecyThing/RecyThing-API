@@ -21,9 +21,9 @@ type CountDataInfo struct {
 
 type CountEventInfo struct {
 	TotalCount         int `json:"total_count"`
-	CountBelumBerjalan int `json:"count_belum_berjalan"`
-	CountBerjalan      int `json:"count_berjalan"`
-	CountSelesai       int `json:"count_selesai"`
+	CountBelumBerjalan int `json:"belum_berjalan"`
+	CountBerjalan      int `json:"berjalan"`
+	CountSelesai       int `json:"selesai"`
 }
 
 

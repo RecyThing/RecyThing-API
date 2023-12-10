@@ -1716,7 +1716,7 @@
                                         }
                                     },
                                     "berjalan": {
-                                        "value":{
+                                        "value": {
                                             "status": true,
                                             "message": "Berhasil mendapatkan seluruh misi",
                                             "data": [
@@ -1995,6 +1995,116 @@
                 }
             }
         },
+        "/users/point/history": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Users Point & Voucher"
+                ],
+                "summary": "get all history",
+                "description": "history drop sampah, tukar point, hadiah mission",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil menampilkan seluruh data",
+                                            "data": [
+                                                {
+                                                    "created_at": "2023-12-10T10:40:42+07:00",
+                                                    "id_transaction": "4257888526",
+                                                    "point": 5200,
+                                                    "time_transaction": "10:40:42.919",
+                                                    "type_transaction": "tukar poin"
+                                                },
+                                                {
+                                                    "created_at": "2023-12-10T08:57:54+07:00",
+                                                    "id_transaction": "PS30901",
+                                                    "points": 15921,
+                                                    "time_transaction": "08:57:54.099",
+                                                    "type_transaction": "drop sampah"
+                                                },
+                                                {
+                                                    "created_at": "2023-12-10T00:03:34+07:00",
+                                                    "id_transaction": "abd96b87-b5e2-442d-81fa-9e5387074c6c",
+                                                    "point": 3000,
+                                                    "time_transaction": "00:03:34.000",
+                                                    "type_transaction": "hadiah mission"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/point/history/{idTransaction}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Users Point & Voucher"
+                ],
+                "summary": "get all history",
+                "description": "history drop sampah, tukar point, hadiah mission",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idTransaction"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil menampilkan data",
+                                            "data": {
+                                                "created_at": "2023-12-10T08:57:54+07:00",
+                                                "drop_point": "Recycle Center",
+                                                "id_transaction": "PS30901",
+                                                "points": 15921,
+                                                "time_transaction": "08:57:54.099",
+                                                "trash_detail": [
+                                                    {
+                                                        "amount": 3.7,
+                                                        "type": "Koran",
+                                                        "unit": "kilogram"
+                                                    },
+                                                    {
+                                                        "amount": 5.6,
+                                                        "type": "Plastik",
+                                                        "unit": "kilogram"
+                                                    }
+                                                ],
+                                                "type_transaction": "reward penukaran sampah"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/trashes": {
             "get": {
                 "security": [
@@ -2221,6 +2331,20 @@
                         "diterima",
                         "ditolak"
                     ]
+                }
+            },
+            "idTransaction": {
+                "name": "idTransaction",
+                "in": "path",
+                "description": "id of transaction",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                },
+                "examples": {
+                    "idTransaction":{
+                        "value":"PS30901"
+                    }
                 }
             },
             "id": {

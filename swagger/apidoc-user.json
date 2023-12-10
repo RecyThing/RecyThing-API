@@ -1636,16 +1636,7 @@
                 "description": "view all missions",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/statusMissions"
-                    },
-                    {
-                        "$ref": "#/components/parameters/searchMissions"
-                    },
-                    {
-                        "$ref": "#/components/parameters/limit"
-                    },
-                    {
-                        "$ref": "#/components/parameters/page"
+                        "$ref": "#/components/parameters/filterHistoriesMission"
                     }
                 ],
                 "responses": {
@@ -1657,58 +1648,115 @@
                                     "$ref": "#/components/schemas/ResponseMission"
                                 },
                                 "examples": {
-                                    "200": {
+                                    "tersedia": {
                                         "value": {
                                             "status": true,
-                                            "message": "Berhasil mendapatkan seluruh missi",
+                                            "message": "Berhasil mendapatkan seluruh misi",
                                             "data": [
                                                 {
-                                                    "id": "02f9fa77-a866-449e-81f8-df99702151e3",
-                                                    "name": "buang sampah",
-                                                    "creator": "admin2",
-                                                    "status": "Aktif",
-                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/65e62484-4263-4b24-9c2f-d911d5aac3c4.png",
-                                                    "point": 100,
-                                                    "description": "njnasd",
-                                                    "start_date": "2023-12-05",
-                                                    "end_date": "2023-12-06",
-                                                    "mission_stages": [
-                                                        {
-                                                            "id": "02f9fa77-a866-449e-df99702151e3-81f8",
-                                                            "title": "stage 1",
-                                                            "description": "ini stage 1",
-                                                            "created_at": "0001-01-01T00:00:00Z",
-                                                            "updated_at": "0001-01-01T00:00:00Z"
-                                                        }
-                                                    ],
-                                                    "created_at": "2023-12-02T16:19:15.656+08:00",
-                                                    "updated_at": "2023-12-03T19:31:31.664+08:00"
+                                                    "mission_id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                    "title": "TITLE 96F",
+                                                    "status_mission": "Aktif",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/535475c8-d020-4ff2-8ee1-937be6b574f8.jpg",
+                                                    "point": 3000,
+                                                    "description": "ayam goreng",
+                                                    "start_date": "2023-12-04",
+                                                    "end_date": "2023-12-10",
+                                                    "created_at": "2023-12-04T11:56:02.535+08:00",
+                                                    "updated_at": "0001-01-01T00:00:00Z"
                                                 },
                                                 {
-                                                    "id": "07102bcf-70c3-4bcd-a72f-e27937a5849a",
-                                                    "name": "peduli lingkungan",
-                                                    "creator": "admin2",
-                                                    "status": "Aktif",
-                                                    "mission_image": "",
-                                                    "point": 150000,
-                                                    "description": "peduli dengan lingkungan",
-                                                    "start_date": "2023-12-03",
-                                                    "end_date": "2023-12-06",
-                                                    "mission_stages": [],
-                                                    "created_at": "2023-12-02T12:16:49.596+08:00",
-                                                    "updated_at": "2023-12-03T19:31:31.687+08:00"
+                                                    "mission_id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                    "title": "ayam goreng 7",
+                                                    "status_mission": "Aktif",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/f4d36f43-ec60-4661-9adf-623822a3fa39.jpg",
+                                                    "point": 3000,
+                                                    "description": "ayam goreng",
+                                                    "start_date": "2023-12-04",
+                                                    "end_date": "2023-12-10",
+                                                    "created_at": "2023-12-04T12:55:51.221+08:00",
+                                                    "updated_at": "0001-01-01T00:00:00Z"
+                                                },
+                                                {
+                                                    "mission_id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                    "title": "ayam goreng 5",
+                                                    "status_mission": "Aktif",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/6f9019f2-7666-461c-9fc7-58ea05a4f021.jpg",
+                                                    "point": 3000,
+                                                    "description": "ayam goreng",
+                                                    "start_date": "2023-12-04",
+                                                    "end_date": "2023-12-12",
+                                                    "created_at": "2023-12-04T12:17:32.883+08:00",
+                                                    "updated_at": "0001-01-01T00:00:00Z"
                                                 }
-                                            ],
-                                            "pagination": {
-                                                "limit": 10,
-                                                "current_page": 1,
-                                                "last_page": 1
-                                            },
-                                            "count": {
-                                                "total_count": 2,
-                                                "count_active": 2,
-                                                "count_expired": 0
-                                            }
+                                            ]
+                                        }
+                                    },
+                                    "selesai": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan seluruh misi",
+                                            "data": [
+                                                {
+                                                    "mission_id": "76c64616-ea3a-4404-94d0-e90e74c3f96f",
+                                                    "claimed_id": "sssssssss",
+                                                    "transaction_id": "fffffff",
+                                                    "title": "TITLE 96F",
+                                                    "status_approval": "disetujui",
+                                                    "status_mission": "Aktif",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/535475c8-d020-4ff2-8ee1-937be6b574f8.jpg",
+                                                    "point": 3000,
+                                                    "description": "ayam goreng",
+                                                    "start_date": "2023-12-04",
+                                                    "end_date": "2023-12-10",
+                                                    "created_at": "2023-12-06T13:19:26+08:00",
+                                                    "updated_at": "0001-01-01T00:00:00Z"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "berjalan": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "Berhasil mendapatkan seluruh misi",
+                                            "data": [
+                                                {
+                                                    "mission_id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                    "title": "TITLE 96F",
+                                                    "status_mission": "Aktif",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/535475c8-d020-4ff2-8ee1-937be6b574f8.jpg",
+                                                    "point": 3000,
+                                                    "description": "ayam goreng",
+                                                    "start_date": "2023-12-04",
+                                                    "end_date": "2023-12-10",
+                                                    "created_at": "2023-12-04T11:56:02.535+08:00",
+                                                    "updated_at": "0001-01-01T00:00:00Z"
+                                                },
+                                                {
+                                                    "mission_id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                    "title": "ayam goreng 7",
+                                                    "status_mission": "Aktif",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/f4d36f43-ec60-4661-9adf-623822a3fa39.jpg",
+                                                    "point": 3000,
+                                                    "description": "ayam goreng",
+                                                    "start_date": "2023-12-04",
+                                                    "end_date": "2023-12-10",
+                                                    "created_at": "2023-12-04T12:55:51.221+08:00",
+                                                    "updated_at": "0001-01-01T00:00:00Z"
+                                                },
+                                                {
+                                                    "mission_id": "0c97e17e-d1be-4b54-a40c-78098c5714ac",
+                                                    "title": "ayam goreng 5",
+                                                    "status_mission": "Aktif",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/6f9019f2-7666-461c-9fc7-58ea05a4f021.jpg",
+                                                    "point": 3000,
+                                                    "description": "ayam goreng",
+                                                    "start_date": "2023-12-04",
+                                                    "end_date": "2023-12-12",
+                                                    "created_at": "2023-12-04T12:17:32.883+08:00",
+                                                    "updated_at": "0001-01-01T00:00:00Z"
+                                                }
+                                            ]
                                         }
                                     }
                                 }
@@ -1769,6 +1817,65 @@
                                                 ],
                                                 "created_at": "2023-12-05T23:14:56.185+08:00",
                                                 "updated_at": "2023-12-06T03:39:21.854+08:00"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/histories/:idTransaksi": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Mission"
+                ],
+                "summary": "view all missions ",
+                "description": "view all missions",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseMission"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value": {
+                                            "status": true,
+                                            "message": "berhasil mengambil data misi",
+                                            "data": {
+                                                "id": "fffffff",
+                                                "user_id": "7b27f83b-8512-48de-a623-109aece77a2b",
+                                                "user": "Samantha Davis",
+                                                "mission_id": "76c64616-ea3a-4404-94d0-e90e74c3f96f",
+                                                "mission_name": "TITLE 96F",
+                                                "description": "ini juga decripi",
+                                                "reason": "foto tidak jelas",
+                                                "images": [
+                                                    {
+                                                        "id": "xxxxxxxxx",
+                                                        "upload_mission_task_id": "fffffff",
+                                                        "image": "ini image",
+                                                        "created_at": "2023-12-06T13:20:15+08:00"
+                                                    }
+                                                ],
+                                                "status": "disetujui",
+                                                "created_at": "2023-12-06T13:19:26+08:00",
+                                                "updated_at": "0001-01-01T00:00:00Z"
                                             }
                                         }
                                     }
@@ -1918,7 +2025,7 @@
                                 "examples": {
                                     "succes ": {
                                         "description": "OK",
-                                        "value":{
+                                        "value": {
                                             "status": true,
                                             "message": "Berhasil mendapatkan seluruh kategori sampah",
                                             "data": [
@@ -1950,7 +2057,7 @@
                 }
             }
         },
-        "/trashes/{id}":{
+        "/trashes/{id}": {
             "get": {
                 "security": [
                     {
@@ -2014,10 +2121,10 @@
                     "200": {
                         "description": "OK",
                         "content": {
-                            "application/json":{
+                            "application/json": {
                                 "examples": {
-                                    "success":{
-                                        "value":{
+                                    "success": {
+                                        "value": {
                                             "status": true,
                                             "message": "berhasil mengambil semua data",
                                             "data": [
@@ -2051,8 +2158,6 @@
                 }
             }
         }
-
-
     },
     "components": {
         "parameters": {
@@ -2173,6 +2278,18 @@
                 "description": "search by title of missions",
                 "schema": {
                     "type": "string"
+                }
+            },
+            "filterHistoriesMission": {
+                "name": "filter",
+                "in": "query",
+                "description": "filter by status of missions",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "berjalan",
+                        "selesai"
+                    ]
                 }
             }
         },
@@ -2543,11 +2660,35 @@
             "ResponseMission": {
                 "type": "object",
                 "properties": {
-                    "title": {
+                    "mission_id": {
+                        "type": "string"
+                    },
+                    "claimed_id": {
+                        "type": "string"
+                    },
+                    "transaction_id": {
+                        "type": "string"
+                    },
+                    "user_id": {
                         "type": "string"
                     },
                     "description": {
                         "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "status_approval": {
+                        "type": "string"
+                    },
+                    "status_mission": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    },
+                    "point": {
+                        "type": "integer"
                     },
                     "start_date": {
                         "type": "string"
@@ -2555,57 +2696,63 @@
                     "end_date": {
                         "type": "string"
                     },
-                    "creator": {
+                    "created_at": {
                         "type": "string"
                     },
-                    "point": {
+                    "updated_at": {
                         "type": "string"
+                    }
+                }
+            },
+            "ResponseDetailHistoriesMission": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "type": "string"
+                    },
+                    "user": {
+                        "type": "string"
+                    },
+                    "mission_id": {
+                        "type": "string"
+                    },
+                    "mission_name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    },
+                    "images": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "upload_mission_task_id": {
+                                "type": "string"
+                            },
+                            "image": {
+                                "type": "string"
+                            },
+                            "created_at": {
+                                "type": "string"
+                            }
+                        }
                     },
                     "status": {
-                        "type": "string",
-                        "enum": [
-                            "Melewati Tenggat",
-                            "Aktif"
-                        ]
+                        "type": "string"
                     },
-                    "mission_stages": {
-                        "type": "object",
-                        "properties": {
-                            "title": {
-                                "type": "string"
-                            },
-                            "description": {
-                                "type": "string"
-                            }
-                        }
+                    "created_at": {
+                        "type": "string"
                     },
-                    "pagination": {
-                        "type": "object",
-                        "properties": {
-                            "last_page": {
-                                "type": "string"
-                            },
-                            "current_page": {
-                                "type": "string"
-                            },
-                            "limit": {
-                                "type": "integer"
-                            }
-                        }
-                    },
-                    "count": {
-                        "type": "object",
-                        "properties": {
-                            "total_count": {
-                                "type": "integer"
-                            },
-                            "count_active": {
-                                "type": "integer"
-                            },
-                            "count_expired": {
-                                "type": "integer"
-                            }
-                        }
+                    "updated_at": {
+                        "type": "string"
                     }
                 }
             },

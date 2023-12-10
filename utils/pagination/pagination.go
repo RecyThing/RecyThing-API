@@ -19,12 +19,29 @@ type CountDataInfo struct {
 	CountDitolak       int `json:"count_rejected"`
 }
 
+type CountEventInfo struct {
+	TotalCount         int `json:"total_count"`
+	CountBelumBerjalan int `json:"count_belum_berjalan"`
+	CountBerjalan      int `json:"count_berjalan"`
+	CountSelesai       int `json:"count_selesai"`
+}
+
+
 func MapCountData(totalCount, countPerluDitinjau, countDiterima, countDitolak int64) CountDataInfo {
 	return CountDataInfo{
 		TotalCount:         int(totalCount),
 		CountPerluDitinjau: int(countPerluDitinjau),
 		CountDiterima:      int(countDiterima),
 		CountDitolak:       int(countDitolak),
+	}
+}
+
+func MapCountEventData(totalCount, countBelumBerjalan, countBerjalan, countSelesai int64) CountEventInfo {
+	return CountEventInfo{
+		TotalCount:         int(totalCount),
+		CountBelumBerjalan: int(countBelumBerjalan),
+		CountBerjalan:      int(countBerjalan),
+		CountSelesai:       int(countSelesai),
 	}
 }
 

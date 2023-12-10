@@ -122,12 +122,11 @@ func (cs *communityService) UpdateCommunityById(id string, image *multipart.File
 
 // CreateEvent implements entity.CommunityServiceInterface.
 func (cs *communityService) CreateEvent(communityId string, eventInput entity.CommunityEventCore, image *multipart.FileHeader) error {
-	_,errFind := cs.communityRepository.GetCommunityById(communityId)
+	_, errFind := cs.communityRepository.GetCommunityById(communityId)
 	if errFind != nil {
 		return errFind
 	}
-	
-	
+
 	errEmpty := validation.CheckDataEmpty(eventInput.Title, eventInput.Description, eventInput.Date,
 		eventInput.Quota, eventInput.Location, eventInput.MapLink, eventInput.FormLink)
 	if errEmpty != nil {
@@ -165,24 +164,31 @@ func (cs *communityService) DeleteEvent(communityId string, eventId string) erro
 }
 
 // ReadAllEvent implements entity.CommunityServiceInterface.
-func (cs *communityService) ReadAllEvent(page int, limit int, search string, communityId string) ([]entity.CommunityEventCore, pagination.PageInfo, int, error) {
-	_,errFind := cs.communityRepository.GetCommunityById(communityId)
-	if errFind != nil {
-		return []entity.CommunityEventCore{},pagination.PageInfo{},0,errFind
-	}
-	
-	if limit > 10 {
-		return nil, pagination.PageInfo{}, 0, errors.New("limit tidak boleh lebih dari 10")
+func (cs *communityService) ReadAllEvent(status string, page string, limit string, search string, communityId string) ([]entity.CommunityEventCore, pagination.PageInfo, pagination.CountEventInfo, error) {
+	pageInt, limitInt, validationErr := validation.ValidateTypePaginationParameter(limit, page)
+
+	if validationErr != nil {
+		return nil, pagination.PageInfo{}, pagination.CountEventInfo{}, validationErr
 	}
 
-	page, limit = validation.ValidateCountLimitAndPage(page, limit)
+	pageValid, limitValid := validation.ValidateCountLimitAndPage(pageInt, limitInt)
 
-	event, pageInfo, count, err := cs.communityRepository.ReadAllEvent(page, limit, search, communityId)
+	validStatus := map[string]bool{
+		"belum berjalan": true,
+		"berjalan":       true,
+		"selesai":        true,
+	}
+
+	if _, ok := validStatus[status]; status != "" && !ok {
+		return nil, pagination.PageInfo{}, pagination.CountEventInfo{}, errors.New("status tidak valid")
+	}
+
+	data, paginationInfo, count, err := cs.communityRepository.ReadAllEvent(status, pageValid, limitValid, search, communityId)
 	if err != nil {
-		return []entity.CommunityEventCore{}, pagination.PageInfo{}, 0, err
+		return nil, pagination.PageInfo{}, pagination.CountEventInfo{}, err
 	}
 
-	return event, pageInfo, count, nil
+	return data, paginationInfo, count, nil	
 }
 
 // ReadEvent implements entity.CommunityServiceInterface.
@@ -205,7 +211,7 @@ func (cs *communityService) UpdateEvent(communityId string, eventId string, even
 		return errors.New("event tidak ditemukan")
 	}
 
-	dataStatus,errEqual := validation.CheckEqualData(eventInput.Status,constanta.STATUS_EVENT)
+	dataStatus, errEqual := validation.CheckEqualData(eventInput.Status, constanta.STATUS_EVENT)
 	if errEqual != nil {
 		return errors.New("error : status input tidak valid")
 	}

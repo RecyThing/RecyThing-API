@@ -76,7 +76,7 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 		}
 
 		counts.TotalCount = int64(totalCount)
-		tx = paginationQuery.Where("title LIKE ?", "%"+search+"%").Preload("MissionStages").Find(&data)
+		tx = paginationQuery.Where("title LIKE ?", "%"+search+"%").Find(&data)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, counts, tx.Error
 		}
@@ -131,7 +131,7 @@ func (mr *MissionRepository) FindAllMissionUser(userID string, filter string) ([
 			uniqueMissionIDs := append(claimedMissionIDs, rejectedOrPendingMissionIDs...)
 			subQuery := mr.db.Model(&model.UploadMissionTask{}).Select("mission_id").Where("status = ?", constanta.DISETUJUI)
 
-			mr.db.Preload("MissionStages").Where("id IN (?) AND id NOT IN (?)", uniqueMissionIDs, subQuery).Find(&missionsWithoutTasks)
+			mr.db.Where("id IN (?) AND id NOT IN (?)", uniqueMissionIDs, subQuery).Find(&missionsWithoutTasks)
 
 			histories := []entity.MissionHistories{}
 

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"mime/multipart"
 	"recything/features/community/entity"
 	"recything/features/community/model"
@@ -192,33 +193,64 @@ func (communityRepo *communityRepository) DeleteEvent(communityId string, eventI
 }
 
 // ReadAllEvent implements entity.CommunityRepositoryInterface.
-func (communityRepo *communityRepository) ReadAllEvent(page int, limit int, search string, communityId string) ([]entity.CommunityEventCore, pagination.PageInfo, int, error) {
+func (communityRepo *communityRepository) ReadAllEvent(status string, page int, limit int, search string, communityId string) ([]entity.CommunityEventCore, pagination.PageInfo, pagination.CountEventInfo, error) {
 	var eventData []model.CommunityEvent
 
 	offset := (page - 1) * limit
 	query := communityRepo.db.Model(&model.CommunityEvent{})
 
+	var totalCountWithoutFilter int64
+	if err := query.Count(&totalCountWithoutFilter).Error; err != nil {
+		return nil, pagination.PageInfo{}, pagination.CountEventInfo{}, err
+	}
+
+	totalCountWithFilter := totalCountWithoutFilter
+
 	if search != "" {
 		query = query.Where("title LIKE ? OR location LIKE ?", "%"+search+"%", "%"+search+"%")
 	}
 
-	var totalCount int64
-	tx := query.Where("community_id = ?", communityId).Count(&totalCount).Find(&eventData)
+	tx := query.Where("community_id = ?", communityId).Count(&totalCountWithFilter).Find(&eventData)
 	if tx.Error != nil {
-		return nil, pagination.PageInfo{}, 0, tx.Error
+		return nil, pagination.PageInfo{}, pagination.CountEventInfo{}, tx.Error
+	}
+
+	if status != "" {
+		query = query.Where("status = ?", status)
 	}
 
 	query = query.Offset(offset).Limit(limit)
 
 	tx = query.Where("community_id = ?", communityId).Find(&eventData)
 	if tx.Error != nil {
-		return nil, pagination.PageInfo{}, 0, tx.Error
+		return nil, pagination.PageInfo{}, pagination.CountEventInfo{}, tx.Error
 	}
 
-	dataResponse := entity.ListEventModelToEventCore(eventData)
-	pageInfo := pagination.CalculateData(int(totalCount), limit, page)
+	fmt.Println("ini dari read all : ", communityId)
+	countBelumBerjalan, err := communityRepo.GetCountByStatus("belum berjalan", communityId, search)
+	if err != nil {
+		return nil, pagination.PageInfo{}, pagination.CountEventInfo{}, err
+	}
 
-	return dataResponse, pageInfo, int(totalCount), nil
+	countBerjalan, err := communityRepo.GetCountByStatus("berjalan", communityId, search)
+	if err != nil {
+		return nil, pagination.PageInfo{}, pagination.CountEventInfo{}, err
+	}
+
+	countSelesai, err := communityRepo.GetCountByStatus("selesai", communityId, search)
+	if err != nil {
+		return nil, pagination.PageInfo{}, pagination.CountEventInfo{}, err
+	}
+
+	// dataResponse := entity.ListEventModelToEventCore(eventData)
+	// pageInfo := pagination.CalculateData(int(totalCount), limit, page)
+
+	// return dataResponse, pageInfo, int(totalCount), nil
+	paginationInfo := pagination.CalculateData(int(totalCountWithFilter), limit, page)
+
+	countData := pagination.MapCountEventData(totalCountWithFilter, countBelumBerjalan, countBerjalan, countSelesai)
+
+	return entity.ListEventModelToEventCore(eventData), paginationInfo, countData, nil
 }
 
 // ReadEvent implements entity.CommunityRepositoryInterface.
@@ -268,4 +300,22 @@ func (communityRepo *communityRepository) UpdateEvent(communityId string, eventI
 	}
 
 	return nil
+}
+
+// GetCountByStatus implements entity.AdminRepositoryInterface.
+func (communityRepo *communityRepository) GetCountByStatus(status, communityId string, search string) (int64, error) {
+	var count int64
+	fmt.Println("id komunitas : ", communityId)
+	query := communityRepo.db.Model(&model.CommunityEvent{}).Where("status = ? AND community_id = ?", status, communityId)
+
+	if search != "" {
+		query = query.Where("title LIKE ? OR location LIKE ?", "%"+search+"%", "%"+search+"%")
+	}
+
+	tx := query.Count(&count)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+
+	return count, nil
 }

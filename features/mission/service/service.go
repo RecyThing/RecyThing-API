@@ -94,10 +94,15 @@ func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]
 }
 
 func (ms *missionService) FindAllMissionUser(userID string, filter string) ([]entity.MissionHistories, error) {
+	var data string
+	var err error
+	
+	if filter != "" {
+		data, err = validation.CheckEqualData(filter, constanta.STATUS_MISSION_USER)
+		if err != nil {
+			return nil, errors.New("error: filter tidak sesuai")
+		}
 
-	data, err := validation.CheckEqualData(filter, constanta.STATUS_MISSION_USER)
-	if err != nil {
-		return nil, errors.New("error: filter tidak sesuai")
 	}
 
 	missions, err := ms.MissionRepo.FindAllMissionUser(userID, data)

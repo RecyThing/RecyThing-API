@@ -1908,7 +1908,7 @@
                 }
             }
         },
-        "/missions/history/{idTransaksi}": {
+        "/missions/history/{idTransaction}": {
             "get": {
                 "security": [
                     {
@@ -1922,7 +1922,7 @@
                 "description": "view detail history missions, by id transaction",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/id"
+                        "$ref": "#/components/parameters/idTransaction"
                     }
                 ],
                 "responses": {

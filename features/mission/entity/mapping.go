@@ -163,7 +163,7 @@ func ListImageUploadMissionCoreToImageUploadMissionModel(data []ImageUploadMissi
 
 func MissionModelTomissionHistoriesCore(data model.Mission) MissionHistories {
 	return MissionHistories{
-		MissionID:     data.AdminID,
+		MissionID:     data.ID,
 		Title:         data.Title,
 		StatusMission: data.Status,
 		MissionImage:  data.MissionImage,

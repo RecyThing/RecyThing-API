@@ -53,7 +53,9 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 	}
 
 	if filter != "" {
-		tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Preload("MissionStages").Find(&data)
+		// tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Preload("MissionStages").Find(&data)
+		tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Find(&data)
+
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, counts, tx.Error
 		}
@@ -83,7 +85,8 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 	}
 
 	if search == "" || filter == "" {
-		tx := paginationQuery.Preload("MissionStages").Find(&data)
+		tx := paginationQuery.Find(&data)
+		// tx := paginationQuery.Preload("MissionStages").Find(&data)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, counts, tx.Error
 		}
@@ -103,7 +106,7 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 			return nil, pagination.PageInfo{}, counts, err
 		}
 
-		if err := mr.db.Where("id = ?", v.ID).Preload("MissionStages").Take(&v).Error; err != nil {
+		if err := mr.db.Where("id = ?", v.ID).Take(&v).Error; err != nil {
 			return nil, pagination.PageInfo{}, counts, err
 		}
 		result = append(result, v)
@@ -289,7 +292,7 @@ func (mr *MissionRepository) GetCountDataMissionApproval(search string) (helper.
 func (mr *MissionRepository) FindById(missionID string) (entity.Mission, error) {
 	dataMission := model.Mission{}
 
-	tx := mr.db.Where("id = ? ", missionID).Preload("MissionStages").First(&dataMission)
+	tx := mr.db.Where("id = ? ", missionID).First(&dataMission)
 	if tx.Error != nil {
 		return entity.Mission{}, tx.Error
 	}
@@ -311,7 +314,7 @@ func (mr *MissionRepository) UpdateMission(missionID string, data entity.Mission
 		return tx.Error
 	}
 
-	ok := helper.FieldsEqual(getMission, data, "Title", "Description", "Point", "StartDate", "EndDate")
+	ok := helper.FieldsEqual(getMission, data, "Title", "Description", "Point", "StartDate", "EndDate", "DescriptionStage, TitleStage")
 	if ok {
 		return errors.New(constanta.ERROR_INVALID_UPDATE)
 	}
@@ -337,97 +340,6 @@ func (mr *MissionRepository) UpdateMission(missionID string, data entity.Mission
 		}
 		return tx.Error
 	}
-	return nil
-}
-
-func (mr *MissionRepository) UpdateMissionStage(missionID string, data []entity.MissionStage) error {
-	tx := mr.db.Where("id = ?", missionID).Take(&model.Mission{})
-	if tx.Error != nil {
-		return tx.Error
-	}
-
-	if len(data) > constanta.MAX_STAGE {
-		return errors.New(constanta.ERROR_MISSION_LIMIT)
-	}
-
-	var countStage int64
-	tx = mr.db.Model(&model.MissionStage{}).Where("mission_id = ?", missionID).Count(&countStage)
-	if tx.Error != nil {
-		return tx.Error
-	}
-
-	allStages := []model.MissionStage{}
-	tx = mr.db.Where("mission_id = ?", missionID).Find(&allStages)
-	if tx.Error != nil {
-		return tx.Error
-	}
-
-	dataIDs := make(map[string]bool)
-	for _, stage := range data {
-		dataIDs[stage.ID] = true
-	}
-
-	for _, stage := range allStages {
-		if _, exists := dataIDs[stage.ID]; !exists {
-			tx = mr.db.Unscoped().Delete(&stage)
-			if tx.Error != nil {
-				return tx.Error
-			}
-		}
-	}
-	// for _, stage := range allStages {
-	// 	if _, exists := dataIDs[stage.ID]; !exists {
-	// 		tx = mr.db.Unscoped().Delete(&stage)
-	// 		if tx.Error != nil {
-	// 			return tx.Error
-	// 		}
-	// 	}
-	// }
-
-	for _, stage := range data {
-		if stage.ID == "" {
-			countStage++
-		}
-	}
-
-	if countStage > constanta.MAX_STAGE {
-		return errors.New(constanta.ERROR_MISSION_LIMIT)
-	}
-
-	missionStage := entity.ListMissionStagesCoreToMissionStagesModel(data)
-
-	for i, stage := range missionStage {
-		if stage.ID == "" {
-			tx = mr.db.Create(&stage)
-			if tx.Error != nil {
-				return tx.Error
-			}
-		}
-
-		if stage.ID != "" {
-			for j := i + 1; j < len(data); j++ {
-				if stage.ID == data[j].ID {
-					return errors.New(constanta.ERROR_INVALID_ID)
-				}
-			}
-
-			existStage := model.MissionStage{}
-			tx = mr.db.Where("id = ?", stage.ID).First(&existStage)
-			if tx.Error != nil {
-				return tx.Error
-			}
-
-			existStage.Title = stage.Title
-			existStage.Description = stage.Description
-
-			tx = mr.db.Save(&existStage)
-			if tx.Error != nil {
-				return tx.Error
-			}
-
-		}
-	}
-
 	return nil
 }
 

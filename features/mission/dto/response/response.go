@@ -5,18 +5,20 @@ import (
 )
 
 type Mission struct {
-	ID            string         `json:"id"`
-	Title         string         `json:"name"`
-	Creator       string         `json:"creator"`
-	Status        string         `json:"status"`
-	MissionImage  string         `json:"mission_image"`
-	Point         int            `json:"point"`
-	Description   string         `json:"description"`
-	StartDate     string         `json:"start_date"`
-	EndDate       string         `json:"end_date"`
-	MissionStages []MissionStage `json:"mission_stages"`
-	CreatedAt     time.Time      `json:"created_at"`
-	UpdatedAt     time.Time      `json:"updated_at"`
+	ID           string `json:"id"`
+	Title        string `json:"name"`
+	Creator      string `json:"creator"`
+	Status       string `json:"status"`
+	MissionImage string `json:"mission_image"`
+	Point        int    `json:"point"`
+	Description  string `json:"description"`
+	StartDate    string `json:"start_date"`
+	EndDate      string `json:"end_date"`
+	// MissionStages []MissionStage `json:"mission_stages"`
+	TitleStage       string    `json:"title_stage,omitempty"`
+	DescriptionStage string    `json:"description_stage,omitempty"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 type MissionStage struct {
@@ -70,4 +72,3 @@ type MissionHistories struct {
 	CreatedAt      time.Time      `json:"created_at,omitempty"`
 	UpdatedAt      time.Time      `json:"updated_at,omitempty"`
 }
-

@@ -35,21 +35,21 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 	// 	return errors.New("tahapan misi tidak boleh kosong")
 
 	// }
-	if len(data.MissionStages) > constanta.MAX_STAGE {
-		return errors.New(constanta.ERROR_MISSION_LIMIT)
-	}
+	// if len(data.MissionStages) > constanta.MAX_STAGE {
+	// 	return errors.New(constanta.ERROR_MISSION_LIMIT)
+	// }
 
-	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point)
+	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point, data.DescriptionStage, data.TitleStage)
 	if errEmpty != nil {
 		return errEmpty
 	}
 
-	for _, stage := range data.MissionStages {
-		err := validation.CheckDataEmpty(stage.Description, data.Title)
-		if err != nil {
-			return err
-		}
-	}
+	// for _, stage := range data.MissionStages {
+	// 	err := validation.CheckDataEmpty(stage.Description, data.Title)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	err := validation.ValidateDate(data.StartDate, data.EndDate)
 	if err != nil {
@@ -96,7 +96,7 @@ func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]
 func (ms *missionService) FindAllMissionUser(userID string, filter string) ([]entity.MissionHistories, error) {
 	var data string
 	var err error
-	
+
 	if filter != "" {
 		data, err = validation.CheckEqualData(filter, constanta.STATUS_MISSION_USER)
 		if err != nil {
@@ -146,20 +146,6 @@ func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID s
 	return nil
 }
 
-func (ms *missionService) UpdateMissionStage(missionID string, data []entity.MissionStage) error {
-	for _, stage := range data {
-		err := validation.CheckDataEmpty(stage.Description, stage.Title)
-		if err != nil {
-			return err
-		}
-	}
-
-	err := ms.MissionRepo.UpdateMissionStage(missionID, data)
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
 // Claimed Mission
 func (ms *missionService) ClaimMission(userID string, data entity.ClaimedMission) error {

@@ -1830,8 +1830,8 @@
                 "tags": [
                     "Mission"
                 ],
-                "summary": "view all missions ",
-                "description": "view all missions",
+                "summary": "view deatil history missions ",
+                "description": "view all history missions",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/id"

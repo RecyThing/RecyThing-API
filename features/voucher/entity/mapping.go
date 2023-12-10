@@ -1,6 +1,9 @@
 package entity
 
-import "recything/features/voucher/model"
+import (
+	"recything/features/voucher/model"
+	"time"
+)
 
 func CoreVoucherToModelVoucher(data VoucherCore) model.Voucher {
 	return model.Voucher{
@@ -74,6 +77,29 @@ func ModelExchangeVoucherToCoreExchangeVoucher(data model.ExchangeVoucher) Excha
 		TimeTransaction: data.TimeTransaction,
 		CreatedAt:       data.CreatedAt,
 		UpdatedAt:       data.UpdatedAt,
+	}
+}
+
+func ModelExchangeVoucherToMapDetail(data model.ExchangeVoucher, point int) map[string]interface{} {
+	return map[string]interface{}{
+		"id_transaction":   data.Id,
+		"voucher":          data.IdVoucher,
+		"point":            point,
+		"phone":            data.Phone,
+		"status":           data.Status,
+		"time_transaction": data.TimeTransaction,
+		"type_transaction": "tukar poin",
+		"created_at":       data.CreatedAt.Format(time.RFC3339),
+	}
+}
+
+func ModelExchangeVoucherToMap(data model.ExchangeVoucher, point int) map[string]interface{} {
+	return map[string]interface{}{
+		"id_transaction":   data.Id,
+		"point":            point,
+		"time_transaction": data.TimeTransaction,
+		"type_transaction": "tukar poin",
+		"created_at":       data.CreatedAt.Format(time.RFC3339),
 	}
 }
 

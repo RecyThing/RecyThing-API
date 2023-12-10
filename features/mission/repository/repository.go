@@ -704,3 +704,22 @@ func (mr *MissionRepository) FindHistoryById(userID, transactionID string) (enti
 	return result, nil
 
 }
+
+func (mr *MissionRepository) FindHistoryByIdTransaction(userID, transactionID string) (map[string]interface{}, error) {
+	data := model.UploadMissionTask{}
+	tx := mr.db.Where("user_id = ? AND id = ? AND status = ? ", userID, transactionID, constanta.DISETUJUI).First(&data)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	dataMission, txMission := mr.FindById(data.MissionID)
+	if txMission != nil {
+		return nil, txMission
+	}
+
+	dataMissionResult := entity.MissionCoreToMissionModel(dataMission)
+	dataResult := entity.UploadTaskModelToMissionHistoriesCore(data, dataMissionResult)
+	result := entity.MissionHistoriesCoreToMapDetail(dataResult)
+	return result, nil
+
+}

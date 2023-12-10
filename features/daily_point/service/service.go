@@ -33,3 +33,23 @@ func (dailyS *dailyPointService) PostWeekly() error {
 
 	return nil
 }
+
+func (dailyS *dailyPointService) GetAllHistoryPoint(userID string) ([]map[string]interface{}, error) {
+	data, errDat := dailyS.DailyPointRepository.GetAllHistoryPoint(userID)
+	if errDat != nil {
+		return nil, errDat
+	}
+
+	return data, nil
+}
+
+func (dailyS *dailyPointService) GetByIdHistoryPoint(userID,idTransaction string) (map[string]interface{}, error) {
+	data, errDat := dailyS.DailyPointRepository.GetByIdHistoryPoint(userID,idTransaction)
+	if errDat != nil {
+		return nil, errDat
+	}
+
+	return data, nil
+}
+
+

@@ -78,12 +78,12 @@ func (ter *trashExchangeRepository) GetAllTrashExchange(page int, limit int, sea
 	if tx.Error != nil {
 		return nil, pagination.PageInfo{}, 0, tx.Error
 	}
-	
+
 	query = query.Offset(offset).Limit(limit)
 
 	tx = query.Find(&trashExchange)
 	if tx.Error != nil {
-		return nil, pagination.PageInfo{}, 0,tx.Error
+		return nil, pagination.PageInfo{}, 0, tx.Error
 	}
 
 	response := entity.ListTrashExchangeModelToTrashExchangeCoreForGetData(trashExchange)
@@ -105,5 +105,52 @@ func (ter *trashExchangeRepository) GetTrashExchangeById(id string) (entity.Tras
 	}
 
 	dropPointId := entity.TrashExchangeModelToTrashExchangeCoreForGetData(trashExchange)
+	return dropPointId, nil
+}
+
+func (ter *trashExchangeRepository) GetByEmail(email string) ([]map[string]interface{}, error) {
+	dataTrashEx := []model.TrashExchange{}
+
+	tx := ter.db.Preload("TrashExchangeDetails").Where("email_user = ?", email).Find(&dataTrashEx)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return nil, tx.Error
+	}
+
+	var dataResponse []map[string]interface{}
+
+	for _, trashEx := range dataTrashEx {
+		ter.db.Model(&trashEx).Association("DropPoint").Find(&trashEx.DropPoint)
+		trashEx.DropPointId = trashEx.DropPoint.Name
+
+		data := entity.TrashExchangeModelToMapTrash(trashEx)
+
+		dataResponse = append(dataResponse, data)
+	}
+
+	return dataResponse, nil
+}
+
+
+// History Point 
+
+func (ter *trashExchangeRepository) GetTrashExchangeByIdTransaction(email,idTransaction string) (map[string]interface{}, error) {
+	trashExchange := model.TrashExchange{}
+
+	tx := ter.db.Preload("TrashExchangeDetails").Where("email_user = ? AND id = ?",email,idTransaction).First(&trashExchange)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return nil, errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	}
+	ter.db.Model(&trashExchange).Association("DropPoint").Find(&trashExchange.DropPoint)
+	trashExchange.DropPointId = trashExchange.DropPoint.Name
+
+	dropPointId := entity.TrashExchangeModelToMapTrashDetail(trashExchange)
 	return dropPointId, nil
 }

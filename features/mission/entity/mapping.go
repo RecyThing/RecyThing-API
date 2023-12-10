@@ -2,6 +2,7 @@ package entity
 
 import (
 	"recything/features/mission/model"
+	"time"
 )
 
 func MissionCoreToMissionModel(data Mission) model.Mission {
@@ -19,6 +20,41 @@ func MissionCoreToMissionModel(data Mission) model.Mission {
 	missionModel.MissionStages = missionStagesModel
 	return missionModel
 }
+
+func MissionHistoriesCoreToMap(data MissionHistories) map[string]interface{} {
+	return map[string]interface{}{
+		"id_transaction":   data.TransactionID,
+		"point":            data.Point,
+		"type_transaction": "hadiah mission",
+		"time_transaction": data.CreatedAt.Format("15:04:05.000"),
+		"created_at":       data.CreatedAt.Format(time.RFC3339),
+	}
+}
+
+func MissionHistoriesCoreToMapDetail(data MissionHistories) map[string]interface{} {
+	return map[string]interface{}{
+		"id_transaction":   data.TransactionID,
+		"mission_id":       data.MissionID,
+		"title":            data.Title,
+		"status":           data.StatusApproval,
+		"point":            data.Point,
+		"type_transaction": "reward hadiah mission",
+		"time_transaction": data.CreatedAt.Format("15:04:05.000"),
+		"created_at":       data.CreatedAt.Format(time.RFC3339),
+	}
+}
+
+func UploadTaskModelToMissionHistoriesCore(data model.UploadMissionTask, dataMission model.Mission) MissionHistories {
+	return MissionHistories{
+		TransactionID:  data.ID,
+		MissionID:      data.MissionID,
+		Title:          dataMission.Title,
+		StatusApproval: data.Status,
+		Point:          dataMission.Point,
+		CreatedAt:      data.CreatedAt,
+	}
+}
+
 func MissionModelToMissionCore(data model.Mission) Mission {
 	missionCore := Mission{
 		ID:           data.ID,
@@ -78,6 +114,15 @@ func ListMissionModelToMissionCore(data []model.Mission) []Mission {
 	missions := []Mission{}
 	for _, mission := range data {
 		result := MissionModelToMissionCore(mission)
+		missions = append(missions, result)
+	}
+	return missions
+}
+
+func ListMissionCoreToMissionMission(data []Mission) []model.Mission {
+	missions := []model.Mission{}
+	for _, mission := range data {
+		result := MissionCoreToMissionModel(mission)
 		missions = append(missions, result)
 	}
 	return missions
@@ -163,7 +208,7 @@ func ListImageUploadMissionCoreToImageUploadMissionModel(data []ImageUploadMissi
 
 func MissionModelTomissionHistoriesCore(data model.Mission) MissionHistories {
 	return MissionHistories{
-		MissionID:     data.AdminID,
+		MissionID:     data.ID,
 		Title:         data.Title,
 		StatusMission: data.Status,
 		MissionImage:  data.MissionImage,

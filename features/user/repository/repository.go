@@ -260,3 +260,22 @@ func (ur *userRepository) JoinCommunity(communityId string, userId string) error
 
 	return nil
 }
+
+
+// For History Point
+
+func (ur *userRepository) FindById(userID string) (entity.UsersCore,error){
+	dataUser := model.Users{}
+
+	tx := ur.db.Where("id = ?", userID).First(&dataUser)
+	if tx.Error != nil {
+		return entity.UsersCore{}, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return entity.UsersCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
+	}
+	
+	dataResponse := entity.UsersModelToUsersCore(dataUser)
+	return dataResponse,nil
+}

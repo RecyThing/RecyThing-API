@@ -8,6 +8,8 @@ type TrashExchangeRepositoryInterface interface {
 	GetTrashExchangeById(id string) (TrashExchangeCore, error)
 	GetAllTrashExchange(page, limit int, search string) ([]TrashExchangeCore, pagination.PageInfo, int, error)
 	DeleteTrashExchangeById(id string) error
+	GetByEmail(email string) ([]map[string]interface{}, error) 
+	GetTrashExchangeByIdTransaction(email,idTransaction string) (map[string]interface{}, error)
 }
 
 type TrashExchangeServiceInterface interface {

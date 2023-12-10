@@ -50,7 +50,6 @@ func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&daily.DailyPoint{})
 	db.AutoMigrate(&dropPoint.DropPoints{}, &dropPoint.Schedules{})
 	db.AutoMigrate(&trashExchange.TrashExchange{}, trashExchange.TrashExchangeDetail{})
-	db.AutoMigrate(&mission.Mission{}, &mission.MissionStage{}, &mission.ClaimedMission{})
+	db.AutoMigrate(&mission.Mission{},&mission.ClaimedMission{}) //&mission.MissionStage{}, )
 	db.AutoMigrate(&community.Community{}, &community.CommunityEvent{})
-
 }

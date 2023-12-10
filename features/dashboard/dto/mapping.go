@@ -141,7 +141,7 @@ func MapToCombinedResponseMonthly(
 		"recycle":     trashExchangeResponse,
 		"scale":       scalaResponse,
 		"ranking":     rankingResponse,
-		"week":        weekResponse,
+		"monthly":        weekResponse,
 	}
 
 	return combinedResponse

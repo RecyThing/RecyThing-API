@@ -8,7 +8,6 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
-	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -260,9 +259,11 @@ func (ch *communityHandler) DeleteEvent(e echo.Context) error {
 }
 
 func (ch *communityHandler) ReadAllEvent(e echo.Context) error {
+
+	filter := e.QueryParam("filter")
 	search := e.QueryParam("search")
-	page, _ := strconv.Atoi(e.QueryParam("page"))
-	limit, _ := strconv.Atoi(e.QueryParam("limit"))
+	page := e.QueryParam("page")
+	limit := e.QueryParam("limit")
 	idKom := e.Param("idkomunitas")
 
 	Id, _, err := jwt.ExtractToken(e)
@@ -273,7 +274,7 @@ func (ch *communityHandler) ReadAllEvent(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
 	}
 
-	eventData, paginationInfo, count, err := ch.communityService.ReadAllEvent(page, limit, search, idKom)
+	eventData, paginationInfo, count, err := ch.communityService.ReadAllEvent(filter, page, limit, search, idKom)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
@@ -286,13 +287,11 @@ func (ch *communityHandler) ReadAllEvent(e echo.Context) error {
 	}
 
 	if len(eventData) == 0 {
-	return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
-
+		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
 	}
 
 	var eventResponse = response.ListEventCoreToListEventRessponse(eventData)
-
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan semua event", eventResponse, paginationInfo, count))
+	return e.JSON(http.StatusOK, helper.SuccessWithPaginationAndCount("berhasil mendapatkan semua event", eventResponse, paginationInfo, count))
 }
 
 func (ch *communityHandler) ReadEvent(e echo.Context) error {

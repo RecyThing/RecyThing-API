@@ -15,10 +15,11 @@ type CommunityRepositoryInterface interface {
 
 	//Event
 	CreateEvent(communityId string, eventInput CommunityEventCore, image *multipart.FileHeader) error
-	ReadAllEvent(page, limit int, search string, communityId string) ([]CommunityEventCore, pagination.PageInfo, int, error)
+	ReadAllEvent(status string, page, limit int, search string, communityId string) ([]CommunityEventCore, pagination.PageInfo, pagination.CountEventInfo, error)
 	ReadEvent(communityId string,eventId string) (CommunityEventCore, error)
 	UpdateEvent(communityId string, eventId string, eventInput CommunityEventCore, image *multipart.FileHeader) error
 	DeleteEvent(communityId string, eventId string) error
+	GetCountByStatus(status, communityid string, search string) (int64, error)
 }
 
 type CommunityServiceInterface interface {
@@ -30,7 +31,7 @@ type CommunityServiceInterface interface {
 
 	//Event
 	CreateEvent(communityId string, eventInput CommunityEventCore, image *multipart.FileHeader) error
-	ReadAllEvent(page, limit int, search string, communityId string) ([]CommunityEventCore, pagination.PageInfo, int, error)
+	ReadAllEvent(status string, page, limit string, search string, communityId string) ([]CommunityEventCore, pagination.PageInfo, pagination.CountEventInfo, error)
 	ReadEvent(communityId string,eventId string) (CommunityEventCore, error)
 	UpdateEvent(communityId string, eventId string, eventInput CommunityEventCore, image *multipart.FileHeader) error
 	DeleteEvent(communityId string, eventId string) error

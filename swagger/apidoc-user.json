@@ -1820,7 +1820,7 @@
                 }
             }
         },
-        "/histories/:idTransaksi": {
+        "/missions/history/{idTransaksi}": {
             "get": {
                 "security": [
                     {
@@ -1830,8 +1830,8 @@
                 "tags": [
                     "Mission"
                 ],
-                "summary": "view deatil history missions ",
-                "description": "view all history missions",
+                "summary": "view detail history missions ",
+                "description": "view detail history missions, by id transaction",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/id"

@@ -1352,7 +1352,7 @@
                             "application/json": {
                                 "examples": {
                                     "success": {
-                                        "value":{
+                                        "value": {
                                             "status": true,
                                             "message": "berhasil mendapatkan artikel populer",
                                             "data": [
@@ -1409,7 +1409,7 @@
                             "application/json": {
                                 "examples": {
                                     "success": {
-                                        "value":{
+                                        "value": {
                                             "status": true,
                                             "message": "berhasil melakukan like"
                                         }
@@ -1775,6 +1775,48 @@
                                                     "start_date": "2023-12-04",
                                                     "end_date": "2023-12-12",
                                                     "created_at": "2023-12-04T12:17:32.883+08:00",
+                                                    "updated_at": "0001-01-01T00:00:00Z"
+                                                },
+                                                {
+                                                    "mission_id": "MIS-1E22344C62BD4B2",
+                                                    "title": "ini misi rahasiaa 1aaaaaaaaa",
+                                                    "status_mission": "Aktif",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/20f92c18-b3a7-4624-9d53-5813144fce92.png",
+                                                    "point": 150000,
+                                                    "description": "SEPULSA",
+                                                    "start_date": "2023-12-10",
+                                                    "end_date": "2023-12-11",
+                                                    "title_stage": "SEPULSA",
+                                                    "description_stage": "stage1qqqqqqqqqqq",
+                                                    "created_at": "2023-12-10T23:10:25.592+08:00",
+                                                    "updated_at": "0001-01-01T00:00:00Z"
+                                                },
+                                                {
+                                                    "mission_id": "MIS-357F3CD5F1DA427",
+                                                    "title": "ini misi rahasiaa 1",
+                                                    "status_mission": "Aktif",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/88f1b3e0-b845-4baf-ba98-ffeabde4cd4f.png",
+                                                    "point": 150000,
+                                                    "description": "SEPULSA",
+                                                    "start_date": "2023-12-10",
+                                                    "end_date": "2023-12-11",
+                                                    "title_stage": "SEPULSA",
+                                                    "description_stage": "stage1",
+                                                    "created_at": "2023-12-10T22:25:40.685+08:00",
+                                                    "updated_at": "0001-01-01T00:00:00Z"
+                                                },
+                                                {
+                                                    "mission_id": "MIS-BC35B3011CF2435",
+                                                    "title": "judul misi update",
+                                                    "status_mission": "Aktif",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/6dca4853-4e8e-4ac1-871c-3c2a2cb31206.jpg",
+                                                    "point": 10000,
+                                                    "description": "des  misi update",
+                                                    "start_date": "2010-02-03",
+                                                    "end_date": "2010-02-04",
+                                                    "title_stage": "des  misi update",
+                                                    "description_stage": "title update",
+                                                    "created_at": "2023-12-11T05:26:51.024+08:00",
                                                     "updated_at": "0001-01-01T00:00:00Z"
                                                 }
                                             ]

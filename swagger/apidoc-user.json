@@ -1333,6 +1333,94 @@
                 }
             }
         },
+        "/articles/popular": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Article & Drop Point"
+                ],
+                "summary": "view popular articles",
+                "description": "view all popular",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil mendapatkan artikel populer",
+                                            "data": [
+                                                {
+                                                    "id": "2f40abc7-27a9-4881-a1f6-7af910c8d243",
+                                                    "title": "Sampah di Indonesia: Peluang Tersembunyi",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/1c0fa924-362c-426b-9e5e-f122ac2af294.png",
+                                                    "content": "<p>Pengelolaan sampah di Indonesia bukan hanya sebuah tantangan, melainkan juga menyimpan potensi besar untuk perubahan positif. Meskipun masih ada permasalahan infrastruktur dan kesadaran, negara ini memiliki peluang untuk menerapkan model pengelolaan sampah yang inovatif. Seiring dengan pertumbuhan teknologi dan semangat keberlanjutan yang berkembang, Indonesia dapat memanfaatkan peluang ini untuk memimpin dalam upaya global untuk mengurangi dampak sampah dan menciptakan lingkungan yang lebih sehat.</p>",
+                                                    "like": 1288,
+                                                    "share": 192,
+                                                    "created_at": "2023-12-09T19:01:27+07:00",
+                                                    "updated_at": "2023-12-10T20:13:38+07:00"
+                                                },
+                                                {
+                                                    "id": "f71b237c-5629-4fa2-8c24-d550b6d34f6f",
+                                                    "title": "3 Sampah Berbahaya",
+                                                    "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/3603cc17-6d34-4d60-b6b6-904da5c7d1a2.png",
+                                                    "content": "sampah itu berbahaya",
+                                                    "like": 9023,
+                                                    "share": 462,
+                                                    "created_at": "2023-11-28T04:47:10+07:00",
+                                                    "updated_at": "2023-11-28T04:47:10+07:00"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/articles/like/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Article & Drop Point"
+                ],
+                "summary": "like articles by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil melakukan like"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/drop-points": {
             "get": {
                 "security": [
@@ -2073,7 +2161,7 @@
                             "application/json": {
                                 "examples": {
                                     "succes": {
-                                        "value":{
+                                        "value": {
                                             "status": true,
                                             "message": "berhasil menampilkan data",
                                             "data": {
@@ -2342,8 +2430,8 @@
                     "type": "string"
                 },
                 "examples": {
-                    "idTransaction":{
-                        "value":"PS30901"
+                    "idTransaction": {
+                        "value": "PS30901"
                     }
                 }
             },

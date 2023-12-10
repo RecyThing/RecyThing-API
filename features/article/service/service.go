@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mime/multipart"
 	"recything/features/article/entity"
+	"recything/utils/constanta"
 	"recything/utils/pagination"
 	"recything/utils/validation"
 )
@@ -116,8 +117,16 @@ func (article *articleService) CreateArticle(articleInput entity.ArticleCore, im
 }
 
 // PostLike implements entity.ArticleServiceInterface.
-func (article *articleService) PostLike(idArticle string) error {
-	postLike := article.ArticleRepository.PostLike(idArticle)
+func (article *articleService) PostLike(idArticle string, idUser string) error {
+	if idArticle == ""{
+		return errors.New(constanta.ERROR_ID_INVALID)
+	}
+
+	if idUser == ""{
+		return errors.New(constanta.ERROR_ID_INVALID)
+	}
+
+	postLike := article.ArticleRepository.PostLike(idArticle, idUser)
 	if postLike != nil {
 		return postLike
 	}

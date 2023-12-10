@@ -6,6 +6,7 @@ import (
 	"recything/features/article/entity"
 	"recything/features/article/model"
 	trashcategory "recything/features/trash_category/entity"
+	umod "recything/features/user/model"
 	"recything/utils/constanta"
 	"recything/utils/pagination"
 	"recything/utils/storage"
@@ -216,15 +217,40 @@ func (article *articleRepository) CreateArticle(articleInput entity.ArticleCore,
 }
 
 // PostLike implements entity.ArticleRepositoryInterface.
-func (article *articleRepository) PostLike(idArticle string) error {
+func (article *articleRepository) PostLike(idArticle string, idUser string) error {
 	var articleData model.Article
+	var userData umod.UserArticleLike
 
-	check := article.db.Where("id = ?", idArticle).First(&articleData)
-	if check.Error != nil {
-		return check.Error
+	checkArticle := article.db.Where("id = ?", idArticle).First(&articleData)
+	if checkArticle.Error != nil {
+		return checkArticle.Error
+	}
+
+	userData.UsersID = idUser
+	userData.ArticleID = idArticle
+
+	txSave := article.db.Create(userData)
+	if txSave.Error != nil {
+		articleData.Like -= 1
+
+		tx := article.db.Updates(articleData)
+		if tx.Error != nil {
+			return tx.Error
+		}
+
+		dataDel := article.db.Where("users_id = ? AND article_id = ?", idUser, idArticle).Delete(&userData)
+		if dataDel.Error != nil {
+			return dataDel.Error
+		}
+
 	}
 
 	articleData.Like += 1
+
+	checkUserLike := article.db.Where("users_id = ? AND article_id = ?", idUser, idArticle).First(&userData)
+	if checkUserLike.Error != nil {
+		return errors.New("berhasil unlike artikel")
+	}
 
 	tx := article.db.Updates(articleData)
 	if tx.Error != nil {

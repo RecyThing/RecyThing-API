@@ -203,7 +203,7 @@ func (communityRepo *communityRepository) ReadAllEvent(page int, limit int, sear
 	}
 
 	var totalCount int64
-	tx := query.Count(&totalCount).Find(&eventData)
+	tx := query.Where("community_id = ?", communityId).Count(&totalCount).Find(&eventData)
 	if tx.Error != nil {
 		return nil, pagination.PageInfo{}, 0, tx.Error
 	}

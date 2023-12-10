@@ -109,8 +109,8 @@ func (mh *missionHandler) GetAllMissionUser(e echo.Context) error {
 	if len(result) == 0 {
 		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada misi"))
 	}
-	response.ListHistoriesCoreToHistoriesResponse(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh misi", result))
+	resp := response.ListHistoriesCoreToHistoriesResponse(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("Berhasil mendapatkan seluruh misi", resp))
 }
 
 func (mh *missionHandler) UpdateMission(e echo.Context) error {
@@ -435,6 +435,6 @@ func (mh *missionHandler) FindHistoryById(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	response := response.UpMissionTaskCoreToUpMissionTaskResp(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mengambil data misi", response))
+	resp := response.UpMissionTaskCoreToUpMissionTaskResp(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mengambil data misi", resp))
 }

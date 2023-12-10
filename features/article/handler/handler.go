@@ -179,7 +179,7 @@ func (article *articleHandler) PostLike(e echo.Context) error{
 
 	idParams := e.Param("id")
 
-	err := article.articleService.PostLike(idParams)
+	err := article.articleService.PostLike(idParams,Id)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}

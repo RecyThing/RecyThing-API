@@ -15,8 +15,8 @@ func MissionCoreToMissionModel(data Mission) model.Mission {
 		Description:      data.Description,
 		StartDate:        data.StartDate,
 		EndDate:          data.EndDate,
-		TitleStage:       data.DescriptionStage,
-		DescriptionStage: data.TitleStage,
+		TitleStage:       data.TitleStage,
+		DescriptionStage: data.DescriptionStage,
 		CreatedAt:        time.Time{},
 		UpdatedAt:        time.Time{},
 	}

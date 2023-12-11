@@ -42,16 +42,19 @@ func (ah *AdminHandler) Create(e echo.Context) error {
 	}
 
 	input := request.AdminRequest{}
-	err = helper.DecodeJSON(e, &input)
+	err = e.Bind(&input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
+	image, _ := e.FormFile("image")
+
 	request := request.AdminRequestToAdminCore(input)
 
-	_, err = ah.AdminService.Create(request)
+	_, err = ah.AdminService.Create(image, request)
 	if err != nil {
-		if helper.HttpResponseCondition(err, constanta.ERROR_INVALID_TYPE, constanta.ERROR_EMAIL_EXIST, constanta.ERROR_INVALID_INPUT, constanta.ERROR_FORMAT_EMAIL, constanta.ERROR_CONFIRM_PASSWORD, constanta.ERROR_LENGTH_PASSWORD, constanta.ERROR_EMPTY) {
+		
+		if strings.Contains(err.Error(), constanta.ERROR) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 		}
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
@@ -182,18 +185,24 @@ func (ah *AdminHandler) UpdateById(e echo.Context) error {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
-	input := request.AdminRequestUpdate{}
+	input := request.AdminRequest{}
 
-	err = helper.DecodeJSON(e, &input)
+	err = e.Bind(&input)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 
-	request := request.AdminRequestUpdateToAdminCore(input)
-	err = ah.AdminService.UpdateById(adminId, request)
+	image, _ := e.FormFile("image")
+	request := request.AdminRequestToAdminCore(input)
+	err = ah.AdminService.UpdateById(image, adminId, request)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+
+		if strings.Contains(err.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+
 		}
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
@@ -215,7 +224,7 @@ func (ah *AdminHandler) GetAllUser(e echo.Context) error {
 	page := e.QueryParam("page")
 	limit := e.QueryParam("limit")
 
-	result, pagination, count, err := ah.AdminService.GetAllUsers(search,page,limit)
+	result, pagination, count, err := ah.AdminService.GetAllUsers(search, page, limit)
 	if err != nil {
 		e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
@@ -224,7 +233,7 @@ func (ah *AdminHandler) GetAllUser(e echo.Context) error {
 		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
 	}
 	response := userDto.UsersCoreToResponseManageUsersList(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan data user", response,pagination,count))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan data user", response, pagination, count))
 
 }
 

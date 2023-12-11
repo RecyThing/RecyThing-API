@@ -85,6 +85,11 @@
                 "requestBody": {
                     "required": true,
                     "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestAdminsForm"
+                            }
+                        },
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/RequestRegister"
@@ -93,9 +98,10 @@
                                 "contoh": {
                                     "value": {
                                         "fullname": "alta",
-                                        "email": "alta@gmailcom",
+                                        "email": "alta@gmail.com",
                                         "password": "12345678",
-                                        "confirm_password": "12345678"
+                                        "confirm_password": "12345678",
+                                        "status": "aktif"
                                     }
                                 }
                             }
@@ -253,6 +259,11 @@
                 "requestBody": {
                     "required": true,
                     "content": {
+                        "multipart/form-data":{
+                            "schema":{
+                                "$ref": "#/components/schemas/RequestAdminsForm"
+                            }
+                        },
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/RequestRegister"
@@ -260,9 +271,11 @@
                             "examples": {
                                 "contoh": {
                                     "value": {
-                                        "full_name": "alterra",
-                                        "email": "alterra@gmailcom",
-                                        "password": "123456789"
+                                        "fullname": "alterra",
+                                        "email": "alterra@gmail.com",
+                                        "password": "123456789",
+                                        "confirm_password": "123456789",
+                                        "status":"tidak aktif"
                                     }
                                 }
                             }
@@ -4498,7 +4511,6 @@
                         "aktif",
                         "melewati tenggat"
                     ]
-
                 }
             },
             "searchMissions": {
@@ -4523,11 +4535,10 @@
                 "description": "status of mission approvals",
                 "schema": {
                     "type": "string",
-                    "enum":[
+                    "enum": [
                         "perlu tinjauan",
                         "ditolak",
                         "disetujui"
-
                     ]
                 }
             }
@@ -4547,13 +4558,56 @@
                     },
                     "confirm_password": {
                         "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "aktif",
+                            "tidak aktif"
+                        ]
                     }
                 },
                 "required": [
-                    "full_name",
+                    "fullname",
                     "email",
                     "password",
-                    "confirm_password"
+                    "confirm_password",
+                    "status"
+                ]
+            },
+            "RequestAdminsForm": {
+                "type": "object",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "fullname": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "confirm_password": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "aktif",
+                            "tidak aktif"
+                        ]
+                    }
+                },
+                "required": [
+                    "fullname",
+                    "email",
+                    "password",
+                    "confirm_password",
+                    "status"
                 ]
             },
             "RequestPrompt": {
@@ -5342,7 +5396,8 @@
                     },
                     "title_stage": {
                         "type": "string"
-                    },"description_stage": {
+                    },
+                    "description_stage": {
                         "type": "string"
                     }
                 },

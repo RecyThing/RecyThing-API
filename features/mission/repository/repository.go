@@ -314,10 +314,10 @@ func (mr *MissionRepository) UpdateMission(missionID string, data entity.Mission
 		return tx.Error
 	}
 
-	ok := helper.FieldsEqual(getMission, data, "Title", "Description", "Point", "StartDate", "EndDate", "DescriptionStage, TitleStage")
-	if ok {
-		return errors.New(constanta.ERROR_INVALID_UPDATE)
-	}
+	// ok := helper.FieldsEqual(getMission, data, "Title", "Description", "Point", "StartDate", "EndDate", "DescriptionStage, TitleStage")
+	// if ok {
+	// 	return errors.New(constanta.ERROR_INVALID_UPDATE)
+	// }
 
 	endDateValid, err := time.Parse("2006-01-02", data.EndDate)
 	if err != nil {

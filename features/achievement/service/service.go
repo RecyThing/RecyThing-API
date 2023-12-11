@@ -27,13 +27,9 @@ func (as *achievementService) GetAllAchievement() ([]entity.AchievementCore, err
 }
 
 // UpdateById implements entity.AchievementServiceInterface.
-func (as *achievementService) UpdateById(id int, data entity.AchievementCore) error {
+func (as *achievementService) UpdateById(id int, point int) error {
 	if id == 0 {
 		return errors.New(constanta.ERROR_ID_INVALID)
-	}
-
-	if data.TargetPoint < 0 {
-		return errors.New("error : data tidak boleh kosong")
 	}
 
 	dataAchievement, errFind := as.achievementRepository.FindById(id)
@@ -42,27 +38,28 @@ func (as *achievementService) UpdateById(id int, data entity.AchievementCore) er
 	}
 
 	if dataAchievement.Name == "bronze" {
-		if data.TargetPoint > 0 {
+	
+		if point > 0 {
 			return errors.New("error: target point lencana bronze tidak boleh lebih dari 0")
 		}
 	} else if dataAchievement.Name == "silver" {
-		if data.TargetPoint > 50000 || data.TargetPoint <= 0 {
+		if point > 50000 || point <= 0 {
 			return errors.New("error: target point lencana silver tidak boleh lebih dari 50000 atau kurang dari 0")
 		}
 	} else if dataAchievement.Name == "gold" {
-		if data.TargetPoint > 100000 || data.TargetPoint <= 50000 {
+		if point > 100000 || point <= 50000 {
 			return errors.New("error: target point lencana gold tidak boleh lebih dari 100000 atau kurang dari lencana sebelumnya")
 		}
 	} else if dataAchievement.Name == "platinum" {
-		if data.TargetPoint > 250000 || data.TargetPoint <= 100000 {
+		if point > 250000 || point <= 100000 {
 			return errors.New("error: target point lencana platinum tidak boleh lebih dari 250000 atau kurang dari lencana sebelumnya")
 		}
 	}
 
-	if data.TargetPoint == dataAchievement.TargetPoint {
+	if point == dataAchievement.TargetPoint {
 
 	} else {
-		errUpdate := as.achievementRepository.UpdateById(id, data)
+		errUpdate := as.achievementRepository.UpdateById(id, point)
 		if errUpdate != nil {
 			return errUpdate
 		}

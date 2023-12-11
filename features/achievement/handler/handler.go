@@ -72,7 +72,7 @@ func (ah *achievementHandler) UpdateById(e echo.Context) error {
 	}
 
 	request := request.AchievementRequestToAchievementCore(input)
-	err = ah.achievementService.UpdateById(id, request)
+	err = ah.achievementService.UpdateById(id, request.TargetPoint)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_DATA_ID) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))

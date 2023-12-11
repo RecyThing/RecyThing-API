@@ -298,7 +298,7 @@ func (article *articleRepository) PostShare(idArticle string) error {
 func (article *articleRepository) GetPopularArticle(search string) ([]entity.ArticleCore, error) {
 	var articleData []model.Article
 
-	tx := article.db.Order("`like` DESC").Limit(10).Find(&articleData)
+	tx := article.db.Model(&model.Article{}).Preload("Categories").Order("`like` DESC").Limit(10).Find(&articleData)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}

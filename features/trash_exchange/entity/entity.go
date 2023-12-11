@@ -10,6 +10,7 @@ type TrashExchangeCore struct {
 	EmailUser            string                    `json:"email"`
 	Address              string                    `json:"address"`
 	DropPointId          string                    `json:"drop_point_id"`
+	TotalIncome          int                       `json:"total_income"`
 	TotalPoint           int                       `json:"total_point"`
 	TotalUnit            float64                   `json:"total_unit"`
 	CreatedAt            time.Time                 `json:"created_at"`

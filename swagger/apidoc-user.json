@@ -2515,7 +2515,151 @@
                     }
                 }
             }
+        },
+        "/users/event/{idkomunitas}":{
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Events"
+                ],
+                "summary": "view all  event by id community ",
+                "description": "view all  event by id community",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idkomunitas"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterEvent"
+                    },
+                    {
+                        "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseEvent"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil mendapatkan semua event",
+                                            "data": [
+                                                {
+                                                    "id": "32d18f02-1069-4197-8b15-14a131e9a382",
+                                                    "communityId": "dc47e2f1-2c4f-4047-b90f-e0a25d8d43a9",
+                                                    "title": "Minggu Bersih",
+                                                    "quota": 100,
+                                                    "date": "2023/12/30",
+                                                    "status": "belum berjalan"
+                                                },
+                                                {
+                                                    "id": "c125523f-c214-4e11-897c-1eb1c5059f80",
+                                                    "communityId": "dc47e2f1-2c4f-4047-b90f-e0a25d8d43a9",
+                                                    "title": "Jumat Bersih",
+                                                    "quota": 100,
+                                                    "date": "2023/12/30",
+                                                    "status": "belum berjalan"
+                                                },
+                                                {
+                                                    "id": "f32cc071-f274-4ff7-9bf6-3017e00173f4",
+                                                    "communityId": "dc47e2f1-2c4f-4047-b90f-e0a25d8d43a9",
+                                                    "title": "Minggu Bersih",
+                                                    "quota": 100,
+                                                    "date": "2023/12/29",
+                                                    "status": "berjalan"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            },
+                                            "count": {
+                                                "total_count": 3,
+                                                "count_pending": 2,
+                                                "count_active": 1,
+                                                "count_finished": 0
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/event/{idkomunitas}/{idevent}":{
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Events"
+                ],
+                "summary": "view detail  event ",
+                "description": "view detail event",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idkomunitas"
+                    },
+                    {
+                        "$ref": "#/components/parameters/idevent"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseEvent"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil mendapatkan event",
+                                            "data": {
+                                                "id": "32d18f02-1069-4197-8b15-14a131e9a382",
+                                                "communityId": "dc47e2f1-2c4f-4047-b90f-e0a25d8d43a9",
+                                                "title": "Minggu Bersih",
+                                                "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/9dbbace5-0afc-42c2-a81f-b15205d840f5.jpg",
+                                                "description": "Hari minggu bersih bersih",
+                                                "location": "Jakarta Selatan",
+                                                "maplink": "https://maps.app.goo.gl/JN4bsdsTYwVMBkkg8",
+                                                "formlink": "https://www.google.com/intl/id_id/forms/about/",
+                                                "quota": 100,
+                                                "date": "2023/12/30",
+                                                "status": "belum berjalan"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+        
     },
     "components": {
         "parameters": {
@@ -2668,6 +2812,37 @@
                 "name": "search",
                 "in": "query",
                 "description": "search by name or location",
+                "schema": {
+                    "type": "string"
+                }
+            },
+             "filterEvent": {
+                "name": "filter",
+                "in": "query",
+                "description": "status event",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "berjalan",
+                        "belum berjalan",
+                        "selesai"
+                    ]
+                }
+            },
+            "idkomunitas": {
+                "name": "idkomunitas",
+                "in": "path",
+                "description": "id  komunitas",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "idevent": {
+                "name": "idevent",
+                "in": "path",
+                "description": "id event",
+                "required": true,
                 "schema": {
                     "type": "string"
                 }
@@ -3198,6 +3373,59 @@
                     },
                     "count_data":{
                         "type": "integer"
+                    }
+                }
+            },
+            "ResponseEvent": {
+                "type": "object",
+                "properties": {
+                    
+                    "communityId": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "quote": {
+                        "type": "integer"
+                    },
+                    "date": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "pagination":{
+                        "type": "object",
+                        "properties": {
+                            "limit":{
+                                "type": "integer"
+                            },
+                            "current_page":{
+                                "type": "integer"
+                            },
+                            "last_page":{
+                                "type": "integer"
+                            }
+                            
+                        }
+                    },
+                    "count":{
+                        "type": "object",
+                        "properties": {
+                            "total_count":{
+                                "type": "string"
+                            },
+                            "total_pending":{
+                                "type": "string"
+                            },
+                            "total_active":{
+                                "type": "string"
+                            },
+                            "total_finished":{
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             }

@@ -1118,6 +1118,9 @@
                 "description": "view all articles with pagination",
                 "parameters": [
                     {
+                        "$ref": "#/components/parameters/FilterArticle"
+                    },
+                    {
                         "$ref": "#/components/parameters/search"
                     },
                     {
@@ -2729,6 +2732,25 @@
                         "perlu ditinjau",
                         "diterima",
                         "ditolak"
+                    ]
+                }
+            },"FilterArticle": {
+                "name": "filter",
+                "in": "query",
+                "description": "filter category",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "plastik",
+                        "kaca",
+                        "logam",
+                        "organik",
+                        "kertas",
+                        "kaleng",
+                        "minyak",
+                        "elektronik",
+                        "tekstil",
+                        "baterai"
                     ]
                 }
             },

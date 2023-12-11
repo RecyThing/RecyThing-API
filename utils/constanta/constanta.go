@@ -99,6 +99,11 @@ const (
 )
 
 const (
+	NeedProof  = "upload bukti pengerjaan"
+	NeedReview = "menunggu verifikasi"
+)
+
+const (
 	BRONZE   = "bronze"
 	PLATINUM = "platinum"
 	SILVER   = "silver"

@@ -144,11 +144,15 @@ func (mr *MissionRepository) FindAllMissionUser(userID string, filter string) ([
 				if upmistask.ID == "" {
 					newHis := entity.MissionToMissionHistoriesCore(v, claimed, upmistask)
 					newHis.TransactionID = ""
+					newHis.Reason = constanta.NeedProof
 					histories = append(histories, newHis)
 
 				}
 				if upmistask.ID != "" {
 					newHis := entity.MissionToMissionHistoriesCore(v, claimed, upmistask)
+					if newHis.StatusApproval == constanta.PERLU_TINJAUAN{
+						newHis.Reason = constanta.NeedReview
+					}
 					histories = append(histories, newHis)
 				}
 			}

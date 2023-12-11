@@ -1,22 +1,23 @@
 package entity
 
 import (
+	"mime/multipart"
 	report "recything/features/report/entity"
 	user "recything/features/user/entity"
 	"recything/utils/pagination"
 )
 
 type AdminRepositoryInterface interface {
-	Create(data AdminCore) (AdminCore, error)
+	Create(image *multipart.FileHeader, data AdminCore) (AdminCore, error)
 	SelectAll(page, limit int, search string) ([]AdminCore, pagination.PageInfo, int, error)
 	SelectById(adminId string) (AdminCore, error)
-	Update(adminId string, data AdminCore) error
+	Update(image *multipart.FileHeader, adminId string, data AdminCore) error
 	Delete(adminId string) error
 	FindByEmail(email string) error
 	FindByEmailANDPassword(data AdminCore) (AdminCore, error)
 	GetCount(fullName, role string) (int, error)
 	//Manage Users
-	GetAllUsers( search string, page, limit int) ([]user.UsersCore,  pagination.PageInfo, int, error)
+	GetAllUsers(search string, page, limit int) ([]user.UsersCore, pagination.PageInfo, int, error)
 	GetByIdUser(userId string) (user.UsersCore, error)
 	DeleteUsers(adminId string) error
 	// Manage Reporting
@@ -27,10 +28,10 @@ type AdminRepositoryInterface interface {
 }
 
 type AdminServiceInterface interface {
-	Create(data AdminCore) (AdminCore, error)
+	Create(image *multipart.FileHeader, data AdminCore) (AdminCore, error)
 	GetAll(page, limit, search string) ([]AdminCore, pagination.PageInfo, int, error)
 	GetById(adminId string) (AdminCore, error)
-	UpdateById(adminId string, data AdminCore) error
+	UpdateById(image *multipart.FileHeader, adminId string, data AdminCore) error
 	DeleteById(adminId string) error
 	FindByEmailANDPassword(data AdminCore) (AdminCore, string, error)
 	//Manage Users

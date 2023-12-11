@@ -17,50 +17,55 @@ func NewDashboardService(dashboardRepo entity.DashboardRepositoryInterface) enti
 }
 
 // CountUserActive implements entity.DashboardUsecaseInterface.
-func (ds *dashboardService) DashboardMonthly() (dashboard.GetCountUser, dashboard.GetCountExchangeVoucher, dashboard.GetCountReporting, dashboard.GetCountTrashExchange, dashboard.GetCountScaleType, []dashboard.UserRanking, []dashboard.WeeklyStats, error) {
+func (ds *dashboardService) DashboardMonthly() (dashboard.GetCountUser, dashboard.GetCountExchangeVoucher, dashboard.GetCountReporting, dashboard.GetCountTrashExchange, dashboard.GetCountScaleType, []dashboard.UserRanking, []dashboard.WeeklyStats, dashboard.GetCountTrashExchangeIncome, error) {
 	users, reports, err := ds.dashboardRepository.CountUserActive()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	usersLastMonth, reportsLastMonth, err := ds.dashboardRepository.CountUserActiveLastMonth()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	userResult, err := dashboard.CalculateAndMapUserStats(users, usersLastMonth, reports, reportsLastMonth)
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	voucherThisMonth, voucherLastMonth, err := ds.dashboardRepository.CountVoucherExchanges()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	totalReportsThisMonth, totalReportsLastMonth, err := ds.dashboardRepository.CountReports()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	totalTrashThisMonth, totalTrashLastMonth, err := ds.dashboardRepository.CountTrashExchanges()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	totalLargeScale, totalSmallScale, err := ds.dashboardRepository.CountCategory()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	pointUsers, err := ds.dashboardRepository.GetUserRanking()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	trashAndScalaTypes, err := ds.dashboardRepository.CountWeeklyTrashAndScalaTypes()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
+	}
+
+	trashIncomeStats, err := ds.dashboardRepository.CountTrashExchangesIncome()
+	if err != nil {
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	firstOfMonth := time.Now().AddDate(0, 0, -time.Now().Day()+1)
@@ -72,55 +77,60 @@ func (ds *dashboardService) DashboardMonthly() (dashboard.GetCountUser, dashboar
 	reportResult := dashboard.MapToGetCountReporting(len(totalReportsThisMonth), len(totalReportsLastMonth))
 	voucherResult := dashboard.MapToGetCountExchangeVoucher(len(voucherThisMonth), len(voucherLastMonth))
 	scalaResult := dashboard.MapToGetCountScaleTypePercentage(len(totalLargeScale), len(totalSmallScale))
-
-	return userResult, voucherResult, reportResult, trashResult, scalaResult, userRanking, weeklyStats, nil
+	incomeResult := dashboard.MapToGetCountIncome(trashIncomeStats.TotalIncomeThisMonth, trashIncomeStats.TotalIncomeLastMonth)
+	return userResult, voucherResult, reportResult, trashResult, scalaResult, userRanking, weeklyStats, incomeResult, nil
 }
 
 // DashboardYears implements entity.DashboardServiceInterface.
-func (ds *dashboardService) DashboardYears() (dashboard.GetCountUser, dashboard.GetCountExchangeVoucher, dashboard.GetCountReporting, dashboard.GetCountTrashExchange, dashboard.GetCountScaleType, []dashboard.UserRanking, []dashboard.MonthlyStats, error) {
+func (ds *dashboardService) DashboardYears() (dashboard.GetCountUser, dashboard.GetCountExchangeVoucher, dashboard.GetCountReporting, dashboard.GetCountTrashExchange, dashboard.GetCountScaleType, []dashboard.UserRanking, []dashboard.MonthlyStats, dashboard.GetCountTrashExchangeIncome, error) {
 	users, reports, err := ds.dashboardRepository.CountUserActiveThisYear()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	usersLastYears, reportsLastYears, err := ds.dashboardRepository.CountUserActiveLastYear()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	userResult, err := dashboard.CalculateAndMapUserStats(users, usersLastYears, reports, reportsLastYears)
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	voucherThisYears, voucherLastYears, err := ds.dashboardRepository.CountVoucherExchangesYear()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	totalReportsThisYears, totalReportsLastYears, err := ds.dashboardRepository.CountReportsYear()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	totalTrashThisYears, totalTrashLastYears, err := ds.dashboardRepository.CountTrashExchangesYear()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	totalLargeScale, totalSmallScale, err := ds.dashboardRepository.CountCategoryYear()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	pointUsers, err := ds.dashboardRepository.GetUserRankingYear()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	trashAndScalaTypes, err := ds.dashboardRepository.CountWeeklyTrashAndScalaTypes()
 	if err != nil {
-		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, err
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
+	}
+
+	trashIncomeStats, err := ds.dashboardRepository.CountTrashExchangesIncomeYear()
+	if err != nil {
+		return dashboard.GetCountUser{}, dashboard.GetCountExchangeVoucher{}, dashboard.GetCountReporting{}, dashboard.GetCountTrashExchange{}, dashboard.GetCountScaleType{}, nil, nil, dashboard.GetCountTrashExchangeIncome{}, err
 	}
 
 	// Menghitung jumlah bulan dalam setahun
@@ -134,41 +144,42 @@ func (ds *dashboardService) DashboardYears() (dashboard.GetCountUser, dashboard.
 	reportResult := dashboard.MapToGetCountReporting(len(totalReportsThisYears), len(totalReportsLastYears))
 	voucherResult := dashboard.MapToGetCountExchangeVoucher(len(voucherThisYears), len(voucherLastYears))
 	scalaResult := dashboard.MapToGetCountScaleTypePercentage(len(totalLargeScale), len(totalSmallScale))
+	incomeResult := dashboard.MapToGetCountIncome(trashIncomeStats.TotalIncomeThisMonth, trashIncomeStats.TotalIncomeLastMonth)
 
-	return userResult, voucherResult, reportResult, trashResult, scalaResult, userRanking, monthlyStats, nil
+	return userResult, voucherResult, reportResult, trashResult, scalaResult, userRanking, monthlyStats, incomeResult, nil
 }
 
 // CountMonthlyTrashAndScalaTypesYear implements entity.DashboardServiceInterface.
-func (ds *dashboardService) CountMonthlyTrashAndScalaTypesYear() ([]dashboard.MonthlyStats, error) {
-	trashAndScalaTypes, err := ds.dashboardRepository.CountWeeklyTrashAndScalaTypes()
-	if err != nil {
-		return nil, err
-	}
+// func (ds *dashboardService) CountMonthlyTrashAndScalaTypesYear() ([]dashboard.MonthlyStats, error) {
+// 	trashAndScalaTypes, err := ds.dashboardRepository.CountWeeklyTrashAndScalaTypes()
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	// Menghitung jumlah bulan dalam setahun
-	startOfYear := time.Now().AddDate(-1, 0, 0) // Mengubah ke -1 untuk mendapatkan awal tahun sekarang
-	monthsInYear := 12
-	monthlyStats := make([]dashboard.MonthlyStats, monthsInYear)
+// 	// Menghitung jumlah bulan dalam setahun
+// 	startOfYear := time.Now().AddDate(-1, 0, 0) // Mengubah ke -1 untuk mendapatkan awal tahun sekarang
+// 	monthsInYear := 12
+// 	monthlyStats := make([]dashboard.MonthlyStats, monthsInYear)
 
-	for i := 0; i < monthsInYear; i++ {
-		// Menghitung awal dan akhir bulan
-		monthStartDate := startOfYear.AddDate(0, i, 0)
-		monthEndDate := monthStartDate.AddDate(0, 1, -1)
+// 	for i := 0; i < monthsInYear; i++ {
+// 		// Menghitung awal dan akhir bulan
+// 		monthStartDate := startOfYear.AddDate(0, i, 0)
+// 		monthEndDate := monthStartDate.AddDate(0, 1, -1)
 
-		// Filter data yang berada dalam rentang waktu bulan ini
-		filteredData := dashboard.FilterDataByDate(trashAndScalaTypes, monthStartDate, monthEndDate)
+// 		// Filter data yang berada dalam rentang waktu bulan ini
+// 		filteredData := dashboard.FilterDataByDate(trashAndScalaTypes, monthStartDate, monthEndDate)
 
-		// Hitung jumlah data trash_type dan scala_type
-		trashCount, scalaCount := dashboard.CountTrashAndScalaTypes(filteredData)
+// 		// Hitung jumlah data trash_type dan scala_type
+// 		trashCount, scalaCount := dashboard.CountTrashAndScalaTypes(filteredData)
 
-		// Set nilai MonthlyStats
-		monthlyStats[i].Month = i + 1
-		monthlyStats[i].Trash = trashCount
-		monthlyStats[i].Scala = scalaCount
-	}
+// 		// Set nilai MonthlyStats
+// 		monthlyStats[i].Month = i + 1
+// 		monthlyStats[i].Trash = trashCount
+// 		monthlyStats[i].Scala = scalaCount
+// 	}
 
-	return monthlyStats, nil
-}
+// 	return monthlyStats, nil
+// }
 
 // // CountWeeklyTrashAndScalaTypes implements entity.DashboardServiceInterface.
 // func (ds *dashboardService) CountWeeklyTrashAndScalaTypes() ([]dashboard.WeeklyStats, error) {

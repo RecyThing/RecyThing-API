@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"log"
 	"recything/features/dashboard/entity"
 	report "recything/features/report/entity"
 	modelReport "recything/features/report/model"
@@ -10,6 +11,7 @@ import (
 	modelUser "recything/features/user/model"
 	voucher "recything/features/voucher/entity"
 	modelVoucher "recything/features/voucher/model"
+	"recything/utils/dashboard"
 	"time"
 
 	"gorm.io/gorm"
@@ -162,50 +164,48 @@ func (dr *dashboardRepository) CountTrashExchanges() ([]trash.TrashExchangeCore,
 func (dr *dashboardRepository) CountCategory() ([]report.ReportCore, []report.ReportCore, error) {
 	now := time.Now()
 
-    // Hitung total pelaporan dengan company_name terisi bulan ini
-    var totalWithCompanyName []modelReport.Report
-    if err := dr.db.Model(&modelReport.Report{}).
-        Where("MONTH(created_at) = ? AND YEAR(created_at) = ? AND company_name IS NOT NULL AND company_name != ''", now.Month(), now.Year()).
-        Find(&totalWithCompanyName).Error; err != nil {
-        return nil, nil, err
-    }
+	// Hitung total pelaporan dengan company_name terisi bulan ini
+	var totalWithCompanyName []modelReport.Report
+	if err := dr.db.Model(&modelReport.Report{}).
+		Where("MONTH(created_at) = ? AND YEAR(created_at) = ? AND company_name IS NOT NULL AND company_name != ''", now.Month(), now.Year()).
+		Find(&totalWithCompanyName).Error; err != nil {
+		return nil, nil, err
+	}
 
-    // Hitung total pelaporan dengan company_name tidak terisi bulan ini
-    var totalWithoutCompanyName []modelReport.Report
-    if err := dr.db.Model(&modelReport.Report{}).
-        Where("MONTH(created_at) = ? AND YEAR(created_at) = ? AND (company_name IS NULL OR company_name = '')", now.Month(), now.Year()).
-        Find(&totalWithoutCompanyName).Error; err != nil {
-        return nil, nil, err
-    }
+	// Hitung total pelaporan dengan company_name tidak terisi bulan ini
+	var totalWithoutCompanyName []modelReport.Report
+	if err := dr.db.Model(&modelReport.Report{}).
+		Where("MONTH(created_at) = ? AND YEAR(created_at) = ? AND (company_name IS NULL OR company_name = '')", now.Month(), now.Year()).
+		Find(&totalWithoutCompanyName).Error; err != nil {
+		return nil, nil, err
+	}
 
-    coreWithCompanyName := report.ListReportModelToReportCore(totalWithCompanyName)
-    coreWithoutCompanyName := report.ListReportModelToReportCore(totalWithoutCompanyName)
+	coreWithCompanyName := report.ListReportModelToReportCore(totalWithCompanyName)
+	coreWithoutCompanyName := report.ListReportModelToReportCore(totalWithoutCompanyName)
 
-    return coreWithCompanyName, coreWithoutCompanyName, nil
+	return coreWithCompanyName, coreWithoutCompanyName, nil
 }
 
 // GetUserRanking implements entity.DashboardRepositoryInterface.
 func (dr *dashboardRepository) GetUserRanking() ([]user.UsersCore, error) {
-    now := time.Now()
+	now := time.Now()
 
-    var userPoints []modelUser.Users
-    limit := 3
-    
-    // Ambil peringkat pengguna untuk bulan ini
-    err := dr.db.Model(&modelUser.Users{}).
-        Where("MONTH(updated_at) = ? AND YEAR(updated_at) = ?", now.Month(), now.Year()).
-        Order("point DESC").
-        Limit(limit).
-        Find(&userPoints).Error
-    if err != nil {
-        return nil, err
-    }
+	var userPoints []modelUser.Users
+	limit := 3
 
-    mappedUsers := user.ListUserModelToUserCore(userPoints)
-    return mappedUsers, nil
+	// Ambil peringkat pengguna untuk bulan ini
+	err := dr.db.Model(&modelUser.Users{}).
+		Where("MONTH(updated_at) = ? AND YEAR(updated_at) = ?", now.Month(), now.Year()).
+		Order("point DESC").
+		Limit(limit).
+		Find(&userPoints).Error
+	if err != nil {
+		return nil, err
+	}
+
+	mappedUsers := user.ListUserModelToUserCore(userPoints)
+	return mappedUsers, nil
 }
-
-
 
 // CountWeeklyTrashAndScalaTypes implements entity.DashboardRepositoryInterface.
 func (dr *dashboardRepository) CountWeeklyTrashAndScalaTypes() ([]report.ReportCore, error) {
@@ -354,24 +354,24 @@ func (dr *dashboardRepository) CountTrashExchangesYear() ([]trash.TrashExchangeC
 // CountScaleTypesYear implements entity.DashboardRepositoryInterface.
 func (dr *dashboardRepository) CountCategoryYear() ([]report.ReportCore, []report.ReportCore, error) {
 	var totalWithCompanyNameThisYear []modelReport.Report
-    if err := dr.db.Model(&modelReport.Report{}).
-        Where("YEAR(created_at) = ? AND company_name IS NOT NULL AND company_name != ''", time.Now().Year()).
-        Find(&totalWithCompanyNameThisYear).Error; err != nil {
-        return nil, nil, err
-    }
+	if err := dr.db.Model(&modelReport.Report{}).
+		Where("YEAR(created_at) = ? AND company_name IS NOT NULL AND company_name != ''", time.Now().Year()).
+		Find(&totalWithCompanyNameThisYear).Error; err != nil {
+		return nil, nil, err
+	}
 
-    // Hitung total pelaporan dengan company_name tidak terisi tahun ini
-    var totalWithoutCompanyNameThisYear []modelReport.Report
-    if err := dr.db.Model(&modelReport.Report{}).
-        Where("YEAR(created_at) = ? AND (company_name IS NULL OR company_name = '')", time.Now().Year()).
-        Find(&totalWithoutCompanyNameThisYear).Error; err != nil {
-        return nil, nil, err
-    }
+	// Hitung total pelaporan dengan company_name tidak terisi tahun ini
+	var totalWithoutCompanyNameThisYear []modelReport.Report
+	if err := dr.db.Model(&modelReport.Report{}).
+		Where("YEAR(created_at) = ? AND (company_name IS NULL OR company_name = '')", time.Now().Year()).
+		Find(&totalWithoutCompanyNameThisYear).Error; err != nil {
+		return nil, nil, err
+	}
 
-    coreWithCompanyNameThisYear := report.ListReportModelToReportCore(totalWithCompanyNameThisYear)
-    coreWithoutCompanyNameThisYear := report.ListReportModelToReportCore(totalWithoutCompanyNameThisYear)
+	coreWithCompanyNameThisYear := report.ListReportModelToReportCore(totalWithCompanyNameThisYear)
+	coreWithoutCompanyNameThisYear := report.ListReportModelToReportCore(totalWithoutCompanyNameThisYear)
 
-    return coreWithCompanyNameThisYear, coreWithoutCompanyNameThisYear, nil
+	return coreWithCompanyNameThisYear, coreWithoutCompanyNameThisYear, nil
 }
 
 // GetUserRankingYear implements entity.DashboardRepositoryInterface.
@@ -401,4 +401,64 @@ func (dr *dashboardRepository) CountWeeklyTrashAndScalaTypesYear() ([]report.Rep
 
 	coreThisMonth := report.ListReportModelToReportCore(trashAndScalaTypes)
 	return coreThisMonth, nil
+}
+
+// CountTrashExchangesIncome implements entity.DashboardRepositoryInterface.
+func (dr *dashboardRepository) CountTrashExchangesIncome() (dashboard.TrashIncomeStats, error) {
+	now := time.Now()
+	firstOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.UTC)
+
+	// Ambil awal bulan
+	firstOfNextMonth := firstOfMonth.AddDate(0, 1, 0)
+	log.Printf("Now: %s, First of Month: %s, First of Next Month: %s\n", now, firstOfMonth, firstOfNextMonth)
+
+	var totalIncomeThisMonth int
+	if err := dr.db.Model(&modelTrash.TrashExchange{}).
+		Where("created_at >= ? AND created_at < ?", firstOfMonth, firstOfNextMonth).
+		Pluck("COALESCE(SUM(total_income), 0)", &totalIncomeThisMonth).
+		Error; err != nil {
+		return dashboard.TrashIncomeStats{}, err
+	}
+
+	// Bulan lalu
+	var totalIncomeLastMonth int
+	if err := dr.db.Model(&modelTrash.TrashExchange{}).
+		Where("created_at >= ? AND created_at < ?", firstOfMonth.AddDate(0, -1, 0), firstOfMonth).
+		Pluck("COALESCE(SUM(total_income), 0)", &totalIncomeLastMonth).
+		Error; err != nil {
+		return dashboard.TrashIncomeStats{}, err
+	}
+
+	data := dashboard.MapTrashIncomeStats(totalIncomeThisMonth, totalIncomeLastMonth)
+	return data, nil
+}
+
+// CountTrashExchangesIncomeYear implements entity.DashboardRepositoryInterface.
+func (dr *dashboardRepository) CountTrashExchangesIncomeYear() (dashboard.TrashIncomeStats, error) {
+	now := time.Now()
+    firstOfYear := time.Date(now.Year(), 1, 1, 0, 0, 0, 0, time.UTC)
+
+    // Awal Tahun
+    firstOfNextYear := firstOfYear.AddDate(1, 0, 0)
+    log.Printf("Now: %s, First of Year: %s, First of Next Year: %s\n", now, firstOfYear, firstOfNextYear)
+
+    var totalIncomeThisYear int
+    if err := dr.db.Model(&modelTrash.TrashExchange{}).
+        Where("created_at >= ? AND created_at < ?", firstOfYear, firstOfNextYear).
+        Pluck("COALESCE(SUM(total_income), 0)", &totalIncomeThisYear).
+        Error; err != nil {
+        return dashboard.TrashIncomeStats{}, err
+    }
+
+    // Tahun lalu
+    var totalIncomeLastYear int
+    if err := dr.db.Model(&modelTrash.TrashExchange{}).
+        Where("created_at >= ? AND created_at < ?", firstOfYear.AddDate(-1, 0, 0), firstOfYear).
+        Pluck("COALESCE(SUM(total_income), 0)", &totalIncomeLastYear).
+        Error; err != nil {
+        return dashboard.TrashIncomeStats{}, err
+    }
+
+    data := dashboard.MapTrashIncomeStats(totalIncomeThisYear, totalIncomeLastYear)
+    return data, nil
 }

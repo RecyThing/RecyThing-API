@@ -34,6 +34,14 @@ func MapToGetCountTrashExchangeResponse(input dashboard.GetCountTrashExchange) G
 	}
 }
 
+func MapToGetCountTrashExchangeIncomeResponse(input dashboard.GetCountTrashExchangeIncome) GetCountTrashExchangeIncomeResponse {
+	return GetCountTrashExchangeIncomeResponse{
+		TotalIncome: input.TotalIncome,
+		Percentage:  input.Persentase,
+		Status:      input.Status,
+	}
+}
+
 func MapToGetCountPersentaseScalaReportingResponse(input dashboard.GetCountScaleType) GetCountScaleTypeResponse {
 	return GetCountScaleTypeResponse{
 		Company: input.Company,
@@ -97,6 +105,7 @@ func MapToCombinedResponseYears(
 	scalaResult dashboard.GetCountScaleType,
 	rankingResult []dashboard.UserRanking,
 	monthResult []dashboard.MonthlyStats,
+	incomeResult dashboard.GetCountTrashExchangeIncome,
 ) map[string]interface{} {
 	userActiveResponse := MapToGetCountUserResponse(userActiveResult)
 	voucherResponse := MapToGetCountExchangeVoucherResponse(voucherResult)
@@ -105,6 +114,7 @@ func MapToCombinedResponseYears(
 	scalaResponse := MapToGetCountPersentaseScalaReportingResponse(scalaResult)
 	rankingResponse := ListMapToGetUserRankingResponse(rankingResult)
 	monthlyResponse := ListMapToMonthlyStatsResponses(monthResult)
+	incomeResponse := MapToGetCountTrashExchangeIncomeResponse(incomeResult)
 	combinedResponse := map[string]interface{}{
 		"user_active": userActiveResponse,
 		"exchange":    voucherResponse,
@@ -113,6 +123,7 @@ func MapToCombinedResponseYears(
 		"scale":       scalaResponse,
 		"ranking":     rankingResponse,
 		"years":       monthlyResponse,
+		"income":      incomeResponse,
 	}
 
 	return combinedResponse
@@ -126,6 +137,7 @@ func MapToCombinedResponseMonthly(
 	scalaResult dashboard.GetCountScaleType,
 	rankingResult []dashboard.UserRanking,
 	weekResult []dashboard.WeeklyStats,
+	incomeResult dashboard.GetCountTrashExchangeIncome,
 ) map[string]interface{} {
 	userActiveResponse := MapToGetCountUserResponse(userActiveResult)
 	voucherResponse := MapToGetCountExchangeVoucherResponse(voucherResult)
@@ -134,6 +146,7 @@ func MapToCombinedResponseMonthly(
 	scalaResponse := MapToGetCountPersentaseScalaReportingResponse(scalaResult)
 	rankingResponse := ListMapToGetUserRankingResponse(rankingResult)
 	weekResponse := ListMapToWeeklyStatsResponses(weekResult)
+	incomeResponse := MapToGetCountTrashExchangeIncomeResponse(incomeResult)
 	combinedResponse := map[string]interface{}{
 		"user_active": userActiveResponse,
 		"exchange":    voucherResponse,
@@ -141,7 +154,8 @@ func MapToCombinedResponseMonthly(
 		"recycle":     trashExchangeResponse,
 		"scale":       scalaResponse,
 		"ranking":     rankingResponse,
-		"monthly":        weekResponse,
+		"monthly":     weekResponse,
+		"income":      incomeResponse,
 	}
 
 	return combinedResponse

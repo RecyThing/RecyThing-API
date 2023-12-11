@@ -2519,6 +2519,42 @@
                 }
             }
         },
+        "/communities/{idKomunitas}":{
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Communities"
+                ],
+                "summary": "join community",
+                "description": "join community",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/idKomunitas"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "200": {
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil bergabung dengan komunitas"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/event/{idkomunitas}":{
             "get": {
                 "security": [
@@ -2853,6 +2889,15 @@
             },
             "idkomunitas": {
                 "name": "idkomunitas",
+                "in": "path",
+                "description": "id  komunitas",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "idKomunitas": {
+                "name": "idKomunitas",
                 "in": "path",
                 "description": "id  komunitas",
                 "required": true,

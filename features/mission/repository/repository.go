@@ -244,7 +244,7 @@ func (mr *MissionRepository) GetCountDataMissionApproval(search string) (helper.
 	if search != "" {
 		newCounts := helper.CountMissionApproval{}
 		join := fmt.Sprint("JOIN users ON upload_mission_tasks.user_id = users.id")
-		query := fmt.Sprint("users.fullname LIKE ")
+		query := fmt.Sprint("users.fullname LIKE ?")
 
 		tx := mr.db.Model(&model.UploadMissionTask{}).
 			Joins(join).

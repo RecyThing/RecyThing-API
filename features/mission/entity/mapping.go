@@ -15,8 +15,8 @@ func MissionCoreToMissionModel(data Mission) model.Mission {
 		Description:      data.Description,
 		StartDate:        data.StartDate,
 		EndDate:          data.EndDate,
-		TitleStage:       data.DescriptionStage,
-		DescriptionStage: data.TitleStage,
+		TitleStage:       data.TitleStage,
+		DescriptionStage: data.DescriptionStage,
 		CreatedAt:        time.Time{},
 		UpdatedAt:        time.Time{},
 	}
@@ -58,7 +58,7 @@ func UploadTaskModelToMissionHistoriesCore(data model.UploadMissionTask, dataMis
 }
 
 func MissionModelToMissionCore(data model.Mission) Mission {
-	 return Mission{
+	return Mission{
 		ID:               data.ID,
 		Title:            data.Title,
 		Status:           data.Status,
@@ -72,7 +72,7 @@ func MissionModelToMissionCore(data model.Mission) Mission {
 		DescriptionStage: data.DescriptionStage,
 		CreatedAt:        data.CreatedAt,
 		UpdatedAt:        data.UpdatedAt,
-	 }
+	}
 }
 
 func ListMissionModelToMissionCore(data []model.Mission) []Mission {
@@ -181,8 +181,10 @@ func MissionModelTomissionHistoriesCore(data model.Mission) MissionHistories {
 		Description:   data.Description,
 		StartDate:     data.StartDate,
 		EndDate:       data.EndDate,
-		MissionStages: []MissionStage{},
-		CreatedAt:     data.CreatedAt,
+		// MissionStages: []MissionStage{},
+		TitleStage:       data.TitleStage,
+		DescriptionStage: data.DescriptionStage,
+		CreatedAt:        data.CreatedAt,
 	}
 }
 
@@ -197,18 +199,20 @@ func ListMissionModelTomissionHistoriesCore(data []model.Mission) []MissionHisto
 
 func MissionToMissionHistoriesCore(data model.Mission, claimed model.ClaimedMission, upMisTask model.UploadMissionTask) MissionHistories {
 	return MissionHistories{
-		MissionID:      data.ID,
-		ClaimedID:      claimed.ID,
-		TransactionID:  upMisTask.ID,
-		Title:          data.Title,
-		StatusApproval: upMisTask.Status,
-		StatusMission:  data.Status,
-		MissionImage:   data.MissionImage,
-		Reason:         upMisTask.Reason,
-		Point:          data.Point,
-		Description:    data.Description,
-		StartDate:      data.StartDate,
-		EndDate:        data.EndDate,
-		CreatedAt:      upMisTask.CreatedAt,
+		MissionID:        data.ID,
+		ClaimedID:        claimed.ID,
+		TransactionID:    upMisTask.ID,
+		Title:            data.Title,
+		StatusApproval:   upMisTask.Status,
+		StatusMission:    data.Status,
+		MissionImage:     data.MissionImage,
+		Reason:           upMisTask.Reason,
+		Point:            data.Point,
+		Description:      data.Description,
+		DescriptionStage: data.DescriptionStage,
+		TitleStage:       data.TitleStage,
+		StartDate:        data.StartDate,
+		EndDate:          data.EndDate,
+		CreatedAt:        upMisTask.CreatedAt,
 	}
 }

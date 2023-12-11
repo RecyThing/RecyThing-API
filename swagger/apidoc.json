@@ -4522,7 +4522,13 @@
                 "in": "query",
                 "description": "status of mission approvals",
                 "schema": {
-                    "type": "string"
+                    "type": "string",
+                    "enum":[
+                        "perlu tinjauan",
+                        "ditolak",
+                        "disetujui"
+
+                    ]
                 }
             }
         },

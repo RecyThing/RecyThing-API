@@ -255,7 +255,7 @@ func (mh *missionHandler) UpdateUploadMission(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan form multipart"))
 	}
 
-	images := form.File["image"]
+	images := form.File["images"]
 
 	request := request.UpdateUploadMissionTaskRequestToUpdateUploadMissionTaskCore(input)
 

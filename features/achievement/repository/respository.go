@@ -55,10 +55,10 @@ func (ar *achievementRepository) FindById(id int) (entity.AchievementCore, error
 	return dataResponse, nil
 }
 
-func (ar *achievementRepository) UpdateById(id int, data entity.AchievementCore) error {
-	dataAchievement := entity.AchievementCoreToAchievementModel(data)
+func (ar *achievementRepository) UpdateById(id int, point int) error {
+	data:=model.Achievement{}
 
-	tx := ar.db.Where("id = ?", id).Updates(&dataAchievement)
+	tx := ar.db.Model(&data).Where("id = ?", id).Update("target_point",point)
 	if tx.Error != nil {
 		return tx.Error
 	}

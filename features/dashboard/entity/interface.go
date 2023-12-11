@@ -17,6 +17,7 @@ type DashboardRepositoryInterface interface {
 	CountCategory() ([]report.ReportCore, []report.ReportCore, error)
 	GetUserRanking() ([]user.UsersCore, error)
 	CountWeeklyTrashAndScalaTypes() ([]report.ReportCore, error)
+	CountTrashExchangesIncome() (dashboard.TrashIncomeStats, error)
 
 	// Years
 	CountUserActiveThisYear() ([]user.UsersCore, []report.ReportCore, error)
@@ -27,12 +28,13 @@ type DashboardRepositoryInterface interface {
 	CountCategoryYear() ([]report.ReportCore, []report.ReportCore, error)
 	GetUserRankingYear() ([]user.UsersCore, error)
 	CountWeeklyTrashAndScalaTypesYear() ([]report.ReportCore, error)
+	CountTrashExchangesIncomeYear() (dashboard.TrashIncomeStats, error)
 }
 
 type DashboardServiceInterface interface {
-	DashboardMonthly() (dashboard.GetCountUser, dashboard.GetCountExchangeVoucher, dashboard.GetCountReporting, dashboard.GetCountTrashExchange, dashboard.GetCountScaleType, []dashboard.UserRanking, []dashboard.WeeklyStats, error)
+	DashboardMonthly() (dashboard.GetCountUser, dashboard.GetCountExchangeVoucher, dashboard.GetCountReporting, dashboard.GetCountTrashExchange, dashboard.GetCountScaleType, []dashboard.UserRanking, []dashboard.WeeklyStats, dashboard.GetCountTrashExchangeIncome, error)
 	// CountWeeklyTrashAndScalaTypes() ([]dashboard.WeeklyStats, error)
 
-	DashboardYears() (dashboard.GetCountUser, dashboard.GetCountExchangeVoucher, dashboard.GetCountReporting, dashboard.GetCountTrashExchange, dashboard.GetCountScaleType, []dashboard.UserRanking, []dashboard.MonthlyStats, error)
-	CountMonthlyTrashAndScalaTypesYear() ([]dashboard.MonthlyStats, error)
+	DashboardYears() (dashboard.GetCountUser, dashboard.GetCountExchangeVoucher, dashboard.GetCountReporting, dashboard.GetCountTrashExchange, dashboard.GetCountScaleType, []dashboard.UserRanking, []dashboard.MonthlyStats, dashboard.GetCountTrashExchangeIncome, error)
+	// CountMonthlyTrashAndScalaTypesYear() ([]dashboard.MonthlyStats, error)
 }

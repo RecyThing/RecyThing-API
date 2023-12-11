@@ -34,6 +34,12 @@ type GetCountTrashExchange struct {
 	Status             string
 }
 
+type GetCountTrashExchangeIncome struct {
+	TotalIncome int
+	Persentase  string
+	Status      string
+}
+
 type GetCountScaleType struct {
 	Company string
 	Person  string
@@ -55,6 +61,11 @@ type MonthlyStats struct {
 	Month int
 	Trash int
 	Scala int
+}
+
+type TrashIncomeStats struct {
+	TotalIncomeThisMonth int
+	TotalIncomeLastMonth int
 }
 
 func CalculateAndMapUserStats(users, usersLastMonth []user.UsersCore, reports, reportsLastMonth []report.ReportCore) (GetCountUser, error) {
@@ -287,7 +298,6 @@ func CalculateMonthlyStats(data []report.ReportCore, startOfYear time.Time, mont
 	return monthlyStats
 }
 
-
 func CalculateWeeklyStats(data []report.ReportCore, startOfMonth time.Time) []WeeklyStats {
 	year, month, _ := startOfMonth.Date()
 	weeksInMonth := helper.GetWeeksInMonth(year, month)
@@ -324,5 +334,38 @@ func CalculateWeeklyStats(data []report.ReportCore, startOfMonth time.Time) []We
 	return weeklyStats
 }
 
+func MapTrashIncomeStats(totalIncomeThisMonth, totalIncomeLastMonth int) TrashIncomeStats {
+	return TrashIncomeStats{
+		TotalIncomeThisMonth: totalIncomeThisMonth,
+		TotalIncomeLastMonth: totalIncomeLastMonth,
+	}
+}
 
+func MapToGetCountIncome(totalThisMonth int, totalLastMonth int) GetCountTrashExchangeIncome {
+	var persentasePerubahanIncome float64
+	if totalLastMonth > 0 {
+		persentasePerubahanIncome = float64(totalThisMonth-totalLastMonth) / float64(totalLastMonth) * 100
+	} else {
+		persentasePerubahanIncome = 0
+	}
 
+	var statusIncome string
+	if persentasePerubahanIncome > 0 {
+		statusIncome = "naik"
+	} else if persentasePerubahanIncome < 0 {
+		statusIncome = "turun"
+	} else {
+		statusIncome = "tetap"
+	}
+
+	persentasePerubahanInt := int(math.Round(persentasePerubahanIncome))
+
+	// Buat map hasil untuk total income
+	result := GetCountTrashExchangeIncome{
+		TotalIncome: totalThisMonth,
+		Persentase:  fmt.Sprintf("%d", persentasePerubahanInt),
+		Status:      statusIncome,
+	}
+
+	return result
+}

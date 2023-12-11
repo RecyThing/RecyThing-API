@@ -130,34 +130,18 @@ func (article *articleRepository) GetAllArticle(page, limit int, search, filter 
 	}
 
 	if filter != "" {
-
-		tx := query.
-			Joins("INNER JOIN article_trash_categories ON articles.id = article_trash_categories.article_id").
-			Joins("INNER JOIN trash_categories ON article_trash_categories.trash_category_id = trash_categories.id").
-			Where("trash_categories.trash_type LIKE ?", "%"+filter+"%").
-			Count(&totalCount).
-			Find(&articleData)
-
-		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, 0, tx.Error
-		}
-
-		query = article.db.Model(&model.Article{}).Preload("Categories")
 		query = query.
 			Joins("INNER JOIN article_trash_categories ON articles.id = article_trash_categories.article_id").
 			Joins("INNER JOIN trash_categories ON article_trash_categories.trash_category_id = trash_categories.id").
 			Where("trash_categories.trash_type LIKE ?", "%"+filter+"%")
-		query = query.Offset(offset).Limit(limit)
-
 	}
 
-	query = query.Offset(offset).Limit(limit)
-	tx := query.Count(&totalCount).Find(&articleData)
+	tx := query.Count(&totalCount)
 	if tx.Error != nil {
 		return nil, pagination.PageInfo{}, 0, tx.Error
 	}
 
-	tx = query.Find(&articleData)
+	tx = query.Offset(offset).Limit(limit).Find(&articleData)
 	if tx.Error != nil {
 		return nil, pagination.PageInfo{}, 0, tx.Error
 	}
@@ -167,6 +151,7 @@ func (article *articleRepository) GetAllArticle(page, limit int, search, filter 
 
 	return dataResponse, pageInfo, int(totalCount), nil
 }
+
 
 
 // CreateArticle implements entity.ArticleRepositoryInterface.

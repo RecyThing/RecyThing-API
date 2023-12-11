@@ -253,7 +253,7 @@ func (ur *userRepository) JoinCommunity(communityId string, userId string) error
 	saveData.CommunityID = dataCommunity.Id
 	saveData.UsersID = userId
 
-	txSave := ur.db.Save(saveData).Error
+	txSave := ur.db.Create(&saveData).Error
 	if txSave != nil {
 		return txSave
 	}

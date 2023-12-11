@@ -75,6 +75,7 @@ var (
 	Status_Exchange     = []string{"diproses", "selesai"}
 	STATUS_MISSION_USER = []string{"berjalan", "selesai"}
 	STATUS_ADMIN        = []string{"aktif", "tidak aktif"}
+	CATEGORY_ARTICLE    = []string{"plastik", "kaca", "logam", "organik", "kertas", "kaleng", "minyak", "elektronik", "tekstil", "baterai"}
 	ERROR_MESSAGE       = []string{"sudah", "tidak", "harus", "gagal", "harap"}
 )
 

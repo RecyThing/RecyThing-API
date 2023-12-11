@@ -119,10 +119,9 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 	return articleUpdate, nil
 }
 
-// GetAllArticle implements entity.ArticleRepositoryInterface.
-func (article *articleRepository) GetAllArticle(page, limit int, search string) ([]entity.ArticleCore, pagination.PageInfo, int, error) {
+func (article *articleRepository) GetAllArticle(page, limit int, search, filter string) ([]entity.ArticleCore, pagination.PageInfo, int, error) {
 	var articleData []model.Article
-
+	var totalCount int64
 	offset := (page - 1) * limit
 	query := article.db.Model(&model.Article{}).Preload("Categories")
 
@@ -130,18 +129,33 @@ func (article *articleRepository) GetAllArticle(page, limit int, search string) 
 		query = query.Where("title LIKE ?", "%"+search+"%")
 	}
 
-	var totalCount int64
+	if filter != "" {
+
+		tx := query.
+			Joins("INNER JOIN article_trash_categories ON articles.id = article_trash_categories.article_id").
+			Joins("INNER JOIN trash_categories ON article_trash_categories.trash_category_id = trash_categories.id").
+			Where("trash_categories.trash_type LIKE ?", "%"+filter+"%").
+			Count(&totalCount).
+			Find(&articleData)
+
+		if tx.Error != nil {
+			return nil, pagination.PageInfo{}, 0, tx.Error
+		}
+
+		query = article.db.Model(&model.Article{}).Preload("Categories")
+		query = query.
+			Joins("INNER JOIN article_trash_categories ON articles.id = article_trash_categories.article_id").
+			Joins("INNER JOIN trash_categories ON article_trash_categories.trash_category_id = trash_categories.id").
+			Where("trash_categories.trash_type LIKE ?", "%"+filter+"%")
+		query = query.Offset(offset).Limit(limit)
+
+	}
+
+	query = query.Offset(offset).Limit(limit)
 	tx := query.Count(&totalCount).Find(&articleData)
 	if tx.Error != nil {
 		return nil, pagination.PageInfo{}, 0, tx.Error
 	}
-
-	query = query.Offset(offset).Limit(limit)
-
-	// txData := article.db.Preload("Categories").Find(&articleData)
-	// if txData.Error != nil {
-	// 	return nil, pagination.PageInfo{}, txData.Error
-	// }
 
 	tx = query.Find(&articleData)
 	if tx.Error != nil {
@@ -153,6 +167,7 @@ func (article *articleRepository) GetAllArticle(page, limit int, search string) 
 
 	return dataResponse, pageInfo, int(totalCount), nil
 }
+
 
 // CreateArticle implements entity.ArticleRepositoryInterface.
 func (article *articleRepository) CreateArticle(articleInput entity.ArticleCore, image *multipart.FileHeader) (entity.ArticleCore, error) {
@@ -291,25 +306,4 @@ func (article *articleRepository) GetPopularArticle(search string) ([]entity.Art
 	dataResponse := entity.ListArticleModelToArticleCore(articleData)
 
 	return dataResponse, nil
-}
-
-// GetArticleByCategory implements entity.ArticleRepositoryInterface.
-func (article *articleRepository) GetArticleByCategory(idCategory string) ([]entity.ArticleCore, error) {
-	var articleData []model.Article
-
-	data := article.db.
-		Table("articles").
-		Select("articles.*").
-		Joins("INNER JOIN article_trash_categories ON articles.id = article_trash_categories.article_id").
-		Where("article_trash_categories.trash_category_id = ?", idCategory).
-		Preload("Categories").
-		Find(&articleData)
-
-	if data.Error != nil {
-		return nil, data.Error
-	}
-
-	articles := entity.ListArticleModelToArticleCore(articleData)
-
-	return articles, nil
 }

@@ -2390,6 +2390,131 @@
                     }
                 }
             }
+        },
+        "/communities":{
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Communities"
+                ],
+                "summary": "view all communities ",
+                "description": "view all communities",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/searchCommunity"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseCommunity"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": [
+                                                {
+                                                    "id": "1b44d47c-662b-45b2-9e00-3202284e6e8d",
+                                                    "name": "Zero Waste Warrior",
+                                                    "location": "Jakarta Pusat",
+                                                    "created_at": "2023-12-08T22:00:54.002Z"
+                                                },
+                                                {
+                                                    "id": "4be2d09a-6d40-4c20-94ec-a65134e51622",
+                                                    "name": "Pecinta Mermet Indonesia",
+                                                    "location": "Samudra Hindia",
+                                                    "created_at": "2023-12-10T19:35:24.726Z"
+                                                },
+                                                {
+                                                    "id": "944506f7-6478-4b87-9b9f-c4905ec0e767",
+                                                    "name": "Ecoguardians",
+                                                    "location": "Jakarta",
+                                                    "created_at": "2023-12-09T17:59:37.638Z"
+                                                },
+                                                {
+                                                    "id": "97eee5ba-64c3-484e-afeb-9fb5ff221826",
+                                                    "name": "Zerowaste Warrior",
+                                                    "location": "Jakarta",
+                                                    "created_at": "2023-12-09T18:02:16.582Z"
+                                                },
+                                                {
+                                                    "id": "dc47e2f1-2c4f-4047-b90f-e0a25d8d43a9",
+                                                    "name": "Recy Beka",
+                                                    "location": "Bekasi Barat",
+                                                    "created_at": "2023-12-08T23:22:36.349Z"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "limit": 10,
+                                                "current_page": 1,
+                                                "last_page": 1
+                                            },
+                                            "count_data": 5
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/communities/{id}":{
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Communities"
+                ],
+                "summary": "view detail community by id ",
+                "description": "view all community by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseCommunity"
+                                },
+                                "examples": {
+                                    "200": {
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil mendapatkan data",
+                                            "data": {
+                                                "id": "97eee5ba-64c3-484e-afeb-9fb5ff221826",
+                                                "name": "Zerowaste Warrior",
+                                                "description": "Para pejuang yang berkomitmen untuk mengurangi sampah dan mencapai gaya hidup tanpa limbah. Mereka memimpin dengan contoh dan berbagi tips untuk membantu anggota lain mengadopsi praktik hidup berkelanjutan.",
+                                                "location": "Jakarta",
+                                                "max_members": 200,
+                                                "image": "https://storage.googleapis.com/article_thumbnail/thumbnail/9b7181fe-fc2a-4664-82fe-b52373182c9d.png",
+                                                "created_at": "2023-12-09T18:02:16.582Z"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -2537,6 +2662,14 @@
                         "berjalan",
                         "selesai"
                     ]
+                }
+            },
+            "searchCommunity": {
+                "name": "search",
+                "in": "query",
+                "description": "search by name or location",
+                "schema": {
+                    "type": "string"
                 }
             }
         },
@@ -3032,6 +3165,39 @@
                     },
                     "count_data": {
                         "type": "string"
+                    }
+                }
+            },
+            "ResponseCommunity": {
+                "type": "object",
+                "properties": {
+                    
+                    "name": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "pagination":{
+                        "type": "object",
+                        "properties": {
+                            "limit":{
+                                "type": "integer"
+                            },
+                            "current_page":{
+                                "type": "integer"
+                            },
+                            "last_page":{
+                                "type": "integer"
+                            }
+                            
+                        }
+                    },
+                    "count_data":{
+                        "type": "integer"
                     }
                 }
             }

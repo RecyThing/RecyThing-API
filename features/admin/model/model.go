@@ -10,12 +10,13 @@ import (
 
 type Admin struct {
 	Id              string `gorm:"primary key"`
+	Image			string
 	Fullname        string
 	Role            string `gorm:"type:enum('admin', 'super_admin');default:'admin'"`
 	Email           string
 	Password        string
 	ConfirmPassword string
-	Status          string         `gorm:"type:enum('active', 'nonactive');default:'active'"`
+	Status          string         `gorm:"type:enum('aktif', 'tidak aktif');default:'aktif'"`
 	CreatedAt       time.Time      `gorm:"type:DATETIME(0)"`
 	UpdatedAt       time.Time      `gorm:"type:DATETIME(0)"`
 	DeletedAt       gorm.DeletedAt `gorm:"index"`

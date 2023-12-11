@@ -81,7 +81,7 @@ func (article *articleHandler) GetAllArticle(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
 	}
 
-	articleData, paginationInfo, count, err := article.articleService.GetAllArticle(page, limit, search)
+	articleData, paginationInfo, count, err := article.articleService.GetAllArticle(page, limit, search,"")
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan artikel"))
 	}
@@ -90,6 +90,36 @@ func (article *articleHandler) GetAllArticle(e echo.Context) error {
 
 	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan semua article", articleResponse, paginationInfo, count))
 }
+
+
+func (article *articleHandler) GetAllArticleUser(e echo.Context) error {
+	filter := e.QueryParam("filter")
+	search := e.QueryParam("search")
+	page, _ := strconv.Atoi(e.QueryParam("page"))
+	limit, _ := strconv.Atoi(e.QueryParam("limit"))
+
+	Id, _, err := jwt.ExtractToken(e)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
+	}
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
+	}
+
+	articleData, paginationInfo, count, err := article.articleService.GetAllArticle(page, limit, search,filter)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	if len(articleData) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
+	}
+
+	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan semua article", articleResponse, paginationInfo, count))
+}
+
 
 func (article *articleHandler) GetSpecificArticle(e echo.Context) error {
 	idParams := e.Param("id")
@@ -225,24 +255,4 @@ func (article *articleHandler) GetPopularArticle(e echo.Context) error{
 	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
 
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan artikel populer", articleResponse))
-}
-
-func (article *articleHandler) GetArticleByCategory(e echo.Context) error{
-	Id, _, err := jwt.ExtractToken(e)
-	if err != nil {
-		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
-	}
-	if Id == "" {
-		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
-	}
-
-	idParams := e.Param("idcategory")
-
-	articleData, err := article.articleService.GetArticleByCategory(idParams)
-	if err != nil {
-		return e.JSON(http.StatusNotFound, helper.ErrorResponse("gagal membaca data"))
-	}
-	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
-
-	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan artikel", articleResponse))
 }

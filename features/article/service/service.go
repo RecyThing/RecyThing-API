@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"log"
 	"mime/multipart"
 	"recything/features/article/entity"
 	"recything/utils/constanta"
@@ -77,7 +78,7 @@ func (article *articleService) UpdateArticle(idArticle string, articleInput enti
 }
 
 // GetAllArticle implements entity.ArticleServiceInterface.
-func (ac *articleService) GetAllArticle(page, limit int, search string) ([]entity.ArticleCore, pagination.PageInfo, int, error) {
+func (ac *articleService) GetAllArticle(page, limit int, search, filter string) ([]entity.ArticleCore, pagination.PageInfo, int, error) {
 
 	if limit > 10 {
 		return nil, pagination.PageInfo{}, 0, errors.New("limit tidak boleh lebih dari 10")
@@ -85,7 +86,16 @@ func (ac *articleService) GetAllArticle(page, limit int, search string) ([]entit
 
 	page, limit = validation.ValidateCountLimitAndPage(page, limit)
 
-	article, pageInfo, count, err := ac.ArticleRepository.GetAllArticle(page, limit, search)
+	if filter != "" {
+		category, errEqual := validation.CheckEqualData(filter, constanta.CATEGORY_ARTICLE)
+		if errEqual != nil {
+			return []entity.ArticleCore{}, pagination.PageInfo{}, 0, errors.New("error : kategori tidak valid")
+		}
+		filter = category
+	}
+	log.Println("ini:", filter)
+
+	article, pageInfo, count, err := ac.ArticleRepository.GetAllArticle(page, limit, search, filter)
 	if err != nil {
 		return []entity.ArticleCore{}, pagination.PageInfo{}, 0, err
 	}
@@ -118,11 +128,11 @@ func (article *articleService) CreateArticle(articleInput entity.ArticleCore, im
 
 // PostLike implements entity.ArticleServiceInterface.
 func (article *articleService) PostLike(idArticle string, idUser string) error {
-	if idArticle == ""{
+	if idArticle == "" {
 		return errors.New(constanta.ERROR_ID_INVALID)
 	}
 
-	if idUser == ""{
+	if idUser == "" {
 		return errors.New(constanta.ERROR_ID_INVALID)
 	}
 
@@ -152,16 +162,3 @@ func (article *articleService) GetPopularArticle(search string) ([]entity.Articl
 	return articleData, nil
 }
 
-// GetArticleByCategory implements entity.ArticleServiceInterface.
-func (article *articleService) GetArticleByCategory(idCategory string) ([]entity.ArticleCore, error) {
-	if idCategory == ""{
-		return nil, errors.New("id tidak cocok")
-	}
-
-	articleData, err := article.ArticleRepository.GetArticleByCategory(idCategory)
-	if err != nil {
-		return nil, errors.New("gagal membaca data")
-	}
-
-	return articleData, nil
-}

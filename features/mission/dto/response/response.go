@@ -63,7 +63,7 @@ type MissionHistories struct {
 	StatusApproval string `json:"status_approval,omitempty"`
 	StatusMission  string `json:"status_mission,omitempty"`
 	MissionImage   string `json:"mission_image"`
-	Reason         string `json:"reason,omitempty"`
+	// Reason         string `json:"reason,omitempty"`
 	Point          int    `json:"point"`
 	Description    string `json:"description"`
 	StartDate      string `json:"start_date,omitempty"`

@@ -105,7 +105,7 @@ func HistoriesCoreToHistoriesResponse(data entity.MissionHistories) MissionHisto
 		StatusApproval:   data.StatusApproval,
 		StatusMission:    data.StatusMission,
 		MissionImage:     data.MissionImage,
-		Reason:           data.Reason,
+		// Reason:           data.Reason,
 		Point:            data.Point,
 		Description:      data.Description,
 		StartDate:        data.StartDate,

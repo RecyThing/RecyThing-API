@@ -1849,36 +1849,20 @@
                                         }
                                     },
                                     "berjalan": {
-                                        "value": {
+                                        "value":{
                                             "status": true,
                                             "message": "Berhasil mendapatkan seluruh misi",
                                             "data": [
                                                 {
-                                                    "mission_id": "5539f3a0-e330-4d08-8656-213558137113",
-                                                    "claimed_id": "xxxxxxxxxxxx",
-                                                    "transaction_id": "yyyyyyyy",
-                                                    "title": "TITLE 113",
-                                                    "status_approval": "ditolak",
-                                                    "status_mission": "Melewati Tenggat",
-                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/f1174ea9-7de1-4c81-be01-78cc91020bbc.jpg",
-                                                    "reason": "foto tidak jelas",
-                                                    "point": 3000,
-                                                    "description": "ayam goreng",
-                                                    "start_date": "2023-12-04",
-                                                    "end_date": "2023-12-06",
-                                                    "created_at": "2023-12-06T13:19:26+08:00",
-                                                    "updated_at": "0001-01-01T00:00:00Z"
-                                                },
-                                                {
-                                                    "mission_id": "daaaa7cb-6968-4d8d-9540-552bb5669ce8",
-                                                    "claimed_id": "dddddd",
-                                                    "title": "ayam goreng 5",
+                                                    "mission_id": "76c64616-ea3a-4404-94d0-e90e74c3f96f",
+                                                    "title": "TITLE 96F",
+                                                    "status_approval": "upload bukti pengerjaan",
                                                     "status_mission": "Aktif",
-                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/6f9019f2-7666-461c-9fc7-58ea05a4f021.jpg",
+                                                    "mission_image": "https://storage.googleapis.com/article_thumbnail/thumbnail/535475c8-d020-4ff2-8ee1-937be6b574f8.jpg",
                                                     "point": 3000,
                                                     "description": "ayam goreng",
                                                     "start_date": "2023-12-04",
-                                                    "end_date": "2023-12-12",
+                                                    "end_date": "2023-12-10",
                                                     "created_at": "0001-01-01T00:00:00Z",
                                                     "updated_at": "0001-01-01T00:00:00Z"
                                                 }

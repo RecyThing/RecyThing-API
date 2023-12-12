@@ -93,12 +93,12 @@ func (ur *userRepository) UpdateBadge(id string) error {
 
 	dataUser, errGet := ur.GetById(id)
 	if errGet != nil {
-		return nil
+		return errGet
 	}
 
 	dataAchievement, errAchivement := ur.achievementRepo.GetAllAchievement()
 	if errAchivement != nil {
-		return nil
+		return errAchivement
 	}
 
 	loc, err := time.LoadLocation(constanta.ASIABANGKOK)

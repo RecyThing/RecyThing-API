@@ -6,7 +6,7 @@ type TrashExchangeResponse struct {
 	Id                   string                       `json:"id"`
 	Name                 string                       `json:"name"`
 	EmailUser            string                       `json:"email"`
-	Address              string                       `json:"address"`
+	DropPointName        string                       `json:"drop_point_name"`
 	TotalUnit            float64                      `json:"total_unit"`
 	TotalPoint           int                          `json:"total_point"`
 	CreatedAt            time.Time                    `json:"created_at"`

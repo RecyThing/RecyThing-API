@@ -8,7 +8,7 @@ type TrashExchangeCore struct {
 	Id                   string                    `json:"id"`
 	Name                 string                    `json:"name"`
 	EmailUser            string                    `json:"email"`
-	Address              string                    `json:"address"`
+	DropPointName        string                    `json:"drop_point_name"`
 	DropPointId          string                    `json:"drop_point_id"`
 	TotalIncome          int                       `json:"total_income"`
 	TotalPoint           int                       `json:"total_point"`

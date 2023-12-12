@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"mime/multipart"
 	"recything/features/admin/entity"
 	report "recything/features/report/entity"
 	user "recything/features/user/entity"
@@ -22,11 +23,16 @@ func NewAdminService(ar entity.AdminRepositoryInterface) entity.AdminServiceInte
 	}
 }
 
-func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) {
+func (as *AdminService) Create(image *multipart.FileHeader, data entity.AdminCore) (entity.AdminCore, error) {
 
-	errEmpty := validation.CheckDataEmpty(data.Fullname, data.Email, data.Password, data.ConfirmPassword)
+	errEmpty := validation.CheckDataEmpty(data.Fullname, data.Email, data.Password, data.ConfirmPassword, data.Status)
 	if errEmpty != nil {
 		return entity.AdminCore{}, errors.New(constanta.ERROR_EMPTY)
+	}
+
+	status, errEqual := validation.CheckEqualData(data.Status, constanta.STATUS_ADMIN)
+	if errEqual != nil {
+		return entity.AdminCore{}, errors.New("error : status input tidak valid")
 	}
 
 	errEmail := validation.EmailFormat(data.Email)
@@ -48,7 +54,9 @@ func (as *AdminService) Create(data entity.AdminCore) (entity.AdminCore, error) 
 		return entity.AdminCore{}, errors.New(constanta.ERROR_CONFIRM_PASSWORD)
 	}
 
-	dataAdmins, errCreate := as.AdminRepository.Create(data)
+	data.Status = status
+
+	dataAdmins, errCreate := as.AdminRepository.Create(image, data)
 	if errCreate != nil {
 		return entity.AdminCore{}, errors.New("gagal membuat data admin")
 	}
@@ -79,31 +87,54 @@ func (as *AdminService) GetById(adminId string) (entity.AdminCore, error) {
 	return dataAdmins, nil
 }
 
-func (as *AdminService) UpdateById(adminId string, data entity.AdminCore) error {
+func (as *AdminService) UpdateById(image *multipart.FileHeader, adminId string, data entity.AdminCore) error {
 
-	if data.Email != "" {
-		errEmail := validation.EmailFormat(data.Email)
-		if errEmail != nil {
-			return errEmail
-		}
-
+	errEmpty := validation.CheckDataEmpty(data.Fullname, data.Email, data.Password, data.ConfirmPassword, data.Status)
+	if errEmpty != nil {
+		return errors.New(constanta.ERROR_EMPTY)
 	}
 
-	if data.Password != "" {
-		errLength := validation.MinLength(data.Password, 8)
-		if errLength != nil {
-			return errLength
-		}
-
-		HashPassword, errHash := helper.HashPassword(data.Password)
-		if errHash != nil {
-			return errors.New("error hash password")
-		}
-		data.Password = HashPassword
-
+	status, errEqual := validation.CheckEqualData(data.Status, constanta.STATUS_ADMIN)
+	if errEqual != nil {
+		return errors.New("error : status input tidak valid")
 	}
 
-	err := as.AdminRepository.Update(adminId, data)
+	errEmail := validation.EmailFormat(data.Email)
+	if errEmail != nil {
+		return errors.New(constanta.ERROR_FORMAT_EMAIL)
+	}
+
+	errLength := validation.MinLength(data.Password, 8)
+	if errLength != nil {
+		return errors.New(constanta.ERROR_LENGTH_PASSWORD)
+	}
+
+	dataAdmins, errAdmins := as.AdminRepository.SelectById(adminId)
+	if errAdmins != nil {
+		return errAdmins
+	}
+
+	if data.Email == dataAdmins.Email {
+
+	} else {
+		errFind := as.AdminRepository.FindByEmail(data.Email)
+		if errFind == nil {
+			return errors.New(constanta.ERROR_EMAIL_EXIST)
+		}
+	}
+
+	if data.ConfirmPassword != data.Password {
+		return errors.New(constanta.ERROR_CONFIRM_PASSWORD)
+	}
+
+	HashPassword, errHash := helper.HashPassword(data.Password)
+	if errHash != nil {
+		return errors.New("error hash password")
+	}
+	data.Password = HashPassword
+	data.Status = status
+
+	err := as.AdminRepository.Update(image, adminId, data)
 	if err != nil {
 		return err
 	}
@@ -135,7 +166,7 @@ func (as *AdminService) FindByEmailANDPassword(data entity.AdminCore) (entity.Ad
 
 	data, err := as.AdminRepository.FindByEmailANDPassword(data)
 	if err != nil {
-		return entity.AdminCore{}, "", errors.New("data tidak ada")
+		return entity.AdminCore{}, "", errors.New("error : email atau password salah")
 	}
 
 	token, errToken := jwt.CreateToken(data.Id, data.Role)

@@ -8,6 +8,7 @@ func AdminRequestToAdminCore(data AdminRequest) entity.AdminCore {
 		Email:           data.Email,
 		Password:        data.Password,
 		ConfirmPassword: data.ConfirmPassword,
+		Status:          data.Status,
 	}
 }
 
@@ -18,11 +19,12 @@ func RequestLoginToAdminCore(data AdminLogin) entity.AdminCore {
 	}
 }
 
-func AdminRequestUpdateToAdminCore(data AdminRequestUpdate) entity.AdminCore {
-	return entity.AdminCore{
-		Fullname: data.Fullname,
-		Email:    data.Email,
-		Password: data.Password,
-		Status:   data.Status,
-	}
-}
+// func AdminRequestUpdateToAdminCore(data AdminRequestUpdate) entity.AdminCore {
+// 	return entity.AdminCore{
+// 		Fullname:        data.Fullname,
+// 		Email:           data.Email,
+// 		Password:        data.Password,
+// 		ConfirmPassword: data.ConfirmPassword,
+// 		Status:          data.Status,
+// 	}
+// }

@@ -72,7 +72,7 @@ type UploadMissionTask struct {
 	UserID      string `gorm:"type:varchar(255);index" `
 	MissionID   string `gorm:"type:varchar(255)" `
 	Description string
-	Reason      string
+	Reason      string `gorm:"default:'menunggu verifikasi'"`
 	Images      []ImageUploadMission
 	Status      string    `gorm:"type:enum('disetujui','ditolak','perlu tinjauan');default:'perlu tinjauan'"`
 	CreatedAt   time.Time `gorm:"type:DATETIME(0)" `

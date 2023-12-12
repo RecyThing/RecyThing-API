@@ -9,15 +9,16 @@ import (
 )
 
 type TrashExchange struct {
-	Id         string  `gorm:"primary key"`
-	Name       string  `gorm:"not null"`
-	EmailUser  string  `gorm:"index"`
-	Address    string  `gorm:"not null"`
-	TotalPoint int     `gorm:"not null"`
-	TotalUnit  float64 `gorm:"type:decimal(10,1);not null"`
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	DeletedAt  gorm.DeletedAt `gorm:"index"`
+	Id            string  `gorm:"primary key"`
+	Name          string  `gorm:"not null"`
+	EmailUser     string  `gorm:"index"`
+	DropPointName string  `gorm:"not null"`
+	TotalIncome   int     `gorm:"not null"`
+	TotalPoint    int     `gorm:"not null"`
+	TotalUnit     float64 `gorm:"type:decimal(10,1);not null"`
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     gorm.DeletedAt `gorm:"index"`
 
 	DropPointId          string                `gorm:"index"`
 	DropPoint            dropPoint.DropPoints  `gorm:"foreignKey:DropPointId"`

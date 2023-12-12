@@ -22,13 +22,13 @@ func ListTrashExchangeDetailCoreToTrashExchangeDetailResponse(data []entity.Tras
 
 func TrashExchangeCoreToTrashExchangeResponse(data entity.TrashExchangeCore) TrashExchangeResponse {
 	trashExchangeResponse := TrashExchangeResponse{
-		Id:         data.Id,
-		Name:       data.Name,
-		EmailUser:  data.EmailUser,
-		Address:    data.Address,
-		TotalPoint: data.TotalPoint,
-		TotalUnit:  data.TotalUnit,
-		CreatedAt:  data.CreatedAt,
+		Id:            data.Id,
+		Name:          data.Name,
+		EmailUser:     data.EmailUser,
+		DropPointName: data.DropPointName,
+		TotalPoint:    data.TotalPoint,
+		TotalUnit:     data.TotalUnit,
+		CreatedAt:     data.CreatedAt,
 	}
 
 	trashExchange := ListTrashExchangeDetailCoreToTrashExchangeDetailResponse(data.TrashExchangeDetails)

@@ -20,5 +20,5 @@ func RouteDashboard(e *echo.Group, db *gorm.DB) {
 	dashboard.GET("/monthly", dashboardHandler.Dashboard)
 	dashboard.GET("/years", dashboardHandler.DashboardYears)
 	// dashboard.GET("/statistik/monthly", dashboardHandler.CountWeeklyTrashAndScalaTypes)
-	dashboard.GET("/statistik/years", dashboardHandler.CountMonthlyTrashAndScalaTypes)
+	// dashboard.GET("/statistik/years", dashboardHandler.CountMonthlyTrashAndScalaTypes)
 }

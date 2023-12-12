@@ -24,6 +24,12 @@ type GetCountTrashExchangeResponse struct {
 	Status             string `json:"status"`
 }
 
+type GetCountTrashExchangeIncomeResponse struct {
+	TotalIncome int    `json:"total_income"`
+	Percentage  string `json:"percentage"`
+	Status      string `json:"status"`
+}
+
 type GetCountScaleTypeResponse struct {
 	Company string `json:"company"`
 	Person  string `json:"person"`

@@ -6,6 +6,7 @@ func AdminCoreToAdminResponse(admin entity.AdminCore) AdminRespon {
 	return AdminRespon{
 		ID:        admin.Id,
 		Fullname:  admin.Fullname,
+		Image:     admin.Image,
 		Email:     admin.Email,
 		Status:    admin.Status,
 		CreatedAt: admin.CreatedAt,

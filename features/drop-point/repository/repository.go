@@ -140,9 +140,9 @@ func (dpr *dropPointRepository) DeleteDropPointById(id string) error {
 }
 
 // GetDropPointByAddress implements entity.DropPointRepositoryInterface.
-func (dpr *dropPointRepository) GetDropPointByAddress(address string) (entity.DropPointsCore, error) {
+func (dpr *dropPointRepository) GetDropPointByName(name string) (entity.DropPointsCore, error) {
 	dropPoint := model.DropPoints{}
-	tx := dpr.db.Where("address = ?", address).First(&dropPoint)
+	tx := dpr.db.Where("name = ?", name).First(&dropPoint)
 
 	if tx.RowsAffected == 0 {
 		return entity.DropPointsCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)

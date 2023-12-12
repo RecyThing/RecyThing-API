@@ -21,9 +21,9 @@ func ListTrashExchangeDetailsRequestToTrashExchangeDetailsCore(data []TrashExcha
 
 func TrashExchangeRequestToTrashExchangeCore(data TrashExchangeRequest) entity.TrashExchangeCore {
 	TrashExchangeCore := entity.TrashExchangeCore{
-		Name:      data.Name,
-		EmailUser: data.EmailUser,
-		Address:   data.Address,
+		Name:          data.Name,
+		EmailUser:     data.EmailUser,
+		DropPointName: data.DropPointName,
 	}
 	trashExchange := ListTrashExchangeDetailsRequestToTrashExchangeDetailsCore(data.TrashExchangeDetails)
 	TrashExchangeCore.TrashExchangeDetails = trashExchange

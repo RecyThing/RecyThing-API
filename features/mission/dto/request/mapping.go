@@ -11,7 +11,7 @@ func MissionRequestToMissionCore(missi Mission) entity.Mission {
 		StartDate:        missi.Start_Date,
 		EndDate:          missi.End_Date,
 		TitleStage:       missi.TitleStage,
-		DescriptionStage: missi.Description,
+		DescriptionStage: missi.DescriptionStage,
 	}
 	return missionCore
 }

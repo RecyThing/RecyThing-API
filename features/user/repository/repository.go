@@ -2,21 +2,24 @@ package repository
 
 import (
 	"errors"
+	achievement "recything/features/achievement/entity"
+	moco "recything/features/community/model"
 	"recything/features/user/entity"
 	"recything/features/user/model"
-	moco "recything/features/community/model"
 	"recything/utils/constanta"
 
 	"gorm.io/gorm"
 )
 
 type userRepository struct {
-	db *gorm.DB
+	db              *gorm.DB
+	achievementRepo achievement.AchievementRepositoryInterface
 }
 
-func NewUserRepository(db *gorm.DB) entity.UsersRepositoryInterface {
+func NewUserRepository(db *gorm.DB, achievementRepo achievement.AchievementRepositoryInterface) entity.UsersRepositoryInterface {
 	return &userRepository{
-		db: db,
+		db:              db,
+		achievementRepo: achievementRepo,
 	}
 }
 
@@ -82,6 +85,39 @@ func (ur *userRepository) UpdateById(id string, data entity.UsersCore) error {
 	}
 
 	return nil
+}
+
+func (ur *userRepository) UpdateBadge(id string) error {
+	dataBadge := model.Users{}
+
+	dataUser, errGet := ur.GetById(id)
+	if errGet != nil {
+		return nil
+	}
+
+	dataAchievement, errAchivement := ur.achievementRepo.GetAllAchievement()
+	if errAchivement != nil {
+		return nil
+	}
+
+	for i := len(dataAchievement) - 1; i >= 0; i-- {
+		v := dataAchievement[i]
+		if dataUser.Point >= v.TargetPoint {
+			dataUser.Badge = v.Name
+		}
+	}
+
+	tx := ur.db.Model(&dataBadge).Where("id = ?", id).Update("badge", dataUser.Badge)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return errors.New(constanta.ERROR_DATA_ID)
+	}
+
+	return nil
+
 }
 
 // ForgetPassword implements entity.UsersRepositoryInterface.
@@ -239,6 +275,7 @@ func (ur *userRepository) UpdateUserPoint(id string, point int) error {
 	}
 	return nil
 }
+
 // JoinCommunity implements entity.UsersRepositoryInterface.
 func (ur *userRepository) JoinCommunity(communityId string, userId string) error {
 	dataCommunity := moco.Community{}
@@ -246,14 +283,14 @@ func (ur *userRepository) JoinCommunity(communityId string, userId string) error
 
 	// ambil data community
 	txCommunity := ur.db.Where("id = ?", communityId).First(&dataCommunity)
-	if txCommunity.Error != nil{
+	if txCommunity.Error != nil {
 		return txCommunity.Error
 	}
 
 	saveData.CommunityID = dataCommunity.Id
 	saveData.UsersID = userId
 
-	txSave := ur.db.Save(saveData).Error
+	txSave := ur.db.Create(&saveData).Error
 	if txSave != nil {
 		return txSave
 	}
@@ -261,10 +298,9 @@ func (ur *userRepository) JoinCommunity(communityId string, userId string) error
 	return nil
 }
 
-
 // For History Point
 
-func (ur *userRepository) FindById(userID string) (entity.UsersCore,error){
+func (ur *userRepository) FindById(userID string) (entity.UsersCore, error) {
 	dataUser := model.Users{}
 
 	tx := ur.db.Where("id = ?", userID).First(&dataUser)
@@ -275,7 +311,7 @@ func (ur *userRepository) FindById(userID string) (entity.UsersCore,error){
 	if tx.RowsAffected == 0 {
 		return entity.UsersCore{}, errors.New(constanta.ERROR_DATA_NOT_FOUND)
 	}
-	
+
 	dataResponse := entity.UsersModelToUsersCore(dataUser)
-	return dataResponse,nil
+	return dataResponse, nil
 }

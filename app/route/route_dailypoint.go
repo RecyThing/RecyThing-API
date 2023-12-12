@@ -18,7 +18,7 @@ import (
 func RouteDailyPoint(e *echo.Group, db *gorm.DB) {
 	missionRepo := missionRepository.NewMissionRepository(db)
 	trashRepo := trashExRepository.NewTrashExchangeRepository(db)
-	userRepo := userRepository.NewUserRepository(db)
+	userRepo := userRepository.NewUserRepository(db,nil)
 	voucherRepo := voucherRepository.NewVoucherRepository(db)
 	dailyRepo := repository.NewDailyPointRepository(db,missionRepo,trashRepo,userRepo,voucherRepo)
 	dailyServ := service.NewDailyPointService(dailyRepo)

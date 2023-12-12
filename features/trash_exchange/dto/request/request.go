@@ -3,7 +3,7 @@ package request
 type TrashExchangeRequest struct {
 	Name                 string                       `json:"name"`
 	EmailUser            string                       `json:"email"`
-	Address              string                       `json:"address"`
+	DropPointName        string                       `json:"drop_point_name"`
 	TrashExchangeDetails []TrashExchangeDetailRequest `json:"trash_exchange_details"`
 }
 

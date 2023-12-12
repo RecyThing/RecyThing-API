@@ -18,9 +18,9 @@ import (
 func RouteDailyPoint(e *echo.Group, db *gorm.DB) {
 	missionRepo := missionRepository.NewMissionRepository(db)
 	trashRepo := trashExRepository.NewTrashExchangeRepository(db)
-	userRepo := userRepository.NewUserRepository(db,nil)
+	userRepo := userRepository.NewUserRepository(db, nil)
 	voucherRepo := voucherRepository.NewVoucherRepository(db)
-	dailyRepo := repository.NewDailyPointRepository(db,missionRepo,trashRepo,userRepo,voucherRepo)
+	dailyRepo := repository.NewDailyPointRepository(db, missionRepo, trashRepo, userRepo, voucherRepo)
 	dailyServ := service.NewDailyPointService(dailyRepo)
 	dailyHand := handler.NewDailyPointHandler(dailyServ)
 
@@ -28,6 +28,7 @@ func RouteDailyPoint(e *echo.Group, db *gorm.DB) {
 
 	daily := e.Group("/point", jwt.JWTMiddleware())
 	daily.POST("/daily", dailyHand.DailyClaim)
+	daily.GET("/claimed", dailyHand.ClaimPointHistory)
 	daily.GET("/history", dailyHand.PointHistory)
 	daily.GET("/history/:idTransaction", dailyHand.PointHistoryById)
 }

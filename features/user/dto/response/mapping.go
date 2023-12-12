@@ -82,3 +82,20 @@ func ListCommunityCoreToCommunityResponse(communities []entity.UserCommunityCore
 	}
 	return ResponseCommunity
 }
+
+func UserDailyPointsCoreToUserDailyPointsResponse(data entity.UserDailyPointsCore) UserDailyPointsResponse {
+	return UserDailyPointsResponse{
+		Claim:        data.Claim,
+		DailyPointID: data.DailyPointID,
+		CreatedAt:    data.CreatedAt,
+	}
+}
+
+func ListUserDailyPointsCoreToUserDailyPointsResponse(data []entity.UserDailyPointsCore) []UserDailyPointsResponse {
+	dataDaily := []UserDailyPointsResponse{}
+	for _, v := range data {
+		daily := UserDailyPointsCoreToUserDailyPointsResponse(v)
+		dataDaily = append(dataDaily, daily)
+	}
+	return dataDaily
+}

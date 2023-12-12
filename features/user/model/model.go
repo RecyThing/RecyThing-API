@@ -45,6 +45,7 @@ type Users struct {
 type UserDailyPoints struct {
 	UsersID      string
 	DailyPointID int
+	Claim        bool `gorm:"default:true"`
 	CreatedAt    time.Time
 }
 

@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"recything/features/daily_point/entity"
+	user "recything/features/user/dto/response"
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/jwt"
@@ -103,6 +104,30 @@ func (daily *dailyPointHandler) PointHistoryById(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
-	
 	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil menampilkan data", result))
+}
+
+func (daily *dailyPointHandler) ClaimPointHistory(e echo.Context) error {
+	Id, _, _ := jwt.ExtractToken(e)
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan id"))
+	}
+
+	result, err := daily.dailyPointService.GetAllClaimedDaily(Id)
+	if err != nil {
+		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
+			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
+		}
+		if strings.Contains(err.Error(), constanta.ERROR) {
+			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+		}
+		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
+	}
+
+	if len(result) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
+	}
+
+	response := user.ListUserDailyPointsCoreToUserDailyPointsResponse(result)
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil menampilkan data", response))
 }

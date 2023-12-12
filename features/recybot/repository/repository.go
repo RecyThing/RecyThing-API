@@ -5,7 +5,9 @@ import (
 	"recything/features/recybot/entity"
 	"recything/features/recybot/model"
 	"recything/utils/constanta"
+	"recything/utils/helper"
 	"recything/utils/pagination"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -32,70 +34,121 @@ func (rb *recybotRepository) Create(recybot entity.RecybotCore) (entity.RecybotC
 	return result, nil
 }
 
-func (rb *recybotRepository) FindAll(page, limit int, filter, search string) ([]entity.RecybotCore, pagination.PageInfo, int, error) {
+func (rb *recybotRepository) FindAll(page, limit int, filter, search string) ([]entity.RecybotCore, pagination.PageInfo, helper.CountPrompt, error) {
 	dataRecybots := []model.Recybot{}
 
 	offsetInt := (page - 1) * limit
-	totalCount, err := rb.GetCount(filter, search)
+	var totalCount int64
+	counts, err := rb.GetCountAllData(search, filter)
 	if err != nil {
-		return nil, pagination.PageInfo{}, 0, err
+		return nil, pagination.PageInfo{}, helper.CountPrompt{}, err
 	}
 
 	paginationQuery := rb.db.Limit(limit).Offset(offsetInt)
-
 	if filter == "" || search == "" {
+		totalCount = counts.TotalCount
 		tx := paginationQuery.Find(&dataRecybots)
 		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, 0, tx.Error
+			return nil, pagination.PageInfo{}, helper.CountPrompt{}, err
 		}
 	}
 
 	if filter != "" {
-		tx := paginationQuery.Where("category LIKE ?", "%"+filter+"%").Find(&dataRecybots)
+		if strings.Contains(filter, constanta.ANORGANIC) {
+			totalCount = counts.CountAnorganic
+		}
+
+		if strings.Contains(filter, constanta.ORGANIC) {
+			totalCount = counts.CountOrganic
+		}
+
+		tx := paginationQuery.Where("category = ?", filter).Find(&dataRecybots)
 		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, 0, tx.Error
+			return nil, pagination.PageInfo{}, helper.CountPrompt{}, err
 		}
 	}
 
 	if search != "" {
-		tx := paginationQuery.Where("category LIKE ? or question LIKE ? ", "%"+search+"%", "%"+search+"%").Find(&dataRecybots)
+		totalCount = counts.TotalCount
+		tx := paginationQuery.Where("question LIKE ? ", "%"+search+"%").Find(&dataRecybots)
 		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, 0, tx.Error
+			return nil, pagination.PageInfo{}, helper.CountPrompt{}, err
 		}
 	}
 
 	result := entity.ListModelRecybotToCoreRecybot(dataRecybots)
 	paginationInfo := pagination.CalculateData(int(totalCount), limit, page)
-	return result, paginationInfo, totalCount, nil
+	return result, paginationInfo, counts, nil
 
 }
 
-func (rb *recybotRepository) GetCount(filter, search string) (int, error) {
-	var totalCount int64
-	model := rb.db.Model(&model.Recybot{})
-	if filter == "" || search == "" {
-		err := model.Count(&totalCount).Error
-		if err != nil {
-			return 0, err
-		}
+func (rb *recybotRepository) GetCountAllData(search string, filter string) (helper.CountPrompt, error) {
 
-	}
-	if filter != "" {
-		tx := model.Where("category LIKE ?", "%"+filter+"%").Count(&totalCount)
-		if tx.Error != nil {
-			return 0, tx.Error
-		}
+	counts := helper.CountPrompt{}
+
+	tx := rb.db.Model(&model.Recybot{}).Select(
+		"COUNT(CASE WHEN category = ? THEN 1 END) AS CountAnorganic, "+
+			"COUNT(CASE WHEN category = ? THEN 1 END) AS CountOrganic, "+
+			"COUNT(CASE WHEN category = ? THEN 1 END) AS CountLimitation, "+
+			"COUNT(CASE WHEN category = ? THEN 1 END) AS CountInformation",
+		constanta.ANORGANIC, constanta.ORGANIC, constanta.LIMITATION, constanta.INFORMATION).
+		Scan(&counts)
+	if tx.Error != nil {
+		return counts, tx.Error
 	}
 
 	if search != "" {
-		tx := model.Where("category LIKE ? or question LIKE ? ", "%"+search+"%", "%"+search+"%").Count(&totalCount)
-		if tx.Error != nil {
-			return 0, tx.Error
+		if filter != "" {
+			tx = rb.db.Model(&model.Recybot{}).Where("category = ? AND question LIKE ? ", filter, "%"+search+"%").Count(&counts.TotalCount)
+			if tx.Error != nil {
+				return counts, tx.Error
+			}
+
+			// if filter != constanta.ANORGANIC {
+
+			// }
+
+			tx := rb.db.Model(&model.Recybot{}).
+				Select("COUNT(CASE WHEN category = ? AND question LIKE ? THEN 1 ELSE NULL END) AS CountAnorganic, "+
+					"COUNT(CASE WHEN category = ? AND question LIKE ? THEN 1 ELSE NULL END) AS CountOrganic, "+
+					"COUNT(CASE WHEN category = ? AND question LIKE ? THEN 1 ELSE NULL END) AS CountLimitation, "+
+					"COUNT(CASE WHEN category = ? AND question LIKE ? THEN 1 ELSE NULL END) AS CountInformation",
+					constanta.ANORGANIC, "%"+search+"%", constanta.ORGANIC, "%"+search+"%",
+					constanta.LIMITATION, "%"+search+"%", constanta.INFORMATION, "%"+search+"%").
+				Scan(&counts)
+			if tx.Error != nil {
+				return counts, tx.Error
+			}
+
+			return counts, nil
+
+		}
+
+		if filter == "" {
+			tx := rb.db.Model(&model.Recybot{}).Select(
+				"COUNT(CASE WHEN category = ? THEN 1 END) AS CountAnorganic, "+
+					"COUNT(CASE WHEN category = ? THEN 1 END) AS CountOrganic, "+
+					"COUNT(CASE WHEN category = ? THEN 1 END) AS CountLimitation, "+
+					"COUNT(CASE WHEN category = ? THEN 1 END) AS CountInformation",
+				constanta.ANORGANIC, constanta.ORGANIC, constanta.LIMITATION, constanta.INFORMATION).
+				Where("question LIKE ?", "%"+search+"%").Scan(&counts)
+
+			tx = rb.db.Model(&model.Recybot{}).Where("question LIKE ? ", "%"+search+"%").Count(&counts.TotalCount)
+			if tx.Error != nil {
+				return counts, tx.Error
+			}
 		}
 
 	}
-	return int(totalCount), nil
 
+	if search == "" {
+		tx := rb.db.Model(&model.Recybot{}).Count(&counts.TotalCount)
+		if tx.Error != nil {
+			return counts, tx.Error
+		}
+	}
+
+	return counts, nil
 }
 
 func (rb *recybotRepository) GetAll() ([]entity.RecybotCore, error) {

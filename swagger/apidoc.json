@@ -2715,7 +2715,7 @@
                                     "value": {
                                         "name": "roni daru",
                                         "email": "tehpucuk8700@gmail.com",
-                                        "address": "Jl. Bukit Barisan I No.78e, Glugur Darat II, Kec. Medan Tim., Kota Medan, Sumatera Utara 20238, Indonesia",
+                                        "drop_point_name": "Recycle Center Bali",
                                         "trash_exchange_details": [
                                             {
                                                 "trash_type": "botol",
@@ -5176,7 +5176,7 @@
                     "email": {
                         "type": "string"
                     },
-                    "address": {
+                    "drop_point_name": {
                         "type": "string"
                     },
                     "trash_exchange_details": {

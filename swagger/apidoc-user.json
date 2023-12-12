@@ -2112,6 +2112,73 @@
                 }
             }
         },
+        "/users/point/claimed": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    }
+                ],
+                "tags": [
+                    "Users Point & Voucher"
+                ],
+                "summary": "view claimed daily",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "succes": {
+                                        "value":{
+                                            "status": true,
+                                            "message": "berhasil menampilkan data",
+                                            "data": [
+                                                {
+                                                    "claim": true,
+                                                    "daily_point_id": 7,
+                                                    "created_at": "2023-12-12T07:00:00Z"
+                                                },
+                                                {
+                                                    "claim": true,
+                                                    "daily_point_id": 6,
+                                                    "created_at": "2023-12-12T00:00:00Z"
+                                                },
+                                                {
+                                                    "claim": true,
+                                                    "daily_point_id": 5,
+                                                    "created_at": "2023-12-11T00:00:00Z"
+                                                },
+                                                {
+                                                    "claim": true,
+                                                    "daily_point_id": 4,
+                                                    "created_at": "2023-12-10T00:00:00Z"
+                                                },
+                                                {
+                                                    "claim": true,
+                                                    "daily_point_id": 2,
+                                                    "created_at": "2023-12-06T00:00:00Z"
+                                                },
+                                                {
+                                                    "claim": true,
+                                                    "daily_point_id": 3,
+                                                    "created_at": "2023-12-05T00:00:00Z"
+                                                },
+                                                {
+                                                    "claim": true,
+                                                    "daily_point_id": 1,
+                                                    "created_at": "2023-12-04T00:00:00Z"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/point/history": {
             "get": {
                 "security": [

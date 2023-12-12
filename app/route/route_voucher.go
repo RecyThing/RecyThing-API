@@ -12,7 +12,7 @@ import (
 )
 
 func RouteVoucher(e *echo.Group, db *gorm.DB) {
-	userRepository := userRepo.NewUserRepository(db)
+	userRepository := userRepo.NewUserRepository(db,nil)
 	voucherRepository := repository.NewVoucherRepository(db)
 	voucherService := service.NewVoucherService(voucherRepository, userRepository)
 	voucherHandler := handler.NewVoucherHandler(voucherService)

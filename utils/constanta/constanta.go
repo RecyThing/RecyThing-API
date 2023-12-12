@@ -109,3 +109,7 @@ const (
 	SILVER   = "silver"
 	GOLD     = "gold"
 )
+
+const(
+	ASIABANGKOK = "Asia/Bangkok"
+)

@@ -7,6 +7,7 @@ import (
 	"recything/features/user/entity"
 	"recything/features/user/model"
 	"recything/utils/constanta"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -100,10 +101,19 @@ func (ur *userRepository) UpdateBadge(id string) error {
 		return nil
 	}
 
-	for i := len(dataAchievement) - 1; i >= 0; i-- {
-		v := dataAchievement[i]
-		if dataUser.Point >= v.TargetPoint {
-			dataUser.Badge = v.Name
+	loc, err := time.LoadLocation(constanta.ASIABANGKOK)
+	if err != nil {
+		return err
+	}
+
+	now := time.Now().In(loc)
+
+	if now.Day() == 1 {
+		for i := len(dataAchievement) - 1; i >= 0; i-- {
+			v := dataAchievement[i]
+			if dataUser.Point >= v.TargetPoint {
+				dataUser.Badge = v.Name
+			}
 		}
 	}
 

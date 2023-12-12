@@ -19,3 +19,11 @@ type CountExchangeVoucher struct {
 	CountProcess int64 `json:"count_process"`
 	CountDone    int64 `json:"count_done"`
 }
+
+type CountPrompt struct {
+	TotalCount       int64 `json:"total_count"`
+	CountOrganic     int64 `json:"count_organic"`
+	CountAnorganic   int64 `json:"count_anorganic"`
+	CountInformation int64 `json:"count_information"`
+	CountLimitation  int64 `json:"count_limitation"`
+}

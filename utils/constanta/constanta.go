@@ -77,6 +77,7 @@ var (
 	STATUS_ADMIN        = []string{"aktif", "tidak aktif"}
 	CATEGORY_ARTICLE    = []string{"plastik", "kaca", "logam", "organik", "kertas", "kaleng", "minyak", "elektronik", "tekstil", "baterai"}
 	ERROR_MESSAGE       = []string{"sudah", "tidak", "harus", "gagal", "harap"}
+	FILTER_PROMPT       = []string{ORGANIC, ANORGANIC, LIMITATION, INFORMATION}
 )
 
 // const for mission
@@ -112,4 +113,11 @@ const (
 
 const(
 	ASIABANGKOK = "Asia/Bangkok"
+)
+
+const (
+	ORGANIC     = "sampah organik"
+	ANORGANIC   = "sampah anorganik"
+	INFORMATION = "informasi"
+	LIMITATION  = "batasan"
 )

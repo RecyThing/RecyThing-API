@@ -71,11 +71,11 @@ func (rh *recybotHandler) GetAllData(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
 	if len(result) == 0 {
-		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada kategori sampah"))
+		return e.JSON(http.StatusOK, helper.SuccessResponse("Belum ada data"))
 	}
 
 	response := response.ListCoreRecybotToCoreRecybot(result)
-	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("Berhasil mendapatkan seluruh kategori sampah", response, pagnation, count))
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCountAll("Berhasil mendapatkan seluruh data", response, pagnation, count))
 }
 
 func (rh *recybotHandler) GetById(e echo.Context) error {

@@ -7,6 +7,7 @@ import (
 	"os"
 	"recything/features/recybot/entity"
 	"recything/utils/constanta"
+	"recything/utils/helper"
 	"recything/utils/pagination"
 	"recything/utils/validation"
 
@@ -45,16 +46,17 @@ func (rb *recybotService) CreateData(data entity.RecybotCore) (entity.RecybotCor
 	return result, nil
 }
 
-func (rb *recybotService) FindAllData(filter, search, page, limit string) ([]entity.RecybotCore, pagination.PageInfo, int, error) {
+
+func (rb *recybotService) FindAllData(filter, search, page, limit string) ([]entity.RecybotCore, pagination.PageInfo, helper.CountPrompt, error) {
 
 	pageInt, limitInt, err := validation.ValidateParamsPagination(page, limit)
 	if err != nil {
-		return nil, pagination.PageInfo{}, 0, err
+		return nil, pagination.PageInfo{}, helper.CountPrompt{}, err
 	}
 
 	result, pagnationInfo, count, err := rb.recybotRepository.FindAll(pageInt, limitInt, filter, search)
 	if err != nil {
-		return nil, pagination.PageInfo{}, 0, err
+		return nil, pagination.PageInfo{}, count, err
 	}
 	return result, pagnationInfo, count, nil
 }

@@ -2360,7 +2360,7 @@
                             "application/json": {
                                 "examples": {
                                     "success": {
-                                        "value": {
+                                        "value":{
                                             "status": true,
                                             "message": "berhasil mengambil semua data",
                                             "data": [
@@ -2372,12 +2372,12 @@
                                                 {
                                                     "id": 2,
                                                     "name": "gold",
-                                                    "target_point": 51000
+                                                    "target_point": 100000
                                                 },
                                                 {
                                                     "id": 3,
                                                     "name": "silver",
-                                                    "target_point": 50000
+                                                    "target_point": 25000
                                                 },
                                                 {
                                                     "id": 4,

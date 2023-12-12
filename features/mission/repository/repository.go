@@ -131,7 +131,7 @@ func (mr *MissionRepository) FindAllMissionUser(userID string, filter string) ([
 			uniqueMissionIDs := append(claimedMissionIDs, rejectedOrPendingMissionIDs...)
 			subQuery := mr.db.Model(&model.UploadMissionTask{}).Select("mission_id").Where("status = ?", constanta.DISETUJUI)
 
-			mr.db.Where("id IN (?) AND id NOT IN (?)", uniqueMissionIDs, subQuery).Find(&missionsWithoutTasks)
+			mr.db.Where("id IN (?) AND id NOT IN (?)", uniqueMissionIDs, subQuery).Order("created_at DESC").Find(&missionsWithoutTasks)
 
 			histories := []entity.MissionHistories{}
 
@@ -163,7 +163,7 @@ func (mr *MissionRepository) FindAllMissionUser(userID string, filter string) ([
 			var missions []model.Mission
 
 			tx := mr.db.Joins("JOIN upload_mission_tasks ON missions.id = upload_mission_tasks.mission_id").
-				Where("upload_mission_tasks.user_id = ? AND upload_mission_tasks.status = ?", userID, constanta.DISETUJUI).
+				Where("upload_mission_tasks.user_id = ? AND upload_mission_tasks.status = ?", userID, constanta.DISETUJUI).Order("created_at DESC").
 				Find(&missions)
 			if tx.Error != nil {
 				return nil, tx.Error
@@ -184,7 +184,7 @@ func (mr *MissionRepository) FindAllMissionUser(userID string, filter string) ([
 	}
 
 	missions := []model.Mission{}
-	tx := mr.db.Where("status = ?", constanta.ACTIVE).Find(&missions)
+	tx := mr.db.Where("status = ?", constanta.ACTIVE).Order("created_at DESC").Find(&missions)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
@@ -564,7 +564,7 @@ func (mr *MissionRepository) FindAllMissionApproval(page, limit int, search, fil
 			totalCount = int(counts.CountApproved)
 		}
 
-		tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Preload("Images").Find(&approvalMission)
+		tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Preload("Images").Order("created_at DESC").Find(&approvalMission)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, counts, tx.Error
 		}
@@ -574,7 +574,7 @@ func (mr *MissionRepository) FindAllMissionApproval(page, limit int, search, fil
 		totalCount = int(counts.TotalCount)
 		tx := paginationQuery.Model(&model.UploadMissionTask{}).
 			Joins("JOIN users ON upload_mission_tasks.user_id = users.id").
-			Where("users.fullname LIKE ?", "%"+search+"%").Preload("Images").
+			Where("users.fullname LIKE ?", "%"+search+"%").Preload("Images").Order("created_at DESC").
 			Find(&approvalMission)
 
 		if tx.Error != nil {
@@ -584,7 +584,7 @@ func (mr *MissionRepository) FindAllMissionApproval(page, limit int, search, fil
 
 	if search == "" && filter == "" {
 		totalCount = int(counts.TotalCount)
-		tx := paginationQuery.Preload("Images").Find(&approvalMission)
+		tx := paginationQuery.Preload("Images").Order("created_at DESC").Find(&approvalMission)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, counts, tx.Error
 		}

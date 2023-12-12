@@ -126,14 +126,14 @@ func (article *articleRepository) GetAllArticle(page, limit int, search, filter 
 	query := article.db.Model(&model.Article{}).Preload("Categories")
 
 	if search != "" {
-		query = query.Where("title LIKE ?", "%"+search+"%")
+		query = query.Where("title LIKE ?", "%"+search+"%").Order("created_at DESC")
 	}
 
 	if filter != "" {
 		query = query.
 			Joins("INNER JOIN article_trash_categories ON articles.id = article_trash_categories.article_id").
 			Joins("INNER JOIN trash_categories ON article_trash_categories.trash_category_id = trash_categories.id").
-			Where("trash_categories.trash_type LIKE ?", "%"+filter+"%")
+			Where("trash_categories.trash_type LIKE ?", "%"+filter+"%").Order("created_at DESC")
 	}
 
 	tx := query.Count(&totalCount)
@@ -141,7 +141,7 @@ func (article *articleRepository) GetAllArticle(page, limit int, search, filter 
 		return nil, pagination.PageInfo{}, 0, tx.Error
 	}
 
-	tx = query.Offset(offset).Limit(limit).Find(&articleData)
+	tx = query.Offset(offset).Limit(limit).Order("created_at DESC").Find(&articleData)
 	if tx.Error != nil {
 		return nil, pagination.PageInfo{}, 0, tx.Error
 	}

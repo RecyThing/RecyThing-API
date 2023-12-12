@@ -97,6 +97,7 @@ const (
 	SELESAI        = "selesai"
 	TERBARU        = "terbaru"
 	BERJALAN       = "berjalan"
+	GAGAL          = "gagal"
 )
 
 const (

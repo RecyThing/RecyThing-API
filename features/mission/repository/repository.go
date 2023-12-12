@@ -144,17 +144,34 @@ func (mr *MissionRepository) FindAllMissionUser(userID string, filter string) ([
 				if upmistask.ID == "" {
 					newHis := entity.MissionToMissionHistoriesCore(v, claimed, upmistask)
 					newHis.TransactionID = ""
-					newHis.Reason = constanta.NeedProof
-					histories = append(histories, newHis)
+					newHis.StatusApproval = constanta.NeedProof
 
+					//mission overdue
+					endDate, _ := time.Parse("2006-01-02", newHis.EndDate)
+					today := time.Now()
+					if today.After(endDate) {
+						mr.db.Where("id = ?", newHis.ClaimedID).Unscoped().Delete(&claimed)
+					}
+
+					histories = append(histories, newHis)
 				}
+
 				if upmistask.ID != "" {
 					newHis := entity.MissionToMissionHistoriesCore(v, claimed, upmistask)
-					if newHis.StatusApproval == constanta.PERLU_TINJAUAN{
-						newHis.Reason = constanta.NeedReview
+
+					//status approv disetujui
+					if upmistask.Status == constanta.PERLU_TINJAUAN {
+						newHis.StatusApproval = constanta.NeedReview
 					}
+
+					//status approv ditolak
+					if upmistask.Status == constanta.DITOLAK {
+						newHis.StatusApproval = upmistask.Reason
+					}
+
 					histories = append(histories, newHis)
 				}
+
 			}
 			return histories, nil
 		}

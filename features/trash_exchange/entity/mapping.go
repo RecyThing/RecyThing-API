@@ -29,31 +29,31 @@ func ListTrashExchangeDetailModelToTrashExchangeDetailCore(data []model.TrashExc
 
 func TrashExchangeModelToTrashExchangeCore(data model.TrashExchange) TrashExchangeCore {
 	coreTrashExchange := TrashExchangeCore{
-		Id:          data.Id,
-		Name:        data.Name,
-		EmailUser:   data.EmailUser,
-		Address:     data.Address,
-		DropPointId: data.DropPointId,
-		TotalIncome: data.TotalIncome,
-		TotalPoint:  data.TotalPoint,
-		TotalUnit:   data.TotalUnit,
-		CreatedAt:   data.CreatedAt,
-		UpdatedAt:   data.UpdatedAt,
+		Id:            data.Id,
+		Name:          data.Name,
+		EmailUser:     data.EmailUser,
+		DropPointName: data.DropPointName,
+		DropPointId:   data.DropPointId,
+		TotalIncome:   data.TotalIncome,
+		TotalPoint:    data.TotalPoint,
+		TotalUnit:     data.TotalUnit,
+		CreatedAt:     data.CreatedAt,
+		UpdatedAt:     data.UpdatedAt,
 	}
 	return coreTrashExchange
 }
 
 func TrashExchangeModelToTrashExchangeCoreForGetData(data model.TrashExchange) TrashExchangeCore {
 	coreTrashExchange := TrashExchangeCore{
-		Id:          data.Id,
-		Name:        data.Name,
-		EmailUser:   data.EmailUser,
-		Address:     data.Address,
-		DropPointId: data.DropPointId,
-		TotalPoint:  data.TotalPoint,
-		TotalUnit:   data.TotalUnit,
-		CreatedAt:   data.CreatedAt,
-		UpdatedAt:   data.UpdatedAt,
+		Id:            data.Id,
+		Name:          data.Name,
+		EmailUser:     data.EmailUser,
+		DropPointName: data.DropPointName,
+		DropPointId:   data.DropPointId,
+		TotalPoint:    data.TotalPoint,
+		TotalUnit:     data.TotalUnit,
+		CreatedAt:     data.CreatedAt,
+		UpdatedAt:     data.UpdatedAt,
 	}
 	trashExchange := ListTrashExchangeDetailModelToTrashExchangeDetailCore(data.TrashExchangeDetails)
 	coreTrashExchange.TrashExchangeDetails = trashExchange
@@ -93,16 +93,16 @@ func ListTrashExchangeDetailCoreToTrashExchangeDetailModel(data []TrashExchangeD
 
 func TrashExchangeCoreToTrashExchangeModel(data TrashExchangeCore) model.TrashExchange {
 	trashExchangeModel := model.TrashExchange{
-		Id:          data.Id,
-		Name:        data.Name,
-		EmailUser:   data.EmailUser,
-		Address:     data.Address,
-		DropPointId: data.DropPointId,
-		TotalIncome: data.TotalIncome,
-		TotalPoint:  data.TotalPoint,
-		TotalUnit:   data.TotalUnit,
-		CreatedAt:   data.CreatedAt,
-		UpdatedAt:   data.UpdatedAt,
+		Id:            data.Id,
+		Name:          data.Name,
+		EmailUser:     data.EmailUser,
+		DropPointName: data.DropPointName,
+		DropPointId:   data.DropPointId,
+		TotalIncome:   data.TotalIncome,
+		TotalPoint:    data.TotalPoint,
+		TotalUnit:     data.TotalUnit,
+		CreatedAt:     data.CreatedAt,
+		UpdatedAt:     data.UpdatedAt,
 	}
 	return trashExchangeModel
 }

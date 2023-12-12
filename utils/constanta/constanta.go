@@ -112,7 +112,10 @@ const (
 	GOLD     = "gold"
 )
 
-// Prompt
+const(
+	ASIABANGKOK = "Asia/Bangkok"
+)
+
 const (
 	ORGANIC     = "sampah organik"
 	ANORGANIC   = "sampah anorganik"

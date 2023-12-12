@@ -15,8 +15,6 @@ type userService struct {
 	userRepo entity.UsersRepositoryInterface
 }
 
-
-
 func NewUserService(userRepo entity.UsersRepositoryInterface) entity.UsersUsecaseInterface {
 	return &userService{
 		userRepo: userRepo,
@@ -108,7 +106,10 @@ func (us *userService) GetById(id string) (entity.UsersCore, error) {
 	if id == "" {
 		return entity.UsersCore{}, errors.New(constanta.ERROR_ID_INVALID)
 	}
-
+	updateBadge := us.userRepo.UpdateBadge(id)
+	if updateBadge != nil {
+		return entity.UsersCore{}, updateBadge
+	}
 	dataUser, err := us.userRepo.GetById(id)
 	if err != nil {
 		return entity.UsersCore{}, errors.New("data user tidak ada")
@@ -332,12 +333,12 @@ func (us *userService) NewPassword(email string, data entity.UsersCore) error {
 
 // JoinCommunity implements entity.UsersUsecaseInterface.
 func (us *userService) JoinCommunity(communityId string, userId string) error {
-	if communityId == "" || userId == ""{
+	if communityId == "" || userId == "" {
 		return errors.New("id tidak boleh kosong")
 	}
 
-	tx := us.userRepo.JoinCommunity(communityId,userId)
-	if tx != nil{
+	tx := us.userRepo.JoinCommunity(communityId, userId)
+	if tx != nil {
 		return tx
 	}
 

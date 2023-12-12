@@ -85,7 +85,7 @@ func SuccessWithPagnationAndCount(message string, data interface{}, pagnation in
 }
 func SuccessWithPagnationAndCountAll(message string, data interface{}, pagnation interface{}, count interface{}) SuccessResponseJsonWithPagenationAndCountAll {
 	return SuccessResponseJsonWithPagenationAndCountAll{
-		Status:     false,
+		Status:     true,
 		Message:    message,
 		Data:       data,
 		Pagination: pagnation,

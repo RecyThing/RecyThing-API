@@ -10,6 +10,15 @@ func DailyPointModelToDailyPointCore(dailyPoint model.DailyPoint) DailyPointCore
 	}
 }
 
+func ListDailyPointModelToDailyPointCore(dailyPoint []model.DailyPoint) []DailyPointCore{
+	coreDaily := []DailyPointCore{}
+	for _, v := range dailyPoint {
+		daily := DailyPointModelToDailyPointCore(v)
+		coreDaily = append(coreDaily, daily)
+	}
+	return coreDaily
+}
+
 func DailyPointCoreToDailyPointModel(dailyPoint DailyPointCore) model.DailyPoint{
 	return model.DailyPoint{
 		Id: dailyPoint.ID,

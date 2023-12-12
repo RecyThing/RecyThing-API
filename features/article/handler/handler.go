@@ -81,7 +81,7 @@ func (article *articleHandler) GetAllArticle(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
 	}
 
-	articleData, paginationInfo, count, err := article.articleService.GetAllArticle(page, limit, search)
+	articleData, paginationInfo, count, err := article.articleService.GetAllArticle(page, limit, search,"")
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan artikel"))
 	}
@@ -89,8 +89,37 @@ func (article *articleHandler) GetAllArticle(e echo.Context) error {
 	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
 
 	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan semua article", articleResponse, paginationInfo, count))
-
 }
+
+
+func (article *articleHandler) GetAllArticleUser(e echo.Context) error {
+	filter := e.QueryParam("filter")
+	search := e.QueryParam("search")
+	page, _ := strconv.Atoi(e.QueryParam("page"))
+	limit, _ := strconv.Atoi(e.QueryParam("limit"))
+
+	Id, _, err := jwt.ExtractToken(e)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
+	}
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
+	}
+
+	articleData, paginationInfo, count, err := article.articleService.GetAllArticle(page, limit, search,filter)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	if len(articleData) == 0 {
+		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
+	}
+
+	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithPagnationAndCount("berhasil mendapatkan semua article", articleResponse, paginationInfo, count))
+}
+
 
 func (article *articleHandler) GetSpecificArticle(e echo.Context) error {
 	idParams := e.Param("id")
@@ -167,4 +196,63 @@ func (article *articleHandler) DeleteArticle(e echo.Context) error {
 	}
 
 	return e.JSON(http.StatusOK, helper.SuccessResponse("berhasil menghapus artikel"))
+}
+
+func (article *articleHandler) PostLike(e echo.Context) error{
+	Id, _, errId := jwt.ExtractToken(e)
+	if errId != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(errId.Error()))
+	}
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
+	}
+
+	idParams := e.Param("id")
+
+	err := article.articleService.PostLike(idParams,Id)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil melakukan like"))
+}
+
+func (article *articleHandler) PostShare(e echo.Context) error{
+	Id, _, errId := jwt.ExtractToken(e)
+	if errId != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(errId.Error()))
+	}
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
+	}
+
+	idParams := e.Param("id")
+
+	err := article.articleService.PostShare(idParams)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
+	}
+
+	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil melakukan share"))
+}
+
+func (article *articleHandler) GetPopularArticle(e echo.Context) error{
+	Id, _, err := jwt.ExtractToken(e)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, helper.ErrorResponse(err.Error()))
+	}
+	if Id == "" {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(constanta.ERROR_ID_INVALID))
+	}
+
+	search := e.QueryParam("search")
+	
+	articleData, errData := article.articleService.GetPopularArticle(search)
+	if errData != nil {
+		return e.JSON(http.StatusBadRequest, helper.ErrorResponse("gagal mendapatkan artikel"))
+	}
+
+	var articleResponse = response.ListArticleCoreToListArticleResponse(articleData)
+
+	return e.JSON(http.StatusOK, helper.SuccessWithDataResponse("berhasil mendapatkan artikel populer", articleResponse))
 }

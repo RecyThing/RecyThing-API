@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	drop_point"recything/features/drop-point/entity"
+	"math/rand"
+	drop_point "recything/features/drop-point/entity"
 	"recything/utils/constanta"
 	"reflect"
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 	"unicode"
 
@@ -121,19 +121,17 @@ func ConvertUnitToDecimal(unit string) (float64, error) {
 	return result, nil
 }
 
-var (
-	idCounter int
-	idMutex   sync.Mutex
-)
+func GenerateRandomID(prefix string, length int) string {
+	source := rand.NewSource(time.Now().UnixNano())
+	randomGenerator := rand.New(source)
 
-func GenerateRandomID(length int) string {
-	idMutex.Lock()
-	defer idMutex.Unlock()
+	generatedID := prefix
 
-	idCounter++
-	formatString := fmt.Sprintf("PS%%0%dd", length)
-	result := fmt.Sprintf(formatString, idCounter)
-	return result
+	for i := 0; i < length; i++ {
+		generatedID += fmt.Sprintf("%d", randomGenerator.Intn(10))
+	}
+
+	return generatedID
 }
 
 func ChangeStatusMission(endDate string) (string, error) {
@@ -151,12 +149,41 @@ func ChangeStatusMission(endDate string) (string, error) {
 	return status, nil
 }
 
-
 func SortByDay(schedules []drop_point.ScheduleCore) []drop_point.ScheduleCore {
-    sort.Slice(schedules, func(i, j int) bool {
-        daysOrder := map[string]int{"senin": 1, "selasa": 2, "rabu": 3, "kamis": 4, "jumat": 5, "sabtu": 6, "minggu": 7}
-        return daysOrder[schedules[i].Day] < daysOrder[schedules[j].Day]
-    })
+	sort.Slice(schedules, func(i, j int) bool {
+		daysOrder := map[string]int{"senin": 1, "selasa": 2, "rabu": 3, "kamis": 4, "jumat": 5, "sabtu": 6, "minggu": 7}
+		return daysOrder[schedules[i].Day] < daysOrder[schedules[j].Day]
+	})
 
     return schedules
 }
+
+func CalculateBonus(badge string, missionPoint int) float64 {
+	var bonusRate float64
+
+	switch badge {
+	case constanta.BRONZE:
+		bonusRate = 0.1
+	case constanta.SILVER:
+		bonusRate = 0.12
+	case constanta.GOLD:
+		bonusRate = 0.15
+	case constanta.PLATINUM:
+		bonusRate = 0.2
+	default:
+		return 0
+	}
+
+	bonus := float64(missionPoint) * bonusRate
+	return bonus + float64(missionPoint)
+}
+
+func GetWeeksInMonth(year int, month time.Month) int {
+	// Menghitung jumlah hari dalam bulan ini
+	daysInMonth := time.Date(year, month+1, 0, 0, 0, 0, 0, time.UTC).Day()
+
+	// Menghitung jumlah minggu dalam bulan ini
+	weeksInMonth := (daysInMonth + 6) / 7
+	return int(weeksInMonth)
+}
+

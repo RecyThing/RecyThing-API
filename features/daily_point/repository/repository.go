@@ -5,27 +5,41 @@ import (
 	"fmt"
 	"recything/features/daily_point/entity"
 	"recything/features/daily_point/model"
-	muser "recything/features/user/model"
+	mission "recything/features/mission/entity"
+	trashEx "recything/features/trash_exchange/entity"
+	user_entity "recything/features/user/entity"
+	user "recything/features/user/model"
+	voucher "recything/features/voucher/entity"
+	"recything/utils/constanta"
 
+	//"recything/utils/constanta"
 	"time"
 
 	"gorm.io/gorm"
 )
 
 type dailyPointRepository struct {
-	db *gorm.DB
+	db                *gorm.DB
+	missionRepository mission.MissionRepositoryInterface
+	trashExRepository trashEx.TrashExchangeRepositoryInterface
+	userRepository    user_entity.UsersRepositoryInterface
+	voucherRepository voucher.VoucherRepositoryInterface
 }
 
-func NewDailyPointRepository(db *gorm.DB) entity.DailyPointRepositoryInterface {
+func NewDailyPointRepository(db *gorm.DB, missionRepository mission.MissionRepositoryInterface, trashExRepository trashEx.TrashExchangeRepositoryInterface, userRepository user_entity.UsersRepositoryInterface, voucherRepository voucher.VoucherRepositoryInterface) entity.DailyPointRepositoryInterface {
 	return &dailyPointRepository{
-		db: db,
+		db:                db,
+		missionRepository: missionRepository,
+		trashExRepository: trashExRepository,
+		userRepository:    userRepository,
+		voucherRepository: voucherRepository,
 	}
 }
 
 // DailyClaim implements entity.DailyPointRepositoryInterface.
 func (dailyPoint *dailyPointRepository) DailyClaim(userId string) error {
-	userDaily := new(muser.UserDailyPoints)
-	userProf := new(muser.Users)
+	userDaily := new(user.UserDailyPoints)
+	userProf := new(user.Users)
 	pointData := new(model.DailyPoint)
 	tx := dailyPoint.db.Begin()
 
@@ -39,7 +53,7 @@ func (dailyPoint *dailyPointRepository) DailyClaim(userId string) error {
 
 	//melakukan pengecekan untuk menghitung hari claim
 	var countData int64
-	err := tx.Model(&muser.UserDailyPoints{}).Where("users_id = ?", userId).Count(&countData).Error
+	err := tx.Model(&user.UserDailyPoints{}).Where("users_id = ?", userId).Count(&countData).Error
 	if err != nil {
 		fmt.Println("masuk error count data : ", err)
 		tx.Rollback()
@@ -47,9 +61,8 @@ func (dailyPoint *dailyPointRepository) DailyClaim(userId string) error {
 	}
 	dpId := countData + 1
 
-	//if dpId 8 maka dia balik ke 1 lagi
 	if dpId == 8 {
-		errDeleteAll := tx.Where("users_id = ?", userId).Delete(&muser.UserDailyPoints{}).Error
+		errDeleteAll := tx.Where("users_id = ?", userId).Delete(&user.UserDailyPoints{}).Error
 		if errDeleteAll != nil {
 			tx.Rollback()
 			return errDeleteAll
@@ -60,7 +73,7 @@ func (dailyPoint *dailyPointRepository) DailyClaim(userId string) error {
 	today := time.Now().Truncate(24 * time.Hour)
 	fmt.Println("tanggal hari ini : ", today)
 	var existingCount int64
-	errClaim := tx.Model(&muser.UserDailyPoints{}).Where("users_id = ? AND created_at = ?", userId, today).Count(&existingCount).Error
+	errClaim := tx.Model(&user.UserDailyPoints{}).Where("users_id = ? AND created_at = ?", userId, today).Count(&existingCount).Error
 	if errClaim != nil {
 		tx.Rollback()
 		return errClaim
@@ -95,7 +108,7 @@ func (dailyPoint *dailyPointRepository) DailyClaim(userId string) error {
 	}
 
 	//update user point
-	savePoint := tx.Save(&userProf).Error
+	savePoint := tx.Updates(&userProf).Error
 	if savePoint != nil {
 		tx.Rollback()
 		return savePoint
@@ -139,4 +152,63 @@ func (daily *dailyPointRepository) PostWeekly() error {
 	}
 
 	return nil
+}
+
+// History Point
+
+func (daily *dailyPointRepository) GetAllHistoryPoint(userID string) ([]map[string]interface{}, error) {
+	dataMission, errFind := daily.missionRepository.FindAllMissionUser(userID, constanta.SELESAI)
+	if errFind != nil {
+		return nil, errFind
+	}
+
+	dataUser, errUser := daily.userRepository.FindById(userID)
+	if errUser != nil {
+		return nil, errUser
+	}
+
+	dataTrashEx, errTrash := daily.trashExRepository.GetByEmail(dataUser.Email)
+	if errTrash != nil {
+		return nil, errTrash
+	}
+
+	dataVoucherEx, errVoucher := daily.voucherRepository.GetAllExchangeHistory(userID)
+	if errVoucher != nil {
+		return nil, errVoucher
+	}
+
+	var combinedData []map[string]interface{}
+	for _, missionData := range dataMission {
+
+		data := mission.MissionHistoriesCoreToMap(missionData)
+		combinedData = append(combinedData, data)
+	}
+
+	combinedData = append(combinedData, dataTrashEx...)
+	combinedData = append(combinedData, dataVoucherEx...)
+	return combinedData, nil
+}
+
+func (daily *dailyPointRepository) GetByIdHistoryPoint(userID, idTransaction string) (map[string]interface{}, error) {
+	dataMission, errMission := daily.missionRepository.FindHistoryByIdTransaction(userID, idTransaction)
+	if errMission == nil {
+		return dataMission, nil
+	}
+
+	dataUser, errUser := daily.userRepository.FindById(userID)
+	if errUser != nil {
+		return nil, errUser
+	}
+
+	dataTrashEx, errTrash := daily.trashExRepository.GetTrashExchangeByIdTransaction(dataUser.Email, idTransaction)
+	if errTrash == nil {
+		return dataTrashEx, nil
+	}
+
+	dataVoucherEx, errVoucher := daily.voucherRepository.GetByIdExchangeTransactions(userID, idTransaction)
+	if errVoucher == nil {
+		return dataVoucherEx, nil
+	}
+
+	return nil, errors.New("record not found")
 }

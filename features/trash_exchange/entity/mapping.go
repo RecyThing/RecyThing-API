@@ -1,12 +1,16 @@
 package entity
 
-import "recything/features/trash_exchange/model"
+import (
+	"recything/features/trash_exchange/model"
+	"time"
+)
 
 func TrashExchangeDetailModelToTrashExchangeDetailCore(data model.TrashExchangeDetail) TrashExchangeDetailCore {
 	return TrashExchangeDetailCore{
 		Id:              data.Id,
 		TrashExchangeId: data.TrashExchangeId,
 		TrashType:       data.Type,
+		Amount:          data.Amount,
 		Unit:            data.Unit,
 		TotalPoints:     data.TotalPoints,
 		CreatedAt:       data.CreatedAt,
@@ -30,6 +34,7 @@ func TrashExchangeModelToTrashExchangeCore(data model.TrashExchange) TrashExchan
 		EmailUser:   data.EmailUser,
 		Address:     data.Address,
 		DropPointId: data.DropPointId,
+		TotalIncome: data.TotalIncome,
 		TotalPoint:  data.TotalPoint,
 		TotalUnit:   data.TotalUnit,
 		CreatedAt:   data.CreatedAt,
@@ -69,6 +74,7 @@ func TrashExchangeDetailCoreToTrashExchangeDetailModel(data TrashExchangeDetailC
 		Id:              data.Id,
 		TrashExchangeId: data.TrashExchangeId,
 		Type:            data.TrashType,
+		Amount:          data.Amount,
 		Unit:            data.Unit,
 		TotalPoints:     data.TotalPoints,
 		CreatedAt:       data.CreatedAt,
@@ -92,10 +98,50 @@ func TrashExchangeCoreToTrashExchangeModel(data TrashExchangeCore) model.TrashEx
 		EmailUser:   data.EmailUser,
 		Address:     data.Address,
 		DropPointId: data.DropPointId,
+		TotalIncome: data.TotalIncome,
 		TotalPoint:  data.TotalPoint,
 		TotalUnit:   data.TotalUnit,
 		CreatedAt:   data.CreatedAt,
 		UpdatedAt:   data.UpdatedAt,
 	}
 	return trashExchangeModel
+}
+
+func TrashExchangeModelToMapTrash(data model.TrashExchange) map[string]interface{} {
+	return map[string]interface{}{
+		"id_transaction":   data.Id,
+		"created_at":       data.CreatedAt.Format(time.RFC3339),
+		"time_transaction": data.CreatedAt.Format("15:04:05.000"),
+		"type_transaction": "drop sampah",
+		"points":           data.TotalPoint,
+	}
+}
+
+func TrashExchangeModelToMapTrashDetail(data model.TrashExchange) map[string]interface{} {
+	return map[string]interface{}{
+		"id_transaction":   data.Id,
+		"drop_point":       data.DropPointId,
+		"created_at":       data.CreatedAt.Format(time.RFC3339),
+		"time_transaction": data.CreatedAt.Format("15:04:05.000"),
+		"type_transaction": "reward penukaran sampah",
+		"points":           data.TotalPoint,
+		"trash_detail":     ListTrashExchangeDetailCoreToMapTrash(data.TrashExchangeDetails),
+	}
+}
+
+func TrashExchangeDetailCoreToMapTrash(data model.TrashExchangeDetail) map[string]interface{} {
+	return map[string]interface{}{
+		"type":   data.Type,
+		"amount": data.Amount,
+		"unit":   data.Unit,
+	}
+}
+
+func ListTrashExchangeDetailCoreToMapTrash(data []model.TrashExchangeDetail) []map[string]interface{} {
+	coreTrashExchange := []map[string]interface{}{}
+	for _, v := range data {
+		trashExchange := TrashExchangeDetailCoreToMapTrash(v)
+		coreTrashExchange = append(coreTrashExchange, trashExchange)
+	}
+	return coreTrashExchange
 }

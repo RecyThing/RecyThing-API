@@ -5,19 +5,21 @@ import (
 )
 
 type Mission struct {
-	ID            string
-	Title         string
-	Creator       string
-	Status        string
-	AdminID       string
-	MissionImage  string
-	Point         int
-	Description   string
-	StartDate     string
-	EndDate       string
-	MissionStages []MissionStage
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	ID               string
+	Title            string
+	Creator          string
+	Status           string
+	AdminID          string
+	MissionImage     string
+	Point            int
+	Description      string
+	StartDate        string
+	EndDate          string
+	TitleStage       string
+	DescriptionStage string
+	// MissionStages []MissionStage
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type MissionStage struct {
@@ -27,12 +29,6 @@ type MissionStage struct {
 	Description string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-}
-
-type Stage struct {
-	ID          string
-	Title       string
-	Description string
 }
 
 type ClaimedMission struct {
@@ -64,4 +60,26 @@ type ImageUploadMissionCore struct {
 	UploadMissionTaskID string
 	Image               string
 	CreatedAt           time.Time
+}
+
+// histories
+
+type MissionHistories struct {
+	MissionID        string
+	ClaimedID        string
+	TransactionID    string
+	Title            string
+	StatusApproval   string
+	StatusMission    string
+	MissionImage     string
+	Reason           string
+	Point            int
+	Description      string
+	StartDate        string
+	EndDate          string
+	TitleStage       string
+	DescriptionStage string
+	// MissionStages  []MissionStage
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

@@ -40,6 +40,7 @@ func UsersModelToUsersCore(mainData model.Users) UsersCore {
 		Email:             mainData.Email,
 		Password:          mainData.Password,
 		Fullname:          mainData.Fullname,
+		Badge:             mainData.Badge,
 		Phone:             mainData.Phone,
 		Address:           mainData.Address,
 		DateOfBirth:       mainData.DateOfBirth,
@@ -68,7 +69,7 @@ func ListUserModelToUserCore(mainData []model.Users) []UsersCore {
 
 func CommunityModelToCommunityCore(community como.Community) UserCommunityCore {
 	return UserCommunityCore{
-		Id: community.Id,
+		Id:   community.Id,
 		Name: community.Name,
 	}
 }

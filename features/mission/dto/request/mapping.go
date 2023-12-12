@@ -4,16 +4,15 @@ import "recything/features/mission/entity"
 
 func MissionRequestToMissionCore(missi Mission) entity.Mission {
 	missionCore := entity.Mission{
-		Title:        missi.Title,
-		MissionImage: missi.MissionImage,
-		Point:        missi.Point,
-		Description:  missi.Description,
-		StartDate:    missi.Start_Date,
-		EndDate:      missi.End_Date,
+		Title:            missi.Title,
+		MissionImage:     missi.MissionImage,
+		Point:            missi.Point,
+		Description:      missi.Description,
+		StartDate:        missi.Start_Date,
+		EndDate:          missi.End_Date,
+		TitleStage:       missi.TitleStage,
+		DescriptionStage: missi.DescriptionStage,
 	}
-
-	missionStagesCore := ListMissionStagesRequestToMissionStagesCore(missi.MissionStages)
-	missionCore.MissionStages = missionStagesCore
 	return missionCore
 }
 
@@ -24,7 +23,7 @@ func MissionRequestToMissionCore(missi Mission) entity.Mission {
 //             MissionID:   addMissionStage.MissionID,
 //             Title:       stage.Name,
 //             Description: stage.DescriptionStage,
-           
+
 //         }
 //         missionStages = append(missionStages, newStage)
 //     }
@@ -40,29 +39,28 @@ func RequestMissionStageToMissionStageCore(missionID string, data RequestMission
 			Title:       stage.Title,
 			Description: stage.Description,
 		}
-		missionStagesCore =append(missionStagesCore, newStage)
+		missionStagesCore = append(missionStagesCore, newStage)
 	}
 	return missionStagesCore
 }
 
+// func MissionStagesRequestToMissionStagesCore(missionStages MissionStage) entity.MissionStage {
+// 	missionStagesCore := entity.MissionStage{
+// 		Title:       missionStages.Name,
+// 		Description: missionStages.DescriptionStage,
+// 	}
 
-func MissionStagesRequestToMissionStagesCore(missionStages MissionStage) entity.MissionStage {
-	missionStagesCore := entity.MissionStage{
-		Title:       missionStages.Name,
-		Description: missionStages.DescriptionStage,
-	}
+// 	return missionStagesCore
+// }
 
-	return missionStagesCore
-}
-
-func ListMissionStagesRequestToMissionStagesCore(missionStages []MissionStage) []entity.MissionStage {
-	missionStagesCore := []entity.MissionStage{}
-	for _, misiStages := range missionStages {
-		missi := MissionStagesRequestToMissionStagesCore(misiStages)
-		missionStagesCore = append(missionStagesCore, missi)
-	}
-	return missionStagesCore
-}
+// func ListMissionStagesRequestToMissionStagesCore(missionStages []MissionStage) []entity.MissionStage {
+// 	missionStagesCore := []entity.MissionStage{}
+// 	for _, misiStages := range missionStages {
+// 		missi := MissionStagesRequestToMissionStagesCore(misiStages)
+// 		missionStagesCore = append(missionStagesCore, missi)
+// 	}
+// 	return missionStagesCore
+// }
 
 func ClaimRequestToClaimCore(claim Claim) entity.ClaimedMission {
 	return entity.ClaimedMission{

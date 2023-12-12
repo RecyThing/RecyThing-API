@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"log"
 	"mime/multipart"
 	admin "recything/features/admin/entity"
 	user "recything/features/user/entity"
@@ -34,21 +35,21 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 	// 	return errors.New("tahapan misi tidak boleh kosong")
 
 	// }
-	if len(data.MissionStages) > constanta.MAX_STAGE {
-		return errors.New(constanta.ERROR_MISSION_LIMIT)
-	}
+	// if len(data.MissionStages) > constanta.MAX_STAGE {
+	// 	return errors.New(constanta.ERROR_MISSION_LIMIT)
+	// }
 
-	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point)
+	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point, data.DescriptionStage, data.TitleStage)
 	if errEmpty != nil {
 		return errEmpty
 	}
 
-	for _, stage := range data.MissionStages {
-		err := validation.CheckDataEmpty(stage.Description, data.Title)
-		if err != nil {
-			return err
-		}
-	}
+	// for _, stage := range data.MissionStages {
+	// 	err := validation.CheckDataEmpty(stage.Description, data.Title)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	err := validation.ValidateDate(data.StartDate, data.EndDate)
 	if err != nil {
@@ -92,6 +93,25 @@ func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]
 	return data, pagnationInfo, count, nil
 }
 
+func (ms *missionService) FindAllMissionUser(userID string, filter string) ([]entity.MissionHistories, error) {
+	var data string
+	var err error
+
+	if filter != "" {
+		data, err = validation.CheckEqualData(filter, constanta.STATUS_MISSION_USER)
+		if err != nil {
+			return nil, errors.New("error: filter tidak sesuai")
+		}
+
+	}
+
+	missions, err := ms.MissionRepo.FindAllMissionUser(userID, data)
+	if err != nil {
+		return nil, err
+	}
+	return missions, nil
+}
+
 func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID string, data entity.Mission) error {
 
 	err := validation.ValidateDateForUpdate(data.StartDate, data.EndDate)
@@ -126,20 +146,6 @@ func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID s
 	return nil
 }
 
-func (ms *missionService) UpdateMissionStage(missionID string, data []entity.MissionStage) error {
-	for _, stage := range data {
-		err := validation.CheckDataEmpty(stage.Description, stage.Title)
-		if err != nil {
-			return err
-		}
-	}
-
-	err := ms.MissionRepo.UpdateMissionStage(missionID, data)
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
 // Claimed Mission
 func (ms *missionService) ClaimMission(userID string, data entity.ClaimedMission) error {
@@ -167,6 +173,12 @@ func (ms *missionService) FindById(missionID string) (entity.Mission, error) {
 		return entity.Mission{}, err
 	}
 
+	admin, err := ms.AdminRepo.SelectById(dataMission.AdminID)
+	if err != nil {
+		return entity.Mission{}, err
+	}
+
+	dataMission.Creator = admin.Fullname
 	return dataMission, nil
 }
 
@@ -291,8 +303,9 @@ func (ms *missionService) UpdateStatusMissionApproval(UploadMissionTaskID, statu
 	if status == constanta.DISETUJUI {
 		approv.Status = status
 		approv.Reason = ""
-		totalPoint := user.Point + mission.Point
 
+		bonus := helper.CalculateBonus(user.Badge, mission.Point)
+		totalPoint := user.Point + int(bonus)
 		err := ms.UserRepo.UpdateUserPoint(approv.UserID, totalPoint)
 		if err != nil {
 			return err
@@ -314,5 +327,22 @@ func (ms *missionService) UpdateStatusMissionApproval(UploadMissionTaskID, statu
 	}
 
 	return nil
+
+}
+
+func (ms *missionService) FindHistoryById(userID, transactionID string) (entity.UploadMissionTaskCore, error) {
+	log.Println("")
+	data, err := ms.MissionRepo.FindHistoryById(userID, transactionID)
+	if err != nil {
+		return data, err
+	}
+
+	missionData, _ := ms.MissionRepo.FindById(data.MissionID)
+	data.MissionName = missionData.Title
+
+	userData, _ := ms.UserRepo.GetById(data.UserID)
+	data.User = userData.Fullname
+
+	return data, nil
 
 }

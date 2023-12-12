@@ -18,8 +18,8 @@ const (
 
 // Constanta For Utils
 const (
-	VERIFICATION_URL = "http://localhost:8080/verify-token?token="
-	// VERIFICATION_URL   = "https://api.recything.my.id/verify-token?token="
+	//VERIFICATION_URL = "http://localhost:8080/verify-token?token="
+	VERIFICATION_URL   = "https://api.recything.my.id/verify-token?token="
 	EMAIL_NOT_REGISTER = "email belum terdaftar"
 )
 
@@ -29,17 +29,17 @@ const (
 	ERROR_DATA_ID          = "id tidak ditemukan"
 	ERROR_ID_INVALID       = "id salah"
 	ERROR_DATA_EMAIL       = "email tidak ditemukan"
-	ERROR_FORMAT_EMAIL     = "format email tidak valid"
-	ERROR_EMAIL_EXIST      = "email sudah digunakan"
+	ERROR_FORMAT_EMAIL     = "error : format email tidak valid"
+	ERROR_EMAIL_EXIST      = "error : email sudah digunakan"
 	ERROR_AKSES_ROLE       = "akses ditolak"
-	ERROR_PASSWORD         = "password lama tidak sesuai"
-	ERROR_CONFIRM_PASSWORD = "konfirmasi password tidak sesuai"
+	ERROR_PASSWORD         = "error : password lama tidak sesuai"
+	ERROR_CONFIRM_PASSWORD = "error : konfirmasi password tidak sesuai"
 	ERROR_EXTRA_TOKEN      = "gagal ekstrak token"
 	ERROR_ID_ROLE          = "id atau role tidak ditemukan"
 	ERROR_GET_DATA         = "data tidak ditemukan"
 	ERROR_EMPTY            = "error : harap lengkapi data dengan benar"
-	ERROR_EMPTY_FILE       = "tidak ada file yang di upload"
-	ERROR_HASH_PASSWORD    = "error hash password"
+	ERROR_EMPTY_FILE       = "error : tidak ada file yang di upload"
+	ERROR_HASH_PASSWORD    = "error : hash password"
 	ERROR_DATA_NOT_FOUND   = "data tidak ditemukan"
 	ERROR_DATA_EXIST       = "error : data sudah ada"
 	ERROR_MISSION_LIMIT    = "error : tahapan misi tidak boleh dari 5"
@@ -51,8 +51,8 @@ const (
 	ERROR_RECORD_NOT_FOUND = "record not found"
 	ERROR_INVALID_TYPE     = "berupa angka"
 	ERROR_INVALID_STATUS   = "status tidak valid"
-	ERROR_LIMIT            = "limit tidak boleh lebih dari 10"
-	ERROR_LENGTH_PASSWORD  = "minimal 8 karakter, ulangi kembali"
+	ERROR_LIMIT            = "error : limit tidak boleh lebih dari 10"
+	ERROR_LENGTH_PASSWORD  = "error : minimal 8 karakter, ulangi kembali"
 )
 
 // Message Handle
@@ -66,18 +66,24 @@ const (
 
 // const for fix data
 var (
-	Unit            = []string{"barang", "kilogram"}
-	Category        = []string{"sampah anorganik", "sampah organik", "informasi", "batasan"}
-	Days            = []string{"senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"}
-	Status_Exchange = []string{"diproses", "selesai"}
-	ERROR_MESSAGE   = []string{"sudah", "tidak", "harus", "gagal", "harap"}
+	Unit                = []string{"barang", "kilogram"}
+	Category            = []string{"sampah anorganik", "sampah organik", "informasi", "batasan"}
+	Days                = []string{"senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"}
+	REPORT_TYPE         = []string{"pelanggaran sampah", "tumpukan sampah"}
+	SCALE_TYPE          = []string{"skala besar", "skala kecil"}
+	STATUS_EVENT        = []string{"berjalan", "belum berjalan", "selesai"}
+	Status_Exchange     = []string{"diproses", "selesai"}
+	STATUS_MISSION_USER = []string{"berjalan", "selesai"}
+	STATUS_ADMIN        = []string{"aktif", "tidak aktif"}
+	CATEGORY_ARTICLE    = []string{"plastik", "kaca", "logam", "organik", "kertas", "kaleng", "minyak", "elektronik", "tekstil", "baterai"}
+	ERROR_MESSAGE       = []string{"sudah", "tidak", "harus", "gagal", "harap"}
 )
 
 // const for mission
 const (
 	OVERDUE   = "Melewati Tenggat"
 	ACTIVE    = "Aktif"
-	MAX_STAGE = 5
+	MAX_STAGE = 1
 	MIN_STAGE = 1
 )
 
@@ -89,4 +95,17 @@ const (
 	DIPROSES       = "diproses"
 	SELESAI        = "selesai"
 	TERBARU        = "terbaru"
+	BERJALAN       = "berjalan"
+)
+
+const (
+	NeedProof  = "upload bukti pengerjaan"
+	NeedReview = "menunggu verifikasi"
+)
+
+const (
+	BRONZE   = "bronze"
+	PLATINUM = "platinum"
+	SILVER   = "silver"
+	GOLD     = "gold"
 )

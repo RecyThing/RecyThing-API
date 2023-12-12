@@ -10,6 +10,7 @@ type UsersCore struct {
 	Id                string
 	Email             string
 	Password          string
+	Badge             string
 	ConfirmPassword   string
 	Fullname          string
 	Phone             string

@@ -9,6 +9,7 @@ import (
 	"recything/utils/helper"
 	"recything/utils/pagination"
 	"recything/utils/validation"
+	"time"
 )
 
 type voucherService struct {
@@ -126,6 +127,7 @@ func (vs *voucherService) CreateExchangeVoucher(idUser string, data entity.Excha
 		return errors.New("gagal memperbarui nilai point pengguna")
 	}
 
+	data.TimeTransaction = time.Now().Format("15:04:05.000")
 	err = vs.voucherRepository.CreateExchangeVoucher(idUser, data)
 	if err != nil {
 		return err

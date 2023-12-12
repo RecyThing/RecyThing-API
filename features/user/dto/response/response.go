@@ -24,6 +24,7 @@ type UserResponseProfile struct {
 	Phone        string                  `json:"phone"`
 	Address      string                  `json:"address"`
 	Purpose      string                  `json:"purpose"`
+	Badge        string                  `json:"badge"`
 	Communities  []UserCommunityResponse `json:"communities"`
 	Community_id []string                `json:"community_id"`
 }

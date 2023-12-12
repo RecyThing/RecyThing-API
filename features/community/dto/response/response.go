@@ -3,12 +3,14 @@ package response
 import "time"
 
 type CommunityResponse struct {
+	Id        string    `json:"id"`
 	Name      string    `json:"name"`
 	Location  string    `json:"location"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 type CommunityResponseForDetails struct {
+	Id          string    `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	Location    string    `json:"location"`
@@ -18,6 +20,15 @@ type CommunityResponseForDetails struct {
 }
 
 type EventResponse struct {
+	Id          string `json:"id"`
+	CommunityId string `json:"communityId"`
+	Title       string `json:"title"`
+	Quota       int    `json:"quota"`
+	Date        string `json:"date"`
+	Status      string `json:"status"`
+}
+
+type EventResponseDetail struct {
 	Id          string `json:"id"`
 	CommunityId string `json:"communityId"`
 	Title       string `json:"title"`

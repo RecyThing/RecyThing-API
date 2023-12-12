@@ -14,7 +14,7 @@ import (
 )
 
 func RouteCommunity(e *echo.Group, db *gorm.DB) {
-	userRepository := userrep.NewUserRepository(db)
+	userRepository := userrep.NewUserRepository(db,nil)
 	userService := userserv.NewUserService(userRepository)
 	userHandler := userhand.NewUserHandlers(userService)
 
@@ -32,7 +32,7 @@ func RouteCommunity(e *echo.Group, db *gorm.DB) {
 	user := e.Group("/communities", jwt.JWTMiddleware())
 	user.GET("", communityHandler.GetAllCommunity)
 	user.GET("/:id", communityHandler.GetCommunityById)
-	user.POST("/:idKomunitas/join", userHandler.JoinCommunity)
+	user.POST("/:idKomunitas", userHandler.JoinCommunity)
 
 	event := e.Group("/admins/manage/event", jwt.JWTMiddleware())
 	event.POST("/:idkomunitas", communityHandler.CreateEvent)

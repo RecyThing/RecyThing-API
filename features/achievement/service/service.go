@@ -4,7 +4,6 @@ import (
 	"errors"
 	"recything/features/achievement/entity"
 	"recything/utils/constanta"
-	"recything/utils/validation"
 )
 
 type achievementService struct {
@@ -28,19 +27,42 @@ func (as *achievementService) GetAllAchievement() ([]entity.AchievementCore, err
 }
 
 // UpdateById implements entity.AchievementServiceInterface.
-func (as *achievementService) UpdateById(id int, data entity.AchievementCore) error {
+func (as *achievementService) UpdateById(id int, point int) error {
 	if id == 0 {
 		return errors.New(constanta.ERROR_ID_INVALID)
 	}
 
-	errEmpty := validation.CheckDataEmpty(data.TargetPoint)
-	if errEmpty != nil {
-		return errEmpty
+	dataAchievement, errFind := as.achievementRepository.FindById(id)
+	if errFind != nil {
+		return errFind
 	}
 
-	errUpdate := as.achievementRepository.UpdateById(id, data)
-	if errUpdate != nil {
-		return errUpdate
+	if dataAchievement.Name == "bronze" {
+	
+		if point > 0 {
+			return errors.New("error: target point lencana bronze tidak boleh lebih dari 0")
+		}
+	} else if dataAchievement.Name == "silver" {
+		if point > 50000 || point <= 0 {
+			return errors.New("error: target point lencana silver tidak boleh lebih dari 50000 atau kurang dari 0")
+		}
+	} else if dataAchievement.Name == "gold" {
+		if point > 100000 || point <= 50000 {
+			return errors.New("error: target point lencana gold tidak boleh lebih dari 100000 atau kurang dari lencana sebelumnya")
+		}
+	} else if dataAchievement.Name == "platinum" {
+		if point > 250000 || point <= 100000 {
+			return errors.New("error: target point lencana platinum tidak boleh lebih dari 250000 atau kurang dari lencana sebelumnya")
+		}
+	}
+
+	if point == dataAchievement.TargetPoint {
+
+	} else {
+		errUpdate := as.achievementRepository.UpdateById(id, point)
+		if errUpdate != nil {
+			return errUpdate
+		}
 	}
 
 	return nil

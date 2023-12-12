@@ -3,8 +3,10 @@ package service
 import (
 	"errors"
 	"fmt"
+	"log"
 	"mime/multipart"
 	"recything/features/article/entity"
+	"recything/utils/constanta"
 	"recything/utils/pagination"
 	"recything/utils/validation"
 )
@@ -76,21 +78,29 @@ func (article *articleService) UpdateArticle(idArticle string, articleInput enti
 }
 
 // GetAllArticle implements entity.ArticleServiceInterface.
-func (ac *articleService) GetAllArticle(page, limit int, search string) ([]entity.ArticleCore, pagination.PageInfo,int ,error) {
-	
-	if limit > 10 {
-		return nil, pagination.PageInfo{}, 0,errors.New("limit tidak boleh lebih dari 10")
-    }
+func (ac *articleService) GetAllArticle(page, limit int, search, filter string) ([]entity.ArticleCore, pagination.PageInfo, int, error) {
 
-	page, limit = validation.ValidateCountLimitAndPage(page, limit)
-	
-	article, pageInfo ,count,err := ac.ArticleRepository.GetAllArticle(page, limit, search)
-	if err != nil {
-		return []entity.ArticleCore{}, pagination.PageInfo{},0,err
+	if limit > 10 {
+		return nil, pagination.PageInfo{}, 0, errors.New("limit tidak boleh lebih dari 10")
 	}
 
+	page, limit = validation.ValidateCountLimitAndPage(page, limit)
 
-	return article, pageInfo,count, nil
+	if filter != "" {
+		category, errEqual := validation.CheckEqualData(filter, constanta.CATEGORY_ARTICLE)
+		if errEqual != nil {
+			return []entity.ArticleCore{}, pagination.PageInfo{}, 0, errors.New("error : kategori tidak valid")
+		}
+		filter = category
+	}
+	log.Println("ini:", filter)
+
+	article, pageInfo, count, err := ac.ArticleRepository.GetAllArticle(page, limit, search, filter)
+	if err != nil {
+		return []entity.ArticleCore{}, pagination.PageInfo{}, 0, err
+	}
+
+	return article, pageInfo, count, nil
 }
 
 // CreateArticle implements entity.ArticleServiceInterface.
@@ -115,3 +125,40 @@ func (article *articleService) CreateArticle(articleInput entity.ArticleCore, im
 
 	return articleCreate, nil
 }
+
+// PostLike implements entity.ArticleServiceInterface.
+func (article *articleService) PostLike(idArticle string, idUser string) error {
+	if idArticle == "" {
+		return errors.New(constanta.ERROR_ID_INVALID)
+	}
+
+	if idUser == "" {
+		return errors.New(constanta.ERROR_ID_INVALID)
+	}
+
+	postLike := article.ArticleRepository.PostLike(idArticle, idUser)
+	if postLike != nil {
+		return postLike
+	}
+	return nil
+}
+
+// PostShare implements entity.ArticleServiceInterface.
+func (article *articleService) PostShare(idArticle string) error {
+	postShare := article.ArticleRepository.PostShare(idArticle)
+	if postShare != nil {
+		return postShare
+	}
+	return nil
+}
+
+// GetPopularArticle implements entity.ArticleServiceInterface.
+func (article *articleService) GetPopularArticle(search string) ([]entity.ArticleCore, error) {
+	articleData, err := article.ArticleRepository.GetPopularArticle(search)
+	if err != nil {
+		return []entity.ArticleCore{}, err
+	}
+
+	return articleData, nil
+}
+

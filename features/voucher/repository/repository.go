@@ -318,29 +318,29 @@ func (vr *voucherRepository) GetAllExchange(page, limit int, search, filter stri
 
 }
 
-// func (vr *voucherRepository) GetAllExchange() ([]entity.ExchangeVoucherCore, error) {
-// 	dataExchange := []model.ExchangeVoucher{}
+func (vr *voucherRepository) GetAllExchangeHistory(userID string) ([]map[string]interface{}, error) {
+	dataExchange := []model.ExchangeVoucher{}
 
-// 	tx := vr.db.Find(&dataExchange)
-// 	if tx.Error != nil {
-// 		return []entity.ExchangeVoucherCore{}, tx.Error
-// 	}
+	tx := vr.db.Where("id_user", userID).Find(&dataExchange)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
 
-// 	dataResponse := []entity.ExchangeVoucherCore{}
+	var dataResponse []map[string]interface{}
 
-// 	for _, exchange := range dataExchange {
-// 		vr.db.Model(&exchange).Association("Users").Find(&exchange.Users)
-// 		vr.db.Model(&exchange).Association("Vouchers").Find(&exchange.Vouchers)
+	for _, exchange := range dataExchange {
+		vr.db.Model(&exchange).Association("Vouchers").Find(&exchange.Vouchers)
 
-// 		exchange.IdUser = exchange.Users.Fullname
-// 		exchange.IdVoucher = exchange.Vouchers.RewardName
-// 		data := entity.ModelExchangeVoucherToCoreExchangeVoucher(exchange)
+		exchange.IdVoucher = exchange.Vouchers.RewardName
+		point := exchange.Vouchers.Point
 
-// 		dataResponse = append(dataResponse, data)
-// 	}
+		data := entity.ModelExchangeVoucherToMap(exchange,point)
 
-// 	return dataResponse, nil
-// }
+		dataResponse = append(dataResponse, data)
+	}
+
+	return dataResponse, nil
+}
 
 func (vr *voucherRepository) GetByIdExchange(idExchange string) (entity.ExchangeVoucherCore, error) {
 	dataExchange := model.ExchangeVoucher{}
@@ -385,4 +385,28 @@ func (vr *voucherRepository) UpdateStatusExchange(id, status string) error {
 	}
 
 	return nil
+}
+
+// Point History 
+
+func (vr *voucherRepository) GetByIdExchangeTransactions(userID,idTransaction string) (map[string]interface{}, error) {
+	dataExchange := model.ExchangeVoucher{}
+
+	tx := vr.db.Where("id_user = ? AND id = ?", userID,idTransaction).First(&dataExchange)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return nil, tx.Error
+	}
+
+	vr.db.Model(&dataExchange).Association("Vouchers").Find(&dataExchange.Vouchers)
+
+	point := dataExchange.Vouchers.Point
+	dataExchange.IdVoucher = dataExchange.Vouchers.RewardName
+
+	dataResponse := entity.ModelExchangeVoucherToMapDetail(dataExchange,point)
+
+	return dataResponse, nil
 }

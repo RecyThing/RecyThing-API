@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"mime/multipart"
 
 	"recything/features/admin/entity"
 	"recything/features/admin/model"
@@ -14,6 +15,7 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/pagination"
+	"recything/utils/storage"
 
 	"gorm.io/gorm"
 )
@@ -28,8 +30,18 @@ func NewAdminRepository(db *gorm.DB) entity.AdminRepositoryInterface {
 	}
 }
 
-func (ar *AdminRepository) Create(data entity.AdminCore) (entity.AdminCore, error) {
+func (ar *AdminRepository) Create(image *multipart.FileHeader, data entity.AdminCore) (entity.AdminCore, error) {
 	dataAdmins := entity.AdminCoreToAdminModel(data)
+
+	if image != nil {
+		imageURL, errUpload := storage.UploadThumbnail(image)
+		if errUpload != nil {
+			return entity.AdminCore{}, errUpload
+		}
+		dataAdmins.Image = imageURL
+	} else {
+		dataAdmins.Image = "https://ui-avatars.com/api/?background=56cc33&color=fff&name=" + data.Fullname
+	}
 
 	tx := ar.db.Create(&dataAdmins)
 	if tx.Error != nil {
@@ -107,8 +119,23 @@ func (ar *AdminRepository) SelectById(adminId string) (entity.AdminCore, error) 
 	return dataResponse, nil
 }
 
-func (ar *AdminRepository) Update(adminId string, data entity.AdminCore) error {
+func (ar *AdminRepository) Update(image *multipart.FileHeader, adminId string, data entity.AdminCore) error {
 	dataAdmins := entity.AdminCoreToAdminModel(data)
+
+	dataFind , errFind := ar.SelectById(adminId) 
+	if errFind != nil  {
+		return errFind
+	}
+
+	if image != nil {
+		imageURL, errUpload := storage.UploadThumbnail(image)
+		if errUpload != nil {
+			return errUpload
+		}
+		dataAdmins.Image = imageURL
+	} else {
+		dataAdmins.Image = dataFind.Image
+	}
 
 	tx := ar.db.Where("id = ?", adminId).Updates(&dataAdmins)
 	if tx.Error != nil {
@@ -247,6 +274,7 @@ func (ar *AdminRepository) GetAllReport(status, search string, page, limit int) 
 	if err := query.Count(&totalCountWithoutFilter).Error; err != nil {
 		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
+
 	totalCountWithFilter := totalCountWithoutFilter
 
 	if search != "" {
@@ -255,6 +283,17 @@ func (ar *AdminRepository) GetAllReport(status, search string, page, limit int) 
 			Count(&totalCountWithFilter).Error; err != nil {
 			return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 		}
+	}
+
+	if status != "" {
+		query = query.Where("reports.status = ?", status)
+	}
+
+	query = query.Offset(offset).Limit(limit)
+
+	err := query.Find(&dataReports).Error
+	if err != nil {
+		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
 
 	countPerluDitinjau, err := ar.GetCountByStatus("perlu ditinjau", search)
@@ -272,24 +311,11 @@ func (ar *AdminRepository) GetAllReport(status, search string, page, limit int) 
 		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
 	}
 
-	if status != "" {
-		query = query.Where("reports.status = ?", status)
-		totalCountWithFilter = totalCountWithoutFilter
-	}
-
-	query = query.Offset(offset).Limit(limit)
-
-	err = query.Find(&dataReports).Error
-	if err != nil {
-		return nil, pagination.PageInfo{}, pagination.CountDataInfo{}, err
-	}
-
-	dataAllReport := report.ListReportModelToReportCore(dataReports)
 	paginationInfo := pagination.CalculateData(int(totalCountWithFilter), limit, page)
 
 	countData := pagination.MapCountData(totalCountWithFilter, countPerluDitinjau, countDiterima, countDitolak)
 
-	return dataAllReport, paginationInfo, countData, nil
+	return report.ListReportModelToReportCore(dataReports), paginationInfo, countData, nil
 }
 
 // GetCountByStatus implements entity.AdminRepositoryInterface.

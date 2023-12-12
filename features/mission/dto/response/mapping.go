@@ -4,21 +4,23 @@ import "recything/features/mission/entity"
 
 func MissionCoreToMissionResponse(missi entity.Mission) Mission {
 	missionResp := Mission{
-		ID:            missi.ID,
-		Title:         missi.Title,
-		Status:        missi.Status,
-		Creator:       missi.Creator,
-		MissionImage:  missi.MissionImage,
-		Point:         missi.Point,
-		Description:   missi.Description,
-		StartDate:     missi.StartDate,
-		EndDate:       missi.EndDate,
-		MissionStages: []MissionStage{},
-		CreatedAt:     missi.CreatedAt,
-		UpdatedAt:     missi.UpdatedAt,
+		ID:               missi.ID,
+		Title:            missi.Title,
+		Status:           missi.Status,
+		Creator:          missi.Creator,
+		MissionImage:     missi.MissionImage,
+		Point:            missi.Point,
+		Description:      missi.Description,
+		StartDate:        missi.StartDate,
+		EndDate:          missi.EndDate,
+		DescriptionStage: missi.DescriptionStage,
+		TitleStage:       missi.TitleStage,
+		// MissionStages: []MissionStage{},
+		CreatedAt: missi.CreatedAt,
+		UpdatedAt: missi.UpdatedAt,
 	}
-	missionStagesResp := ListMissionStagesCoreToMissionStagesResponse(missi.MissionStages)
-	missionResp.MissionStages = missionStagesResp
+	// missionStagesResp := ListMissionStagesCoreToMissionStagesResponse(missi.MissionStages)
+	// missionResp.MissionStages = missionStagesResp
 	return missionResp
 }
 
@@ -89,6 +91,36 @@ func ListUpMissionTaskCoreToUpMissionTaskResp(data []entity.UploadMissionTaskCor
 	list := []UploadMissionTask{}
 	for _, v := range data {
 		result := UpMissionTaskCoreToUpMissionTaskResp(v)
+		list = append(list, result)
+	}
+	return list
+}
+
+func HistoriesCoreToHistoriesResponse(data entity.MissionHistories) MissionHistories {
+	return MissionHistories{
+		MissionID:        data.MissionID,
+		ClaimedID:        data.ClaimedID,
+		TransactionID:    data.TransactionID,
+		Title:            data.Title,
+		StatusApproval:   data.StatusApproval,
+		StatusMission:    data.StatusMission,
+		MissionImage:     data.MissionImage,
+		Reason:           data.Reason,
+		Point:            data.Point,
+		Description:      data.Description,
+		StartDate:        data.StartDate,
+		EndDate:          data.EndDate,
+		DescriptionStage: data.DescriptionStage,
+		TitleStage:       data.TitleStage,
+		// MissionStages:  []MissionStage{},
+		CreatedAt: data.CreatedAt,
+	}
+}
+
+func ListHistoriesCoreToHistoriesResponse(data []entity.MissionHistories) []MissionHistories {
+	list := []MissionHistories{}
+	for _, v := range data {
+		result := HistoriesCoreToHistoriesResponse(v)
 		list = append(list, result)
 	}
 	return list

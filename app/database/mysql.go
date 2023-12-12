@@ -7,6 +7,7 @@ import (
 	achievement "recything/features/achievement/model"
 	admin "recything/features/admin/model"
 	article "recything/features/article/model"
+	community "recything/features/community/model"
 	daily "recything/features/daily_point/model"
 	dropPoint "recything/features/drop-point/model"
 	faq "recything/features/faq/model"
@@ -49,5 +50,6 @@ func InitMigrationMysql(db *gorm.DB) {
 	db.AutoMigrate(&daily.DailyPoint{})
 	db.AutoMigrate(&dropPoint.DropPoints{}, &dropPoint.Schedules{})
 	db.AutoMigrate(&trashExchange.TrashExchange{}, trashExchange.TrashExchangeDetail{})
-	db.AutoMigrate(&mission.Mission{}, &mission.MissionStage{}, &mission.ClaimedMission{})
+	db.AutoMigrate(&mission.Mission{},&mission.ClaimedMission{}) //&mission.MissionStage{}, )
+	db.AutoMigrate(&community.Community{}, &community.CommunityEvent{})
 }

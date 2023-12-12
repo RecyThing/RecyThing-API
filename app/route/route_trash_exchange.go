@@ -16,7 +16,7 @@ import (
 )
 
 func RouteTrashExchange(e *echo.Group, db *gorm.DB) {
-	userRepository := userRepo.NewUserRepository(db)
+	userRepository := userRepo.NewUserRepository(db,nil)
 	dropPointRepository := dropPointRepo.NewDropPointRepository(db)
 	trashCategoryRepository := trashCategoryRepo.NewTrashCategoryRepository(db)
 

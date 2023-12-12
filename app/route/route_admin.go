@@ -22,7 +22,7 @@ import (
 func RouteAdmin(e *echo.Group, db *gorm.DB) {
 
 	// import user
-	userRepository := userRepository.NewUserRepository(db)
+	userRepository := userRepository.NewUserRepository(db,nil)
 	userService := userService.NewUserService(userRepository)
 	//userHandler := adminHandler.NewAdminHandler(userService)
 

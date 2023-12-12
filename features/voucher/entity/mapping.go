@@ -1,6 +1,9 @@
 package entity
 
-import "recything/features/voucher/model"
+import (
+	"recything/features/voucher/model"
+	"time"
+)
 
 func CoreVoucherToModelVoucher(data VoucherCore) model.Voucher {
 	return model.Voucher{
@@ -47,10 +50,11 @@ func ListModelVoucherToCoreVoucher(data []model.Voucher) []VoucherCore {
 
 func CoreExchangeVoucherToModelExchangeVoucher(data ExchangeVoucherCore) model.ExchangeVoucher {
 	return model.ExchangeVoucher{
-		IdUser:    data.IdUser,
-		IdVoucher: data.IdVoucher,
-		Phone:     data.Phone,
-		Status:    data.Status,
+		IdUser:          data.IdUser,
+		IdVoucher:       data.IdVoucher,
+		Phone:           data.Phone,
+		Status:          data.Status,
+		TimeTransaction: data.TimeTransaction,
 	}
 }
 
@@ -65,13 +69,37 @@ func ListCoreExchangeVoucherToModelExchangeVoucher(data []ExchangeVoucherCore) [
 
 func ModelExchangeVoucherToCoreExchangeVoucher(data model.ExchangeVoucher) ExchangeVoucherCore {
 	return ExchangeVoucherCore{
-		Id:        data.Id,
-		IdUser:    data.IdUser,
-		IdVoucher: data.IdVoucher,
-		Phone:     data.Phone,
-		Status:    data.Status,
-		CreatedAt: data.CreatedAt,
-		UpdatedAt: data.UpdatedAt,
+		Id:              data.Id,
+		IdUser:          data.IdUser,
+		IdVoucher:       data.IdVoucher,
+		Phone:           data.Phone,
+		Status:          data.Status,
+		TimeTransaction: data.TimeTransaction,
+		CreatedAt:       data.CreatedAt,
+		UpdatedAt:       data.UpdatedAt,
+	}
+}
+
+func ModelExchangeVoucherToMapDetail(data model.ExchangeVoucher, point int) map[string]interface{} {
+	return map[string]interface{}{
+		"id_transaction":   data.Id,
+		"voucher":          data.IdVoucher,
+		"point":            point,
+		"phone":            data.Phone,
+		"status":           data.Status,
+		"time_transaction": data.TimeTransaction,
+		"type_transaction": "tukar poin",
+		"created_at":       data.CreatedAt.Format(time.RFC3339),
+	}
+}
+
+func ModelExchangeVoucherToMap(data model.ExchangeVoucher, point int) map[string]interface{} {
+	return map[string]interface{}{
+		"id_transaction":   data.Id,
+		"point":            point,
+		"time_transaction": data.TimeTransaction,
+		"type_transaction": "tukar poin",
+		"created_at":       data.CreatedAt.Format(time.RFC3339),
 	}
 }
 

@@ -2,6 +2,7 @@ package model
 
 import (
 	badge "recything/features/achievement/model"
+	art "recything/features/article/model"
 	comm "recything/features/community/model"
 	dp "recything/features/daily_point/model"
 	mission "recything/features/mission/model"
@@ -37,6 +38,8 @@ type Users struct {
 	DailyClaim        []dp.DailyPoint               `gorm:"many2many:UserDailyPoints"`
 	Communities       []comm.Community              `gorm:"many2many:UserCommunity"`
 	Community_id      []string                      `gorm:"-"`
+	ArticleLike       []art.Article                 `gorm:"many2many:UserArticleLike"`
+	Article_id        []string                      `gorm:"-"`
 }
 
 type UserDailyPoints struct {
@@ -48,4 +51,9 @@ type UserDailyPoints struct {
 type UserCommunity struct {
 	UsersID     string
 	CommunityID string
+}
+
+type UserArticleLike struct {
+	UsersID   string
+	ArticleID string
 }

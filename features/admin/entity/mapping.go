@@ -8,6 +8,7 @@ func AdminModelToAdminCore(data model.Admin) AdminCore {
 	return AdminCore{
 		Id:              data.Id,
 		Fullname:        data.Fullname,
+		Image:           data.Image,
 		Role:            data.Role,
 		Email:           data.Email,
 		Password:        data.Password,
@@ -32,6 +33,7 @@ func AdminCoreToAdminModel(admin AdminCore) model.Admin {
 	return model.Admin{
 		Id:        admin.Id,
 		Fullname:  admin.Fullname,
+		Image:     admin.Image,
 		Role:      admin.Role,
 		Email:     admin.Email,
 		Password:  admin.Password,

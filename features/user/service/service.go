@@ -108,7 +108,7 @@ func (us *userService) GetById(id string) (entity.UsersCore, error) {
 	}
 	updateBadge := us.userRepo.UpdateBadge(id)
 	if updateBadge != nil {
-		return entity.UsersCore{}, nil
+		return entity.UsersCore{}, updateBadge
 	}
 	dataUser, err := us.userRepo.GetById(id)
 	if err != nil {

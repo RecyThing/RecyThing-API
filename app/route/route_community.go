@@ -14,7 +14,7 @@ import (
 )
 
 func RouteCommunity(e *echo.Group, db *gorm.DB) {
-	userRepository := userrep.NewUserRepository(db)
+	userRepository := userrep.NewUserRepository(db,nil)
 	userService := userserv.NewUserService(userRepository)
 	userHandler := userhand.NewUserHandlers(userService)
 

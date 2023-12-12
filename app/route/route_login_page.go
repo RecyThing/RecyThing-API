@@ -12,7 +12,7 @@ import (
 
 func RouteLoginPage(e *echo.Group, db *gorm.DB) {
 	// User
-	userRepository := repository.NewUserRepository(db)
+	userRepository := repository.NewUserRepository(db,nil)
 	userService := service.NewUserService(userRepository)
 	userHandler := handler.NewUserHandlers(userService)
 

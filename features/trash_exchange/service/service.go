@@ -35,7 +35,7 @@ func NewTrashExchangeService(trashExchange trashExchange.TrashExchangeRepository
 func (tes *trashExchangeService) CreateTrashExchange(data trashExchange.TrashExchangeCore) (trashExchange.TrashExchangeCore, error) {
 	
 	data.Id = helper.GenerateRandomID("PS", 5)
-	errEmpty := validation.CheckDataEmpty(data.Name, data.EmailUser, data.Address)
+	errEmpty := validation.CheckDataEmpty(data.Name, data.EmailUser, data.DropPointName)
 	if errEmpty != nil {
 		return trashExchange.TrashExchangeCore{}, errEmpty
 	}
@@ -45,9 +45,9 @@ func (tes *trashExchangeService) CreateTrashExchange(data trashExchange.TrashExc
 		return trashExchange.TrashExchangeCore{}, errors.New("pengguna dengan email tersebut tidak ditemukan")
 	}
 
-	dropPoint, err := tes.dropPointRepository.GetDropPointByAddress(data.Address)
+	dropPoint, err := tes.dropPointRepository.GetDropPointByName(data.DropPointName)
 	if err != nil {
-		return trashExchange.TrashExchangeCore{}, errors.New("alamat drop point tidak ditemukan")
+		return trashExchange.TrashExchangeCore{}, errors.New("nama drop point tidak ditemukan")
 	}
 	data.DropPointId = dropPoint.Id
 

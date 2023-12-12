@@ -3,6 +3,7 @@ package route
 import (
 	"recything/features/user/handler"
 	"recything/features/user/repository"
+	achievement"recything/features/achievement/repository"
 	"recything/features/user/service"
 	"recything/utils/jwt"
 
@@ -12,7 +13,8 @@ import (
 
 func RouteUser(e *echo.Group, db *gorm.DB) {
 	// User
-	userRepository := repository.NewUserRepository(db)
+	achievementRepository := achievement.NewAchievementRepository(db)
+	userRepository := repository.NewUserRepository(db,achievementRepository)
 	userService := service.NewUserService(userRepository)
 	userHandler := handler.NewUserHandlers(userService)
 

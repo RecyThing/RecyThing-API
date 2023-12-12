@@ -34,3 +34,10 @@ type UserCommunityCore struct {
 	Id   string
 	Name string
 }
+
+type UserDailyPointsCore struct {
+	UsersID      string
+	DailyPointID int
+	Claim        bool
+	CreatedAt    time.Time
+}

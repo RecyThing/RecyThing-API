@@ -212,3 +212,21 @@ func (daily *dailyPointRepository) GetByIdHistoryPoint(userID, idTransaction str
 
 	return nil, errors.New("record not found")
 }
+
+func (daily *dailyPointRepository) GetAllClaimedDaily(userID string) ([]user_entity.UserDailyPointsCore, error) {
+	dataDaily := []user.UserDailyPoints{}
+
+	tx := daily.db.Where("users_id = ? ", userID).Order("created_at DESC").Find(&dataDaily)
+	if tx.Error != nil {
+		return []user_entity.UserDailyPointsCore{}, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return []user_entity.UserDailyPointsCore{}, tx.Error
+
+	}
+
+	dataResponse := user_entity.ListUserDailyPointsModelToUserDailyPointsCore(dataDaily)
+
+	return dataResponse,nil
+}

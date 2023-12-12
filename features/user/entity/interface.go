@@ -15,6 +15,7 @@ type UsersRepositoryInterface interface {
 	UpdateUserPoint(id string, point int)error
 	JoinCommunity(communityId string, userId string) error
 	FindById(userID string) (UsersCore,error)
+	UpdateBadge(id string) error
 }
 
 type UsersUsecaseInterface interface {

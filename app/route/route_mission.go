@@ -15,7 +15,7 @@ import (
 
 func RouteMissions(e *echo.Group, db *gorm.DB) {
 	adminRepository := admin.NewAdminRepository(db)
-	userRepository := user.NewUserRepository(db)
+	userRepository := user.NewUserRepository(db,nil)
 	missionRepository := repository.NewMissionRepository(db)
 	missionService := service.NewMissionService(missionRepository, adminRepository, userRepository)
 	missionHandler := handler.NewMissionHandler(missionService)

@@ -31,8 +31,10 @@ type UsersCore struct {
 }
 
 type UserCommunityCore struct {
-	Id   string
-	Name string
+	Id       string
+	Name     string
+	Image    string
+	Location string
 }
 
 type UserDailyPointsCore struct {

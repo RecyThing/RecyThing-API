@@ -69,8 +69,10 @@ func ListUserModelToUserCore(mainData []model.Users) []UsersCore {
 
 func CommunityModelToCommunityCore(community como.Community) UserCommunityCore {
 	return UserCommunityCore{
-		Id:   community.Id,
-		Name: community.Name,
+		Id:       community.Id,
+		Name:     community.Name,
+		Image:    community.Image,
+		Location: community.Location,
 	}
 }
 
@@ -85,8 +87,10 @@ func ListCommunityModelToCommunityCore(community []como.Community) []UserCommuni
 
 func CommunityCoreToCommunityModel(community UserCommunityCore) como.Community {
 	return como.Community{
-		Id:   community.Id,
-		Name: community.Name,
+		Id:       community.Id,
+		Name:     community.Name,
+		Image:    community.Image,
+		Location: community.Location,
 	}
 }
 

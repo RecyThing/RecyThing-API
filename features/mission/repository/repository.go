@@ -50,15 +50,7 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 	totalCount := int(counts.TotalCount)
 
 	if filter != "" {
-
 		if search != "" {
-			if filter == constanta.ACTIVE {
-				totalCount = int(counts.CountActive)
-			}
-			if filter == constanta.OVERDUE {
-				totalCount = int(counts.CountExpired)
-			}
-
 			tx := paginationQuery.Where("status LIKE ? AND title LIKE ?", "%"+filter+"%", "%"+search+"%").Find(&data)
 			if tx.Error != nil {
 				return nil, pagination.PageInfo{}, counts, tx.Error
@@ -66,13 +58,6 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 		}
 
 		if search == "" {
-			if filter == constanta.ACTIVE {
-				totalCount = int(counts.CountActive)
-			}
-			if filter == constanta.OVERDUE {
-				totalCount = int(counts.CountExpired)
-			}
-
 			tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Find(&data)
 			if tx.Error != nil {
 				return nil, pagination.PageInfo{}, counts, tx.Error
@@ -80,6 +65,7 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 		}
 
 	}
+	
 	if filter == "" {
 		if search != "" {
 			tx := paginationQuery.Where("title LIKE ?", "%"+search+"%").Find(&data)

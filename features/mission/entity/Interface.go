@@ -2,6 +2,7 @@ package entity
 
 import (
 	"mime/multipart"
+	"recything/features/mission/model"
 	"recything/utils/helper"
 	"recything/utils/pagination"
 )
@@ -15,15 +16,16 @@ type MissionRepositoryInterface interface {
 	GetImageURL(missionID string) (string, error)
 	UpdateMission(missionID string, data Mission) error
 	DeleteMission(missionID string) error
+	UpdateMissionStatus(data model.Mission) error
 
 	FindAllMissionUser(userID string, filter string) ([]MissionHistories, error)
-	FindHistoryById(userID, transactionID string) (UploadMissionTaskCore, error) 
+	FindHistoryById(userID, transactionID string) (UploadMissionTaskCore, error)
 	ClaimMission(userID string, data ClaimedMission) error
 	FindClaimed(userID, missionID string) error
 
 	FindUploadMissionStatus(id, missionID, userID, status string) error
 	FindUploadById(id string) error
-	CreateUploadMissionTask(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) (UploadMissionTaskCore,error)
+	CreateUploadMissionTask(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) (UploadMissionTaskCore, error)
 	UpdateUploadMissionTask(id string, images []*multipart.FileHeader, data UploadMissionTaskCore) error
 
 	FindAllMissionApproval(page, limit int, search, filter string) ([]UploadMissionTaskCore, pagination.PageInfo, helper.CountMissionApproval, error)
@@ -38,7 +40,7 @@ type MissionServiceInterface interface {
 	// CreateMission(data Mission) error
 	FindAllMission(page, limit, search, filter string) ([]Mission, pagination.PageInfo, helper.CountMission, error)
 	FindAllMissionUser(userID string, filter string) ([]MissionHistories, error)
-	FindHistoryById(userID, transactionID string) (UploadMissionTaskCore, error) 
+	FindHistoryById(userID, transactionID string) (UploadMissionTaskCore, error)
 	FindById(missionID string) (Mission, error)
 	UpdateMission(image *multipart.FileHeader, missionID string, data Mission) error
 
@@ -46,7 +48,7 @@ type MissionServiceInterface interface {
 	ClaimMission(userID string, data ClaimedMission) error
 	DeleteMission(missionID string) error
 
-	CreateUploadMissionTask(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) (UploadMissionTaskCore,error)
+	CreateUploadMissionTask(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) (UploadMissionTaskCore, error)
 	UpdateUploadMissionTask(userID, id string, images []*multipart.FileHeader, data UploadMissionTaskCore) error
 
 	FindAllMissionApproval(page, limit, search, filter string) ([]UploadMissionTaskCore, pagination.PageInfo, helper.CountMissionApproval, error)

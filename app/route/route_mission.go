@@ -7,6 +7,9 @@ import (
 	"recything/features/mission/handler"
 	"recything/features/mission/repository"
 	"recything/features/mission/service"
+
+	achievement"recything/features/achievement/repository"
+
 	"recything/utils/jwt"
 
 	"github.com/labstack/echo/v4"
@@ -15,7 +18,9 @@ import (
 
 func RouteMissions(e *echo.Group, db *gorm.DB) {
 	adminRepository := admin.NewAdminRepository(db)
-	userRepository := user.NewUserRepository(db,nil)
+	achievementRepository := achievement.NewAchievementRepository(db)
+	userRepository := user.NewUserRepository(db,achievementRepository)
+	
 	missionRepository := repository.NewMissionRepository(db)
 	missionService := service.NewMissionService(missionRepository, adminRepository, userRepository)
 	missionHandler := handler.NewMissionHandler(missionService)

@@ -2,6 +2,7 @@ package route
 
 import (
 	userRepo "recything/features/user/repository"
+	achievement"recything/features/achievement/repository"
 	"recything/features/voucher/handler"
 	"recything/features/voucher/repository"
 	"recything/features/voucher/service"
@@ -12,7 +13,8 @@ import (
 )
 
 func RouteVoucher(e *echo.Group, db *gorm.DB) {
-	userRepository := userRepo.NewUserRepository(db,nil)
+	achievementRepository := achievement.NewAchievementRepository(db)
+	userRepository := userRepo.NewUserRepository(db,achievementRepository)
 	voucherRepository := repository.NewVoucherRepository(db)
 	voucherService := service.NewVoucherService(voucherRepository, userRepository)
 	voucherHandler := handler.NewVoucherHandler(voucherService)

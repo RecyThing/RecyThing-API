@@ -106,10 +106,20 @@ func (us *userService) GetById(id string) (entity.UsersCore, error) {
 	if id == "" {
 		return entity.UsersCore{}, errors.New(constanta.ERROR_ID_INVALID)
 	}
-	updateBadge := us.userRepo.UpdateBadge(id)
-	if updateBadge != nil {
-		return entity.UsersCore{}, updateBadge
+
+	loc, err := time.LoadLocation(constanta.ASIABANGKOK)
+	if err != nil {
+		return entity.UsersCore{}, err
 	}
+
+	now := time.Now().In(loc)
+	if now.Day() == 1 {
+		errBadge := us.userRepo.UpdateBadge(id)
+		if errBadge != nil {
+			return entity.UsersCore{}, errBadge
+		}
+	}
+
 	dataUser, err := us.userRepo.GetById(id)
 	if err != nil {
 		return entity.UsersCore{}, errors.New("data user tidak ada")

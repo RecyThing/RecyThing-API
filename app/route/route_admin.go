@@ -13,6 +13,8 @@ import (
 	recybotRepository "recything/features/recybot/repository"
 	recybotService "recything/features/recybot/service"
 
+	achievement"recything/features/achievement/repository"
+
 	"recything/utils/jwt"
 
 	"github.com/labstack/echo/v4"
@@ -22,7 +24,8 @@ import (
 func RouteAdmin(e *echo.Group, db *gorm.DB) {
 
 	// import user
-	userRepository := userRepository.NewUserRepository(db,nil)
+	achievementRepository := achievement.NewAchievementRepository(db)
+	userRepository :=  userRepository.NewUserRepository(db,achievementRepository)
 	userService := userService.NewUserService(userRepository)
 	//userHandler := adminHandler.NewAdminHandler(userService)
 

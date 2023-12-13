@@ -6,6 +6,7 @@ func CoreCommunityToResponCommunity(data entity.CommunityCore) CommunityResponse
 	return CommunityResponse{
 		Id:        data.Id,
 		Name:      data.Name,
+		Image:     data.Image,
 		Location:  data.Location,
 		CreatedAt: data.CreatedAt,
 	}

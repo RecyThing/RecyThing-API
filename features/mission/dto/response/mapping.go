@@ -98,13 +98,13 @@ func ListUpMissionTaskCoreToUpMissionTaskResp(data []entity.UploadMissionTaskCor
 
 func HistoriesCoreToHistoriesResponse(data entity.MissionHistories) MissionHistories {
 	return MissionHistories{
-		MissionID:        data.MissionID,
-		ClaimedID:        data.ClaimedID,
-		TransactionID:    data.TransactionID,
-		Title:            data.Title,
-		StatusApproval:   data.StatusApproval,
-		StatusMission:    data.StatusMission,
-		MissionImage:     data.MissionImage,
+		MissionID:      data.MissionID,
+		ClaimedID:      data.ClaimedID,
+		TransactionID:  data.TransactionID,
+		Title:          data.Title,
+		StatusApproval: data.StatusApproval,
+		StatusMission:  data.StatusMission,
+		MissionImage:   data.MissionImage,
 		// Reason:           data.Reason,
 		Point:            data.Point,
 		Description:      data.Description,
@@ -124,4 +124,10 @@ func ListHistoriesCoreToHistoriesResponse(data []entity.MissionHistories) []Miss
 		list = append(list, result)
 	}
 	return list
+}
+
+func UploadMissionTaskResponses(data entity.UploadMissionTaskCore) UploadMissionTaskResponse {
+	return UploadMissionTaskResponse{
+		ID:        data.ID,
+	}
 }

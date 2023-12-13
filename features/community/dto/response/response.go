@@ -27,6 +27,7 @@ type EventResponse struct {
 	Quota       int    `json:"quota"`
 	Date        string `json:"date"`
 	Status      string `json:"status"`
+	Image       string `json:"image"`
 }
 
 type EventResponseDetail struct {

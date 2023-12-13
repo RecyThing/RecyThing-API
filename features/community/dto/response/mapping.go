@@ -41,6 +41,7 @@ func EventCoreToEventResponse(event entity.CommunityEventCore) EventResponse {
 		Quota:       event.Quota,
 		Date:        event.Date,
 		Status:      event.Status,
+		Image:       event.Image,
 	}
 }
 

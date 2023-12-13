@@ -1390,7 +1390,7 @@
             }
         },
         "/articles/like/{id}": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "token": []
@@ -2057,7 +2057,7 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
-                                "$ref": "#/components/schemas/RequestMissionUser"
+                                "$ref": "#/components/schemas/RequestUpdateMissionUser"
                             }
                         }
                     }
@@ -3312,6 +3312,27 @@
                     "mission_id": {
                         "type": "string"
                     },
+                    "description": {
+                        "type": "string"
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "binary"
+                        },
+                        "nullable": false
+                    }
+                },
+                "required": [
+                    "mission_id",
+                    "description",
+                    "images"
+                ]
+            },
+            "RequestUpdateMissionUser": {
+                "type": "object",
+                "properties": {
                     "description": {
                         "type": "string"
                     },

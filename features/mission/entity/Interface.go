@@ -26,7 +26,7 @@ type MissionRepositoryInterface interface {
 
 	FindUploadMissionStatus(id, missionID, userID, status string) error
 	FindUploadById(id string) error
-	CreateUploadMissionTask(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) error
+	CreateUploadMissionTask(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) (UploadMissionTaskCore,error)
 	UpdateUploadMissionTask(id string, images []*multipart.FileHeader, data UploadMissionTaskCore) error
 
 	FindAllMissionApproval(page, limit int, search, filter string) ([]UploadMissionTaskCore, pagination.PageInfo, helper.CountMissionApproval, error)
@@ -49,7 +49,7 @@ type MissionServiceInterface interface {
 	ClaimMission(userID string, data ClaimedMission) error
 	DeleteMission(missionID string) error
 
-	CreateUploadMissionTask(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) error
+	CreateUploadMissionTask(userID string, data UploadMissionTaskCore, images []*multipart.FileHeader) (UploadMissionTaskCore,error)
 	UpdateUploadMissionTask(userID, id string, images []*multipart.FileHeader, data UploadMissionTaskCore) error
 
 	FindAllMissionApproval(page, limit, search, filter string) ([]UploadMissionTaskCore, pagination.PageInfo, helper.CountMissionApproval, error)

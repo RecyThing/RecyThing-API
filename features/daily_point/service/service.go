@@ -2,6 +2,7 @@ package service
 
 import (
 	"recything/features/daily_point/entity"
+	user_entity "recything/features/user/entity"
 )
 
 type dailyPointService struct {
@@ -43,8 +44,8 @@ func (dailyS *dailyPointService) GetAllHistoryPoint(userID string) ([]map[string
 	return data, nil
 }
 
-func (dailyS *dailyPointService) GetByIdHistoryPoint(userID,idTransaction string) (map[string]interface{}, error) {
-	data, errDat := dailyS.DailyPointRepository.GetByIdHistoryPoint(userID,idTransaction)
+func (dailyS *dailyPointService) GetByIdHistoryPoint(userID, idTransaction string) (map[string]interface{}, error) {
+	data, errDat := dailyS.DailyPointRepository.GetByIdHistoryPoint(userID, idTransaction)
 	if errDat != nil {
 		return nil, errDat
 	}
@@ -52,4 +53,11 @@ func (dailyS *dailyPointService) GetByIdHistoryPoint(userID,idTransaction string
 	return data, nil
 }
 
+func (dailyS *dailyPointService) GetAllClaimedDaily(userID string) ([]user_entity.UserDailyPointsCore, error) {
+	dataDaily, errGet := dailyS.DailyPointRepository.GetAllClaimedDaily(userID)
+	if errGet != nil {
+		return []user_entity.UserDailyPointsCore{}, errGet
+	}
 
+	return dataDaily, nil
+}

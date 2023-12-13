@@ -98,3 +98,23 @@ func ListCommunityCoreToCommunityModel(community []UserCommunityCore) []como.Com
 	}
 	return communityCore
 }
+
+func UserDailyPointsModelToUserDailyPointsCore(data model.UserDailyPoints) UserDailyPointsCore {
+	return UserDailyPointsCore{
+
+		UsersID:      data.UsersID,
+		DailyPointID: data.DailyPointID,
+		Claim:        data.Claim,
+		CreatedAt:    data.CreatedAt,
+	}
+
+}
+
+func ListUserDailyPointsModelToUserDailyPointsCore(data []model.UserDailyPoints) []UserDailyPointsCore {
+	dataDaily := []UserDailyPointsCore{}
+	for _, v := range data {
+		daily := UserDailyPointsModelToUserDailyPointsCore(v)
+		dataDaily = append(dataDaily, daily)
+	}
+	return dataDaily
+}

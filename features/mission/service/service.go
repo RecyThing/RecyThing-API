@@ -193,29 +193,29 @@ func (ms *missionService) DeleteMission(missionID string) error {
 }
 
 // Upload Mission User
-func (ms *missionService) CreateUploadMissionTask(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) error {
+func (ms *missionService) CreateUploadMissionTask(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) (entity.UploadMissionTaskCore, error) {
 
 	err := ms.MissionRepo.FindUploadMissionStatus("", data.MissionID, userID, "")
 	if err == nil {
-		return errors.New("error : sudah mengupload data")
+		return entity.UploadMissionTaskCore{}, errors.New("error : sudah mengupload data")
 	}
 
 	_, err = ms.MissionRepo.FindById(data.MissionID)
 	if err != nil {
-		return err
+		return entity.UploadMissionTaskCore{}, err
 	}
 
 	err = ms.MissionRepo.FindClaimed(userID, data.MissionID)
 	if err != nil {
-		return errors.New("error : belum melakukan klaim mission")
+		return entity.UploadMissionTaskCore{}, errors.New("error : belum melakukan klaim mission")
 	}
 
-	err = ms.MissionRepo.CreateUploadMissionTask(userID, data, images)
+	dataUpload, err := ms.MissionRepo.CreateUploadMissionTask(userID, data, images)
 	if err != nil {
-		return err
+		return entity.UploadMissionTaskCore{}, err
 	}
 
-	return nil
+	return dataUpload, nil
 }
 
 func (ms *missionService) UpdateUploadMissionTask(userID, id string, images []*multipart.FileHeader, data entity.UploadMissionTaskCore) error {

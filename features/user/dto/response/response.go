@@ -51,3 +51,9 @@ type UserCommunityResponse struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
 }
+
+type UserDailyPointsResponse struct {
+	Claim        bool      `json:"claim"`
+	DailyPointID int       `json:"daily_point_id"`
+	CreatedAt    time.Time `json:"created_at"`
+}

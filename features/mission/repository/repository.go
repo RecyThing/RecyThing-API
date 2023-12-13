@@ -485,18 +485,18 @@ func (mr *MissionRepository) FindClaimed(userID, missionID string) error {
 }
 
 // Upload Mission User
-func (mr *MissionRepository) CreateUploadMissionTask(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) error {
+func (mr *MissionRepository) CreateUploadMissionTask(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) (entity.UploadMissionTaskCore,error) {
 	request := entity.UploadMissionTaskCoreToUploadMissionTaskModel(data)
 	request.UserID = userID
 	tx := mr.db.Create(&request)
 	if tx.Error != nil {
-		return tx.Error
+		return entity.UploadMissionTaskCore{},tx.Error
 	}
 
 	for _, image := range images {
 		imageURL, uploadErr := storage.UploadProof(image)
 		if uploadErr != nil {
-			return uploadErr
+			return entity.UploadMissionTaskCore{},uploadErr
 		}
 
 		ImageList := entity.ImageUploadMissionCore{}
@@ -506,13 +506,15 @@ func (mr *MissionRepository) CreateUploadMissionTask(userID string, data entity.
 		ImageSave := entity.ImageUploadMissionCoreToImageUploadMissionModel(ImageList)
 
 		if err := mr.db.Create(&ImageSave).Error; err != nil {
-			return err
+			return entity.UploadMissionTaskCore{},err
 		}
 
 		data.Images = append(data.Images, ImageList)
 	}
 
-	return nil
+	dataResponse := entity.UploadMissionTaskModelToUploadMissionTaskCore(request)
+
+	return dataResponse,nil
 }
 
 func (mr *MissionRepository) FindUploadMissionStatus(id, missionID, userID, status string) error {

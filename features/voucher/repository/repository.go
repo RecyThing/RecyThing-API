@@ -66,14 +66,14 @@ func (vr *voucherRepository) GetAll(page, limit int, search string) ([]entity.Vo
 	}
 
 	if search == "" {
-		tx := vr.db.Limit(limit).Offset(offsetInt).Find(&dataVouchers)
+		tx := vr.db.Limit(limit).Offset(offsetInt).Order("created_at DESC").Find(&dataVouchers)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
 	}
 
 	if search != "" {
-		tx := vr.db.Where("reward_name LIKE ? or point LIKE ? ", "%"+search+"%", "%"+search+"%").Limit(limit).Offset(offsetInt).Find(&dataVouchers)
+		tx := vr.db.Where("reward_name LIKE ? or point LIKE ? ", "%"+search+"%", "%"+search+"%").Limit(limit).Offset(offsetInt).Order("created_at DESC").Find(&dataVouchers)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, 0, tx.Error
 		}
@@ -238,7 +238,7 @@ func (vr *voucherRepository) GetAllExchange(page, limit int, search, filter stri
 	}
 
 	if filter != "" {
-		tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Find(&dataExchange)
+		tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Order("created_at DESC").Find(&dataExchange)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, counts, tx.Error
 		}
@@ -286,6 +286,7 @@ func (vr *voucherRepository) GetAllExchange(page, limit int, search, filter stri
 			Joins("JOIN vouchers ON exchange_vouchers.id_voucher = vouchers.id").
 			Joins("JOIN users ON exchange_vouchers.id_user = users.id").
 			Where("vouchers.reward_name LIKE ? OR users.fullname LIKE ?", "%"+search+"%", "%"+search+"%").
+			Order("created_at DESC").
 			Find(&dataExchange)
 
 		if tx.Error != nil {
@@ -294,7 +295,7 @@ func (vr *voucherRepository) GetAllExchange(page, limit int, search, filter stri
 	}
 
 	if search == "" && filter == "" {
-		tx := paginationQuery.Find(&dataExchange)
+		tx := paginationQuery.Order("created_at DESC").Find(&dataExchange)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, counts, tx.Error
 		}

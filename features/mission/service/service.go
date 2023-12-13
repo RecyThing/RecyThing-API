@@ -75,8 +75,9 @@ func (ms *missionService) FindAllMission(page, limit, search, filter string) ([]
 	if err != nil {
 		return nil, pagination.PageInfo{}, helper.CountMission{}, err
 	}
+	validFilter := validation.ValidateMissionStatus(filter)
 
-	data, pagnationInfo, count, err := ms.MissionRepo.FindAllMission(pageInt, limitInt, search, filter)
+	data, pagnationInfo, count, err := ms.MissionRepo.FindAllMission(pageInt, limitInt, search, validFilter)
 	if err != nil {
 		return nil, pagination.PageInfo{}, count, err
 	}
@@ -145,7 +146,6 @@ func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID s
 
 	return nil
 }
-
 
 // Claimed Mission
 func (ms *missionService) ClaimMission(userID string, data entity.ClaimedMission) error {

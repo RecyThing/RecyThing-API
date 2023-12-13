@@ -11,7 +11,7 @@ type MissionRepositoryInterface interface {
 	FindAllMission(page, limit int, search, filter string) ([]Mission, pagination.PageInfo, helper.CountMission, error)
 	FindById(missionID string) (Mission, error)
 	GetCountMission(status, search string) (int, error)
-	GetCountDataMission() (helper.CountMission, error)
+	GetCountDataMission(filter, search string) (helper.CountMission, error)
 	// GetCountMissionApproval(filter, search string) (int, error)
 	GetCountDataMissionApproval(search string) (helper.CountMissionApproval, error)
 	GetImageURL(missionID string) (string, error)

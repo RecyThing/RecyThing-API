@@ -26,7 +26,7 @@ func MissionCoreToMissionModel(data Mission) model.Mission {
 func MissionHistoriesCoreToMap(data MissionHistories) map[string]interface{} {
 	return map[string]interface{}{
 		"id_transaction":   data.TransactionID,
-		"point":            data.Point,
+		"points":           data.Point,
 		"type_transaction": "hadiah mission",
 		"time_transaction": data.CreatedAt.Format("15:04:05.000"),
 		"created_at":       data.CreatedAt.Format(time.RFC3339),
@@ -39,7 +39,7 @@ func MissionHistoriesCoreToMapDetail(data MissionHistories) map[string]interface
 		"mission_id":       data.MissionID,
 		"title":            data.Title,
 		"status":           data.StatusApproval,
-		"point":            data.Point,
+		"points":           data.Point,
 		"type_transaction": "reward hadiah mission",
 		"time_transaction": data.CreatedAt.Format("15:04:05.000"),
 		"created_at":       data.CreatedAt.Format(time.RFC3339),

@@ -41,13 +41,22 @@ func (mr *MissionRepository) CreateMission(input entity.Mission) error {
 }
 
 func (mr *MissionRepository) FindAllMission(page, limit int, search, filter string) ([]entity.Mission, pagination.PageInfo, helper.CountMission, error) {
-	data := []model.Mission{}
-	offsetInt := (page - 1) * limit
 
-	paginationQuery := mr.db.Limit(limit).Offset(offsetInt)
+	var validMission []model.Mission
+	mr.db.Find(&validMission)
+
+	for _, v := range validMission {
+		err := mr.UpdateMissionStatus(v)
+		if err!=nil{
+			return nil, pagination.PageInfo{}, helper.CountMission{}, err
+		}
+	}
 
 	counts, _ := mr.GetCountDataMission(filter, search)
 	totalCount := int(counts.TotalCount)
+	data := []model.Mission{}
+	offsetInt := (page - 1) * limit
+	paginationQuery := mr.db.Limit(limit).Offset(offsetInt)
 
 	if filter != "" {
 		if search != "" {
@@ -65,7 +74,7 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 		}
 
 	}
-	
+
 	if filter == "" {
 		if search != "" {
 			tx := paginationQuery.Where("title LIKE ?", "%"+search+"%").Find(&data)
@@ -82,43 +91,50 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 		}
 	}
 
-	result := []model.Mission{}
-	for _, v := range data {
-		newStatus, err := helper.ChangeStatusMission(v.EndDate)
-		if err != nil {
-			return nil, pagination.PageInfo{}, counts, err
-		}
-
-		v.Status = newStatus
-		err = mr.db.Model(&v).Updates(map[string]interface{}{"status": v.Status}).Error
-		if err != nil {
-			return nil, pagination.PageInfo{}, counts, err
-		}
-
-		if err := mr.db.Where("id = ?", v.ID).Take(&v).Error; err != nil {
-			return nil, pagination.PageInfo{}, counts, err
-		}
-		result = append(result, v)
-	}
-
-	dataMission := entity.ListMissionModelToMissionCore(result)
+	dataMission := entity.ListMissionModelToMissionCore(data)
 	paginationInfo := pagination.CalculateData(totalCount, limit, page)
 	return dataMission, paginationInfo, counts, nil
 }
 
+func (mr *MissionRepository) UpdateMissionStatus(data model.Mission) error {
+	newStatus, err := helper.ChangeStatusMission(data.EndDate)
+	if err != nil {
+		return err
+	}
+
+	data.Status = newStatus
+	err = mr.db.Model(&data).Updates(map[string]interface{}{"status": data.Status}).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (mr *MissionRepository) FindAllMissionUser(userID string, filter string) ([]entity.MissionHistories, error) {
+
+	dataMission := []model.Mission{}
+	mr.db.Find(&dataMission)
+
+	for _, v := range dataMission {
+		err := mr.UpdateMissionStatus(v)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	if filter != "" {
 		if filter == constanta.BERJALAN {
 			var missionsWithoutTasks []model.Mission
 
 			var claimedMissionIDs []string
-			mr.db.Model(&model.ClaimedMission{}).Pluck("mission_id", &claimedMissionIDs)
+			mr.db.Model(&model.ClaimedMission{}).Where("user_id = ?", userID).Pluck("mission_id", &claimedMissionIDs)
 
 			var rejectedOrPendingMissionIDs []string
-			mr.db.Model(&model.UploadMissionTask{}).Where("status IN (?)", []string{constanta.PERLU_TINJAUAN, constanta.DITOLAK}).Pluck("mission_id", &rejectedOrPendingMissionIDs)
+			mr.db.Model(&model.UploadMissionTask{}).Where("user_id = ? AND status IN (?)", userID, []string{constanta.PERLU_TINJAUAN, constanta.DITOLAK}).Pluck("mission_id", &rejectedOrPendingMissionIDs)
 
 			uniqueMissionIDs := append(claimedMissionIDs, rejectedOrPendingMissionIDs...)
-			subQuery := mr.db.Model(&model.UploadMissionTask{}).Select("mission_id").Where("status = ?", constanta.DISETUJUI)
+			subQuery := mr.db.Model(&model.UploadMissionTask{}).Select("mission_id").Where("user_id = ? AND status = ?", userID, constanta.DISETUJUI)
 
 			mr.db.Where("id IN (?) AND id NOT IN (?)", uniqueMissionIDs, subQuery).Order("created_at DESC").Find(&missionsWithoutTasks)
 
@@ -160,8 +176,8 @@ func (mr *MissionRepository) FindAllMissionUser(userID string, filter string) ([
 
 					histories = append(histories, newHis)
 				}
-
 			}
+
 			return histories, nil
 		}
 

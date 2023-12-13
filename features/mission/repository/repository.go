@@ -525,12 +525,7 @@ func (mr *MissionRepository) UpdateUploadMissionTask(id string, images []*multip
 
 	ImageList := []model.ImageUploadMission{}
 
-	tx = mr.db.Where("upload_mission_task_id = ? ", id).Find(&ImageList)
-	if tx.Error != nil {
-		return tx.Error
-	}
-
-	tx = mr.db.Unscoped().Delete(&ImageList)
+	tx = mr.db.Unscoped().Where("upload_mission_task_id = ? ", id).Delete(&ImageList)
 	if tx.Error != nil {
 		return tx.Error
 	}

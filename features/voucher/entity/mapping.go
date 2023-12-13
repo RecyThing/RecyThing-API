@@ -84,7 +84,7 @@ func ModelExchangeVoucherToMapDetail(data model.ExchangeVoucher, point int) map[
 	return map[string]interface{}{
 		"id_transaction":   data.Id,
 		"voucher":          data.IdVoucher,
-		"point":            point,
+		"points":           point,
 		"phone":            data.Phone,
 		"status":           data.Status,
 		"time_transaction": data.TimeTransaction,
@@ -96,7 +96,7 @@ func ModelExchangeVoucherToMapDetail(data model.ExchangeVoucher, point int) map[
 func ModelExchangeVoucherToMap(data model.ExchangeVoucher, point int) map[string]interface{} {
 	return map[string]interface{}{
 		"id_transaction":   data.Id,
-		"point":            point,
+		"points":           point,
 		"time_transaction": data.TimeTransaction,
 		"type_transaction": "tukar poin",
 		"created_at":       data.CreatedAt.Format(time.RFC3339),

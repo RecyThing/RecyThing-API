@@ -262,3 +262,13 @@ func CheckLatLong(latitude, longitude float64) error {
 
 	return nil
 }
+
+func ValidateMissionStatus(filter string) string {
+	if filter == "aktif" {
+		return constanta.ACTIVE
+	}
+	if filter == "melewati tenggat" {
+		return constanta.OVERDUE
+	}
+	return filter
+}

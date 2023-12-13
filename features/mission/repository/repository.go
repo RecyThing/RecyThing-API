@@ -46,54 +46,57 @@ func (mr *MissionRepository) FindAllMission(page, limit int, search, filter stri
 
 	paginationQuery := mr.db.Limit(limit).Offset(offsetInt)
 
-	counts, _ := mr.GetCountDataMission()
-	totalCount, err := mr.GetCountMission(filter, search)
-	if err != nil {
-		return nil, pagination.PageInfo{}, counts, err
-	}
+	counts, _ := mr.GetCountDataMission(filter, search)
+	totalCount := int(counts.TotalCount)
 
 	if filter != "" {
-		// tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Preload("MissionStages").Find(&data)
-		tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Find(&data)
 
-		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, counts, tx.Error
+		if search != "" {
+			if filter == constanta.ACTIVE {
+				totalCount = int(counts.CountActive)
+			}
+			if filter == constanta.OVERDUE {
+				totalCount = int(counts.CountExpired)
+			}
+
+			tx := paginationQuery.Where("status LIKE ? AND title LIKE ?", "%"+filter+"%", "%"+search+"%").Find(&data)
+			if tx.Error != nil {
+				return nil, pagination.PageInfo{}, counts, tx.Error
+			}
+		}
+
+		if search == "" {
+			if filter == constanta.ACTIVE {
+				totalCount = int(counts.CountActive)
+			}
+			if filter == constanta.OVERDUE {
+				totalCount = int(counts.CountExpired)
+			}
+
+			tx := paginationQuery.Where("status LIKE ?", "%"+filter+"%").Find(&data)
+			if tx.Error != nil {
+				return nil, pagination.PageInfo{}, counts, tx.Error
+			}
+		}
+
+	}
+	if filter == "" {
+		if search != "" {
+			tx := paginationQuery.Where("title LIKE ?", "%"+search+"%").Find(&data)
+			if tx.Error != nil {
+				return nil, pagination.PageInfo{}, counts, tx.Error
+			}
 		}
 	}
-	newCount := helper.CountMission{}
-	if search != "" {
 
-		list := model.Mission{}
-		tx := mr.db.Model(&list).Where("status LIKE ? AND title LIKE ?", "%"+constanta.OVERDUE+"%", "%"+search+"%").Count(&newCount.CountExpired)
-		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, counts, tx.Error
-		}
-
-		list2 := model.Mission{}
-		tx = mr.db.Model(&list2).Where("status LIKE ? AND title LIKE ?", "%"+constanta.ACTIVE+"%", "%"+search+"%").Count(&newCount.CountActive)
-		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, counts, tx.Error
-		}
-
-		counts.TotalCount = int64(totalCount)
-		tx = paginationQuery.Where("title LIKE ?", "%"+search+"%").Find(&data)
-		if tx.Error != nil {
-			return nil, pagination.PageInfo{}, counts, tx.Error
-		}
-		counts.CountActive = newCount.CountActive
-		counts.CountExpired = newCount.CountExpired
-	}
-
-	if search == "" || filter == "" {
+	if search == "" && filter == "" {
 		tx := paginationQuery.Find(&data)
-		// tx := paginationQuery.Preload("MissionStages").Find(&data)
 		if tx.Error != nil {
 			return nil, pagination.PageInfo{}, counts, tx.Error
 		}
 	}
 
 	result := []model.Mission{}
-
 	for _, v := range data {
 		newStatus, err := helper.ChangeStatusMission(v.EndDate)
 		if err != nil {
@@ -211,35 +214,52 @@ func (mr *MissionRepository) FindAllMissionUser(userID string, filter string) ([
 
 }
 
-func (mr *MissionRepository) GetCountMission(filter, search string) (int, error) {
-	var totalCount int64
-	model := mr.db.Model(&model.Mission{})
-	if filter == "" || search == "" {
-		tx := model.Count(&totalCount)
+func (mr *MissionRepository) GetCountDataMission(filter, search string) (helper.CountMission, error) {
+	counts := helper.CountMission{}
+
+	if filter != "" && search != "" {
+		tx := mr.db.Model(&model.Mission{}).Where("status LIKE ? AND title LIKE ?", "%"+filter+"%", "%"+search+"%").Count(&counts.TotalCount)
 		if tx.Error != nil {
-			return 0, tx.Error
+			return counts, tx.Error
 		}
+
+		tx = mr.db.Model(&model.Mission{}).Where("status = ? AND title LIKE ?", constanta.ACTIVE, "%"+search+"%").Count(&counts.CountActive)
+		if tx.Error != nil {
+			return counts, tx.Error
+		}
+
+		tx = mr.db.Model(&model.Mission{}).Where("status = ? AND title LIKE ?", constanta.OVERDUE, "%"+search+"%").Count(&counts.CountExpired)
+		if tx.Error != nil {
+			return counts, tx.Error
+		}
+
+		if filter != constanta.ACTIVE {
+			counts.CountActive = 0
+		}
+		if filter != constanta.OVERDUE {
+			counts.CountExpired = 0
+		}
+
+		return counts, tx.Error
 	}
 
 	if search != "" {
-		tx := model.Where("title LIKE ?", "%"+search+"%").Count(&totalCount)
+		tx := mr.db.Model(&model.Mission{}).Where("status = ? AND title LIKE ?", constanta.OVERDUE, "%"+search+"%").Count(&counts.CountExpired)
 		if tx.Error != nil {
-			return 0, tx.Error
-		}
-	}
-
-	if filter != "" {
-		tx := model.Where("status LIKE ?", "%"+filter+"%").Count(&totalCount)
-		if tx.Error != nil {
-			return 0, tx.Error
+			return counts, tx.Error
 		}
 
-	}
-	return int(totalCount), nil
-}
+		tx = mr.db.Model(&model.Mission{}).Where("status = ? AND title LIKE ?", constanta.ACTIVE, "%"+search+"%").Count(&counts.CountActive)
+		if tx.Error != nil {
+			return counts, tx.Error
+		}
+		tx = mr.db.Model(&model.Mission{}).Where("title LIKE ?", "%"+search+"%").Count(&counts.TotalCount)
+		if tx.Error != nil {
+			return counts, tx.Error
+		}
 
-func (mr *MissionRepository) GetCountDataMission() (helper.CountMission, error) {
-	counts := helper.CountMission{}
+		return counts, tx.Error
+	}
 
 	tx := mr.db.Model(&model.Mission{}).Count(&counts.TotalCount)
 	if tx.Error != nil {
@@ -422,18 +442,18 @@ func (mr *MissionRepository) FindClaimed(userID, missionID string) error {
 }
 
 // Upload Mission User
-func (mr *MissionRepository) CreateUploadMissionTask(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) (entity.UploadMissionTaskCore,error) {
+func (mr *MissionRepository) CreateUploadMissionTask(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) (entity.UploadMissionTaskCore, error) {
 	request := entity.UploadMissionTaskCoreToUploadMissionTaskModel(data)
 	request.UserID = userID
 	tx := mr.db.Create(&request)
 	if tx.Error != nil {
-		return entity.UploadMissionTaskCore{},tx.Error
+		return entity.UploadMissionTaskCore{}, tx.Error
 	}
 
 	for _, image := range images {
 		imageURL, uploadErr := storage.UploadProof(image)
 		if uploadErr != nil {
-			return entity.UploadMissionTaskCore{},uploadErr
+			return entity.UploadMissionTaskCore{}, uploadErr
 		}
 
 		ImageList := entity.ImageUploadMissionCore{}
@@ -443,7 +463,7 @@ func (mr *MissionRepository) CreateUploadMissionTask(userID string, data entity.
 		ImageSave := entity.ImageUploadMissionCoreToImageUploadMissionModel(ImageList)
 
 		if err := mr.db.Create(&ImageSave).Error; err != nil {
-			return entity.UploadMissionTaskCore{},err
+			return entity.UploadMissionTaskCore{}, err
 		}
 
 		data.Images = append(data.Images, ImageList)
@@ -451,7 +471,7 @@ func (mr *MissionRepository) CreateUploadMissionTask(userID string, data entity.
 
 	dataResponse := entity.UploadMissionTaskModelToUploadMissionTaskCore(request)
 
-	return dataResponse,nil
+	return dataResponse, nil
 }
 
 func (mr *MissionRepository) FindUploadMissionStatus(id, missionID, userID, status string) error {

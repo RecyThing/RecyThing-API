@@ -214,42 +214,6 @@ func (mr *MissionRepository) FindAllMissionUser(userID string, filter string) ([
 
 }
 
-func (mr *MissionRepository) GetCountMission(filter, search string) (int, error) {
-	var totalCount int64
-	model := mr.db.Model(&model.Mission{})
-	if filter == "" || search == "" {
-		tx := model.Count(&totalCount)
-		if tx.Error != nil {
-			return 0, tx.Error
-		}
-	}
-
-	if filter != "" && search != "" {
-		tx := model.Where("status = ? AND title LIKE ?", filter, "%"+search+"%").Count(&totalCount)
-		if tx.Error != nil {
-			return 0, tx.Error
-		}
-		return int(totalCount), nil
-
-	}
-
-	if search != "" {
-		tx := model.Where("title LIKE ?", "%"+search+"%").Count(&totalCount)
-		if tx.Error != nil {
-			return 0, tx.Error
-		}
-	}
-
-	if filter != "" {
-		tx := model.Where("status LIKE ?", "%"+filter+"%").Count(&totalCount)
-		if tx.Error != nil {
-			return 0, tx.Error
-		}
-
-	}
-	return int(totalCount), nil
-}
-
 func (mr *MissionRepository) GetCountDataMission(filter, search string) (helper.CountMission, error) {
 	counts := helper.CountMission{}
 
@@ -268,13 +232,6 @@ func (mr *MissionRepository) GetCountDataMission(filter, search string) (helper.
 		if tx.Error != nil {
 			return counts, tx.Error
 		}
-
-		// if !strings.Contains(constanta.ACTIVE, filter) {
-		// 	counts.CountActive = 0
-		// }
-		// if !strings.Contains(constanta.OVERDUE, filter) {
-		// 	counts.CountExpired = 0
-		// }
 
 		if filter != constanta.ACTIVE {
 			counts.CountActive = 0
@@ -485,18 +442,18 @@ func (mr *MissionRepository) FindClaimed(userID, missionID string) error {
 }
 
 // Upload Mission User
-func (mr *MissionRepository) CreateUploadMissionTask(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) (entity.UploadMissionTaskCore,error) {
+func (mr *MissionRepository) CreateUploadMissionTask(userID string, data entity.UploadMissionTaskCore, images []*multipart.FileHeader) (entity.UploadMissionTaskCore, error) {
 	request := entity.UploadMissionTaskCoreToUploadMissionTaskModel(data)
 	request.UserID = userID
 	tx := mr.db.Create(&request)
 	if tx.Error != nil {
-		return entity.UploadMissionTaskCore{},tx.Error
+		return entity.UploadMissionTaskCore{}, tx.Error
 	}
 
 	for _, image := range images {
 		imageURL, uploadErr := storage.UploadProof(image)
 		if uploadErr != nil {
-			return entity.UploadMissionTaskCore{},uploadErr
+			return entity.UploadMissionTaskCore{}, uploadErr
 		}
 
 		ImageList := entity.ImageUploadMissionCore{}
@@ -506,7 +463,7 @@ func (mr *MissionRepository) CreateUploadMissionTask(userID string, data entity.
 		ImageSave := entity.ImageUploadMissionCoreToImageUploadMissionModel(ImageList)
 
 		if err := mr.db.Create(&ImageSave).Error; err != nil {
-			return entity.UploadMissionTaskCore{},err
+			return entity.UploadMissionTaskCore{}, err
 		}
 
 		data.Images = append(data.Images, ImageList)
@@ -514,7 +471,7 @@ func (mr *MissionRepository) CreateUploadMissionTask(userID string, data entity.
 
 	dataResponse := entity.UploadMissionTaskModelToUploadMissionTaskCore(request)
 
-	return dataResponse,nil
+	return dataResponse, nil
 }
 
 func (mr *MissionRepository) FindUploadMissionStatus(id, missionID, userID, status string) error {

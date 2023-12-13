@@ -5,6 +5,7 @@ import "time"
 type CommunityResponse struct {
 	Id        string    `json:"id"`
 	Name      string    `json:"name"`
+	Image     string    `json:"image"`
 	Location  string    `json:"location"`
 	CreatedAt time.Time `json:"created_at"`
 }

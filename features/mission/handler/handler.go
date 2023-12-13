@@ -224,14 +224,17 @@ func (mh *missionHandler) CreateUploadMission(e echo.Context) error {
 
 	request := request.UploadMissionTaskRequestToUploadMissionTaskCore(input)
 
-	err = mh.missionService.CreateUploadMissionTask(userID, request, images)
+	result, err := mh.missionService.CreateUploadMissionTask(userID, request, images)
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_RECORD_NOT_FOUND) {
 			return e.JSON(http.StatusNotFound, helper.ErrorResponse(constanta.ERROR_DATA_NOT_FOUND))
 		}
 		return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 	}
-	return e.JSON(http.StatusCreated, helper.SuccessResponse("berhasil mengupload bukti"))
+
+	response := response.UploadMissionTaskResponses(result)
+
+	return e.JSON(http.StatusCreated, helper.SuccessWithDataResponse("berhasil mengupload bukti",response))
 }
 
 func (mh *missionHandler) UpdateUploadMission(e echo.Context) error {

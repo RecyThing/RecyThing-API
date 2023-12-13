@@ -7,7 +7,6 @@ import (
 	"recything/features/user/entity"
 	"recything/features/user/model"
 	"recything/utils/constanta"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -89,45 +88,35 @@ func (ur *userRepository) UpdateById(id string, data entity.UsersCore) error {
 }
 
 func (ur *userRepository) UpdateBadge(id string) error {
-	dataBadge := model.Users{}
+	dataUsers := model.Users{}
 
-	dataUser, errGet := ur.GetById(id)
-	if errGet != nil {
-		return errGet
-	}
-
-	dataAchievement, errAchivement := ur.achievementRepo.GetAllAchievement()
-	if errAchivement != nil {
-		return errAchivement
-	}
-
-	loc, err := time.LoadLocation(constanta.ASIABANGKOK)
-	if err != nil {
-		return err
-	}
-
-	now := time.Now().In(loc)
-
-	if now.Day() == 1 {
-		for i := len(dataAchievement) - 1; i >= 0; i-- {
-			v := dataAchievement[i]
-			if dataUser.Point >= v.TargetPoint {
-				dataUser.Badge = v.Name
-			}
-		}
-	}
-
-	tx := ur.db.Model(&dataBadge).Where("id = ?", id).Update("badge", dataUser.Badge)
+	tx := ur.db.Where("id = ?", id).First(&dataUsers)
 	if tx.Error != nil {
 		return tx.Error
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New(constanta.ERROR_DATA_ID)
+		return tx.Error
+	}
+
+	dataAchievement, errAchievement := ur.achievementRepo.GetAllAchievement()
+	if errAchievement != nil {
+		return errAchievement
+	}
+
+	for i := len(dataAchievement) - 1; i >= 0; i-- {
+		v := dataAchievement[i]
+		if dataUsers.Point >= v.TargetPoint {
+			dataUsers.Badge = v.Name
+		}
+	}
+
+	tx = ur.db.Save(&dataUsers)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
 	return nil
-
 }
 
 // ForgetPassword implements entity.UsersRepositoryInterface.

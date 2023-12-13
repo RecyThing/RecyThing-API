@@ -8,6 +8,7 @@ import (
 	userRepo "recything/features/user/repository"
 	dropPointRepo "recything/features/drop-point/repository"
 	trashCategoryRepo "recything/features/trash_category/repository"
+	achievement"recything/features/achievement/repository"
 
 	"recything/utils/jwt"
 
@@ -16,7 +17,8 @@ import (
 )
 
 func RouteTrashExchange(e *echo.Group, db *gorm.DB) {
-	userRepository := userRepo.NewUserRepository(db,nil)
+	achievementRepository := achievement.NewAchievementRepository(db)
+	userRepository := userRepo.NewUserRepository(db,achievementRepository)
 	dropPointRepository := dropPointRepo.NewDropPointRepository(db)
 	trashCategoryRepository := trashCategoryRepo.NewTrashCategoryRepository(db)
 

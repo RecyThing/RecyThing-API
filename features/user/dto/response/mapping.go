@@ -69,8 +69,10 @@ func UsersCoreToResponseDetailManageUsers(data entity.UsersCore) UserResponseDet
 
 func CommunityCoreToCommunityResponse(community entity.UserCommunityCore) UserCommunityResponse {
 	return UserCommunityResponse{
-		Id:   community.Id,
-		Name: community.Name,
+		Id:       community.Id,
+		Name:     community.Name,
+		Image:    community.Image,
+		Location: community.Location,
 	}
 }
 

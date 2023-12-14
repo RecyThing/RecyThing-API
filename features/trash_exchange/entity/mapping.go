@@ -2,6 +2,7 @@ package entity
 
 import (
 	"recything/features/trash_exchange/model"
+	"recything/utils/constanta"
 	"time"
 )
 
@@ -108,21 +109,23 @@ func TrashExchangeCoreToTrashExchangeModel(data TrashExchangeCore) model.TrashEx
 }
 
 func TrashExchangeModelToMapTrash(data model.TrashExchange) map[string]interface{} {
+	loc, _ := time.LoadLocation(constanta.ASIABANGKOK)
 	return map[string]interface{}{
 		"id_transaction":   data.Id,
 		"created_at":       data.CreatedAt.Format(time.RFC3339),
-		"time_transaction": data.CreatedAt.Format("15:04:05.000"),
+		"time_transaction": data.CreatedAt.In(loc).Format("15:04:05.000"),
 		"type_transaction": "drop sampah",
 		"points":           data.TotalPoint,
 	}
 }
 
 func TrashExchangeModelToMapTrashDetail(data model.TrashExchange) map[string]interface{} {
+	loc, _ := time.LoadLocation(constanta.ASIABANGKOK)
 	return map[string]interface{}{
 		"id_transaction":   data.Id,
 		"drop_point":       data.DropPointId,
 		"created_at":       data.CreatedAt.Format(time.RFC3339),
-		"time_transaction": data.CreatedAt.Format("15:04:05.000"),
+		"time_transaction": data.CreatedAt.In(loc).Format("15:04:05.000"),
 		"type_transaction": "reward penukaran sampah",
 		"points":           data.TotalPoint,
 		"trash_detail":     ListTrashExchangeDetailCoreToMapTrash(data.TrashExchangeDetails),

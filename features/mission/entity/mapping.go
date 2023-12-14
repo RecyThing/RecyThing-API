@@ -2,6 +2,7 @@ package entity
 
 import (
 	"recything/features/mission/model"
+	"recything/utils/constanta"
 	"time"
 )
 
@@ -24,16 +25,19 @@ func MissionCoreToMissionModel(data Mission) model.Mission {
 }
 
 func MissionHistoriesCoreToMap(data MissionHistories) map[string]interface{} {
+	loc, _ := time.LoadLocation(constanta.ASIABANGKOK)
 	return map[string]interface{}{
 		"id_transaction":   data.TransactionID,
 		"points":           data.Point,
 		"type_transaction": "hadiah mission",
-		"time_transaction": data.CreatedAt.Format("15:04:05.000"),
+		"time_transaction": data.CreatedAt.In(loc).Format("15:04:05.000"),
 		"created_at":       data.CreatedAt.Format(time.RFC3339),
 	}
 }
 
 func MissionHistoriesCoreToMapDetail(data MissionHistories) map[string]interface{} {
+
+	loc, _ := time.LoadLocation(constanta.ASIABANGKOK)
 	return map[string]interface{}{
 		"id_transaction":   data.TransactionID,
 		"mission_id":       data.MissionID,
@@ -41,7 +45,7 @@ func MissionHistoriesCoreToMapDetail(data MissionHistories) map[string]interface
 		"status":           data.StatusApproval,
 		"points":           data.Point,
 		"type_transaction": "reward hadiah mission",
-		"time_transaction": data.CreatedAt.Format("15:04:05.000"),
+		"time_transaction": data.CreatedAt.In(loc).Format("15:04:05.000"),
 		"created_at":       data.CreatedAt.Format(time.RFC3339),
 	}
 }

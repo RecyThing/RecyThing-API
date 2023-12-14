@@ -85,3 +85,12 @@ func (tc *trashCategoryService) UpdateCategory(idTrash string, data entity.Trash
 	result.ID = idTrash
 	return result, nil
 }
+
+func (tc *trashCategoryService) FindAllFetch() ([]entity.TrashCategoryCore, error){
+	dataTrash,errFind := tc.trashCategoryRepo.FindAllFetch()
+	if errFind != nil {
+		return []entity.TrashCategoryCore{},errFind
+	}
+
+	return dataTrash,nil
+}

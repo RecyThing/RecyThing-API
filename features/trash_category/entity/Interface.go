@@ -12,6 +12,7 @@ type TrashCategoryRepositoryInterface interface {
 	FindAll(page, limit int, search string) ([]TrashCategoryCore, pagination.PageInfo, int, error)
 	GetCount(search string) (int, error)
 	GetByType(trashType string) (TrashCategoryCore, error)
+	FindAllFetch() ([]TrashCategoryCore, error)
 }
 
 type TrashCategoryServiceInterface interface {
@@ -20,4 +21,5 @@ type TrashCategoryServiceInterface interface {
 	DeleteCategory(idTrash string) error
 	GetAllCategory(page, limit, search string) ([]TrashCategoryCore, pagination.PageInfo, int, error)
 	GetById(idTrash string) (TrashCategoryCore, error)
+	FindAllFetch() ([]TrashCategoryCore, error)
 }

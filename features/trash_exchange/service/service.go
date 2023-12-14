@@ -10,6 +10,7 @@ import (
 	"recything/utils/helper"
 	"recything/utils/pagination"
 	"recything/utils/validation"
+	"time"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -91,7 +92,12 @@ func (tes *trashExchangeService) CreateTrashExchange(data trashExchange.TrashExc
 	if err != nil {
 		return trashExchange.TrashExchangeCore{}, errors.New("gagal memperbarui nilai point pengguna")
 	}
+	loc, err := time.LoadLocation(constanta.ASIABANGKOK)
+	if err != nil {
+		return trashExchange.TrashExchangeCore{},err
+	}
 
+	data.CreatedAt = time.Now().In(loc)
 	result, err := tes.trashExchangeRepository.CreateTrashExchange(data)
 	if err != nil {
 		return trashExchange.TrashExchangeCore{}, errors.New("gagal menyimpan data trash exchange")

@@ -6,6 +6,7 @@ import (
 	"mime/multipart"
 	admin "recything/features/admin/entity"
 	user "recything/features/user/entity"
+	"time"
 
 	"recything/features/mission/entity"
 	"recything/utils/constanta"
@@ -210,6 +211,12 @@ func (ms *missionService) CreateUploadMissionTask(userID string, data entity.Upl
 		return entity.UploadMissionTaskCore{}, errors.New("error : belum melakukan klaim mission")
 	}
 
+	loc, err := time.LoadLocation(constanta.ASIABANGKOK)
+	if err != nil {
+		return entity.UploadMissionTaskCore{}, err
+	}
+
+	data.CreatedAt = time.Now().In(loc)
 	dataUpload, err := ms.MissionRepo.CreateUploadMissionTask(userID, data, images)
 	if err != nil {
 		return entity.UploadMissionTaskCore{}, err

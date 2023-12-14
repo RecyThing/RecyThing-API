@@ -283,11 +283,12 @@ func (ch *communityHandler) ReadAllEvent(e echo.Context) error {
 		if strings.Contains(err.Error(), constanta.ERROR) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))
 		}
+
 		return e.JSON(http.StatusInternalServerError, helper.ErrorResponse(err.Error()))
 	}
 
 	if len(eventData) == 0 {
-		return e.JSON(http.StatusOK, helper.SuccessResponse(constanta.SUCCESS_NULL))
+		return e.JSON(http.StatusNotFound, helper.SuccessResponse(constanta.ERROR_DATA_NOT_FOUND))
 	}
 
 	var eventResponse = response.ListEventCoreToListEventRessponse(eventData)

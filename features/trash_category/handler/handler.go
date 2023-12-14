@@ -86,7 +86,7 @@ func (tc *trashCategoryHandler) GetAllCategoriesFetch(e echo.Context) error {
 		return e.JSON(http.StatusForbidden, helper.ErrorResponse(constanta.ERROR_EXTRA_TOKEN))
 	}
 
-	result, _, _, err := tc.trashCategory.GetAllCategory("", "", "")
+	result, err := tc.trashCategory.FindAllFetch()
 	if err != nil {
 		if strings.Contains(err.Error(), constanta.ERROR_INVALID_TYPE) {
 			return e.JSON(http.StatusBadRequest, helper.ErrorResponse(err.Error()))

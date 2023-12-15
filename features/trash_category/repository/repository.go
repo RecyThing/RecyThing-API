@@ -84,6 +84,18 @@ func (tc *trashCategoryRepository) GetCount(search string) (int, error) {
 	return int(totalCount), nil
 }
 
+func (tc *trashCategoryRepository) FindAllFetch() ([]entity.TrashCategoryCore, error) {
+	dataTrashCategories := []model.TrashCategory{}
+	
+		tx := tc.db.Find(&dataTrashCategories)
+		if tx.Error != nil {
+			return []entity.TrashCategoryCore{},  tx.Error
+		}
+	
+	result := entity.ListModelTrashCategoryToCoreTrashCategory(dataTrashCategories)
+	return result, nil
+}
+
 func (tc *trashCategoryRepository) GetById(idTrash string) (entity.TrashCategoryCore, error) {
 
 	dataTrashCategories := model.TrashCategory{}

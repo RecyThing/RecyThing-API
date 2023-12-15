@@ -127,7 +127,12 @@ func (vs *voucherService) CreateExchangeVoucher(idUser string, data entity.Excha
 		return errors.New("gagal memperbarui nilai point pengguna")
 	}
 
-	data.TimeTransaction = time.Now().Format("15:04:05.000")
+	loc, err := time.LoadLocation(constanta.ASIABANGKOK)
+	if err != nil {
+		return err
+	}
+
+	data.TimeTransaction = time.Now().In(loc).Format("15:04:05.000")
 	err = vs.voucherRepository.CreateExchangeVoucher(idUser, data)
 	if err != nil {
 		return err

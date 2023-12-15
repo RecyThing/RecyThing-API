@@ -27,6 +27,7 @@ func AdminCoreToAdminResponseLogin(admin entity.AdminCore, token string) AdminRe
 		ID:       admin.Id,
 		Fullname: admin.Fullname,
 		Email:    admin.Email,
+		Image:    admin.Image,
 		Token:    token,
 	}
 }

@@ -15,5 +15,6 @@ type AdminResponseLogin struct {
 	ID       string `json:"id"`
 	Fullname string `json:"fullname"`
 	Email    string `json:"email"`
+	Image    string `json:"image"`
 	Token    string `json:"token"`
 }

@@ -40,7 +40,7 @@ func (ar *AdminRepository) Create(image *multipart.FileHeader, data entity.Admin
 		}
 		dataAdmins.Image = imageURL
 	} else {
-		dataAdmins.Image = "https://ui-avatars.com/api/?background=56cc33&color=fff&name=" + data.Fullname
+		dataAdmins.Image = constanta.IMAGE_ADMIN + data.Fullname
 	}
 
 	tx := ar.db.Create(&dataAdmins)

@@ -27,7 +27,7 @@ func TestCreateCategory(t *testing.T) {
 		mockRepo.On("Create", testData).Return(nil)
 
 		err := trashCategoryService.CreateCategory(testData)
-		assert.NoError(t, err, "data yang diinput tidak sesuai")
+		assert.NoError(t, err)
 		mockRepo.AssertExpectations(t)
 	})
 

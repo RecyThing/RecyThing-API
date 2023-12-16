@@ -1,7 +1,7 @@
 package service
 
 import (
-	// "errors"
+	"errors"
 	// "mime/multipart"
 
 	user_entity "recything/features/user/entity"
@@ -31,7 +31,9 @@ var claimedData = []user_entity.UserDailyPointsCore{
 }
 
 func TestGetAllHistoryPoint(t *testing.T) {
-	mockRepo := new(mocks.DailyPointRepositoryInterface)
+
+	t.Run("Success",func(t *testing.T) {
+		mockRepo := new(mocks.DailyPointRepositoryInterface)
 	dailyPointService := NewDailyPointService(mockRepo)
 
 	userId := "1"
@@ -46,10 +48,31 @@ func TestGetAllHistoryPoint(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, dailypoint, len(mockData))
 	mockRepo.AssertExpectations(t)
+	})
+
+	t.Run("Failed",func(t *testing.T) {
+		mockRepo := new(mocks.DailyPointRepositoryInterface)
+	dailyPointService := NewDailyPointService(mockRepo)
+
+	userId := "1"
+
+	// Mock repository response
+	mockRepo.On("GetAllHistoryPoint", userId).
+		Return(mockData, errors.New("Failed"))
+
+	// Test case
+	_, err := dailyPointService.GetAllHistoryPoint(userId)
+
+	assert.Error(t, err)
+	mockRepo.AssertExpectations(t)
+	})
+	
 }
 
 func TestGetByIdHistoryPoint(t *testing.T) {
-	mockRepo := new(mocks.DailyPointRepositoryInterface)
+
+	t.Run("Succes",func(t *testing.T) {
+		mockRepo := new(mocks.DailyPointRepositoryInterface)
 	dailyPointService := NewDailyPointService(mockRepo)
 
 	userId := "1"
@@ -65,10 +88,31 @@ func TestGetByIdHistoryPoint(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, dailypoint)
 	mockRepo.AssertExpectations(t)
+	})
+	
+	t.Run("Failed",func(t *testing.T) {
+		mockRepo := new(mocks.DailyPointRepositoryInterface)
+	dailyPointService := NewDailyPointService(mockRepo)
+
+	userId := "1"
+	transactionId := "2"
+
+	// Mock repository response
+	mockRepo.On("GetByIdHistoryPoint", userId, transactionId).
+		Return(dataHistory, errors.New("Failed"))
+
+	// Test case
+	_, err := dailyPointService.GetByIdHistoryPoint(userId, transactionId)
+
+	assert.Error(t, err)
+	mockRepo.AssertExpectations(t)
+	})
 }
 
 func TestGetAllClaimedDaily(t *testing.T) {
-	mockRepo := new(mocks.DailyPointRepositoryInterface)
+
+	t.Run("Success",func(t *testing.T) {
+		mockRepo := new(mocks.DailyPointRepositoryInterface)
 	dailyPointService := NewDailyPointService(mockRepo)
 
 	userId := "1"
@@ -82,5 +126,58 @@ func TestGetAllClaimedDaily(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Len(t, dailypoint, len(claimedData))
+	mockRepo.AssertExpectations(t)
+	})
+
+	t.Run("Failed",func(t *testing.T) {
+		mockRepo := new(mocks.DailyPointRepositoryInterface)
+	dailyPointService := NewDailyPointService(mockRepo)
+
+	userId := "1"
+
+	// Mock repository response
+	mockRepo.On("GetAllClaimedDaily", userId).
+		Return([]user_entity.UserDailyPointsCore{}, errors.New("Failed"))
+
+	// Test case
+	dailypoint, err := dailyPointService.GetAllClaimedDaily(userId)
+
+	assert.Error(t, err)
+	assert.Empty(t, dailypoint)
+	mockRepo.AssertExpectations(t)
+	})
+}
+
+func TestDailyClaim(t *testing.T) {
+	mockRepo := new(mocks.DailyPointRepositoryInterface)
+	dailyPointService := NewDailyPointService(mockRepo)
+
+	userId := "1"
+
+	// Mock repository response
+	mockRepo.On("DailyClaim", userId).
+		Return(nil)
+
+	// Test case
+	err := dailyPointService.DailyClaim(userId)
+
+	assert.NoError(t, err)
+	mockRepo.AssertExpectations(t)
+}
+
+func TestDailyClaimFailed(t *testing.T) {
+	mockRepo := new(mocks.DailyPointRepositoryInterface)
+	dailyPointService := NewDailyPointService(mockRepo)
+
+	userId := "1"
+
+	// Mock repository response
+	mockRepo.On("DailyClaim", userId).
+		Return(errors.New("Failed"))
+
+	// Test case
+	err := dailyPointService.DailyClaim(userId)
+
+	assert.Error(t, err)
 	mockRepo.AssertExpectations(t)
 }

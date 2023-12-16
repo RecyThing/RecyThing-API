@@ -2050,7 +2050,7 @@
                 "description": "this enpoint for update mission when approval rejected",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/id"
+                        "$ref": "#/components/parameters/idupload"
                     }
                 ],
                 "requestBody": {
@@ -2859,6 +2859,15 @@
                 "name": "id",
                 "in": "path",
                 "description": "id of data",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "idupload": {
+                "name": "id",
+                "in": "path",
+                "description": "id upload mission",
                 "required": true,
                 "schema": {
                     "type": "string"

@@ -21,6 +21,7 @@ const (
 	//VERIFICATION_URL = "http://localhost:8080/verify-token?token="
 	VERIFICATION_URL   = "https://api.recything.my.id/verify-token?token="
 	EMAIL_NOT_REGISTER = "email belum terdaftar"
+	IMAGE_ADMIN        = "https://ui-avatars.com/api/?background=56cc33&color=fff&name="
 )
 
 // Constanta For Error
@@ -112,7 +113,7 @@ const (
 	GOLD     = "gold"
 )
 
-const(
+const (
 	ASIABANGKOK = "Asia/Bangkok"
 )
 

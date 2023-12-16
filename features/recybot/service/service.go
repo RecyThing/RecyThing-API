@@ -3,13 +3,13 @@ package service
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"recything/features/recybot/entity"
 	"recything/utils/constanta"
 	"recything/utils/helper"
 	"recything/utils/pagination"
 	"recything/utils/validation"
+	"strings"
 
 	"github.com/joho/godotenv"
 	"github.com/sashabaranov/go-openai"
@@ -45,7 +45,6 @@ func (rb *recybotService) CreateData(data entity.RecybotCore) (entity.RecybotCor
 	}
 	return result, nil
 }
-
 
 func (rb *recybotService) FindAllData(filter, search, page, limit string) ([]entity.RecybotCore, pagination.PageInfo, helper.CountPrompt, error) {
 
@@ -102,55 +101,66 @@ func (rb *recybotService) UpdateData(idData string, data entity.RecybotCore) (en
 }
 
 func (rb *recybotService) GetPrompt(question string) (string, error) {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	godotenv.Load()
 
-	dataRecybot, err := rb.recybotRepository.GetAll()
-	if err != nil {
-		return "", err
-	}
+	resultChan := make(chan map[string][]string)
+	errChan := make(chan error)
 
-	output := make(map[string][]string)
-	for _, item := range dataRecybot {
-		output[item.Category] = append(output[item.Category], item.Question)
-	}
-
-	var prompt string
-	for category, questions := range output {
-		prompt += "\n" + fmt.Sprintf("kategori %s:\n", category)
-		for _, question := range questions {
-			prompt += fmt.Sprintf("%s\n", question)
+	go func() {
+		dataRecybot, err := rb.recybotRepository.GetAll()
+		if err != nil {
+			errChan <- err
+			return
 		}
-	}
 
-	log.Println(prompt)
-	ctx := context.Background()
-	client := openai.NewClient(os.Getenv("OPEN_AI_KEY"))
-	model := openai.GPT3Dot5Turbo
-	messages := []openai.ChatCompletionMessage{
-		{
-			Role:    "system",
-			Content: prompt,
-		},
-		{
-			Role:    "user",
-			Content: question,
-		},
-	}
+		output := make(map[string][]string)
+		for _, item := range dataRecybot {
+			output[item.Category] = append(output[item.Category], item.Question)
+		}
 
-	response, err := client.CreateChatCompletion(
-		ctx,
-		openai.ChatCompletionRequest{
-			Model:    model,
-			Messages: messages,
-		},
-	)
-	if err != nil {
+		resultChan <- output
+	}()
+
+	select {
+	case output := <-resultChan:
+		var prompt strings.Builder
+		for category, questions := range output {
+			prompt.WriteString(fmt.Sprintln(" "))
+			prompt.WriteString(fmt.Sprintf("kategori %s:\n", category))
+			for _, question := range questions {
+				prompt.WriteString(fmt.Sprintf("%s\n", question))
+			}
+		}
+
+		ctx := context.Background()
+		client := openai.NewClient(os.Getenv("OPEN_AI_KEY"))
+		model := openai.GPT3Dot5Turbo
+		messages := []openai.ChatCompletionMessage{
+			{
+				Role:    "system",
+				Content: prompt.String(),
+			},
+			{
+				Role:    "user",
+				Content: question,
+			},
+		}
+
+		response, err := client.CreateChatCompletion(
+			ctx,
+			openai.ChatCompletionRequest{
+				Model:    model,
+				Messages: messages,
+			},
+		)
+		if err != nil {
+			return "", err
+		}
+
+		answer := response.Choices[0].Message.Content
+		return answer, nil
+
+	case err := <-errChan:
 		return "", err
 	}
-
-	answer := response.Choices[0].Message.Content
-	return answer, nil
 }

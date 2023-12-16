@@ -467,7 +467,28 @@ func TestUpdateById(t *testing.T) {
 		assert.Empty(t, user)
 		mockRepo.AssertExpectations(t)
 	})
+}
 
+func TestUpdateUserFailure(t *testing.T) {
+	mockRepo := new(mocks.UsersRepositoryInterface)
+	userSvc := NewUserService(mockRepo)
+
+	id := "some_user_id"
+	requestBody := entity.UsersCore{
+		Fullname:    "budiawan",
+		Phone:       "082189638011",
+		Address:     "minasaupa",
+		DateOfBirth: "2023-01-04",
+		Purpose:     "pake nanya",
+	}
+	mockRepo.On("GetById", id).Return(entity.UsersCore{}, nil)
+	mockRepo.On("UpdateById", id, requestBody).Return(errors.New("update failed"))
+
+	err := userSvc.UpdateById(id, requestBody)
+
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "update failed")
+	mockRepo.AssertExpectations(t)
 }
 
 // TestUpdatePassword tests the UpdatePassword method of userService.
@@ -575,6 +596,15 @@ func TestUpdatePassword(t *testing.T) {
 		assert.EqualError(t, err, constanta.ERROR_CONFIRM_PASSWORD)
 		mockRepo.AssertExpectations(t)
 	})
+	t.Run("Invalid Update Password", func(t *testing.T) {
+		userID := ""
+		passwordData := entity.UsersCore{}
+		err := userSvc.UpdatePassword(userID, passwordData)
+		assert.NotNil(t, err)
+		assert.EqualError(t, err, constanta.ERROR_ID_INVALID)
+		mockRepo.AssertExpectations(t)
+	})
+
 	t.Run("Invalid Update Password", func(t *testing.T) {
 		userID := ""
 		passwordData := entity.UsersCore{}

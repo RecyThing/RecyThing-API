@@ -145,6 +145,10 @@ func (article *articleService) PostLike(idArticle string, idUser string) error {
 
 // PostShare implements entity.ArticleServiceInterface.
 func (article *articleService) PostShare(idArticle string) error {
+	if idArticle == "" {
+		return errors.New(constanta.ERROR_ID_INVALID)
+	}
+
 	postShare := article.ArticleRepository.PostShare(idArticle)
 	if postShare != nil {
 		return postShare

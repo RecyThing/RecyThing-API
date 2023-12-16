@@ -17,14 +17,20 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var dataUsers = user.UsersCore{
+var dataUser = user.UsersCore{
 	Id:       "1",
 	Fullname: "recything",
 	Email:    "recything@example.com",
 	Point:    2000,
 }
 
-var dataAdmins = entity.AdminCore{
+var dataUsers = []user.UsersCore{
+	{Id: "1", Fullname: "recything", Email: "recything@example.com", Point: 2000},
+	{Id: "2", Fullname: "recything2", Email: "recything2@example.com", Point: 3000},
+	{Id: "3", Fullname: "recything3", Email: "recything3@example.com", Point: 4000},
+}
+
+var dataAdmin = entity.AdminCore{
 	Fullname:        "John Doe",
 	Email:           "john@example.com",
 	Password:        "password123",
@@ -32,11 +38,23 @@ var dataAdmins = entity.AdminCore{
 	Status:          "aktif",
 }
 
+var dataAdmins = []entity.AdminCore{
+	{Id: "1", Fullname: "recything", Email: "recything@example.com", Status: "aktif"},
+	{Id: "2", Fullname: "recything2", Email: "recything2@example.com", Status: "aktif"},
+	{Id: "3", Fullname: "recything3", Email: "recything3@example.com", Status: "aktif"},
+}
+
 var dataReport = report.ReportCore{
 	ID:         "1",
 	ReportType: "tumpukan sampah",
 	UserId:     "user1",
 	Status:     "perlu tinjauan",
+}
+
+var dataReports = []report.ReportCore{
+	{ID: "1", ReportType: "tumpukan sampah", UserId: "user1", Status: "perlu tinjauan"},
+	{ID: "2", ReportType: "pelanggaran sampah", UserId: "user2", Status: "perlu tinjauan"},
+	{ID: "3", ReportType: "tumpukan sampah", UserId: "user3", Status: "perlu tinjauan"},
 }
 
 func TestCreateAdmin(t *testing.T) {
@@ -58,7 +76,7 @@ func TestCreateAdmin(t *testing.T) {
 		_, err := adminService.Create(nil, requestBody)
 
 		assert.NoError(t, err)
-		assert.NotEqual(t, requestBody.Email, dataAdmins.Email)
+		assert.NotEqual(t, requestBody.Email, dataAdmin.Email)
 
 		mockRepo.AssertExpectations(t)
 	})
@@ -153,7 +171,7 @@ func TestCreateAdmin(t *testing.T) {
 		_, err := adminService.Create(nil, requestBody)
 
 		assert.Error(t, err)
-		assert.Equal(t, requestBody.Email, dataAdmins.Email)
+		assert.Equal(t, requestBody.Email, dataAdmin.Email)
 
 		mockRepo.AssertExpectations(t)
 	})
@@ -193,11 +211,25 @@ func TestGetAllAdmins(t *testing.T) {
 		assert.Equal(t, pagination.PageInfo{}, pageInfo)
 		assert.Equal(t, 0, count)
 	})
+	t.Run("Repository Error", func(t *testing.T) {
+		mockRepo := new(mocks.AdminRepositoryInterface)
+		adminService := NewAdminService(mockRepo)
+
+		mockRepo.On("SelectAll", 1, 10, "").Return(dataAdmins, pagination.PageInfo{}, len(dataAdmins), errors.New("repository error"))
+
+		result, pageInfo, count, err := adminService.GetAll("", "", "")
+
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Empty(t, pageInfo)
+		assert.Empty(t, count)
+
+		mockRepo.AssertExpectations(t)
+	})
 
 }
 
 func TestGetAdminById(t *testing.T) {
-
 	// Mock data
 	mockData := entity.AdminCore{
 		Id:       "1",
@@ -205,7 +237,6 @@ func TestGetAdminById(t *testing.T) {
 		Email:    "john@example.com",
 		Status:   "aktif",
 	}
-
 	t.Run("Succes GetBYID", func(t *testing.T) {
 		mockRepo := new(mocks.AdminRepositoryInterface)
 		adminService := NewAdminService(mockRepo)
@@ -400,7 +431,7 @@ func TestDeleteAdmin(t *testing.T) {
 
 }
 
-func TestAdminService_FindByEmailANDPassword(t *testing.T) {
+func TestFindByEmailANDPassword(t *testing.T) {
 	dataAdmin := entity.AdminCore{
 		Email:    "admin@example.com",
 		Password: "hashedpassword",
@@ -511,6 +542,21 @@ func TestGetAllUsers(t *testing.T) {
 		assert.Equal(t, pagination.PageInfo{}, pageInfo)
 		assert.Equal(t, 0, count)
 	})
+	t.Run("Repository Error", func(t *testing.T) {
+		mockRepo := new(mocks.AdminRepositoryInterface)
+		adminService := NewAdminService(mockRepo)
+
+		mockRepo.On("GetAllUsers", "", 1, 10).Return(dataUsers, pagination.PageInfo{}, len(dataUsers), errors.New("repository error"))
+
+		result, pageInfo, count, err := adminService.GetAllUsers("", "", "")
+
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Empty(t, pageInfo)
+		assert.Empty(t, count)
+
+		mockRepo.AssertExpectations(t)
+	})
 
 }
 
@@ -566,7 +612,7 @@ func TestDeleteUsers(t *testing.T) {
 		err := adminService.DeleteUsers(usersID)
 
 		assert.NoError(t, err)
-		assert.Equal(t, usersID, dataUsers.Id)
+		assert.Equal(t, usersID, dataUser.Id)
 
 		mockRepo.AssertExpectations(t)
 
@@ -582,13 +628,13 @@ func TestDeleteUsers(t *testing.T) {
 		err := adminService.DeleteUsers(usersID)
 
 		assert.Error(t, err)
-		assert.NotEqual(t, usersID, dataUsers.Id)
+		assert.NotEqual(t, usersID, dataUser.Id)
 
 		mockRepo.AssertExpectations(t)
 	})
 }
 
-func TestAdminService_GetReportById(t *testing.T) {
+func TestGetReportById(t *testing.T) {
 	t.Run("Succes GetReportId", func(t *testing.T) {
 		mockRepo := new(mocks.AdminRepositoryInterface)
 		adminService := NewAdminService(mockRepo)
@@ -708,5 +754,117 @@ func TestUpdateStatusReport(t *testing.T) {
 		assert.NotEqual(t, reportID, dataReport.ID)
 		mockRepo.AssertExpectations(t)
 
+	})
+
+	t.Run("Repository Error", func(t *testing.T) {
+		mockRepo := new(mocks.AdminRepositoryInterface)
+		adminService := NewAdminService(mockRepo)
+
+		id := "1"
+		status := "diterima"
+		reason := ""
+
+		mockRepo.On("GetReportById", id).Return(report.ReportCore{}, nil) 
+		mockRepo.On("UpdateStatusReport", id, status, reason).Return(report.ReportCore{}, errors.New("repository error"))
+
+		result, err := adminService.UpdateStatusReport(id, status, reason)
+
+		assert.Error(t, err)
+		assert.Equal(t,id,dataReport.ID)
+		assert.Empty(t,result)
+		mockRepo.AssertExpectations(t)
+	})
+}
+
+func TestGetAllReport(t *testing.T) {
+
+	t.Run("Succes Get all Report", func(t *testing.T) {
+		mockRepo := new(mocks.AdminRepositoryInterface)
+		adminService := NewAdminService(mockRepo)
+
+		mockRepo.On("GetAllReport", "", "", 1, 10).Return(dataReports, pagination.PageInfo{}, pagination.CountDataInfo{}, nil)
+
+		reports, pageInfo, count, err := adminService.GetAllReport("", "", "", "")
+
+		assert.NoError(t, err)
+		assert.NotNil(t, reports)
+		assert.NotNil(t, pageInfo)
+		assert.NotNil(t, count)
+
+		mockRepo.AssertExpectations(t)
+	})
+	t.Run("Validation Error", func(t *testing.T) {
+		mockRepo := new(mocks.AdminRepositoryInterface)
+		adminService := NewAdminService(mockRepo)
+
+		status := "perlu ditinjau"
+		search := "example search"
+		page := "1"
+		limit := "10"
+
+		mockRepo.On("GetAllReport", status, search, 1, 10).Return(dataReports, pagination.PageInfo{}, pagination.CountDataInfo{}, errors.New("failed"))
+
+		reports, pageInfo, count, err := adminService.GetAllReport(status, search, page, limit)
+
+		assert.Error(t, err)
+		assert.Nil(t, reports)
+		assert.NotNil(t, pageInfo)
+		assert.NotNil(t, count)
+
+		mockRepo.AssertExpectations(t)
+	})
+
+	t.Run("Wrong Limit Pagination", func(t *testing.T) {
+		mockRepo := mocks.NewAdminRepositoryInterface(t)
+		adminService := NewAdminService(mockRepo)
+
+		result, pageInfo, count, err := adminService.GetAllReport("", "", "", "20")
+
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Empty(t, pageInfo)
+		assert.Empty(t, count)
+		mockRepo.AssertExpectations(t)
+
+	})
+
+	t.Run("Status Invalid Input", func(t *testing.T) {
+		mockRepo := new(mocks.AdminRepositoryInterface)
+		adminService := NewAdminService(mockRepo)
+
+		status := "perlu"
+		search := "example search"
+		page := "1"
+		limit := "10"
+
+		reports, pageInfo, count, err := adminService.GetAllReport(status, search, page, limit)
+
+		assert.Error(t, err)
+		assert.Nil(t, reports)
+		assert.NotNil(t, pageInfo)
+		assert.NotNil(t, count)
+
+		mockRepo.AssertExpectations(t)
+	})
+
+	t.Run("Repository Error", func(t *testing.T) {
+		mockRepo := new(mocks.AdminRepositoryInterface)
+		adminService := NewAdminService(mockRepo)
+
+		status := "perlu ditinjau"
+		search := "example search"
+		page := "1"
+		limit := "10"
+
+		mockRepo.On("GetAllReport", status, search, 1, 10).Return(dataReports, pagination.PageInfo{}, pagination.CountDataInfo{}, errors.New("repository error"))
+
+		reports, pageInfo, count, err := adminService.GetAllReport(status, search, page, limit)
+
+		assert.Error(t, err)
+		assert.Nil(t, reports)
+		assert.Empty(t, pageInfo)
+		assert.Empty(t, count)
+
+		mockRepo.AssertExpectations(t)
 	})
 }

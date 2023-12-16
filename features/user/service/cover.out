@@ -89,9 +89,9 @@ recything/features/user/service/service.go:254.2,255.24 2 1
 recything/features/user/service/service.go:255.24,257.3 1 0
 recything/features/user/service/service.go:259.2,262.20 3 1
 recything/features/user/service/service.go:262.20,264.3 1 1
-recything/features/user/service/service.go:266.2,266.34 1 1
+recything/features/user/service/service.go:266.2,266.34 1 0
 recything/features/user/service/service.go:266.34,268.3 1 0
-recything/features/user/service/service.go:270.2,271.12 2 1
+recything/features/user/service/service.go:270.2,271.12 2 0
 recything/features/user/service/service.go:275.69,278.21 2 1
 recything/features/user/service/service.go:278.21,280.3 1 1
 recything/features/user/service/service.go:282.2,283.16 2 1

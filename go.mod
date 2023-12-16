@@ -65,6 +65,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo-jwt/v4 v4.2.0
 	github.com/sashabaranov/go-openai v1.17.9
+	github.com/stretchr/testify v1.8.4
 	golang.org/x/sys v0.15.0 // indirect
 	gorm.io/driver/mysql v1.5.2
 )

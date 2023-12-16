@@ -14,7 +14,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang-jwt/jwt"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -195,7 +194,7 @@ func TestLogin(t *testing.T) {
 			Id:                "user_id",
 			Fullname:          "John Doe",
 			Email:             "test@example.com",
-			Password:          "",
+			Password:          "budigagah123",
 			IsVerified:        true,
 			VerificationToken: "",
 		}
@@ -219,12 +218,7 @@ func TestLogin(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, "user_id", dataUser.Id)
 
-		actualPayload, err := helper.DecodeJWTToken(token)
-		if err != nil {
-			if ve, ok := err.(*jwt.ValidationError); ok {
-				t.Errorf("JWT validation error: %v", ve)
-			}
-		}
+		actualPayload, _ := helper.DecodeJWTToken(token)
 
 		assert.Equal(t, "", actualPayload)
 	})

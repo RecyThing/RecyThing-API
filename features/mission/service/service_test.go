@@ -7,8 +7,6 @@ import (
 	"recything/features/mission/entity"
 	user "recything/features/user/entity"
 	"recything/utils/constanta"
-	"recything/utils/helper"
-	"recything/utils/pagination"
 
 	"recything/mocks"
 
@@ -18,14 +16,23 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var dataUploads = []entity.UploadMissionTaskCore{
-	{ID: "123", UserID: "091", MissionID: "092", Description: "buang sampah sembarangan"},
-	{ID: "124", UserID: "099", MissionID: "093", Description: "tumpukan sampah"},
-}
+// var dataUploads = []entity.UploadMissionTaskCore{
+// 	{ID: "123", UserID: "091", MissionID: "092", Description: "buang sampah sembarangan"},
+// 	{ID: "124", UserID: "099", MissionID: "093", Description: "tumpukan sampah"},
+// }
 
 var dataUpload = entity.UploadMissionTaskCore{
 	ID: "333", UserID: "123", MissionID: "092", Description: "buang sampah sembarangan", Status: "ditolak",
 }
+
+// var dataMissions = []entity.Mission{
+// 	{ID: "092",
+// 		Title:  "Mari Buang Sampah",
+// 		Status: "perlu ditinjau"},
+// 	{ID: "093",
+// 		Title:  "Mari Buang Sampah",
+// 		Status: "perlu ditinjau"},
+// }
 
 var dataMissi = entity.Mission{
 	ID:     "092",
@@ -44,6 +51,155 @@ var dataClaim = entity.ClaimedMission{
 	MissionID: "092",
 	UserID:    "123",
 	Claimed:   true,
+}
+
+func TestCreateMission(t *testing.T) {
+	t.Run("Data Empty", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+		//data.Title, data.Description, data.StartDate, data.EndDate, data.Point, data.DescriptionStage, data.TitleStage)
+
+		image := &multipart.FileHeader{
+			Filename: "/home/teranix/Downloads/recythin.png",
+		}
+		requestBody := entity.Mission{
+			Creator:          "Admin",
+			Point:            2000,
+			Title:            "Sampah B3",
+			Description:      "Buang sampah ditempatnya",
+			StartDate:        "2023-12-20",
+			EndDate:          "2023-12-30",
+			DescriptionStage: "",
+			TitleStage:       "",
+		}
+
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+
+		err := missionService.CreateMission(image, requestBody)
+
+		assert.Error(t, err)
+		missionRepo.AssertExpectations(t)
+	})
+	t.Run("Invalid Date", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+		//data.Title, data.Description, data.StartDate, data.EndDate, data.Point, data.DescriptionStage, data.TitleStage)
+
+		image := &multipart.FileHeader{
+			Filename: "/home/teranix/Downloads/recythin.png",
+		}
+		requestBody := entity.Mission{
+			Creator:          "Admin",
+			Point:            2000,
+			Title:            "Sampah B3",
+			Description:      "Buang sampah ditempatnya",
+			StartDate:        "2023-11-20",
+			EndDate:          "2023-12-30",
+			DescriptionStage: "Desc Stage",
+			TitleStage:       "Title Stage",
+		}
+
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+
+		err := missionService.CreateMission(image, requestBody)
+
+		assert.Error(t, err)
+		missionRepo.AssertExpectations(t)
+	})
+
+	t.Run("Error Storage", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+		//data.Title, data.Description, data.StartDate, data.EndDate, data.Point, data.DescriptionStage, data.TitleStage)
+
+		image := &multipart.FileHeader{
+			Filename: "/home/teranix/Downloads/recythin.png",
+		}
+		requestBody := entity.Mission{
+			Creator:          "Admin",
+			Point:            2000,
+			Title:            "Sampah B3",
+			Description:      "Buang sampah ditempatnya",
+			StartDate:        "2024-12-20",
+			EndDate:          "2024-12-30",
+			DescriptionStage: "Desc Stage",
+			TitleStage:       "Title Stage",
+		}
+
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+
+		err := missionService.CreateMission(image, requestBody)
+
+		assert.Nil(t, err)
+		missionRepo.AssertExpectations(t)
+	})
+}
+
+func TestFindAllMission(t *testing.T) {
+	t.Run("Wrong limit", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+
+		result, pagnation, count, err := missionService.FindAllMission("", "20", "", "")
+
+		assert.Error(t, err)
+		assert.Empty(t, pagnation)
+		assert.Empty(t, count)
+		assert.Empty(t, result)
+
+		missionRepo.AssertExpectations(t)
+
+	})
+}
+
+func TestUpdateMission(t *testing.T) {
+
+	t.Run("Data Empty", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+
+		requestBody := entity.Mission{
+			Creator:          "Admin",
+			Point:            2000,
+			Title:            "Sampah B3",
+			Description:      "",
+			StartDate:        "2024-12-20",
+			EndDate:          "2024-12-30",
+			DescriptionStage: "Desc Stage",
+			TitleStage:       "Title Stage",
+		}
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+		err := missionService.UpdateMission(nil, dataMissi.ID, requestBody)
+
+		assert.Error(t, err)
+		missionRepo.AssertExpectations(t)
+
+	})
+
+	t.Run("Invalid Date", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+
+		requestBody := entity.Mission{
+
+			StartDate: "2023-12-16",
+			EndDate:   "2021-12-17",
+		}
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+		err := missionService.UpdateMission(nil, dataMissi.ID, requestBody)
+
+		assert.Error(t, err)
+		missionRepo.AssertExpectations(t)
+
+	})
+
 }
 
 func TestDeleteMission(t *testing.T) {
@@ -377,6 +533,21 @@ func TestUpdateUploadMissionTask(t *testing.T) {
 		assert.NotEqual(t, transactionID, dataUpload.ID)
 		missionRepo.AssertExpectations(t)
 	})
+
+	t.Run("Error Repo", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+
+		userID := "123"
+		transactionID := "333"
+
+		missionRepo.On("FindUploadById", transactionID).Return(errors.New(constanta.ERROR))
+		err := missionService.UpdateUploadMissionTask(userID, transactionID, nil, dataUpload)
+		assert.Error(t, err)
+		missionRepo.AssertExpectations(t)
+	})
 }
 
 func TestClaimMission(t *testing.T) {
@@ -389,7 +560,7 @@ func TestClaimMission(t *testing.T) {
 		missionID := "092"
 		userID := "123"
 		missionRepo.On("FindById", missionID).Return(dataMissi, nil)
-		missionRepo.On("ClaimMission", userID, dataClaim).Return(nil) //yang ini fail oi
+		missionRepo.On("ClaimMission", userID, dataClaim).Return(nil)
 
 		err := missionService.ClaimMission(userID, dataClaim)
 		assert.NoError(t, err)
@@ -416,6 +587,22 @@ func TestClaimMission(t *testing.T) {
 
 		missionRepo.AssertExpectations(t)
 
+	})
+
+	t.Run("Data Not Found", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+		missionID := "092ss"
+		missionRepo.On("FindById", missionID).Return(entity.Mission{}, errors.New(constanta.ERROR))
+
+		_, err := missionService.FindById(missionID)
+
+		assert.Error(t, err)
+		assert.NotEqual(t, missionID, dataMissi.ID)
+
+		missionRepo.AssertExpectations(t)
 	})
 
 }
@@ -475,17 +662,42 @@ func TestFindAllMissionUser(t *testing.T) {
 
 	})
 
+	t.Run("Error Repository", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+		userID := "123"
+		filter := ""
+		expectedMissions := []entity.MissionHistories{
+			{
+				MissionID: "092",
+			},
+			{
+				MissionID: "093",
+			},
+		}
+
+		missionRepo.On("FindAllMissionUser", userID, "").Return(expectedMissions, errors.New(constanta.ERROR))
+		missions, err := missionService.FindAllMissionUser(userID, filter)
+		assert.Error(t, err)
+		assert.NotEqual(t, expectedMissions, missions)
+		missionRepo.AssertExpectations(t)
+
+	})
+
 }
 
 func TestUpdateStatusMissionApproval(t *testing.T) {
-	missionRepo := new(mocks.MissionRepositoryInterface)
-	adminRepo := new(mocks.AdminRepositoryInterface)
-	userRepo := new(mocks.UsersRepositoryInterface)
-
-	missionService := NewMissionService(missionRepo, adminRepo, userRepo)
-	// userID := "123"
 
 	t.Run("StatusEmpty", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+
 		errStatusEmpty := errors.New("error : harap lengkapi data dengan benar")
 
 		err := missionService.UpdateStatusMissionApproval("UploadMissionTaskID", "", "reason")
@@ -493,56 +705,34 @@ func TestUpdateStatusMissionApproval(t *testing.T) {
 	})
 
 	t.Run("FindMissionApprovalError", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+
 		missionRepo.On("FindMissionApprovalById", "UploadMissionTaskID").Return(entity.UploadMissionTaskCore{}, errors.New("find error"))
 
 		err := missionService.UpdateStatusMissionApproval("UploadMissionTaskID", "status", "reason")
 		assert.Error(t, err)
 	})
-
 }
 
 func TestFindAllMissionApproval(t *testing.T) {
-	missionRepo := new(mocks.MissionRepositoryInterface)
-	adminRepo := new(mocks.AdminRepositoryInterface)
-	userRepo := new(mocks.UsersRepositoryInterface)
-	missionService := NewMissionService(missionRepo, adminRepo, userRepo)
 
-	t.Run("Invalid Pagination Parameters", func(t *testing.T) {
-		expectedError := errors.New("limit harus berupa angka")
-		missionRepo.On("FindAllMissionApproval", "B", "A", "", "").Return(nil, pagination.PageInfo{}, helper.CountMissionApproval{}, expectedError).Once()
+	t.Run("Wrong Limit", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
 
-		_, _, _, err := missionService.FindAllMissionApproval("B", "A", "", "")
+		result, pagination, count, err := missionService.FindAllMissionApproval("", "50000", "", "")
 
 		assert.Error(t, err)
-		assert.Equal(t, expectedError, err)
+		assert.Empty(t, result)
+		assert.Empty(t, pagination)
+		assert.Empty(t, count)
+		missionRepo.AssertExpectations(t)
 	})
 
 }
-
-
-
-//ini belum fix
-func TestCreateUploadMissionTask_Positive(t *testing.T) {
-	
-	missionRepo := new(mocks.MissionRepositoryInterface)
-	adminRepo := new(mocks.AdminRepositoryInterface)
-	userRepo := new(mocks.UsersRepositoryInterface)
-
-	missionService := NewMissionService(missionRepo, adminRepo, userRepo)
-
-
-	userID := "123"
-	filter:="ditolak"
-    missionRepo.On("FindUploadMissionStatus", dataUpload.ID, dataUpload.MissionID, userID, filter ).Return(errors.New("error : sudah mengupload data")).Once()
-    missionRepo.On("FindById", dataUpload.MissionID).Return(dataMissi, nil).Once()
-    missionRepo.On("FindClaimed", userID, dataUpload.MissionID).Return(nil).Once()
-    missionRepo.On("CreateUploadMissionTask", userID, dataUpload, []*multipart.FileHeader{}).Return(dataUpload, nil).Once()
-
-    _, err := missionService.CreateUploadMissionTask(userID, dataUpload, nil)
-
-    assert.NoError(t, err) 
-    // assert.NotNil(t, createdData)
-
-    missionRepo.AssertExpectations(t)
-}
-

@@ -13,6 +13,35 @@ type UsersRepositoryInterface struct {
 	mock.Mock
 }
 
+type MockUserRepository struct {
+	mock.Mock
+}
+
+func (m *MockUserRepository) VerifyOTP(email, otp string) (entity.UsersCore, error) {
+	args := m.Called(email, otp)
+	return args.Get(0).(entity.UsersCore), args.Error(1)
+}
+
+func (m *MockUserRepository) ResetOTP(otp string) error {
+	args := m.Called(otp)
+	return args.Error(0)
+}
+
+func (m *MockUserRepository) SendVerificationEmail(email string, token string) error {
+	args := m.Called(email, token)
+	return args.Error(0)
+}
+
+func (_m *MockUserRepository) CreateToken(userID string, role string) (string, error) {
+	ret := _m.Called(userID, role)
+	return ret.String(0), ret.Error(1)
+}
+
+func (_m *MockUserRepository) GenerateOTP(length int) (string, error) {
+    ret := _m.Called(length)
+    return ret.String(0), ret.Error(1)
+}
+
 // FindByEmail provides a mock function with given fields: email
 func (_m *UsersRepositoryInterface) FindByEmail(email string) (entity.UsersCore, error) {
 	ret := _m.Called(email)

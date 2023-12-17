@@ -300,3 +300,4 @@ func TestFindAllFetch_Success(t *testing.T) {
 		mockRepo.AssertExpectations(t)
 	})
 }
+

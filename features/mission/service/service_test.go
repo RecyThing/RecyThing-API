@@ -2,16 +2,49 @@ package service
 
 import (
 	"errors"
+	"mime/multipart"
 	admin "recything/features/admin/entity"
 	"recything/features/mission/entity"
 	user "recything/features/user/entity"
+	"recything/utils/constanta"
+	"recything/utils/helper"
+	"recything/utils/pagination"
 
 	"recything/mocks"
 
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
+
+var dataUploads = []entity.UploadMissionTaskCore{
+	{ID: "123", UserID: "091", MissionID: "092", Description: "buang sampah sembarangan"},
+	{ID: "124", UserID: "099", MissionID: "093", Description: "tumpukan sampah"},
+}
+
+var dataUpload = entity.UploadMissionTaskCore{
+	ID: "333", UserID: "123", MissionID: "092", Description: "buang sampah sembarangan", Status: "ditolak",
+}
+
+var dataMissi = entity.Mission{
+	ID:     "092",
+	Title:  "Mari Buang Sampah",
+	Status: "perlu ditinjau",
+}
+
+var dataUser = user.UsersCore{
+	Id:       "123",
+	Fullname: "yeye",
+	Email:    "yeye@gmail.com",
+}
+
+var dataClaim = entity.ClaimedMission{
+	ID:        "321",
+	MissionID: "092",
+	UserID:    "123",
+	Claimed:   true,
+}
 
 func TestDeleteMission(t *testing.T) {
 	t.Run("not founc", func(t *testing.T) {
@@ -75,10 +108,8 @@ func TestGetMissionByID(t *testing.T) {
 		}
 		missionID := "1"
 
-		// Set expectations for the FindById call in the missionRepo
 		missionRepo.On("FindById", missionID).Return(data, nil).Once()
 
-		// Mock the behavior of SelectById in adminRepo
 		dataadmin := admin.AdminCore{
 			Id:              "1",
 			Fullname:        "admin",
@@ -106,10 +137,8 @@ func TestGetMissionByID(t *testing.T) {
 		adminRepo := new(mocks.AdminRepositoryInterface)
 		userRepo := new(mocks.UsersRepositoryInterface)
 
-		// Create mission service instance with mock repositories
 		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
 
-		// Define test data
 		data := entity.Mission{
 			ID:               "1",
 			Title:            "title",
@@ -125,17 +154,6 @@ func TestGetMissionByID(t *testing.T) {
 			DescriptionStage: "description title",
 		}
 		missionID := "1"
-
-		// dataadmin := admin.AdminCore{
-		// 	Id:              "2",
-		// 	Fullname:        "admin",
-		// 	Image:           "image",
-		// 	Role:            "admin",
-		// 	Email:           "admin@gmail.com",
-		// 	Password:        "12345678",
-		// 	ConfirmPassword: "12345678",
-		// 	Status:          "aktif",
-		// }
 		missionRepo.On("FindById", missionID).Return(data, errors.New("data tidak ditemukan")).Once()
 		result, err := missionService.FindById(missionID)
 
@@ -153,10 +171,7 @@ func TestGetMissionByID(t *testing.T) {
 		adminRepo := new(mocks.AdminRepositoryInterface)
 		userRepo := new(mocks.UsersRepositoryInterface)
 
-		// Create mission service instance with mock repositories
 		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
-
-		// Define test data
 		data := entity.Mission{
 			ID:               "1",
 			Title:            "title",
@@ -236,58 +251,298 @@ func TestFindMissionApprovalById(t *testing.T) {
 		missionRepo.AssertExpectations(t)
 		userRepo.AssertExpectations(t)
 	})
+	t.Run("not found", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+
+		uploadMissionID := "2"
+		missionUpproval := entity.UploadMissionTaskCore{
+			ID:          "1",
+			UserID:      "1",
+			User:        "YAYA",
+			MissionID:   "1",
+			MissionName: "mission name",
+			Description: "description",
+			Reason:      "ini reason",
+			Status:      "perlu tinjauaan",
+		}
+
+		missionRepo.On("FindMissionApprovalById", uploadMissionID).Return(missionUpproval, nil)
+		missionRepo.On("FindById", missionUpproval.MissionID).Return(entity.Mission{
+			ID:    missionUpproval.MissionID,
+			Title: "Mission Title",
+		}, nil)
+
+		userRepo.On("GetById", missionUpproval.UserID).Return(user.UsersCore{
+			Id:       "2",
+			Fullname: "User Fullname",
+		}, nil)
+
+		result, err := missionService.FindMissionApprovalById(uploadMissionID)
+
+		assert.NoError(t, err)
+		assert.NotEqual(t, uploadMissionID, result.ID)
+		missionRepo.AssertExpectations(t)
+		userRepo.AssertExpectations(t)
+
+	})
 }
 
-// func TestUpdateStatusMissionApproval(t *testing.T) {
+func TestFindHistoryById(t *testing.T) {
+	t.Run("Succes Find History By ID", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
 
-// 	t.Run("Approval Success with Reason", func(t *testing.T) {
-// 		missionRepo := new(mocks.MissionRepositoryInterface)
-// 		adminRepo := new(mocks.AdminRepositoryInterface)
-// 		userRepo := new(mocks.UsersRepositoryInterface)
-// 		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+		userID := "123"
+		transactionID := "333"
 
-// 		status := "disetujui"
-// 		reason := "approval reason"
+		missionRepo.On("FindHistoryById", userID, transactionID).Return(dataUpload, nil)
+		missionRepo.On("FindById", mock.AnythingOfType("string")).Return(dataMissi, nil)
+		userRepo.On("GetById", mock.AnythingOfType("string")).Return(dataUser, nil)
 
-// 		task := entity.UploadMissionTaskCore{
-// 			ID:        "1",
-// 			UserID:    "1",
-// 			User:      "user",
-// 			MissionID: "1",
-// 		}
+		resultUpload, err := missionService.FindHistoryById(userID, transactionID)
 
-// 		expectedTask := entity.UploadMissionTaskCore{
-// 			ID:        "1",
-// 			UserID:    "1",
-// 			User:      "user",
-// 			MissionID: "1",
-// 			Status:    "disetujui",
-// 			Reason:    "approval reason",
-// 		}
+		assert.NoError(t, err)
+		assert.Equal(t, userID, dataUser.Id)
+		assert.Equal(t, transactionID, dataUpload.ID)
+		assert.Equal(t, resultUpload.MissionID, dataMissi.ID)
 
-// 		// mission := entity.Mission{
-// 		// 	ID:               "1",
-// 		// 	Title:            "title",
-// 		// 	Creator:          "creator",
-// 		// 	Status:           "active",
-// 		// 	AdminID:          "1",
-// 		// 	MissionImage:     "image",
-// 		// 	Point:            10,
-// 		// 	Description:      "desc",
-// 		// 	StartDate:        "2023-12-12",
-// 		// 	EndDate:          "2023-12-13",
-// 		// 	TitleStage:       "stage title",
-// 		// 	DescriptionStage: "description title",
-// 		// }
+		missionRepo.AssertExpectations(t)
+	})
 
-		
-		
-// 		missionRepo.On("UpdateStatusMissionApproval", task.ID, status, reason).Return(nil)
-// 		err := missionService.UpdateStatusMissionApproval(task.ID, status, reason)
+	t.Run("Data Not Found", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
 
-// 		assert.Error(t, err)
-// 		assert.Equal(t, expectedTask.Status, status)
-// 		userRepo.AssertExpectations(t )
-// 	})
+		userID := "5"
+		transactionID := "09"
 
-// }
+		missionRepo.On("FindHistoryById", userID, transactionID).Return(entity.UploadMissionTaskCore{}, errors.New(constanta.ERROR))
+
+		result, err := missionService.FindHistoryById(userID, transactionID)
+
+		assert.Error(t, err)
+		assert.NotEqual(t, userID, dataUser.Id)
+		assert.NotEqual(t, transactionID, dataUpload.ID)
+		assert.Empty(t, result)
+		missionRepo.AssertExpectations(t)
+	})
+}
+
+func TestUpdateUploadMissionTask(t *testing.T) {
+	t.Run("succes", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+
+		var image []*multipart.FileHeader
+
+		userID := "123"
+		transactionID := "333"
+
+		missionRepo.On("FindUploadById", transactionID).Return(nil)
+		missionRepo.On("FindUploadMissionStatus", transactionID, mock.AnythingOfType("string"), userID, mock.AnythingOfType("string")).Return(nil)
+		missionRepo.On("UpdateUploadMissionTask", transactionID, image, dataUpload).Return(nil)
+
+		err := missionService.UpdateUploadMissionTask(userID, transactionID, nil, dataUpload)
+		assert.NoError(t, err)
+		missionRepo.AssertExpectations(t)
+	})
+
+	t.Run("Data Not Found", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+
+		var image []*multipart.FileHeader
+
+		userID := "1231"
+		transactionID := "3332"
+
+		missionRepo.On("FindUploadById", transactionID).Return(nil)
+		missionRepo.On("FindUploadMissionStatus", transactionID, mock.AnythingOfType("string"), userID, mock.AnythingOfType("string")).Return(nil)
+		missionRepo.On("UpdateUploadMissionTask", transactionID, image, dataUpload).Return(errors.New(constanta.ERROR))
+
+		err := missionService.UpdateUploadMissionTask(userID, transactionID, nil, dataUpload)
+		assert.Error(t, err)
+		assert.NotEqual(t, userID, dataUser.Id)
+		assert.NotEqual(t, transactionID, dataUpload.ID)
+		missionRepo.AssertExpectations(t)
+	})
+}
+
+func TestClaimMission(t *testing.T) {
+
+	t.Run("succes", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+		missionID := "092"
+		userID := "123"
+		missionRepo.On("FindById", missionID).Return(dataMissi, nil)
+		missionRepo.On("ClaimMission", userID, dataClaim).Return(nil) //yang ini fail oi
+
+		err := missionService.ClaimMission(userID, dataClaim)
+		assert.NoError(t, err)
+		missionRepo.AssertExpectations(t)
+	})
+
+	t.Run("mission id empty", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+		userID := "123"
+
+		request := entity.ClaimedMission{
+			MissionID: "",
+			UserID:    "",
+		}
+
+		err := missionService.ClaimMission(userID, request)
+
+		assert.Error(t, err)
+		assert.NotEqual(t, dataClaim.MissionID, request.MissionID)
+
+		missionRepo.AssertExpectations(t)
+
+	})
+
+}
+
+func TestFindAllMissionUser(t *testing.T) {
+	t.Run("succes", func(t *testing.T) {
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+		userID := "123"
+		filter := ""
+		expectedMissions := []entity.MissionHistories{
+			{
+				MissionID: "092",
+			},
+			{
+				MissionID: "093",
+			},
+		}
+
+		missionRepo.On("FindAllMissionUser", userID, "").Return(expectedMissions, nil)
+		missions, err := missionService.FindAllMissionUser(userID, filter)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedMissions, missions)
+		missionRepo.AssertExpectations(t)
+
+	})
+	t.Run("filter not empty", func(t *testing.T) {
+
+		missionRepo := new(mocks.MissionRepositoryInterface)
+		adminRepo := new(mocks.AdminRepositoryInterface)
+		userRepo := new(mocks.UsersRepositoryInterface)
+
+		missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+		filter := "berjalan"
+		userID := "123"
+
+		expectedFilteredMissions := []entity.MissionHistories{
+			{
+				MissionID:     "01",
+				StatusMission: "aktive",
+			},
+			{
+				MissionID:     "02",
+				StatusMission: "aktive",
+			},
+		}
+
+		filteredMissions, err := missionService.FindAllMissionUser(userID, "invalid filter")
+
+		assert.Error(t, err)
+		assert.NotEqual(t, expectedFilteredMissions, filteredMissions)
+		assert.NotEqual(t, filter, "invalid filter")
+		missionRepo.AssertExpectations(t)
+
+	})
+
+}
+
+func TestUpdateStatusMissionApproval(t *testing.T) {
+	missionRepo := new(mocks.MissionRepositoryInterface)
+	adminRepo := new(mocks.AdminRepositoryInterface)
+	userRepo := new(mocks.UsersRepositoryInterface)
+
+	missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+	// userID := "123"
+
+	t.Run("StatusEmpty", func(t *testing.T) {
+		errStatusEmpty := errors.New("error : harap lengkapi data dengan benar")
+
+		err := missionService.UpdateStatusMissionApproval("UploadMissionTaskID", "", "reason")
+		assert.EqualError(t, err, errStatusEmpty.Error())
+	})
+
+	t.Run("FindMissionApprovalError", func(t *testing.T) {
+		missionRepo.On("FindMissionApprovalById", "UploadMissionTaskID").Return(entity.UploadMissionTaskCore{}, errors.New("find error"))
+
+		err := missionService.UpdateStatusMissionApproval("UploadMissionTaskID", "status", "reason")
+		assert.Error(t, err)
+	})
+
+}
+
+func TestFindAllMissionApproval(t *testing.T) {
+	missionRepo := new(mocks.MissionRepositoryInterface)
+	adminRepo := new(mocks.AdminRepositoryInterface)
+	userRepo := new(mocks.UsersRepositoryInterface)
+	missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+
+	t.Run("Invalid Pagination Parameters", func(t *testing.T) {
+		expectedError := errors.New("limit harus berupa angka")
+		missionRepo.On("FindAllMissionApproval", "B", "A", "", "").Return(nil, pagination.PageInfo{}, helper.CountMissionApproval{}, expectedError).Once()
+
+		_, _, _, err := missionService.FindAllMissionApproval("B", "A", "", "")
+
+		assert.Error(t, err)
+		assert.Equal(t, expectedError, err)
+	})
+
+}
+
+
+
+//ini belum fix
+func TestCreateUploadMissionTask_Positive(t *testing.T) {
+	
+	missionRepo := new(mocks.MissionRepositoryInterface)
+	adminRepo := new(mocks.AdminRepositoryInterface)
+	userRepo := new(mocks.UsersRepositoryInterface)
+
+	missionService := NewMissionService(missionRepo, adminRepo, userRepo)
+
+
+	userID := "123"
+	filter:="ditolak"
+    missionRepo.On("FindUploadMissionStatus", dataUpload.ID, dataUpload.MissionID, userID, filter ).Return(errors.New("error : sudah mengupload data")).Once()
+    missionRepo.On("FindById", dataUpload.MissionID).Return(dataMissi, nil).Once()
+    missionRepo.On("FindClaimed", userID, dataUpload.MissionID).Return(nil).Once()
+    missionRepo.On("CreateUploadMissionTask", userID, dataUpload, []*multipart.FileHeader{}).Return(dataUpload, nil).Once()
+
+    _, err := missionService.CreateUploadMissionTask(userID, dataUpload, nil)
+
+    assert.NoError(t, err) 
+    // assert.NotNil(t, createdData)
+
+    missionRepo.AssertExpectations(t)
+}
+

@@ -42,38 +42,40 @@
 ### Article
 | Method                                                           | Url                     | Query Param          | Description                    |
 | ---------------------------------------------------------------- | ----------------------- | -------------------- | ------------------------------ |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/articles`             | `category`,`search`  | View Articles Popular,category,search          |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/articles`             | `filter`,`search`,`limit`,`page` | View Articles Popular,category,search          |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/articles/:id`         |                      | View Detail Articles           |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/articles/categories`  |                      | View All Categories Article    |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/articles/popular`  |                      | View All Categories Article    |
+| ![](https://storage.kodeteks.com/POST.png) | `/articles/like/:id`  |                      | Like Article    |
 
 ### Drop Point
 | Method                                                           | Url                     | Query Param    | Description                    |
 | ---------------------------------------------------------------- | ----------------------- | -------------- | ------------------------------ |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/drop-points`           | `search`       | View All Drop Point and Search |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/drop-points`           | `search`,`limit`,`page`       | View All Drop Point and Search |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/drop-points/:id`       |                | View Detail Articles           |
 
 ## Users Report
 | Method                                                           | Url                         | Description                            |
 | ---------------------------------------------------------------- | --------------------------- | -------------------------------------- |
-| ![](https://storage.kodeteks.com/POST.png)                       | `/users/report`             | View User Point                        |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/users/report/history`     | View User History                      |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/users/report/history/:id` | View Detail History Point              |
+| ![](https://storage.kodeteks.com/POST.png)                       | `/reports`             | View User Point                        |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/reports/history`     | View User History                      |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/reports/history/:id` | View Detail History Point              |
 
-## Community
+## Community & Event
 | Method                                                           | Url                         | Query Param               | Description                            |
 | ---------------------------------------------------------------- | --------------------------- | ------------------------- | -------------------------------------- |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/comunities`               | `location`,`most_members`,`search` | View User Comunity and recomendation   |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/comunities`               | `search` | View User Comunity and recomendation   |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/comunities/:id`           |                           | View Detail Community,only member can see event   |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/comunities/users`         |                           | View Community Users Following |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/comunities/recommendation`|                           | View Community Recomendation   |
-| ![](https://storage.kodeteks.com/POST.png)                       | `/comunities/:id`           |                           | Follow Community               |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/comunities/event/:id`     |                           | View Community Event, only member can see   |
+| ![](https://storage.kodeteks.com/POST.png)                       | `/comunities/:idkomunitas`           |                           | Follow Community               |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/users/event/:idkomunitas`     |  `filter`,`search`,`limit`,`page`                         | View Community Event   |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/users/event/:idkomunitas/:idevent`     |    | View Community Event   |
 
 ### Mission 
 | Method                                                           | Url                     | Query Param    | Description                    |
 | ---------------------------------------------------------------- | ----------------------- | -------------- | ------------------------------ |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/missions`             | `status`       | View All Available Missions,  |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/missions`             | `filter`       | View All Available Missions,  |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/missions/:id`       |                | View Detail mission           |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/missions/history/:idTransaction`       |                | View History Detail mission           |
 | ![](https://storage.kodeteks.com/POST.png)  | `/missions`       |                | Accept Challenge           |
 | ![](https://storage.kodeteks.com/POST.png)  | `/missions/proof`       |                | upload proof           |
+| ![](https://storage.kodeteks.com/PUT.png)   | `/missions/proof/:id`       |                | edit proof           |
 

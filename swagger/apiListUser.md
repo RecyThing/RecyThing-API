@@ -11,13 +11,12 @@
 ## Home & Info
 
 | Method                                                           | Url                      | Description                                        |
-| ---------------------------------------------------------------- | ------------------------ | -------------------------------------------------- |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/home`                  | View All Data (point,article popular,mission event and achivement)|
+| ---------------------------------------------------------------- | ------------------------ | -------------------------------------------------- 
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/faq`                   | View All FAQ            |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/faq/:id`               | View Detail FAQ         |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/achievements`          | View All Achievement    |
 | ![](https://storage.kodeteks.com/POST.png)                       | `/recybot`               | Chatbot RecyThing       |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/notifications`         | View User Notifications |
+
 
 ## User Profile
 
@@ -31,10 +30,9 @@
 
 | Method                                                           | Url                             | Description                            |
 | ---------------------------------------------------------------- | ------------------------------- | -------------------------------------- |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/users/point`                  | View User Point                        |
 | ![](https://storage.kodeteks.com/POST.png)                       | `/users/point/daily`            | Claim Daily Point                      |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/users/point/history`          | View All History Point (tukar point, claim point, mission point)                |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/users/point/history/:id`      | View Detail History Point              |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/users/point/history/:idTransaction`      | View Detail History Point              |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/vouchers`               | View All Voucher                       |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png) | `/vouchers/:id`           | View Detail Voucher                    |
 | ![](https://storage.kodeteks.com/POST.png)                       | `/vouchers/:id`           | Confirm Exchange Point With Email      |

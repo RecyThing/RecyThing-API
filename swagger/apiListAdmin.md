@@ -28,7 +28,9 @@
 
 | Method                                                              | Url                            | Description                          |
 | ------------------------------------------------------------------- | ------------------------------ | ------------------------------------ |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/dashboard`            | View All Dashboard                   |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/dashboard/monthly`            | View All Dashboard                   |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/dashboard/years`            | View All Dashboard                   |
+
 
 ### Dashboard Report Download
 
@@ -37,15 +39,15 @@
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/dashboard/download`       | View All Report Download             |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/dashboard/download/:file` | Get Report Download                  |
 
-## Manage Reward
+## Manage Voucher
 
 | Method                                                              | Url                            | Description                          |
 | ------------------------------------------------------------------- | ------------------------------ | ------------------------------------ |
-| ![](https://storage.kodeteks.com/POST.png)                          | `/admins/manage/rewards`       | Add Reward                           |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/rewards`       | View All Reward                      |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/rewards/:id`   | View Detail Reward                   |
-| ![](https://storage.kodeteks.com/PUT.png)                           | `/admins/manage/rewards/:id`   | Update Reward By Id                  |
-| ![](https://storage.kodeteks.com/DELETE.png)                        | `/admins/manage/rewards/:id`   | Delete Reward By Id                  |
+| ![](https://storage.kodeteks.com/POST.png)                          | `/admins/manage/vouchers`       | Add Voucher                           |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/vouchers`       | View All Voucher                      |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/vouchers/:id`   | View Detail Voucher                   |
+| ![](https://storage.kodeteks.com/PUT.png)                           | `/admins/manage/vouchers/:id`   | Update Voucher By Id                  |
+| ![](https://storage.kodeteks.com/DELETE.png)                        | `/admins/manage/vouchers/:id`   | Delete Voucher By Id                  |
 
 ## Manage Report
 
@@ -88,7 +90,7 @@
 | ------------------------------------------------------------------- | ---------------------------------------- | ----------- | ----------------------- |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/missions/approval`       | `status`    | View All Contents       |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/missions/approval/:id`   |             | View Detail Content     |
-| ![](https://storage.kodeteks.com/PATCH.png)                         | `/admins/manage/missions/approval/:id`   |             | Update Content By Id    |
+| ![](https://storage.kodeteks.com/PUT.png)                         | `/admins/manage/missions/approval/:id`   |             | Update Content By Id    |
 
 ## Manage Prompt
 
@@ -106,6 +108,7 @@
 | ------------------------------------------------------------------- | ---------------------------------- | ----------------- | ------------------------------ |
 | ![](https://storage.kodeteks.com/POST.png)                          | `/admins/manage/drop-points`       |                   | Add Drop Point                 |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/drop-points`       | `name` `address`  | View All Drop Points           |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/drop-points/:id`       |   | View detail Drop Points           |
 | ![](https://storage.kodeteks.com/PUT.png)                           | `/admins/manage/drop-points/:id`   |                   | Update Drop Point By Id        |
 | ![](https://storage.kodeteks.com/DELETE.png)                        | `/admins/manage/drop-points/:id`   |                   | Delete Drop Point By Id        |
 
@@ -124,6 +127,7 @@
 | ------------------------------------------------------------------- | ---------------------------------- | ---------------------- |
 | ![](https://storage.kodeteks.com/POST.png)                          | `/admins/manage/trashes`           | Add Trash              |
 | ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/trashes`           | View All Trash         |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/trashes/:id`           | View detail Trash         |
 | ![](https://storage.kodeteks.com/PUT.png)                           | `/admins/manage/trashes/:id`       | Update Trash By Id     |
 | ![](https://storage.kodeteks.com/DELETE.png)                        | `/admins/manage/trashes/:id`       | Delete Trash By Id     |
 
@@ -131,9 +135,9 @@
 
 | Method                                                              | Url                                    | Query Param | Description                          |
 | ------------------------------------------------------------------- | -------------------------------------- | ----------- | ------------------------------------ |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/exchange-points`       | `status`    | View All Exchange Point & filter     |
-| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/exchange-points/:id`   |             | View Detail Exchange Point           |
-| ![](https://storage.kodeteks.com/PATCH.png)                         | `/admins/manage/exchange-points/:id`   |             | Update Exchange Point By Id          |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/exchange-point`       | `status`    | View All Exchange Point & filter     |
+| ![](https://pub-cc8247a7807d42d1bd2453b3dae2f678.r2.dev/GET.png)    | `/admins/manage/exchange-point/:id`   |             | View Detail Exchange Point           |
+| ![](https://storage.kodeteks.com/PATCH.png)                         | `/admins/manage/exchange-point/:id`   |             | Update Exchange Point By Id          |
 
 ## Manage Community
 

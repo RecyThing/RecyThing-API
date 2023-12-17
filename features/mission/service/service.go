@@ -32,25 +32,11 @@ func NewMissionService(missionRepo entity.MissionRepositoryInterface, adminRepo 
 
 func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity.Mission) error {
 
-	// if len(data.MissionStages) < constanta.MIN_STAGE {
-	// 	return errors.New("tahapan misi tidak boleh kosong")
-
-	// }
-	// if len(data.MissionStages) > constanta.MAX_STAGE {
-	// 	return errors.New(constanta.ERROR_MISSION_LIMIT)
-	// }
 
 	errEmpty := validation.CheckDataEmpty(data.Title, data.Description, data.StartDate, data.EndDate, data.Point, data.DescriptionStage, data.TitleStage)
 	if errEmpty != nil {
 		return errEmpty
 	}
-
-	// for _, stage := range data.MissionStages {
-	// 	err := validation.CheckDataEmpty(stage.Description, data.Title)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// }
 
 	err := validation.ValidateDate(data.StartDate, data.EndDate)
 	if err != nil {
@@ -304,7 +290,7 @@ func (ms *missionService) UpdateStatusMissionApproval(UploadMissionTaskID, statu
 
 	user, err := ms.UserRepo.GetById(approv.UserID)
 	if err != nil {
-		return err
+		return err	
 	}
 
 	if status == constanta.DISETUJUI {

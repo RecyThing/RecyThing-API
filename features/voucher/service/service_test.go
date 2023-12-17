@@ -617,6 +617,7 @@ func TestUpdateTStatusExchange(t *testing.T) {
 		status := "selesai"
 
 		mockVoucher.On("GetByIdExchange", exchangeID).Return(dataExchanges[2], nil)
+		// 
 
 		err := voucherService.UpdateStatusExchange(exchangeID, status)
 

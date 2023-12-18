@@ -13,7 +13,7 @@
 - [Unit Testing](#unit-testing)
 - [Running Project](#running-project)
 - [How to deploy to Cloud Run](#how-to-deploy-to-cloud-run)
-- [CI/CD Platform](#CI/CD-platform)
+- [CI/CD Platform](#cicd-platform)
 - [Team Back-End](#team-back-end)
 - [References](#references)
 

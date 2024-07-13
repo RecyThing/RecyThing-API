@@ -45,7 +45,7 @@ func (report *reportRepository) Insert(reportInput entity.ReportCore, images []*
 	}
 
 	for _, image := range images {
-		imageURL, uploadErr := storage.UploadProof(image)
+		imageURL, uploadErr := storage.Upload(image)
 		if uploadErr != nil {
 			return entity.ReportCore{}, uploadErr
 		}

@@ -43,7 +43,7 @@ func (ms *missionService) CreateMission(image *multipart.FileHeader, data entity
 		return err
 	}
 
-	imageURL, errUpload := storage.UploadThumbnail(image)
+	imageURL, errUpload := storage.Upload(image)
 	if errUpload != nil {
 		return err
 	}
@@ -117,7 +117,7 @@ func (ms *missionService) UpdateMission(image *multipart.FileHeader, missionID s
 	}
 
 	if image != nil {
-		newImageURL, errUpload := storage.UploadThumbnail(image)
+		newImageURL, errUpload := storage.Upload(image)
 		if errUpload != nil {
 			return err
 		}

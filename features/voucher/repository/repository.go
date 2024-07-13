@@ -9,7 +9,6 @@ import (
 	"recything/utils/constanta"
 	"recything/utils/helper"
 
-	//"recything/utils/helper"
 	"recything/utils/pagination"
 	"recything/utils/storage"
 
@@ -29,7 +28,7 @@ func NewVoucherRepository(db *gorm.DB) entity.VoucherRepositoryInterface {
 func (vr *voucherRepository) Create(image *multipart.FileHeader, data entity.VoucherCore) error {
 	input := entity.CoreVoucherToModelVoucher(data)
 
-	imageURL, errUpload := storage.UploadThumbnail(image)
+	imageURL, errUpload := storage.Upload(image)
 	if errUpload != nil {
 		return errUpload
 	}
@@ -131,7 +130,7 @@ func (vr *voucherRepository) Update(idVoucher string, image *multipart.FileHeade
 	}
 
 	if image != nil {
-		imageURL, errUpload := storage.UploadThumbnail(image)
+		imageURL, errUpload := storage.Upload(image)
 		if errUpload != nil {
 			return errUpload
 		}

@@ -453,7 +453,7 @@ func (mr *MissionRepository) CreateUploadMissionTask(userID string, data entity.
 	}
 
 	for _, image := range images {
-		imageURL, uploadErr := storage.UploadProof(image)
+		imageURL, uploadErr := storage.Upload(image)
 		if uploadErr != nil {
 			return entity.UploadMissionTaskCore{}, uploadErr
 		}
@@ -532,7 +532,7 @@ func (mr *MissionRepository) UpdateUploadMissionTask(id string, images []*multip
 
 	for _, image := range images {
 		Imagedata := entity.ImageUploadMissionCore{}
-		imageURL, uploadErr := storage.UploadProof(image)
+		imageURL, uploadErr := storage.Upload(image)
 		if uploadErr != nil {
 			return uploadErr
 		}

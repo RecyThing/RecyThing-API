@@ -34,7 +34,7 @@ func (ar *AdminRepository) Create(image *multipart.FileHeader, data entity.Admin
 	dataAdmins := entity.AdminCoreToAdminModel(data)
 
 	if image != nil {
-		imageURL, errUpload := storage.UploadThumbnail(image)
+		imageURL, errUpload := storage.Upload(image)
 		if errUpload != nil {
 			return entity.AdminCore{}, errUpload
 		}
@@ -128,7 +128,7 @@ func (ar *AdminRepository) Update(image *multipart.FileHeader, adminId string, d
 	}
 
 	if image != nil {
-		imageURL, errUpload := storage.UploadThumbnail(image)
+		imageURL, errUpload := storage.Upload(image)
 		if errUpload != nil {
 			return errUpload
 		}

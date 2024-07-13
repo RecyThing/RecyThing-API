@@ -72,7 +72,7 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 	}
 
 	if image != nil {
-		imageURL, errUpload := storage.UploadThumbnail(image)
+		imageURL, errUpload := storage.Upload(image)
 		if errUpload != nil {
 			return entity.ArticleCore{}, errUpload
 		}
@@ -81,7 +81,6 @@ func (article *articleRepository) UpdateArticle(idArticle string, articleInput e
 	} else {
 		input.Image = articleData.Image
 	}
-
 	articleData.Title = articleInput.Title
 	articleData.Content = articleInput.Content
 
@@ -158,7 +157,7 @@ func (article *articleRepository) GetAllArticle(page, limit int, search, filter 
 func (article *articleRepository) CreateArticle(articleInput entity.ArticleCore, image *multipart.FileHeader) (entity.ArticleCore, error) {
 	articleData := entity.ArticleCoreToArticleModel(articleInput)
 
-	imageURL, uploadErr := storage.UploadThumbnail(image)
+	imageURL, uploadErr := storage.Upload(image)
 	if uploadErr != nil {
 		return entity.ArticleCore{}, uploadErr
 	}

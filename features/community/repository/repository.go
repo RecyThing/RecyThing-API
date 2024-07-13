@@ -27,7 +27,7 @@ func NewCommunityRepository(db *gorm.DB) entity.CommunityRepositoryInterface {
 func (cr *communityRepository) CreateCommunity(image *multipart.FileHeader, data entity.CommunityCore) error {
 	request := entity.CoreCommunityToModelCommunity(data)
 
-	imageURL, errUpload := storage.UploadThumbnail(image)
+	imageURL, errUpload := storage.Upload(image)
 	if errUpload != nil {
 		return errUpload
 	}
@@ -116,7 +116,7 @@ func (cr *communityRepository) UpdateCommunityById(id string, image *multipart.F
 	}
 
 	if image != nil {
-		imageURL, errUpload := storage.UploadThumbnail(image)
+		imageURL, errUpload := storage.Upload(image)
 		if errUpload != nil {
 			return errUpload
 		}
@@ -160,7 +160,7 @@ func (cr *communityRepository) GetByName(name string) (entity.CommunityCore, err
 func (communityRepo *communityRepository) CreateEvent(communityId string, eventInput entity.CommunityEventCore, image *multipart.FileHeader) error {
 	eventData := entity.EventCoreToEventModel(eventInput)
 
-	imageURL, uploadErr := storage.UploadThumbnail(image)
+	imageURL, uploadErr := storage.Upload(image)
 	if uploadErr != nil {
 		return uploadErr
 	}
@@ -280,7 +280,7 @@ func (communityRepo *communityRepository) UpdateEvent(communityId string, eventI
 	}
 
 	if image != nil {
-		imageURL, errUpload := storage.UploadThumbnail(image)
+		imageURL, errUpload := storage.Upload(image)
 		if errUpload != nil {
 			return errUpload
 		}

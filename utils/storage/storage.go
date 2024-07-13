@@ -16,7 +16,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func UploadProof(image *multipart.FileHeader) (string, error) {
+func Upload(image *multipart.FileHeader) (string, error) {
 	ctx := context.Background()
 
 	// Decode Google Cloud credentials from Base64
@@ -34,7 +34,7 @@ func UploadProof(image *multipart.FileHeader) (string, error) {
 	}
 	defer client.Close()
 
-	bucketName := "report_proof"
+	bucketName := "recything-bucket"
 	extension := filepath.Ext(image.Filename)
 	allowedExtensions := map[string]bool{".jpg": true, ".png": true, ".mp4": true}
 
@@ -42,7 +42,7 @@ func UploadProof(image *multipart.FileHeader) (string, error) {
 		return "", errors.New("error : format file tidak diizinkan")
 	}
 
-	imagePath := "proof-file/" + uuid.New().String() + extension
+	imagePath := "recything-bucket/" + uuid.New().String() + extension
 
 	wc := client.Bucket(bucketName).Object(imagePath).NewWriter(ctx)
 	defer wc.Close()
